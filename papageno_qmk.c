@@ -14,8 +14,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "papageno.h"
 #include "quantum.h"
 #include "tmk_core/common/keyboard.h"
+
+#ifdef DEBUG_PAPAGENO
+#include "debug.h"
+#define PG_PRINTF(...) \
+	uprintf(__VA_ARGS__);
+#define PG_ERROR(...) PG_PRINTF("*** Error: ", ##__VA_ARGS__)
+#else
+#define PG_PRINTF(...)
+#define PG_ERROR(...)
+#endif
 
 /* This function is defined in quantum/keymap_common.c 
  */
@@ -25,21 +36,22 @@ typedef struct {
 	uint16_t time_offset;
 } PG_QMK_Keycode_Data;
 
-bool pg_process_qmk_key_event(	PG_Key_Event *key_event,
+bool pg_qmk_process_key_event_callback(	PG_Key_Event *key_event,
 										uint8_t state_flag, 
 										void *user_data)
 {
 	PG_QMK_Keycode_Data *kd = (PG_QMK_Keycode_Data *)user_data;
 	
 	if(kd->time_offset == 0) {
-		kd->time_offset = timer_read() - key_event->time
+		kd->time_offset = timer_read() - (uint16_t)key_event->time;
 	};
 	
-	keypos_t keypos = (keypos_t)key_event->key_id;
+	/* keypos_t and key_id are assumed to be 16 bit */
+	keypos_t keypos = *((keypos_t*)&key_event->key_id);
 	
 	keyrecord_t record = {
 		.event = {
-			.time = key_event->time + time_offset,
+			.time = (uint16_t)key_event->time + kd->time_offset,
 			.key = keypos,
 			.pressed = key_event->pressed
 		}
@@ -52,7 +64,20 @@ bool pg_process_qmk_key_event(	PG_Key_Event *key_event,
 	return true;
 }
 
-void pg_process_qmk_keycode(void *user_data) {
+void pg_qmk_flush_key_events(void)
+{
+	PG_QMK_Keycode_Data kd = {
+		.time_offset = 0
+	};
+	
+	pg_flush_stored_key_events(
+		PG_Key_Flush_User,
+		pg_qmk_process_key_event_callback,
+		(void*)&kd
+	);
+}
+
+void pg_qmk_process_keycode(void *user_data) {
 	
 	uint16_t keycode = (uint16_t)user_data;
 	
@@ -76,7 +101,7 @@ void pg_process_qmk_keycode(void *user_data) {
 			* modifier keys or MO(...), etc.is
 			*/
 		
-		uint16_t configured_keycode = keycode_configkeycode);
+		uint16_t configured_keycode = keycode_config(keycode);
 		
 		action_t action = action_for_configured_keycode(configured_keycode); 
 	
@@ -89,13 +114,51 @@ void pg_process_qmk_keycode(void *user_data) {
 	}
 }
 
-bool pg_qmk_process_key_event(uint16_t keycode, keyrecord_t *record)
+bool pg_qmk_process_key_event(
+				uint16_t keycode, 
+				keyrecord_t *record)
 {
 	PG_Key_Event key_event = {
-		.key_id = (PG_Key_Id)record.event.key;
-		.time = (PG_Time_Id)record.event.time;
-		.pressed = record.event.pressed
+		.key_id = *((PG_Key_Id*)&record->event.key),
+		.time = (PG_Time_Id)record->event.time,
+		.pressed = record->event.pressed
 	};
 	
-	return pg_process_key_event(key_event);
+	uint8_t cur_layer = biton32(layer_state);
+	
+	return pg_process_key_event(
+							&key_event, cur_layer);
 }
+
+void  pg_qmk_time(PG_Time_Id *time)
+{
+	uint16_t time_tmp = timer_read();
+	*time = *((PG_Time_Id*)&time_tmp);
+}
+
+void  pg_qmk_time_difference(PG_Time_Id time1, PG_Time_Id time2, PG_Time_Id *delta)
+{
+	uint16_t *delta_t = (uint16_t *)delta;
+	
+	*delta_t = (uint16_t)time2 - (uint16_t)time1; 
+}
+
+int8_t pg_qmk_time_comparison(
+								PG_Time_Id time1,
+								PG_Time_Id time2)
+{
+	if((uint16_t)time1 > (uint16_t)time2) {
+		return 1;
+	}
+	else if((uint16_t)time1 == (uint16_t)time2) {
+		return 0;
+	}
+	 
+	return -1;
+}
+
+void pg_qmk_set_timeout_ms(uint16_t timeout)
+{
+	pg_set_timeout((PG_Time_Id)timeout);
+}
+

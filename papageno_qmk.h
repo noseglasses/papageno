@@ -19,19 +19,43 @@
 
 #include "papageno.h"
 
-bool pg_process_qmk_key_event(	PG_Key_Event *key_event,
-										uint8_t state_flag, 
-										void *user_data);
+bool pg_qmk_process_key_event_callback(	
+								PG_Key_Event *key_event,
+								uint8_t state_flag, 
+								void *user_data);
 
-void pg_process_qmk_keycode(void *user_data);
+void pg_qmk_flush_key_events(void);
 
-bool pg_qmk_process_key_event(uint16_t keycode, keyrecord_t *record);
+void pg_qmk_process_keycode(
+								void *user_data);
+
+bool pg_qmk_process_key_event(
+								uint16_t keycode, 
+								keyrecord_t *record);
+
+void pg_qmk_time(			PG_Time_Id *time);
+
+void  pg_qmk_time_difference(
+								PG_Time_Id time1,
+								PG_Time_Id time2,
+								PG_Time_Id *delta);
+
+int8_t pg_qmk_time_comparison(
+								PG_Time_Id time1,
+								PG_Time_Id time2);
+
+void pg_qmk_set_timeout_ms(uint16_t timeout);
+
+/* Call this to flush key events that
+ * were encountered by papageno
+ */
+void pg_qmk_flush_key_events(void);
 
 #define PG_QMK_ACTION_KEYCODE(KK) \
 	(PG_Action) {	\
 		.flags = PG_Action_Undefined, \
 		.user_callback = (PG_User_Callback) { \
-			.func = pg_process_qmk_keycode,  \
+			.func = pg_qmk_process_keycode,  \
 			.user_data = (void*)KK \
 		} \
 	}
@@ -45,12 +69,13 @@ bool pg_qmk_process_key_event(uint16_t keycode, keyrecord_t *record);
 
 #define QMK_INIT_PAPAGENO \
 	\
-	pg_set_key_processor((PG_Key_Event_Processor_Fun)pg_process_qmk_key_event);\
+	pg_set_key_processor((PG_Key_Event_Processor_Fun)pg_qmk_process_key_event_callback); \
+	\
+	pg_set_time_function((PG_Time_Fun)pg_qmk_time); \
+	pg_set_time_difference_function((PG_Time_Difference_Fun)pg_qmk_time_difference); \
 	\
 	PG_QMK_SET_PRINTF
 
-#define PG_QMK_KEYPOS_HEX(COL, ROW) (PG_Key_Id)((keypos_t){ .row = 0x##ROW, .col = 0x##COL})
-
-#define PG_QMK_
+#define PG_QMK_KEYPOS_HEX(COL, ROW) (*(PG_Key_Id*)(&(keypos_t){ .row = 0x##ROW, .col = 0x##COL}))
 
 #endif

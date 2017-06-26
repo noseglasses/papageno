@@ -85,18 +85,17 @@
 
 #include <assert.h>
 #include <inttypes.h>
+#include <stdarg.h>
 
 #define PG_MAX_KEYCHANGES 100
-
-#define PG_DEFAULT_KEYPRESS_TIMEOUT 200
 
 #ifdef DEBUG_PAPAGENO
 #include "debug.h"
 #define PG_PRINTF(...) \
 	if(pg_state.printf) {	\
-		uprintf(__VA_ARGS__);	\
+		pg_state.printf(__VA_ARGS__);	\
 	}
-#define PG_ERROR(...) PG_PRINTF("*** Error: " __VA_ARGS__)
+#define PG_ERROR(...) PG_PRINTF("*** Error: ", ##__VA_ARGS__)
 #else
 #define PG_PRINTF(...)
 #define PG_ERROR(...)
@@ -114,15 +113,18 @@ struct PG_PhraseStruct;
 
 typedef uint8_t (*PG_Phrase_Consider_Keychange_Fun)(	
 														struct PG_PhraseStruct *a_This, 
-														PG_Key_Event *key_event);
+														PG_Key_Event *key_event,
+														uint8_t cur_layer
+																	);
 
 typedef uint8_t (*PG_Phrase_Successor_Consider_Keychange_Fun)(
 														struct PG_PhraseStruct *a_This, 
-														PG_Key_Event *key_event);
+														PG_Key_Event *key_event
+ 													);
 
 typedef void (*PG_Phrase_Reset_Fun)(	struct PG_PhraseStruct *a_This);
 
-typedef void (*PG_Phrase_Trigger_Action_Fun)(	struct PG_PhraseStruct *a_This);
+typedef bool (*PG_Phrase_Trigger_Action_Fun)(	struct PG_PhraseStruct *a_This);
 
 typedef struct PG_PhraseStruct * (*PG_Phrase_Destroy_Fun)(struct PG_PhraseStruct *a_This);
 
@@ -189,19 +191,40 @@ typedef struct
 
 	PG_Key_Id abort_key_id;
 
-	uint16_t time_last_keypress;
+	PG_Time_Id time_last_keypress;
 
-	uint16_t keypress_timeout;
+	PG_Time_Id keypress_timeout;
 	
 	PG_Key_Id_Equal_Fun key_id_equal;
 	
 	PG_Key_Event_Processor_Fun key_processor;
+	
+	PG_Time_Fun time;
+	PG_Time_Difference_Fun time_difference;
+	PG_Time_Comparison_Fun time_comparison;
 	
 	#ifdef DEBUG_PAPAGENO
 	PG_Printf_Fun printf;
 	#endif	
   
 } PG_Magic_Melody_State;
+
+static void pg_default_time(PG_Time_Id *time)
+{
+	*time = 0;
+}
+
+static void pg_default_time_difference(PG_Time_Id time1, PG_Time_Id time2, PG_Time_Id *delta)
+{
+	*delta = 0;
+}
+
+int8_t pg_default_time_comparison(
+								PG_Time_Id time1,
+								PG_Time_Id time2)
+{
+	return 0;
+}
 
 static PG_Magic_Melody_State pg_state = 
 {
@@ -210,9 +233,12 @@ static PG_Magic_Melody_State pg_state =
 	.current_phrase = NULL,
 	.papageno_enabled = true,
 	.papageno_temporarily_disabled = false,
-	.abort_key_id = { .row = 100, .col = 100 },
-	.keypress_timeout = PG_DEFAULT_KEYPRESS_TIMEOUT,
+	.abort_key_id = (PG_Key_Id)((int16_t)-1),
+	.keypress_timeout = NULL,
 	.key_id_equal = (PG_Key_Id_Equal_Fun)pg_key_id_simple_equal,
+	.time = pg_default_time,
+	.time_difference = pg_default_time_difference,
+	.time_comparison = pg_default_time_comparison,
 	.printf = NULL
 };
 
@@ -237,7 +263,7 @@ static void pg_phrase_store_action(PG_Phrase *a_phrase,
 	a_phrase->action = action; 
 }
 
-void pg_flush_stored_keyevents(
+void pg_flush_stored_key_events(
 								uint8_t state_flag, 
 								PG_Key_Event_Processor_Fun key_processor,
 								void *user_data)
@@ -245,7 +271,7 @@ void pg_flush_stored_keyevents(
 	if(pg_state.n_key_events == 0) { return; }
 	
 	PG_Key_Event_Processor_Fun kp	=
-		(key_processor) ? key_processor : pstate.key_processor;
+		(key_processor) ? key_processor : pg_state.key_processor;
 	
 	if(!key_processor) { return; }
 	
@@ -312,14 +338,14 @@ static void pg_abort_magic_melody(void)
 	
 	/* Cleanup and issue all keypresses as if they happened without parsing a melody
 	*/
-	pg_flush_stored_keyevents(	PG_Key_Flush_Abort, 
+	pg_flush_stored_key_events(	PG_Key_Flush_Abort, 
 										NULL /* key_processor */, 
 										NULL /* user data */);
 	
 	pg_state.current_phrase = NULL;
 }
 
-static void pg_phrase_trigger_action(PG_Phrase *a_PG_Phrase) {
+static bool pg_phrase_trigger_action(PG_Phrase *a_PG_Phrase) {
 	
 	PG_PRINTF("*\n");
 	
@@ -362,9 +388,15 @@ static void pg_phrase_trigger_action(PG_Phrase *a_PG_Phrase) {
 	if(a_PG_Phrase->action.user_callback.func) {
 		a_PG_Phrase->action.user_callback.func(
 			a_PG_Phrase->action.user_callback.user_data);
+		
+		return true;
 	}
+	
+	return false;
 }
 
+/* Returns if an action has been triggered.
+ */
 static bool pg_recurse_and_process_actions(void)
 {			
 	if(!pg_state.current_phrase) { return false; }
@@ -375,13 +407,23 @@ static bool pg_recurse_and_process_actions(void)
 	
 	while(cur_phrase) {
 		
-		pg_phrase_trigger_action(cur_phrase);
+		bool action_present = pg_phrase_trigger_action(cur_phrase);
 		
-		if(cur_phrase->action.flag &= PG_Action_Fallthrough) {
-			cur_phrase = cur_phrase->parent;
+		if(action_present) {
+			if(cur_phrase->action.flags &= PG_Action_Fallthrough) {
+				cur_phrase = cur_phrase->parent;
+			}
+			else {
+				return true;
+			}
 		}
 		else {
-			return true;
+			if(cur_phrase->action.flags &= PG_Action_Noop_Fallthrough) {
+				cur_phrase = cur_phrase->parent;
+			}
+			else {
+				return false;
+			}
 		}
 	}
 	
@@ -407,7 +449,7 @@ static void pg_on_timeout(void)
 	/* Cleanup and issue all keypresses as if they happened without parsing a melody
 	*/
 	if(action_triggered) {
-		pg_flush_stored_keyevents(	PG_Key_Flush_Timeout, 
+		pg_flush_stored_key_events(	PG_Key_Flush_Timeout, 
 											NULL /* key_processor */, 
 											NULL /* user data */);
 	}
@@ -417,7 +459,9 @@ static void pg_on_timeout(void)
 
 static uint8_t pg_phrase_consider_key_event(	
 												PG_Phrase **current_phrase,
-												PG_Key_Event *key_event) 
+												PG_Key_Event *key_event,
+												uint8_t cur_layer
+ 														) 
 {
 	/* Loop over all phrases and inform them about the 
 	 * key_event 
@@ -427,8 +471,6 @@ static uint8_t pg_phrase_consider_key_event(
 	PG_Phrase *a_current_phrase = *current_phrase;
 	
 	pg_store_key_event(key_event);
-	
-	uint8_t layer = biton32(layer_state);
 	
 // 	PG_PRINTF("Processing key\n");
 	
@@ -452,9 +494,9 @@ static uint8_t pg_phrase_consider_key_event(
 		// PG_CALL_VIRT_METHOD(a_current_phrase->successors[i], print_self);
 		
 		/* Accept only paths through the search tree whose
-		 * nodes' layer tags are lower or equal the current layer
+		 * nodes' cur_layer tags are lower or equal the current cur_layer
 		 */
-		if(a_current_phrase->successors[i]->layer > layer) { continue; }
+		if(a_current_phrase->successors[i]->layer > cur_layer) { continue; }
 		
 		if(a_current_phrase->successors[i]->state == PG_Phrase_Invalid) {
 			continue;
@@ -504,16 +546,16 @@ static uint8_t pg_phrase_consider_key_event(
 		int8_t highest_layer = -1;
 		int8_t match_id = -1;
 		
-		/* Find the most suitable phrase with respect to the current layer.
+		/* Find the most suitable phrase with respect to the current cur_layer.
 		 */
 		for(uint8_t i = 0; i < a_current_phrase->n_successors; ++i) {
 		
 // 			PG_CALL_VIRT_METHOD(a_current_phrase->successors[i], print_self);
 		
 			/* Accept only paths through the search tree whose
-			* nodes' layer tags are lower or equal the current layer
+			* nodes' cur_layer tags are lower or equal the current cur_layer
 			*/
-			if(a_current_phrase->successors[i]->layer > layer) { continue; }
+			if(a_current_phrase->successors[i]->layer > cur_layer) { continue; }
 			
 			if(a_current_phrase->successors[i]->state != PG_Phrase_Completed) {
 				continue;
@@ -661,7 +703,7 @@ static void pg_phrase_print_self(PG_Phrase *p)
 	PG_PRINTF("   successors: 0x%" PRIXPTR "\n", (void*)&p->successors);
 	PG_PRINTF("   n_allocated_successors: %d\n", p->n_allocated_successors);
 	PG_PRINTF("   n_successors: %d\n", p->n_successors);
-	PG_PRINTF("   action.flag: %d\n", p->action.flag);
+	PG_PRINTF("   action.flags: %d\n", p->action.flags);
 	PG_PRINTF("   action_user_func: %0x%" PRIXPTR "\n", p->action.user_callback.func);
 	PG_PRINTF("   action_user_data: %0x%" PRIXPTR "\n", p->action.user_callback.user_data);
 	PG_PRINTF("   state: %d\n", p->state);
@@ -694,7 +736,7 @@ static PG_Phrase *pg_phrase_new(PG_Phrase *a_PG_Phrase) {
     a_PG_Phrase->successors = NULL;
 	 a_PG_Phrase->n_allocated_successors = 0;
     a_PG_Phrase->n_successors = 0;
-    a_PG_Phrase->action.flag = PG_Action_Undefined;
+    a_PG_Phrase->action.flags = PG_Action_Undefined;
     a_PG_Phrase->action.user_callback.func = NULL;
     a_PG_Phrase->action.user_callback.user_data = NULL;
     a_PG_Phrase->state = PG_Phrase_In_Progress;
@@ -724,7 +766,7 @@ static uint8_t pg_note_successor_consider_key_event(
 	
 	/* Set state appropriately 
 	 */
-	if(pg_state.key_id_equal(a_This->key_id, record->event.key)) {
+	if(pg_state.key_id_equal(a_This->key_id, key_event->key_id)) {
 		
 		if(key_event->pressed) {
 			a_This->pressed = true;
@@ -767,8 +809,7 @@ static void pg_note_print_self(PG_Note *p)
 	pg_phrase_print_self((PG_Phrase*)p);
 	
 	PG_PRINTF("note\n");
-	PG_PRINTF("   row: %d\n", p->key_id.row);
-	PG_PRINTF("   col: %d\n", p->key_id.col);
+	PG_PRINTF("   key_id: %d\n", p->key_id);
 }
 
 static PG_Phrase_Vtable pg_note_vtable =
@@ -797,8 +838,7 @@ static PG_Note *pg_note_new(PG_Note *a_note)
 
     a_note->phrase_inventory.vtable = &pg_note_vtable;
 		
-	 a_note->key_id.row = 100;
-	 a_note->key_id.col = 100;
+	 a_note->key_id = (PG_Key_Id)((uint16_t)-1);
 	 
 	 a_note->pressed = false;
 	 
@@ -834,7 +874,7 @@ static uint8_t pg_chord_successor_consider_key_event(
 	 */
 	for(uint8_t i = 0; i < a_This->n_members; ++i) {
 		
-		if(pg_state.key_id_equal(a_This->key_id[i], record->event.key)) {
+		if(pg_state.key_id_equal(a_This->key_id[i], key_event->key_id)) {
 			
 			key_part_of_chord = true;
 			
@@ -941,8 +981,8 @@ static void pg_chord_print_self(PG_Chord *c)
 	PG_PRINTF("   n_chord_keys_pressed: %d\n", c->n_chord_keys_pressed);
 	
 	for(uint8_t i = 0; i < c->n_members; ++i) {
-		PG_PRINTF("      row: %d, col: %d, active: %d\n", 
-				  c->key_id[i].row, c->key_id[i].col, c->member_active[i]);
+		PG_PRINTF("      key_id: %d, active: %d\n", 
+				  c->key_id[i], c->member_active[i]);
 	}
 }
 
@@ -1016,7 +1056,7 @@ static uint8_t pg_cluster_successor_consider_key_event(
 	 */
 	for(uint8_t i = 0; i < a_This->n_members; ++i) {
 		
-		if(pg_state.key_id_equal(a_This->key_id[i], record->event.key)) {
+		if(pg_state.key_id_equal(a_This->key_id[i], key_event->key_id)) {
 			
 			key_part_of_cluster = true;
 			
@@ -1131,8 +1171,8 @@ static void pg_cluster_print_self(PG_Cluster *c)
 	PG_PRINTF("   n_cluster_keys_pressed: %d\n", c->n_cluster_keys_pressed);
 	
 	for(uint8_t i = 0; i < c->n_members; ++i) {
-		PG_PRINTF("      row: %d, col: %d, active: %d\n", 
-				  c->key_id[i].row, c->key_id[i].col, c->member_active[i]);
+		PG_PRINTF("      key_id: %d, active: %d\n", 
+				  c->key_id[i], c->member_active[i]);
 	}
 }
 
@@ -1260,9 +1300,9 @@ static void *pg_melody_from_list(	uint8_t layer,
 		 * type none, which means that no fall through happens
 		 * in case of timeout.
 		 */
-		if(cur_phrase->action.type == PG_Action_Undefined) {
-			cur_phrase->action.type = PG_Action_None;
-		}
+// 		if(cur_phrase->action.type == PG_Action_Undefined) {
+// 			cur_phrase->action.flags = PG_Action_Undefined;
+// 		}
 		
 		PG_Phrase *equivalent_successor 
 			= pg_phrase_get_equivalent_successor(parent_phrase, cur_phrase);
@@ -1281,11 +1321,11 @@ static void *pg_melody_from_list(	uint8_t layer,
 			&& (i < (n_phrases - 1))
 		) {
 			
-			#if DEBUG_PAPAGENO
-			if(cur_phrase->action.type != equivalent_successor->action.type) {
-				PG_ERROR("Incompatible action types detected\n");
-			}
-			#endif
+// 			#if DEBUG_PAPAGENO
+// 			if(cur_phrase->action.type != equivalent_successor->action.type) {
+// 				PG_ERROR("Incompatible action types detected\n");
+// 			}
+// 			#endif
 			
 			PG_PRINTF("already present\n");
 			
@@ -1457,7 +1497,7 @@ void *pg_single_note_line(
 
 void *pg_tap_dance(	uint8_t layer,
 							PG_Key_Id curKeypos,
-							uint8_t default_action_type,
+							uint8_t default_action_flags,
 							uint8_t n_vargs,
 							...
 							)
@@ -1494,7 +1534,7 @@ void *pg_tap_dance(	uint8_t layer,
 		
 		phrases[i] = (PG_Phrase *)new_note;
 		
-		phrases[i]->action.type = default_action_type;
+		phrases[i]->action.flags = default_action_flags;
 	}
 	
 	va_start (ap, n_vargs);         /* Initialize the argument list. */
@@ -1529,9 +1569,21 @@ void *pg_set_action(	void *phrase__,
 
 bool pg_check_timeout(void)
 {
+	PG_Time_Id cur_time;
+	
+	pg_state.time(&cur_time);
+	
+	PG_Time_Id delta;
+	pg_state.time_difference(
+					pg_state.time_last_keypress, 
+					cur_time, 
+					&delta);
+	
 	if(pg_state.current_phrase
-		&& (timer_elapsed(pg_state.time_last_keypress) 
-				> pg_state.keypress_timeout)
+		&& (pg_state.time_comparison(
+					delta,
+					pg_state.keypress_timeout
+			) > 0)
 	  ) {
 		
 		PG_PRINTF("Magic melody timeout hit\n");
@@ -1546,7 +1598,8 @@ bool pg_check_timeout(void)
 	return false;
 }
 
-bool pg_process_key_event(PG_Key_Event *key_event)
+bool pg_process_key_event(PG_Key_Event *key_event,
+								  uint8_t cur_layer)
 { 
 	if(!pg_state.papageno_enabled) {
 		return true;
@@ -1572,7 +1625,7 @@ bool pg_process_key_event(PG_Key_Event *key_event)
 	
 	/* Check if the melody is being aborted
 	 */
-	if(pg_state.key_id_equal(pg_state.abort_key_id, record->event.key)) {
+	if(pg_state.key_id_equal(pg_state.abort_key_id, key_event->key_id)) {
 		
 		/* If a melody is in progress, we abort it and consume the abort key.
 		 */
@@ -1595,7 +1648,8 @@ bool pg_process_key_event(PG_Key_Event *key_event)
 		 */
 		pg_state.n_key_events = 0;
 		pg_state.current_phrase = &pg_state.melody_root;
-		pg_state.time_last_keypress = timer_read();
+		
+		pg_state.time(pg_state.time_last_keypress);
 	}
 	else {
 		
@@ -1606,18 +1660,21 @@ bool pg_process_key_event(PG_Key_Event *key_event)
 			return false;
 		}
 		else {
-			pg_state.time_last_keypress = timer_read();
+			pg_state.time(pg_state.time_last_keypress);
 		}
 	}
 	
 	uint8_t result 
-		= pg_phrase_consider_key_event(	&pg_state.current_phrase,
-											key_event);
+		= pg_phrase_consider_key_event(	
+										&pg_state.current_phrase,
+										key_event,
+										cur_layer
+								);
 		
 	switch(result) {
 		case PG_Phrase_In_Progress:
 		case PG_Phrase_Completed:
-			pg_flush_stored_keyevents(	PG_Key_Flush_Melody_Completed, 
+			pg_flush_stored_key_events(	PG_Key_Flush_Melody_Completed, 
 												NULL /* key_processor */, 
 												NULL /* user data */);
 											  
@@ -1644,7 +1701,7 @@ void pg_set_abort_key_id(PG_Key_Id key_id)
 	pg_state.abort_key_id = key_id;
 }
 
-void pg_set_timeout_ms(uint16_t timeout)
+void pg_set_timeout(PG_Time_Id timeout)
 {
 	pg_state.keypress_timeout = timeout;
 }
@@ -1662,6 +1719,21 @@ void pg_set_key_processor(PG_Key_Event_Processor_Fun key_processor)
 void pg_set_enabled(bool state)
 {
 	pg_state.papageno_enabled = state;
+}
+
+void pg_set_time_function(PG_Time_Fun fun)
+{
+	pg_state.time = fun;
+}
+
+void pg_set_time_difference_function(PG_Time_Difference_Fun fun)
+{
+	pg_state.time_difference = fun;
+}
+
+void pg_set_time_comparison_function(PG_Time_Comparison_Fun fun)
+{
+	pg_state.time_comparison = fun;
 }
 
 #ifdef DEBUG_PAPAGENO
