@@ -1476,9 +1476,9 @@ void *pg_single_note_line(
 		
 	for (int i = 0; i < count; i++) {
 		
-		PG_Key_Id curKeypos = va_arg (ap, PG_Key_Id); 
+		PG_Key_Id cur_key_id = va_arg (ap, PG_Key_Id); 
 
-		void *new_note = pg_create_note(curKeypos);
+		void *new_note = pg_create_note(cur_key_id);
 		
 		phrases[i] = (PG_Phrase *)new_note;
 	}
@@ -1496,7 +1496,7 @@ void *pg_single_note_line(
 }
 
 void *pg_tap_dance(	uint8_t layer,
-							PG_Key_Id curKeypos,
+							PG_Key_Id cur_key_id,
 							uint8_t default_action_flags,
 							uint8_t n_vargs,
 							...
@@ -1530,7 +1530,7 @@ void *pg_tap_dance(	uint8_t layer,
 	
 	for (int i = 0; i < n_taps; i++) {
 		
-		void *new_note = pg_create_note(curKeypos);
+		void *new_note = pg_create_note(cur_key_id);
 		
 		phrases[i] = (PG_Phrase *)new_note;
 		

@@ -88,7 +88,7 @@ void *pg_cluster(		uint8_t layer,
  * The variadic arguments are pairs of keystroke counts and associated actions.
  */
 void *pg_tap_dance(	uint8_t layer,
-							PG_Key_Id curKeypos,
+							PG_Key_Id cur_key_id,
 							uint8_t default_action_flags,
 							uint8_t n_tap_definitions,
 							...);
