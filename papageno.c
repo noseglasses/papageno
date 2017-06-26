@@ -1,4 +1,4 @@
-/* Copyright 2016 Jack Humbert
+/* Copyright 2017 Florian Fleissner
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,8 +81,6 @@
  * that is associated with the melody is triggered. 
  */
 
-#ifdef MAGIC_MELODIES_ENABLE
-
 #include "papageno.h"
 
 #include <assert.h>
@@ -92,10 +90,13 @@
 
 #define PG_DEFAULT_KEYPRESS_TIMEOUT 200
 
-#ifdef DEBUG_MAGIC_MELODIES
+#ifdef DEBUG_PAPAGENO
 #include "debug.h"
-#define PG_PRINTF(...) uprintf(__VA_ARGS__)
-#define PG_ERROR(...) uprintf("*** Error: " __VA_ARGS__)
+#define PG_PRINTF(...) \
+	if(pg_state.printf) {	\
+		uprintf(__VA_ARGS__);	\
+	}
+#define PG_ERROR(...) PG_PRINTF("*** Error: " __VA_ARGS__)
 #else
 #define PG_PRINTF(...)
 #define PG_ERROR(...)
@@ -103,10 +104,6 @@
 
 #define PG_CALL_VIRT_METHOD(THIS, METHOD, ...) \
 	THIS->vtable->METHOD(THIS, ##__VA_ARGS__);
-
-/* This function is defined in quantum/keymap_common.c 
- */
-// action_t action_for_configured_keycode(uint16_t keycode);
 
 static bool pg_key_id_simple_equal(PG_Key_Id kp1, PG_Key_Id kp2)
 {
@@ -187,7 +184,8 @@ typedef struct
 
 	PG_Phrase *current_phrase;
 
-	bool magic_melodies_temporarily_disabled;
+	bool papageno_enabled;
+	bool papageno_temporarily_disabled;
 
 	PG_Key_Id abort_key_id;
 
@@ -196,6 +194,12 @@ typedef struct
 	uint16_t keypress_timeout;
 	
 	PG_Key_Id_Equal_Fun key_id_equal;
+	
+	PG_Key_Event_Processor_Fun key_processor;
+	
+	#ifdef DEBUG_PAPAGENO
+	PG_Printf_Fun printf;
+	#endif	
   
 } PG_Magic_Melody_State;
 
@@ -204,10 +208,12 @@ static PG_Magic_Melody_State pg_state =
 	.n_key_events = 0,
 	.melody_root_initialized = false,
 	.current_phrase = NULL,
-	.magic_melodies_temporarily_disabled = false,
+	.papageno_enabled = true,
+	.papageno_temporarily_disabled = false,
 	.abort_key_id = { .row = 100, .col = 100 },
 	.keypress_timeout = PG_DEFAULT_KEYPRESS_TIMEOUT,
-	.key_id_equal = (PG_Key_Id_Equal_Fun)pg_key_id_simple_equal
+	.key_id_equal = (PG_Key_Id_Equal_Fun)pg_key_id_simple_equal,
+	.printf = NULL
 };
 
 enum {
@@ -231,13 +237,15 @@ static void pg_phrase_store_action(PG_Phrase *a_phrase,
 	a_phrase->action = action; 
 }
 
-static void pg_flush_stored_keyevents(PG_Key_Flush_Processor_Fun key_processor
-														 uint8_t state_flag, 
-														 void *user_data
-													
-)
+void pg_flush_stored_keyevents(
+								uint8_t state_flag, 
+								PG_Key_Event_Processor_Fun key_processor,
+								void *user_data)
 {
 	if(pg_state.n_key_events == 0) { return; }
+	
+	PG_Key_Event_Processor_Fun kp	=
+		(key_processor) ? key_processor : pstate.key_processor;
 	
 	if(!key_processor) { return; }
 	
@@ -245,7 +253,7 @@ static void pg_flush_stored_keyevents(PG_Key_Flush_Processor_Fun key_processor
 	 * offset to achieve this.
 	 */
 	
-	pg_state.magic_melodies_temporarily_disabled = true;
+	pg_state.papageno_temporarily_disabled = true;
        
 // 	uint16_t cur_time = timer_read();
 // 	
@@ -253,7 +261,7 @@ static void pg_flush_stored_keyevents(PG_Key_Flush_Processor_Fun key_processor
 	
 	for(uint16_t i = 0; i < pg_state.n_key_events; ++i) {
 		
-		if(!key_processor(&pg_state.key_events[i], state_flag, user_data)) { 
+		if(!kp(&pg_state.key_events[i], state_flag, user_data)) { 
 			break;
 		}
 		
@@ -268,7 +276,9 @@ static void pg_flush_stored_keyevents(PG_Key_Flush_Processor_Fun key_processor
 // 		process_record_quantum(&record);
 	}
 	
-	pg_state.magic_melodies_temporarily_disabled = false;
+	pg_state.papageno_temporarily_disabled = false;
+	
+	pg_state.n_key_events = 0;
 }
 
 static void pg_phrase_reset(	PG_Phrase *a_This)
@@ -302,9 +312,10 @@ static void pg_abort_magic_melody(void)
 	
 	/* Cleanup and issue all keypresses as if they happened without parsing a melody
 	*/
-	pg_flush_stored_keyevents();
+	pg_flush_stored_keyevents(	PG_Key_Flush_Abort, 
+										NULL /* key_processor */, 
+										NULL /* user data */);
 	
-	pg_state.n_key_events = 0;
 	pg_state.current_phrase = NULL;
 }
 
@@ -348,9 +359,9 @@ static void pg_phrase_trigger_action(PG_Phrase *a_PG_Phrase) {
 // 			}
 // 			break;
 			
-	if(a_PG_Phrase->action.data.user_callback.func) {
-		a_PG_Phrase->action.data.user_callback.func(
-			a_PG_Phrase->action.data.user_callback.user_data);
+	if(a_PG_Phrase->action.user_callback.func) {
+		a_PG_Phrase->action.user_callback.func(
+			a_PG_Phrase->action.user_callback.user_data);
 	}
 }
 
@@ -396,10 +407,11 @@ static void pg_on_timeout(void)
 	/* Cleanup and issue all keypresses as if they happened without parsing a melody
 	*/
 	if(action_triggered) {
-		pg_flush_stored_keyevents();
+		pg_flush_stored_keyevents(	PG_Key_Flush_Timeout, 
+											NULL /* key_processor */, 
+											NULL /* user data */);
 	}
 	
-	pg_state.n_key_events = 0;
 	pg_state.current_phrase = NULL;
 }
 
@@ -420,7 +432,7 @@ static uint8_t pg_phrase_consider_key_event(
 	
 // 	PG_PRINTF("Processing key\n");
 	
-	#if DEBUG_MAGIC_MELODIES
+	#if DEBUG_PAPAGENO
 	if(key_event->pressed) {
 		PG_PRINTF("v");
 	}
@@ -650,8 +662,8 @@ static void pg_phrase_print_self(PG_Phrase *p)
 	PG_PRINTF("   n_allocated_successors: %d\n", p->n_allocated_successors);
 	PG_PRINTF("   n_successors: %d\n", p->n_successors);
 	PG_PRINTF("   action.flag: %d\n", p->action.flag);
-	PG_PRINTF("   action_user_func: %0x%" PRIXPTR "\n", p->action.data.user_callback.func);
-	PG_PRINTF("   action_user_data: %0x%" PRIXPTR "\n", p->action.data.user_callback.user_data);
+	PG_PRINTF("   action_user_func: %0x%" PRIXPTR "\n", p->action.user_callback.func);
+	PG_PRINTF("   action_user_data: %0x%" PRIXPTR "\n", p->action.user_callback.user_data);
 	PG_PRINTF("   state: %d\n", p->state);
 	PG_PRINTF("   layer: %d\n", p->layer);
 }
@@ -683,8 +695,8 @@ static PG_Phrase *pg_phrase_new(PG_Phrase *a_PG_Phrase) {
 	 a_PG_Phrase->n_allocated_successors = 0;
     a_PG_Phrase->n_successors = 0;
     a_PG_Phrase->action.flag = PG_Action_Undefined;
-    a_PG_Phrase->action.data.user_callback.func = NULL;
-    a_PG_Phrase->action.data.user_callback.user_data = NULL;
+    a_PG_Phrase->action.user_callback.func = NULL;
+    a_PG_Phrase->action.user_callback.user_data = NULL;
     a_PG_Phrase->state = PG_Phrase_In_Progress;
     a_PG_Phrase->layer = 0;
 	 
@@ -1174,7 +1186,7 @@ static void pg_init(void) {
 	}
 }
 
-void pg_finalize_magic_melodies(void) {
+void pg_finalize(void) {
 	pg_phrase_free_successors(&pg_state.melody_root);
 }
 
@@ -1219,7 +1231,7 @@ void *pg_create_cluster(
 	return a_cluster;
 }
 
-#if DEBUG_MAGIC_MELODIES
+#if DEBUG_PAPAGENO
 static void pg_recursively_print_melody(PG_Phrase *p)
 {
 	if(	p->parent
@@ -1269,7 +1281,7 @@ static void *pg_melody_from_list(	uint8_t layer,
 			&& (i < (n_phrases - 1))
 		) {
 			
-			#if DEBUG_MAGIC_MELODIES
+			#if DEBUG_PAPAGENO
 			if(cur_phrase->action.type != equivalent_successor->action.type) {
 				PG_ERROR("Incompatible action types detected\n");
 			}
@@ -1292,7 +1304,7 @@ static void *pg_melody_from_list(	uint8_t layer,
 			
 			PG_PRINTF("newly defined\n");
 			
-			#if DEBUG_MAGIC_MELODIES
+			#if DEBUG_PAPAGENO
 			
 			/* Detect melody ambiguities
 			 */
@@ -1320,7 +1332,7 @@ static void *pg_melody_from_list(	uint8_t layer,
 					}
 				}
 			}
-			#endif /* if DEBUG_MAGIC_MELODIES */
+			#endif /* if DEBUG_PAPAGENO */
 					
 			cur_phrase->layer = layer;
 			
@@ -1405,9 +1417,11 @@ void *pg_cluster(		uint8_t layer,
 	return leafPhrase;
 }
 
-void *pg_single_note_line(	uint8_t layer,
+void *pg_single_note_line(	
+							uint8_t layer,
 							PG_Action action, 
-							int count, ...)
+							int count, 
+							...)
 {
 	PG_PRINTF("Adding single note line\n");
 	
@@ -1532,14 +1546,18 @@ bool pg_check_timeout(void)
 	return false;
 }
 
-bool pg_process_magic_melodies(PG_Key_Event *key_event)
-{
+bool pg_process_key_event(PG_Key_Event *key_event)
+{ 
+	if(!pg_state.papageno_enabled) {
+		return true;
+	}
+	
 	/* When a melody could not be finished, all keystrokes are
 	 * processed through the process_record_quantum method.
 	 * To prevent infinite recursion, we have to temporarily disable 
 	 * processing magic melodies.
 	 */
-	if(pg_state.magic_melodies_temporarily_disabled) { return true; }
+	if(pg_state.papageno_temporarily_disabled) { return true; }
 	
 	/* Early exit if no melody was registered 
 	 */
@@ -1573,6 +1591,9 @@ bool pg_process_magic_melodies(PG_Key_Event *key_event)
 		
 // 		PG_PRINTF("New melody \n");
 		
+		/* Start of melody processing
+		 */
+		pg_state.n_key_events = 0;
 		pg_state.current_phrase = &pg_state.melody_root;
 		pg_state.time_last_keypress = timer_read();
 	}
@@ -1596,7 +1617,12 @@ bool pg_process_magic_melodies(PG_Key_Event *key_event)
 	switch(result) {
 		case PG_Phrase_In_Progress:
 		case PG_Phrase_Completed:
+			pg_flush_stored_keyevents(	PG_Key_Flush_Melody_Completed, 
+												NULL /* key_processor */, 
+												NULL /* user data */);
+											  
 			return false;
+			
 		case PG_Phrase_Invalid:
 			
 			PG_PRINTF("-\n");
@@ -1628,4 +1654,19 @@ void pg_set_key_id_equal_function(PG_Key_Id_Equal_Fun fun)
 	pg_state.key_id_equal = fun;
 }
 
-#endif /*ifdef MAGIC_MELODIES_ENABLE*/
+void pg_set_key_processor(PG_Key_Event_Processor_Fun key_processor)
+{
+	pg_state.key_processor = key_processor;
+}
+
+void pg_set_enabled(bool state)
+{
+	pg_state.papageno_enabled = state;
+}
+
+#ifdef DEBUG_PAPAGENO
+void pg_set_printf(PG_Printf_Fun printf_fun)
+{
+	pg_state.printf = printf_fun;
+}
+#endif
