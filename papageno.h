@@ -180,7 +180,7 @@ typedef void * PPG_Phrase;
 /** @brief Action flags are defined as power of two to be compined using bitwise operations
  */
 enum PPG_Action_Flags {
-	PPG_Action_Undefined = 0,
+	PPG_Action_Default = 0,
 	PPG_Action_Fall_Through = 1 << 0,
 	PPG_Action_Fall_Back = 1 << 2,
 	PPG_Action_Immediate = 1 << 3
@@ -319,19 +319,22 @@ typedef struct {
 	PPG_Key_State state; ///< The state of the key when the event occured
 } PPG_Key_Event;
 
+#define PPG_PHRASES(...) \
+	sizeof((PPG_Phrase[]) { __VA_ARGS__ })/sizeof(PPG_Phrase), \
+	(PPG_Phrase[]) { __VA_ARGS__ }
+
 /** @brief Defines a stand alone magic melody that consists of single notes.
  * 
  * @param layer The layer the melody is associated with
  * @param action The action that is supposed to be carried out if the melody is completed
- * @param count The number of notes that follow as variadic arguments
- * @param ... Keypositions that represent the notes of the single note line.
+ * @param keys Keypositions that represent the notes of the single note line.
  * @returns The constructed phrase
  */
 PPG_Phrase ppg_single_note_line(
 							uint8_t layer, 
 							PPG_Action action, 
-							int count, 
-							...);
+							uint8_t n_keys,
+							PPG_Key keys[]);
 
 /** @brief Defines a stand alone magic chord. 
  * 
@@ -340,6 +343,7 @@ PPG_Phrase ppg_single_note_line(
  * 
  * @param layer The layer the melody is associated with
  * @param action The action that is supposed to be carried out if the melody is completed
+ * @param n_keys The number of keys
  * @param keys A pointer to an array of key definitions.
  * @param n_members The number of chord members that must match the size of the keys array.
  * @returns The constructed phrase
@@ -347,8 +351,8 @@ PPG_Phrase ppg_single_note_line(
 PPG_Phrase ppg_chord(		
 							uint8_t layer,
 							PPG_Action action,
-							uint8_t n_members,
-							PPG_Key *keys);
+							uint8_t n_keys,
+							PPG_Key keys[]);
 
 /** @brief Defines a stand alone magic note cluster. 
  * 
@@ -357,15 +361,36 @@ PPG_Phrase ppg_chord(
  * 
  * @param layer The layer the melody is associated with
  * @param action The action that is supposed to be carried out if the melody is completed
+ * @param n_keys The number of keys
  * @param keys A pointer to an array of key definitions.
  * @param n_members The number of cluster members that must match the size of the keys array.
  * @returns The constructed phrase
  */
 PPG_Phrase ppg_cluster(		
 							uint8_t layer, 
-							PPG_Action action, 
-							uint8_t n_members,
-							PPG_Key *keys);
+							PPG_Action action,
+							uint8_t n_keys, 
+							PPG_Key keys[]);
+
+/** @brief A tap specification
+ * 
+ * Defines an action for a given number of taps
+ */
+typedef struct {
+	PPG_Action action; ///< The action associated with the given number of taps
+	uint8_t tap_count; ///< The number of taps necessary to trigger the action
+} PPG_Tap_Definition;
+
+/** @brief Auxiliary macro to simplify passing tap definitions
+ * 
+ * @param ... The array members
+ */
+#define PPG_TAP_DEFINITIONS(...) \
+	sizeof((PPG_Tap_Definition[]){ __VA_ARGS__ })/sizeof(PPG_Tap_Definition), \
+	(PPG_Tap_Definition[]){ __VA_ARGS__ }
+
+#define PPG_TAP(TAP_COUNT, ACTION) \
+	(PPG_Tap_Definition) { .action = ACTION, .tap_count = TAP_COUNT }
 
 /** @brief Defines a tap dance. 
  * 
@@ -381,23 +406,16 @@ PPG_Phrase ppg_cluster(
  * @param key The key the tap dance is associated with
  * @param default_action_flags The default action that is supposed to be 
  *               associated with the notes of the tap dance.
- * @param n_tap_definition_varargs The number of tap definition variadic arguments (this is actually a multitude of the number of tap dance specifications. Please use the macro PPG_N_TAPS 
- * supplied with the number of tap specifications to define correct values.
- * @param ... Pairs of tap counts and action specifications. If you want to define,
- *          tap dance actions for three, five and seven taps, you would e.g. specify three pairs.
+ * @param n_tap_definitions The number of tap definitions
+ * @param tap_definitions A tap definitions array.
  * @returns The constructed phrase
  */
 PPG_Phrase ppg_tap_dance(	
 							uint8_t layer,
 							PPG_Key key,
 							uint8_t default_action_flags,
-							uint8_t n_tap_definition_varargs,
-							...);
-
-/** Auxiliary macro to compute the correct number of variadic arguments for the
- * ppg_tap_dance function. Use it to produce the function parameter n_tap_definition_varargs.
- */
-#define PPG_N_TAPS(S) (2*S)
+							uint8_t n_tap_definitions,
+							PPG_Tap_Definition tap_definitions[]);
 
 /** @brief Generates a note subphrase.
  *
@@ -423,23 +441,21 @@ PPG_Phrase ppg_create_note(PPG_Key key);
  * 		to be effective
  * @note Use setter functions that operate on phrases to change attributes of the generated phrase 
  * 
- * @param n_members The number of notes that make up the chord. This value must match the
- * 						number of array members of keys
+ * @param n_keys The number of keys that are associated with the chord 
  * @param keys An array of keys that represent the notes of the magic chord
  * @returns The constructed subphrase
  */
 PPG_Phrase ppg_create_chord(	
-							uint8_t n_members,
-							PPG_Key *keys
+							uint8_t n_keys,
+							PPG_Key keys[]
 							);
 
 /** @brief Auxiliary macro to create a chord based on a set of key specifications
  * 
- * @param ... The cluster members
+ * @param ... A list of keys
  */
 #define PPG_CREATE_CHORD(...) \
-	ppg_create_chord(sizeof((PPG_Key[]){ __VA_ARGS__ }), \
-						  (PPG_Key[]){ __VA_ARGS__ })
+	ppg_create_chord(PPG_KEYS(__VA_ARGS__))
 
 /** @brief Generates a magic cluster subphrase.
  *
@@ -451,30 +467,28 @@ PPG_Phrase ppg_create_chord(
  * 		to be effective
  * @note Use setter functions that operate on phrases to change attributes of the generated phrase 
  * 
- * @param n_members The number of notes that make up the cluster. This value must match the
- * 						number of array members of keys
+ * @param n_keys The number of keys that are associated with the cluster 
  * @param keys An array of key ids that represent the notes of the magic cluster
  * @returns The constructed subphrase
  */
 PPG_Phrase ppg_create_cluster(
-							uint8_t n_members,
-							PPG_Key *keys);
+							uint8_t n_keys,
+							PPG_Key keys[]);
 
 /** @brief Auxiliary macro to create a cluster based on a set of key specifications
  * 
- * @param ... The cluster members
+ * @param ... A list of keys
  */
 #define PPG_CREATE_CLUSTER(...) \
-	ppg_create_cluster(sizeof((PPG_Key[]){ __VA_ARGS__ }), \
-						  (PPG_Key[]){ __VA_ARGS__ })
+	ppg_create_cluster(PPG_KEYS(__VA_ARGS__))
 	
 /** @brief Auxiliary macro to simplify passing key arrays to functions such as
  * ppg_cluster or ppg_chord
  * 
  * @param ... The array members
  */
-#define PPG_KEY_ARRAY(...) \
-	sizeof((PPG_Key[]){ __VA_ARGS__ }), \
+#define PPG_KEYS(...) \
+	sizeof((PPG_Key[]){ __VA_ARGS__ })/sizeof(PPG_Key), \
 	(PPG_Key[]){ __VA_ARGS__ }
 
 /** @brief Defines a magic melody that consists of subphrases
@@ -484,15 +498,14 @@ PPG_Phrase ppg_create_cluster(
  * 		or to modify fall through behavior.
  * 
  * @param layer The layer the melody is associated with
- * @param count The number of subphrases that make up the magic melody
- * @param ... Pointers to phrases that make up the melody.
- * @note The number of variaradic arguments, i.e. the phrase pointers must match the value of parameter count
+ * @param n_phrases The number of phrases combined to form the melody
+ * @param phrases The phrases that make up the melody
  * @returns The constructed phrase
  */
 PPG_Phrase ppg_melody(		
-							uint8_t layer,  
-							int count,
-							...);
+							uint8_t layer,
+							uint8_t n_phrases,
+							PPG_Phrase phrases[]);
 
 /** @brief Assigns an action to a subphrase.
  * 
@@ -715,7 +728,7 @@ void* ppg_get_current_context(void);
  */
 #define PPG_ACTION_USER_CALLBACK(FUNC, USER_DATA) \
 	(PPG_Action) { \
-		.flags = PPG_Action_Undefined, \
+		.flags = PPG_Action_Default, \
 		.user_callback = (PPG_User_Callback) { \
 			.func = (PPG_User_Callback_Fun)FUNC, \
 			.user_data = USER_DATA \

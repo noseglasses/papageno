@@ -16,7 +16,8 @@
 
 #include "papageno.h"
 
-#include <assert.h>
+#include <stdlib.h>
+#include <stddef.h>
 #include <inttypes.h>
 #include <stdarg.h>
 
@@ -32,13 +33,18 @@
 #include "debug.h"
 #define PPG_PRINTF(...) \
 	uprintf(__VA_ARGS__);
-#define PPG_ERROR(...) PPG_PRINTF("*** Error: ", ##__VA_ARGS__)
+#define PPG_ERROR(...) PPG_PRINTF("*** Error: " __VA_ARGS__)
 #else
 #define PPG_PRINTF(...)
 #define PPG_ERROR(...)
 #endif
+	
+#define PPG_ASSERT(...) \
+	if(!(__VA_ARGS__)) { \
+		PPG_ERROR("Assertion failed: " #__VA_ARGS__ "\n"); \
+	}
 
-#else
+#else //DEBUG_PAPAGENO
 
 #ifndef PAPAGENO_PRINT_SELF_ENABLED
 #define PAPAGENO_PRINT_SELF_ENABLED 0
@@ -46,7 +52,10 @@
 
 #define PPG_PRINTF(...)
 #define PPG_ERROR(...)
-#endif
+
+#define PPG_ASSERT(...)
+
+#endif //DEBUG_PAPAGENO
 
 #define PPG_CALL_VIRT_METHOD(THIS, METHOD, ...) \
 	THIS->vtable->METHOD(THIS, ##__VA_ARGS__);
@@ -249,17 +258,20 @@ enum {
 
 static void ppg_store_key_event(PPG_Key_Event *key_event)
 {
-	assert(ppg_context->n_key_events < PPG_MAX_KEYCHANGES);
+	PPG_ASSERT(ppg_context->n_key_events < PPG_MAX_KEYCHANGES);
 	
 	ppg_context->key_events[ppg_context->n_key_events] = *key_event;
 	
 	++ppg_context->n_key_events;
 }
 
-static void ppg_phrase_store_action(PPG_Phrase__ *a_phrase, 
+static void ppg_phrase_store_action(PPG_Phrase__ *phrase, 
 											  PPG_Action action)
 {
-	a_phrase->action = action; 
+	phrase->action = action; 
+	
+	PPG_PRINTF("Action of phrase 0x%" PRIXPTR ": %u\n",
+				  phrase, (uint16_t)phrase->action.user_callback.user_data);
 }
 
 void ppg_flush_stored_key_events(
@@ -278,26 +290,12 @@ void ppg_flush_stored_key_events(
 	 * invokes ppg_process_key_event 
 	 */
 	ppg_context->papageno_temporarily_disabled = true;
-       
-// 	uint16_t cur_time = timer_read();
-// 	
-// 	uint16_t time_offset = cur_time - ppg_context->keytimes[ppg_context->n_key_events - 1];
 	
 	for(uint16_t i = 0; i < ppg_context->n_key_events; ++i) {
 		
 		if(!kp(&ppg_context->key_events[i], slot_id, user_data)) { 
 			break;
 		}
-		
-// 		record.event.time = ppg_context->keytimes[i] + time_offset;
-// 		
-// 		record.event.key.row = ppg_context->key_id[i].row;
-// 		record.event.key.col = ppg_context->key_id[i].col;
-// 		record.event.pressed = ppg_context->pressed[i];
-// 		
-// 		PPG_PRINTF("Issuing keystroke at %d, %d\n", record.event.key.row, record.event.key.col);
-// 		
-// 		process_record_quantum(&record);
 	}
 	
 	ppg_context->papageno_temporarily_disabled = false;
@@ -308,9 +306,9 @@ static void ppg_delete_stored_key_events(void)
 	ppg_context->n_key_events = 0;
 }
 
-static void ppg_phrase_reset(	PPG_Phrase__ *a_This)
+static void ppg_phrase_reset(	PPG_Phrase__ *phrase)
 {
-	a_This->state = PPG_Phrase_In_Progress;
+	phrase->state = PPG_Phrase_In_Progress;
 }
 
 /* Phrases have states. This method resets the states
@@ -318,12 +316,12 @@ static void ppg_phrase_reset(	PPG_Phrase__ *a_This)
  * melody tree we only need to reset thoses phrases
  * that were candidates.
  */
-static void ppg_phrase_reset_successors(PPG_Phrase__ *a_This)
+static void ppg_phrase_reset_successors(PPG_Phrase__ *phrase)
 {
 	/* Reset all successor phrases if there are any
 	 */
-	for(uint8_t i = 0; i < a_This->n_successors; ++i) {
-		PPG_CALL_VIRT_METHOD(a_This->successors[i], reset);
+	for(uint8_t i = 0; i < phrase->n_successors; ++i) {
+		PPG_CALL_VIRT_METHOD(phrase->successors[i], reset);
 	}
 }
 	
@@ -356,42 +354,6 @@ void ppg_abort_magic_melody(void)
 //
 static bool ppg_phrase_trigger_action(PPG_Phrase__ *phrase, uint8_t slot_id) {
 	
-// 	switch(phrase->action.type) {
-// 		case PPG_Action_Keycode:
-// 	
-// 			if(phrase->action.data.keycode != 0) {
-// 				
-// 				/* Construct a dummy record
-// 				*/
-// 				keyrecord_t record;
-// 					record.event.key.row = 0;
-// 					record.event.key.col = 0;
-// 					record.event.pressed = true;
-// 					record.event.time = timer_read();
-// 					
-// 				/* Use the quantum/tmk system to trigger the action
-// 				 * thereby using a fictituous a key (0, 0) with which the action 
-// 				 * keycode is associated. We pretend that the respective key
-// 				 * was hit and released to make sure that any action that
-// 				 * requires both events is correctly processed.
-// 				 * Unfortunatelly this means that some actions that
-// 				 * require keys to be held do not make sense, e.g.
-// 				 * modifier keys or MO(...), etc.
-// 				 */
-// 				
-// 				uint16_t configured_keycode = keycode_config(phrase->action.data.keycode);
-// 				
-// 				action_t action = action_for_configured_keycode(configured_keycode); 
-// 			
-// 				process_action(&record, action);
-// 				
-// 				record.event.pressed = false;
-// 				record.event.time = timer_read();
-// 				
-// 				process_action(&record, action);
-// 			}
-// 			break;
-	
 	/* Actions of completed subphrases have already been triggered during 
 	 * melody processing.
 	 */
@@ -401,6 +363,9 @@ static bool ppg_phrase_trigger_action(PPG_Phrase__ *phrase, uint8_t slot_id) {
 	}
 			
 	if(phrase->action.user_callback.func) {
+
+// 		PPG_PRINTF("Action of phrase 0x%" PRIXPTR ": %u\n",
+// 				  phrase, (uint16_t)phrase->action.user_callback.user_data);
 		
 		PPG_PRINTF("*\n");
 	
@@ -420,7 +385,7 @@ static bool ppg_recurse_and_process_actions(uint8_t slot_id)
 {			
 	if(!ppg_context->current_phrase) { return false; }
 	
-	PPG_PRINTF("Triggering action of most recent phrase\n");
+// 	PPG_PRINTF("Triggering action of most recent phrase\n");
 	
 	PPG_Phrase__ *cur_phrase = ppg_context->current_phrase;
 	
@@ -590,20 +555,21 @@ static uint8_t ppg_phrase_consider_key_event(
 			}
 		}
 		
-		assert(match_id >= 0);
+		PPG_ASSERT(match_id >= 0);
 				
 		/* Cleanup successors of the current node for further melody processing.
 		 */
 		ppg_phrase_reset_successors(a_current_phrase);
 		
-		if(a_current_phrase->action.flags & PPG_Action_Immediate) {
-			ppg_phrase_trigger_action(a_current_phrase, PPG_On_Subphrase_Completed);
-		}
-		
-		/* Replace the current phrase.
+		/* Replace the current phrase. From this point on
+		 * a_current_phrase references the child phrase
 		*/
 		*current_phrase = a_current_phrase->successors[match_id];
 		a_current_phrase = *current_phrase;
+		
+		if(a_current_phrase->action.flags & PPG_Action_Immediate) {
+			ppg_phrase_trigger_action(a_current_phrase, PPG_On_Subphrase_Completed);
+		}
 			
 		if(0 == a_current_phrase->n_successors) {
 			
@@ -691,25 +657,25 @@ static bool ppg_phrase_equals(PPG_Phrase__ *p1, PPG_Phrase__ *p2)
 	return p1->vtable->equals(p1, p2);
 }
 
-static void ppg_phrase_free(PPG_Phrase__ *a_This) {
+static void ppg_phrase_free(PPG_Phrase__ *phrase) {
 	
-	PPG_CALL_VIRT_METHOD(a_This, destroy);
+	PPG_CALL_VIRT_METHOD(phrase, destroy);
 
-	free(a_This);
+	free(phrase);
 }
 
 static PPG_Phrase__* ppg_phrase_get_equivalent_successor(
-														PPG_Phrase__ *phrase,
+														PPG_Phrase__ *parent_phrase,
 														PPG_Phrase__ *sample) {
 	
-	if(phrase->n_successors == 0) { return NULL; }
+	if(parent_phrase->n_successors == 0) { return NULL; }
 	
-	for(uint8_t i = 0; i < phrase->n_successors; ++i) {
+	for(uint8_t i = 0; i < parent_phrase->n_successors; ++i) {
 		if(ppg_phrase_equals(
-											phrase->successors[i], 
+											parent_phrase->successors[i], 
 											sample)
 		  ) {
-			return phrase->successors[i];
+			return parent_phrase->successors[i];
 		}
 	}
 	
@@ -762,7 +728,7 @@ static PPG_Phrase__ *ppg_phrase_new(PPG_Phrase__ *phrase) {
     phrase->successors = NULL;
 	 phrase->n_allocated_successors = 0;
     phrase->n_successors = 0;
-    phrase->action.flags = PPG_Action_Undefined;
+    phrase->action.flags = PPG_Action_Default;
     phrase->action.user_callback.func = NULL;
     phrase->action.user_callback.user_data = NULL;
     phrase->state = PPG_Phrase_In_Progress;
@@ -789,7 +755,7 @@ static uint8_t ppg_note_successor_consider_key_event(
 											PPG_Note *note,
 											PPG_Key_Event *key_event) 
 {	
-	assert(note->phrase_inventory.state == PPG_Phrase_In_Progress);
+	PPG_ASSERT(note->phrase_inventory.state == PPG_Phrase_In_Progress);
 	
 	/* Set state appropriately 
 	 */
@@ -903,9 +869,9 @@ static uint8_t ppg_chord_successor_consider_key_event(
 {
 	bool key_part_of_chord = false;
 	
-	assert(chord->n_members != 0);
+	PPG_ASSERT(chord->n_members != 0);
 	
-	assert(chord->phrase_inventory.state == PPG_Phrase_In_Progress);
+	PPG_ASSERT(chord->phrase_inventory.state == PPG_Phrase_In_Progress);
 	
 	/* Check it the key is part of the current chord 
 	 */
@@ -1101,9 +1067,9 @@ static uint8_t ppg_cluster_successor_consider_key_event(
 {
 	bool key_part_of_cluster = false;
 	
-	assert(cluster->n_members != 0);
+	PPG_ASSERT(cluster->n_members != 0);
 	
-	assert(cluster->phrase_inventory.state == PPG_Phrase_In_Progress);
+	PPG_ASSERT(cluster->phrase_inventory.state == PPG_Phrase_In_Progress);
 	
 	/* Check it the key is part of the current chord 
 	 */
@@ -1333,13 +1299,12 @@ PPG_Phrase ppg_create_note(PPG_Key key)
 	
 static PPG_Phrase ppg_initialize_aggregate(	
 								PPG_Aggregate *aggregate,
-								uint8_t n_members,
-								PPG_Key *keys)
+								uint8_t n_keys,
+								PPG_Key keys[])
 {
-	 	 
-	ppg_aggregate_resize(aggregate, n_members);
+	ppg_aggregate_resize(aggregate, n_keys);
 	 
-	for(uint8_t i = 0; i < n_members; ++i) {
+	for(uint8_t i = 0; i < n_keys; ++i) {
 		aggregate->keys[i] = keys[i];
 	}
 	 
@@ -1349,25 +1314,25 @@ static PPG_Phrase ppg_initialize_aggregate(
 }
 
 PPG_Phrase ppg_create_chord(	
-								uint8_t n_members,
-								PPG_Key *keys)
+								uint8_t n_keys,
+								PPG_Key keys[])
 {
 	PPG_Chord *chord = (PPG_Chord*)ppg_aggregate_new(ppg_aggregate_alloc());
 	
 	chord->phrase_inventory.vtable = &ppg_chord_vtable;
 	
-	return ppg_initialize_aggregate(chord, n_members, keys);
+	return ppg_initialize_aggregate(chord, n_keys, keys);
 }
 	
 PPG_Phrase ppg_create_cluster(
-									uint8_t n_members,
-									PPG_Key *keys)
+								uint8_t n_keys,
+									PPG_Key keys[])
 {
 	PPG_Cluster *cluster = (PPG_Cluster*)ppg_aggregate_new(ppg_aggregate_alloc());
 	 
 	cluster->phrase_inventory.vtable = &ppg_cluster_vtable;
 	
-	return ppg_initialize_aggregate(cluster, n_members, keys);
+	return ppg_initialize_aggregate(cluster, n_keys, keys);
 }
 
 #if PAPAGENO_PRINT_SELF_ENABLED
@@ -1385,24 +1350,16 @@ static void ppg_recursively_print_melody(PPG_Phrase__ *p)
 
 static PPG_Phrase ppg_melody_from_list(	
 												uint8_t layer,
-												PPG_Phrase__ **phrases,
-												int n_phrases)
-{ 
+												uint8_t n_phrases,
+												PPG_Phrase phrases[])
+{ 	
 	PPG_Phrase__ *parent_phrase = &ppg_context->melody_root;
 	
 	PPG_PRINTF("   %d members\n", n_phrases);
 	
 	for (int i = 0; i < n_phrases; i++) { 
 		
-		PPG_Phrase__ *cur_phrase = phrases[i];
-		
-		/* If the action type is undefined, we set action 
-		 * type none, which means that no fall through happens
-		 * in case of timeout.
-		 */
-// 		if(cur_phrase->action.type == PPG_Action_Undefined) {
-// 			cur_phrase->action.flags = PPG_Action_Undefined;
-// 		}
+		PPG_Phrase__ *cur_phrase = (PPG_Phrase__*)phrases[i];
 		
 		PPG_Phrase__ *equivalent_successor 
 			= ppg_phrase_get_equivalent_successor(parent_phrase, cur_phrase);
@@ -1427,7 +1384,7 @@ static PPG_Phrase ppg_melody_from_list(
 // 			}
 // 			#endif
 			
-			PPG_PRINTF("already present\n");
+			PPG_PRINTF("already present: 0x%" PRIXPTR "\n", equivalent_successor);
 			
 			parent_phrase = equivalent_successor;
 			
@@ -1442,7 +1399,7 @@ static PPG_Phrase ppg_melody_from_list(
 		}
 		else {
 			
-			PPG_PRINTF("newly defined\n");
+			PPG_PRINTF("newly defined: 0x%" PRIXPTR "\n", cur_phrase);
 			
 			#if DEBUG_PAPAGENO
 			
@@ -1493,52 +1450,33 @@ static PPG_Phrase ppg_melody_from_list(
 
 PPG_Phrase ppg_melody(		
 							uint8_t layer, 
-							int count, 
-							...)
+							uint8_t n_phrases,
+							PPG_Phrase phrases[])
 { 
 	PPG_PRINTF("Adding magic melody\n");
 	
 	ppg_init();
-	
-	va_list ap;
-
-	va_start (ap, count);         /* Initialize the argument list. */
-  	
-	PPG_Phrase__ **phrases 
-		= (PPG_Phrase__ **)malloc(count*sizeof(PPG_Phrase__ *));
-	
-	for (int i = 0; i < count; i++) { 
 		
-		phrases[i] = va_arg (ap, PPG_Phrase__ *);
-	}
-	
-	PPG_Phrase__ *leafPhrase 
-		= ppg_melody_from_list(layer, phrases, count);
-	
-	free(phrases);
-
-	va_end (ap);                  /* Clean up. */
-	
-	return leafPhrase;
+	return ppg_melody_from_list(layer, n_phrases, phrases);
 }
 
 PPG_Phrase ppg_chord(		
 							uint8_t layer, 
 							PPG_Action action, 
-							uint8_t n_members,
-							PPG_Key *keys)
+							uint8_t n_keys,
+							PPG_Key keys[])
 {   	
 	PPG_PRINTF("Adding chord\n");
 	
 	PPG_Phrase__ *phrase = 
-		(PPG_Phrase__ *)ppg_create_chord(n_members, keys);
+		(PPG_Phrase__ *)ppg_create_chord(n_keys, keys);
 		
 	phrase->action = action;
 		
-	PPG_Phrase__ *phrases[1] = { phrase };
+	PPG_Phrase phrases[1] = { phrase };
 	
 	PPG_Phrase__ *leaf_phrase 
-		= ppg_melody_from_list(layer, phrases, 1);
+		= ppg_melody_from_list(layer, 1, phrases);
 		
 	return leaf_phrase;
 }
@@ -1546,58 +1484,43 @@ PPG_Phrase ppg_chord(
 PPG_Phrase ppg_cluster(		
 							uint8_t layer, 
 							PPG_Action action, 
-							uint8_t n_members,
-							PPG_Key *keys)
+							uint8_t n_keys,
+							PPG_Key keys[])
 {   	
 	PPG_PRINTF("Adding cluster\n");
 	
 	PPG_Phrase__ *phrase = 
-		(PPG_Phrase__ *)ppg_create_cluster(n_members, keys);
+		(PPG_Phrase__ *)ppg_create_cluster(n_keys, keys);
 		
 	phrase->action = action;
 	
-	PPG_Phrase__ *phrases[1] = { phrase };
+	PPG_Phrase phrases[1] = { phrase };
 	
 	PPG_Phrase__ *leaf_phrase 
-		= ppg_melody_from_list(layer, phrases, 1);
+		= ppg_melody_from_list(layer, 1, phrases);
 		
 	return leaf_phrase;
 }
 
 PPG_Phrase ppg_single_note_line(	
 							uint8_t layer,
-							PPG_Action action, 
-							int count, 
-							...)
+							PPG_Action action,
+							uint8_t n_keys,
+							PPG_Key keys[])
 {
 	PPG_PRINTF("Adding single note line\n");
-	
-	ppg_init();
-	
-	va_list ap;
-
-	va_start (ap, count);         /* Initialize the argument list. */
   
-	PPG_Phrase__ **phrases 
-		= (PPG_Phrase__ **)malloc(count*sizeof(PPG_Phrase__ *));
+	PPG_Phrase phrases[n_keys];
 		
-	for (int i = 0; i < count; i++) {
-		
-		PPG_Key cur_key = va_arg (ap, PPG_Key); 
+	for (int i = 0; i < n_keys; i++) {
 
-		PPG_Phrase new_note = ppg_create_note(cur_key);
-		
-		phrases[i] = (PPG_Phrase__ *)new_note;
+		phrases[i] = ppg_create_note(keys[i]);
 	}
 	
-	ppg_phrase_store_action(phrases[count - 1], action);
+	ppg_phrase_store_action(phrases[n_keys - 1], action);
 	
 	PPG_Phrase__ *leaf_phrase 
-		= ppg_melody_from_list(layer, phrases, count);
-	
-	free(phrases);
-
-	va_end (ap);                  /* Clean up. */
+		= ppg_melody_from_list(layer, n_keys, phrases);
   
 	return leaf_phrase;
 }
@@ -1606,59 +1529,42 @@ PPG_Phrase ppg_tap_dance(
 							uint8_t layer,
 							PPG_Key key,
 							uint8_t default_action_flags,
-							uint8_t n_tap_definition_varargs,
-							...
-							)
+							uint8_t n_tap_definitions,
+							PPG_Tap_Definition tap_definitions[])
 {
 	PPG_PRINTF("Adding tap dance\n");
 	
 	ppg_init();
 	
-	va_list ap;
-
-	va_start (ap, n_tap_definition_varargs);         /* Initialize the argument list. */
-	
-	uint8_t n_tap_definitions = n_tap_definition_varargs/2;
-		
 	int n_taps = 0;
-	for (uint8_t i = 0; i < n_tap_definitions; i++) {
+	for (uint8_t i = 0; i < n_tap_definitions; i++) { 
 		
-		int tap_count = va_arg (ap, int); 
-		va_arg (ap, PPG_Action); /* not needed here */
-		
-		if(tap_count > n_taps) {
-			n_taps = tap_count;
+		if(tap_definitions[i].tap_count > n_taps) {
+			n_taps = tap_definitions[i].tap_count;
 		}
 	}
 	
 	if(n_taps == 0) { return NULL; }
-	
-	PPG_Phrase__ **phrases 
-		= (PPG_Phrase__ **)malloc(n_taps*sizeof(PPG_Phrase__ *));
+		
+	PPG_Phrase phrases[n_taps];
 	
 	for (int i = 0; i < n_taps; i++) {
 		
-		PPG_Phrase new_note = ppg_create_note(key);
+		PPG_Phrase__ *new_note = (PPG_Phrase__*)ppg_create_note(key);
+			new_note->action.flags = default_action_flags;
 		
-		phrases[i] = (PPG_Phrase__ *)new_note;
-		
-		phrases[i]->action.flags = default_action_flags;
+		phrases[i] = new_note;
 	}
-	
-	va_start (ap, n_tap_definition_varargs);         /* Initialize the argument list. */
 	
 	for (uint8_t i = 0; i < n_tap_definitions; i++) {
 		
-		int tap_count = va_arg (ap, int); 
-		PPG_Action action = va_arg (ap, PPG_Action);
-
-		ppg_phrase_store_action(phrases[tap_count - 1], action);
+		ppg_phrase_store_action(
+					phrases[tap_definitions[i].tap_count - 1], 
+					tap_definitions[i].action);
 	}
 			
 	PPG_Phrase__ *leafPhrase 
-		= ppg_melody_from_list(layer, phrases, n_taps);
-	
-	free(phrases);
+		= ppg_melody_from_list(layer, n_taps, phrases);
 	
 	return leafPhrase;
 }
@@ -1777,7 +1683,7 @@ bool ppg_process_key_event(PPG_Key_Event *key_event,
 		return false;
 	}
 	
-	PPG_PRINTF("Starting keyprocessing\n");
+// 	PPG_PRINTF("Starting keyprocessing\n");
 	
 	if(!ppg_context->current_phrase) {
 		
@@ -1832,8 +1738,8 @@ bool ppg_process_key_event(PPG_Key_Event *key_event,
 		
 			ppg_abort_magic_melody();
 			
-// 			return false; /* The key(s) have been already processed */
-			return true; // Why does this require true to work and 
+			return false; /* The key(s) have been already processed */
+			//return true; // Why does this require true to work and 
 			// why is t not written?
 	}
 	
