@@ -14,7 +14,10 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.5 r10040"
-   sodipodi:docname="papageno_logo.svg">
+   sodipodi:docname="papageno_logo.svg"
+   inkscape:export-filename="/home/itm/fleissne/Scratch/Projects/qmk_magic_melodies.git/lib/papageno/logos/papageno_logo_240.png"
+   inkscape:export-xdpi="105.23605"
+   inkscape:export-ydpi="105.23605">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -35,9 +38,9 @@
      inkscape:snap-bbox="true"
      inkscape:snap-bbox-edge-midpoints="true"
      inkscape:snap-global="false"
-     inkscape:window-width="1680"
-     inkscape:window-height="1050"
-     inkscape:window-x="0"
+     inkscape:window-width="839"
+     inkscape:window-height="515"
+     inkscape:window-x="840"
      inkscape:window-y="0"
      inkscape:window-maximized="0" />
   <metadata
@@ -63,37 +66,55 @@
          id="path2985"
          d="m 253.43592,188.20115 c -21.69415,13.54005 -35.25,32.73328 -35.25,54.03125 0,4.72662 0.66239,9.33122 1.9375,13.8125 18.47196,-12.88587 45.08771,-22.37538 75.84375,-26.375 -7.70494,-21.56605 -23.51561,-37.44573 -42.53125,-41.46875 z"
          style="fill:#fffd00;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
-         inkscape:connector-curvature="0" />
+         inkscape:connector-curvature="0"
+         inkscape:export-filename="/home/itm/fleissne/Scratch/Projects/qmk_magic_melodies.git/lib/papageno/logos/papageno_logo_640.png"
+         inkscape:export-xdpi="280.62946"
+         inkscape:export-ydpi="280.62946" />
       <path
          sodipodi:nodetypes="cccscccsccc"
          inkscape:connector-curvature="0"
          id="path3008"
          d="m 269.35611,163.38614 0.0148,0.0148 c -0.0112,0.0108 -0.0219,0.022 -0.0326,0.0325 -6.32496,6.31893 -7.98304,14.90995 -3.70425,19.19283 4.27878,4.28286 12.87139,2.63295 19.19634,-3.68598 0.19765,-0.19747 0.40332,-0.40433 0.59185,-0.60603 0.0112,-0.011 0.0218,-0.0219 0.0326,-0.0324 1.4153,-1.38854 2.82824,-2.78135 4.23834,-4.19013 28.09115,-28.06443 42.3383,-44.87391 122.54793,-66.2708 -69.40231,0.37414 -112.66535,25.93659 -142.88495,55.54537 z"
-         style="fill:#ff0000;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+         style="fill:#ff0000;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         inkscape:export-filename="/home/itm/fleissne/Scratch/Projects/qmk_magic_melodies.git/lib/papageno/logos/papageno_logo_640.png"
+         inkscape:export-xdpi="280.62946"
+         inkscape:export-ydpi="280.62946" />
       <path
          style="fill:#59c61c;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
          d="m 281.95615,167.8103 0.01,0.0187 c -0.0137,0.007 -0.0279,0.0143 -0.0414,0.021 -8.05188,4.1166 -12.31782,11.87057 -9.53031,17.3228 2.78748,5.45224 11.57105,6.53457 19.62291,2.41797 0.25163,-0.12865 0.51389,-0.26384 0.75804,-0.3994 0.0139,-0.007 0.0277,-0.0142 0.0414,-0.021 1.79381,-0.89669 3.62834,-1.72094 5.38181,-2.71599 36.54255,-20.73707 46.95891,-32.8533 123.21891,-54.23855 -55.43112,-3.26178 -101.17122,18.48624 -139.46094,37.59439 z"
          id="path3807"
          inkscape:connector-curvature="0"
-         sodipodi:nodetypes="cccscccsccc" />
+         sodipodi:nodetypes="cccscccsccc"
+         inkscape:export-filename="/home/itm/fleissne/Scratch/Projects/qmk_magic_melodies.git/lib/papageno/logos/papageno_logo_640.png"
+         inkscape:export-xdpi="280.62946"
+         inkscape:export-ydpi="280.62946" />
       <path
          sodipodi:nodetypes="cccscccsccc"
          inkscape:connector-curvature="0"
          id="path3809"
          d="m 293.09446,180.40465 0.006,0.0175 c -0.0129,0.005 -0.0261,0.009 -0.0387,0.0131 -7.51376,2.55961 -12.19794,8.75663 -10.46472,13.84447 1.73321,5.08784 9.22636,7.13657 16.7401,4.57694 0.2348,-0.08 0.47967,-0.16432 0.70887,-0.25125 0.0131,-0.005 0.026,-0.009 0.0386,-0.0131 1.67135,-0.55251 3.4427,-0.87298 5.01765,-1.68 33.95783,-17.40053 63.00795,-24.51344 113.87841,-31.56245 -49.01678,-6.44892 -87.11428,-2.49878 -125.88625,15.05477 z"
-         style="fill:#ffa905;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+         style="fill:#ffa905;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         inkscape:export-filename="/home/itm/fleissne/Scratch/Projects/qmk_magic_melodies.git/lib/papageno/logos/papageno_logo_640.png"
+         inkscape:export-xdpi="280.62946"
+         inkscape:export-ydpi="280.62946" />
       <path
          style="fill:#051eff;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
          d="m 305.10455,192.05129 6.8e-4,0.0207 c -0.0124,0.002 -0.0247,0.003 -0.0366,0.005 -7.12905,0.92648 -12.7966,6.54849 -12.66161,12.55986 0.13497,6.01138 6.02126,10.13189 13.1503,9.20539 0.22277,-0.029 0.45535,-0.0601 0.67517,-0.0981 0.0126,-0.002 0.0246,-0.003 0.0366,-0.005 1.58129,-0.18761 3.16358,-0.38001 4.75296,-0.58658 31.66239,-4.1148 70.98629,-7.88514 106.12547,-6.11431 -34.40232,-11.2534 -78.30017,-18.962 -112.04273,-14.98693 z"
          id="path3811"
          inkscape:connector-curvature="0"
-         sodipodi:nodetypes="cccscccsccc" />
+         sodipodi:nodetypes="cccscccsccc"
+         inkscape:export-filename="/home/itm/fleissne/Scratch/Projects/qmk_magic_melodies.git/lib/papageno/logos/papageno_logo_640.png"
+         inkscape:export-xdpi="280.62946"
+         inkscape:export-ydpi="280.62946" />
       <path
          sodipodi:nodetypes="cccscccsccc"
          inkscape:connector-curvature="0"
          id="path3841"
          d="m 315.25707,206.84072 -0.004,0.0202 c -0.0125,-0.001 -0.0246,-0.003 -0.0367,-0.004 -7.1371,-0.86227 -14.01721,3.18646 -15.37054,9.04507 -1.35333,5.85862 3.33344,11.30482 10.47054,12.16708 0.22303,0.0268 0.45608,0.0542 0.67849,0.0716 0.0127,0.001 0.0245,0.003 0.0367,0.004 1.57867,0.2086 3.15947,0.41281 4.75065,0.60503 31.69816,3.82962 70.7356,9.88457 104.34982,20.276 -30.55905,-19.39855 -71.19485,-37.70634 -104.87427,-42.18494 z"
-         style="fill:#05edff;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+         style="fill:#05edff;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         inkscape:export-filename="/home/itm/fleissne/Scratch/Projects/qmk_magic_melodies.git/lib/papageno/logos/papageno_logo_640.png"
+         inkscape:export-xdpi="280.62946"
+         inkscape:export-ydpi="280.62946" />
     </g>
   </g>
 </svg>
