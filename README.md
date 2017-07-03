@@ -1,4 +1,4 @@
-![Logo](logos/papageno_logo.svg)
+![Logo](logos/papageno_logo_240.png)
 
 Papageno
 ==============
