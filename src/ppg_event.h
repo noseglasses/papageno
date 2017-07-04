@@ -17,6 +17,8 @@
 #ifndef PPG_EVENT_H
 #define PPG_EVENT_H
 
+/** @file */
+
 #include "ppg_input.h"
 #include "ppg_slots.h"
 #include "ppg_time.h"

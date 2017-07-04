@@ -17,6 +17,8 @@
 #ifndef PPG_TIME_H
 #define PPG_TIME_H
 
+/** @file */
+
 #include <stdint.h>
 
 /** @brief Time identifier type.
@@ -53,6 +55,8 @@ typedef void (*PPG_Time_Difference_Fun)(PPG_Time time1, PPG_Time time2, PPG_Time
  */
 PPG_Time_Difference_Fun ppg_set_time_difference_function(PPG_Time_Difference_Fun fun);
 
+/** @brief The signed integer type used to code the result of the time comparison function
+ */
 typedef int8_t PPG_Time_Comparison_Result_Type;
 
 /** @brief Function type for time comparisons.

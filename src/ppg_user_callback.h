@@ -17,6 +17,8 @@
 #ifndef PPG_USER_CALLBACK_H
 #define PPG_USER_CALLBACK_H
 
+/** @file */
+
 #include "ppg_slots.h"
 
 /** @brief Function type of user callback functions

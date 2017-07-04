@@ -14,8 +14,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef PPG_TYPES_H
+#define PPG_TYPES_H
+
+/** @file */
+
 #include "stdint.h"
 
+/** An integer type that is generally used to count entities and as loop counter
+ */
 typedef uint8_t PPG_Count;
 
+/** An integer type that is used whenever a signed id is used to code non zero initial state as error
+ */
 typedef int16_t PPG_Id;
+
+#endif

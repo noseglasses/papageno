@@ -17,6 +17,8 @@
 #ifndef PPG_GLOBAL_H
 #define PPG_GLOBAL_H
 
+/** @file */
+
 #include "ppg_input.h"
 #include "ppg_time.h"
 #include "ppg_event.h"

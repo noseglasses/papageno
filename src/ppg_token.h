@@ -17,6 +17,8 @@
 #ifndef PPG_TOKEN_H
 #define PPG_TOKEN_H
 
+/** @file */
+
 #include "ppg_action.h"
 #include "ppg_action_flags.h"
 #include "ppg_types.h"

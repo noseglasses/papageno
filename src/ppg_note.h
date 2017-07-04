@@ -17,6 +17,8 @@
 #ifndef PPG_NOTE_H
 #define PPG_NOTE_H
 
+/** @file */
+
 #include "ppg_token.h"
 #include "ppg_action.h"
 #include "ppg_input.h"

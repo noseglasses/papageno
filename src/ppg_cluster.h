@@ -21,6 +21,8 @@
 #include "ppg_input.h"
 #include "ppg_layer.h"
 
+/** @file */
+
 /** @brief Defines a stand alone note cluster. 
  * 
  * All members must be activated/pressed at 

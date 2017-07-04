@@ -16,10 +16,7 @@
 #ifndef PAPAGENO_H
 #define PAPAGENO_H
 
-/**
- * @file 
- * 
- */
+/** @file */
 
 #include "ppg_action_flags.h"
 #include "ppg_action.h"

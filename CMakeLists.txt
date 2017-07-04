@@ -41,3 +41,38 @@ include_directories(
 add_library(papageno ${source_files_full_path})
 
 set_property(TARGET papageno PROPERTY C_STANDARD 99)
+
+find_package(Doxygen)
+
+option(PAPAGENO_DOXYGEN "Build the doxygen documentation of the Papageno API" ${DOXYGEN_FOUND})
+
+if(PAPAGENO_DOXYGEN)
+
+	if(NOT DOXYGEN_FOUND)
+			message(FATAL_ERROR "Doxygen is needed to build the documentation.")
+	endif()
+	
+	set(doc_dir "${CMAKE_BINARY_DIR}/doc")
+	
+	file(MAKE_DIRECTORY "${doc_dir}")
+	
+	set(doxyfile_in "${CMAKE_SOURCE_DIR}/doc/papageno.doxygen.in")
+	
+	set(doxyfile "${doc_dir}/pasimodo.doxygen")
+	
+	file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/doc")
+	
+	set(PAPAGENO_BASE_DIR "${CMAKE_SOURCE_DIR}")
+	
+	configure_file("${doxyfile_in}" "${doxyfile}")
+	
+	add_custom_target(
+		doxygen 
+		ALL
+		COMMAND
+			${DOXYGEN_EXECUTABLE} ${doxyfile}
+		WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/doc"
+		COMMENT "Generating API documentation with Doxygen"
+		VERBATIM
+	)
+endif()

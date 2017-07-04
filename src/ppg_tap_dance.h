@@ -17,6 +17,8 @@
 #ifndef PPG_TAP_DANCE_H
 #define PPG_TAP_DANCE_H
 
+/** @file */
+
 #include "ppg_action.h"
 #include "ppg_token.h"
 #include "ppg_input.h"
@@ -39,6 +41,11 @@ typedef struct {
 	sizeof((PPG_Tap_Definition[]){ __VA_ARGS__ })/sizeof(PPG_Tap_Definition), \
 	(PPG_Tap_Definition[]){ __VA_ARGS__ }
 
+/** @brief This macro simplifies the specification of taps as actions that are associated with specific a number of taps 
+ * 
+ * @param TAP_COUNT The number of taps the action is associated with
+ * @param ACTION The action
+ */
 #define PPG_TAP(TAP_COUNT, ACTION) \
 	(PPG_Tap_Definition) { .action = ACTION, .tap_count = TAP_COUNT }
 

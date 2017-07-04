@@ -17,6 +17,8 @@
 #ifndef PPG_ACTION_H
 #define PPG_ACTION_H
 
+/** @file */
+
 #include "ppg_user_callback.h"
 
 /** @brief Action information

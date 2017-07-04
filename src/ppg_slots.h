@@ -17,6 +17,8 @@
 #ifndef PPG_SLOTS_H
 #define PPG_SLOTS_H
 
+/** @file */
+
 #include <inttypes.h>
 
 /** @brief Input processing slot identifiers
@@ -32,6 +34,8 @@ enum PPG_Slots {
 	PPG_On_User
 };
 
+/** @brief The data type used to identify slots
+ */
 typedef uint8_t PPG_Slot_Id;
 
 #endif

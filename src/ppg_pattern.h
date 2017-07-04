@@ -17,6 +17,8 @@
 #ifndef PPG_PATTERN_H
 #define PPG_PATTERN_H
 
+/** @file */
+
 #include "ppg_token.h"
 
 /** @brief Defines a pattern that consists of tokens

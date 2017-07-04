@@ -17,6 +17,8 @@
 #ifndef PPG_INPUT_H
 #define PPG_INPUT_H
 
+/** @file */
+
 #include <stdbool.h>
 
 /** @brief The type used as input identifier.
