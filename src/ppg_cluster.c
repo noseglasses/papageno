@@ -65,9 +65,9 @@ static PPG_Processing_State ppg_cluster_match_event(
 	
 	if(cluster->n_inputs_active == cluster->n_members) {
 		
-		/* Cluster completed
+		/* Cluster matches
 		 */
-		cluster->super.state = PPG_Token_Completed;
+		cluster->super.state = PPG_Token_Matches;
  		PPG_PRINTF("O");
 	}
 	

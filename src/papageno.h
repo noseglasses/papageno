@@ -33,6 +33,7 @@
 #include "ppg_slots.h"
 #include "ppg_tap_dance.h"
 #include "ppg_time.h"
+#include "ppg_timeout.h"
 #include "ppg_token.h"
 #include "ppg_types.h"
 #include "ppg_user_callback.h"

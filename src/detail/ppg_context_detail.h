@@ -19,22 +19,21 @@
 
 #include "ppg_event.h"
 #include "detail/ppg_token_detail.h"
+#include "detail/ppg_event_buffer_detail.h"
 
 #include <stddef.h>
 
-#define PPG_MAX_KEYCHANGES 100
-
 typedef struct PPG_Context_Struct
 {
-	PPG_Count n_events;
-	PPG_Event events[PPG_MAX_KEYCHANGES];
-
+	PPG_Event_Buffer event_buffer;
+	
 	PPG_Token__ pattern_root;
 	bool pattern_root_initialized;
 	bool process_actions_if_aborted;
 
 	PPG_Token__ *current_token;
 
+	bool timeout_enabled;
 	bool papageno_enabled;
 	bool papageno_temporarily_disabled;
 

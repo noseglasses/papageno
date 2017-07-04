@@ -19,6 +19,8 @@
 #include "ppg_debug.h"
 #include "ppg_action_flags.h"
 #include "detail/ppg_context_detail.h"
+#include "detail/ppg_global_detail.h"
+#include "detail/ppg_event_buffer_detail.h"
 #include "ppg_context.h"
 
 #include <stdlib.h>
@@ -26,14 +28,12 @@
 #include <inttypes.h>
 #include <stdarg.h>
 
-static bool ppg_recurse_and_process_actions(PPG_Slot_Id slot_id);
-
 void ppg_flush_stored_events(
 								PPG_Slot_Id slot_id, 
 								PPG_Event_Processor_Fun input_processor,
 								void *user_data)
 {
-	if(ppg_context->n_events == 0) { return; }
+	if(ppg_event_buffer_size() == 0) { return; }
 	
 	PPG_Event_Processor_Fun kp	=
 		(input_processor) ? input_processor : ppg_context->input_processor;
@@ -45,19 +45,9 @@ void ppg_flush_stored_events(
 	 */
 	ppg_context->papageno_temporarily_disabled = true;
 	
-	for(PPG_Count i = 0; i < ppg_context->n_events; ++i) {
-		
-		if(!kp(&ppg_context->events[i], slot_id, user_data)) { 
-			break;
-		}
-	}
+	ppg_event_buffer_iterate_events(slot_id, kp, user_data);
 	
 	ppg_context->papageno_temporarily_disabled = false;
-}
-
-static void ppg_delete_stored_events(void)
-{
-	ppg_context->n_events = 0;
 }
 	
 void ppg_abort_pattern(void)
@@ -79,72 +69,6 @@ void ppg_abort_pattern(void)
 	ppg_flush_stored_events(	PPG_On_Abort, 
 										NULL /* input_processor */, 
 										NULL /* user data */);
-	
-	ppg_delete_stored_events();
-	
-	ppg_context->current_token = NULL;
-}
-
-/* Returns if an action has been triggered.
- */
-static bool ppg_recurse_and_process_actions(PPG_Slot_Id slot_id)
-{			
-	if(!ppg_context->current_token) { return false; }
-	
-// 	PPG_PRINTF("Triggering action of most recent token\n");
-	
-	PPG_Token__ *cur_token = ppg_context->current_token;
-	
-	while(cur_token) {
-		
-		bool action_present = ppg_token_trigger_action(cur_token, slot_id);
-		
-		if(action_present) {
-			if(cur_token->action.flags &= PPG_Action_Fall_Through) {
-				cur_token = cur_token->parent;
-			}
-			else {
-				return true;
-			}
-		}
-		else {
-			if(cur_token->action.flags &= PPG_Action_Fall_Back) {
-				cur_token = cur_token->parent;
-			}
-			else {
-				return false;
-			}
-		}
-	}
-	
-	PPG_PRINTF("Done\n");
-	
-	return false;
-}
-
-static void ppg_on_timeout(void)
-{
-	if(!ppg_context->current_token) { return; }
-	
-	/* The frase could not be parsed. Reset any previous tokens.
-	*/
-	ppg_token_reset_successors(ppg_context->current_token);
-	
-	/* It timeout was hit, we either trigger the most recent action
-	 * (e.g. necessary for tap dances) or flush the inputevents
-	 * that happend until this point
-	 */
-	
-	bool action_triggered 
-		= ppg_recurse_and_process_actions(PPG_On_Timeout);
-	
-	/* Cleanup and issue all inputpresses as if they happened without parsing a pattern
-	*/
-	if(!action_triggered) {
-		ppg_flush_stored_events(	PPG_On_Timeout, 
-											NULL /* input_processor */, 
-											NULL /* user data */);
-	}
 	
 	ppg_delete_stored_events();
 	
@@ -184,51 +108,6 @@ void ppg_reset(void)
 	ppg_finalize();
 	
 	ppg_context = (PPG_Context *)ppg_create_context();
-}
-
-bool ppg_check_timeout(void)
-{
-// 	PPG_PRINTF("Checking timeout\n");
-	
-	#ifdef DEBUG_PAPAGENO
-	if(!ppg_context->time) {
-		PPG_ERROR("Time function undefined\n");
-	}
-	if(!ppg_context->time_difference) {
-		PPG_ERROR("Time difference function undefined\n");
-	}
-	if(!ppg_context->time_comparison) {
-		PPG_ERROR("Time comparison function undefined\n");
-	}
-	#endif
-	
-	PPG_Time cur_time;
-	
-	ppg_context->time(&cur_time);
-	
-	PPG_Time delta;
-	ppg_context->time_difference(
-					ppg_context->time_last_inputpress, 
-					cur_time, 
-					&delta);
-	
-	if(ppg_context->current_token
-		&& (ppg_context->time_comparison(
-					delta,
-					ppg_context->inputpress_timeout
-			) > 0)
-	  ) {
-		
-		PPG_PRINTF("Pattern detection timeout hit\n");
-	
-		/* Too late...
-			*/
-		ppg_on_timeout();
-	
-		return true;
-	}
-	
-	return false;
 }
 
 bool ppg_process_event(PPG_Event *event,
@@ -272,7 +151,8 @@ bool ppg_process_event(PPG_Event *event,
 		
 		/* Start of pattern processing
 		 */
-		ppg_context->n_events = 0;
+		ppg_event_buffer_init(&ppg_context->event_buffer);
+		
 		ppg_context->current_token = &ppg_context->pattern_root;
 		
 		ppg_context->time(&ppg_context->time_last_inputpress);
@@ -303,9 +183,9 @@ bool ppg_process_event(PPG_Event *event,
 			
 			return false;
 			
-		case PPG_Pattern_Completed:
+		case PPG_Pattern_Matches:
 			
-			ppg_recurse_and_process_actions(PPG_On_Pattern_Completed);
+			ppg_recurse_and_process_actions(PPG_On_Pattern_Matches);
 			
 			ppg_context->current_token = NULL;
 			
@@ -392,4 +272,18 @@ bool ppg_set_enabled(bool state)
 	ppg_context->papageno_enabled = state;
 
 	return old_state;
+}
+
+bool ppg_set_enable_timeout(bool state)
+{
+	bool previous_state = ppg_context->timeout_enabled;
+	
+	ppg_context->timeout_enabled = state;
+	
+	return previous_state;
+}
+
+bool ppg_get_enable_timeout(void)
+{
+	return ppg_context->timeout_enabled;
 }

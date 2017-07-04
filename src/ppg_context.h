@@ -17,6 +17,8 @@
 #ifndef PPG_CONTEXT_H
 #define PPG_CONTEXT_H
 
+/** @file */
+
 /** @brief Creates a new papageno context
  * 
  * @returns The newly created context

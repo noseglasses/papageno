@@ -30,7 +30,7 @@
 /** @brief Defines an input that aborts current pattern processing. 
  * 
  * If pattern processing is
- * aborted the actions of tokens that already completed are triggered.
+ * aborted the actions of tokens that already matched are triggered.
  * 
  * @note By default there is no abort input defined
  * 
@@ -49,8 +49,8 @@ PPG_Input ppg_get_abort_input(void);
  */
 void ppg_abort_pattern_processing(void);
 
-/** @brief Defines whether actions are supposed to be processed along the pattern
- * chain, based on the last token completed. 
+/** @brief Defines whether actions are supposed to be processed along the token
+ * chain of the current pattern, based on the last token that matched. 
  * 
  * The default setting
  * is to process no action in case of an abortion of pattern processing.
@@ -73,7 +73,7 @@ bool ppg_get_process_actions_if_aborted(void);
  * 
  * If no input events are encountered
  * within the timeout interval after the last input event, pattern processing is 
- * aborted and actions are processed recursively starting with the last token completed.
+ * aborted and actions are processed recursively starting with the last token that matched.
  * 
  * @param timeout The timeout time value
  * @returns The previous setting
@@ -157,5 +157,19 @@ bool ppg_process_event(PPG_Event *event,
  * 			exceeded the user defined timeout threshold.
  */
 bool ppg_check_timeout(void);
+
+/** @brief Toggles global timeout
+ * 
+ * @param state The current timeout state
+ * 
+ * @returns The previous state of global timeout enabled
+ */
+bool ppg_set_enable_timeout(bool state);
+
+/** @brief Determines if global timeout is enabled
+ * 
+ * @returns The current state of global timeout enabled
+ */
+bool ppg_get_enable_timeout(void);
 
 #endif

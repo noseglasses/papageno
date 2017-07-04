@@ -17,6 +17,8 @@
 #ifndef PPG_DEBUG_H
 #define PPG_DEBUG_H
 
+/** @file */
+
 #ifdef DEBUG_PAPAGENO
 
 #if PAPAGENO_PRINT_SELF_ENABLED

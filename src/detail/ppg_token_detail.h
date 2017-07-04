@@ -90,9 +90,9 @@ typedef struct PPG_TokenStruct {
 
 enum PPG_Processing_State {
 	PPG_Token_In_Progress = 0,
-	PPG_Token_Completed,
+	PPG_Token_Matches,
 	PPG_Token_Invalid,
-	PPG_Pattern_Completed
+	PPG_Pattern_Matches
 };
 
 void ppg_token_free_successors(PPG_Token__ *a_This);

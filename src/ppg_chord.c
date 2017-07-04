@@ -68,9 +68,9 @@ static PPG_Processing_State ppg_chord_match_event(
 	
 	if(chord->n_inputs_active == chord->n_members) {
 		
-		/* Chord completed
+		/* Chord matches
 		 */
-		chord->super.state = PPG_Token_Completed;
+		chord->super.state = PPG_Token_Matches;
  		PPG_PRINTF("C");
 	}
 	

@@ -46,10 +46,12 @@ void ppg_initialize_context(PPG_Context *context) {
 	
 	PPG_PRINTF("Initializing context\n");
 	
-	context->n_events = 0;
+	ppg_event_buffer_init(&context->event_buffer);
+	
 	context->pattern_root_initialized = false;
 	context->process_actions_if_aborted = false;
 	context->current_token = NULL;
+	context->timeout_enabled = true;
 	context->papageno_enabled = true;
 	context->papageno_temporarily_disabled = false;
 	ppg_init_input(&context->abort_input);

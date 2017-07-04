@@ -14,28 +14,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PPG_SLOTS_H
-#define PPG_SLOTS_H
+#ifndef PPG_EVENT_BUFFER_DETAIL_H
+#define PPG_EVENT_BUFFER_DETAIL_H
 
-/** @file */
+#include "ppg_event.h"
+#include "ppg_types.h"
 
-#include <inttypes.h>
+#define PPG_MAX_EVENTS 100
 
-/** @brief Input processing slot identifiers
- * 
- * Slot identifiers are used during flushing input events to 
- * distinguish the different reasons for flushing
- */
-enum PPG_Slots {
-	PPG_On_Abort = 0,
-	PPG_On_Timeout,
-	PPG_On_Token_Matches,
-	PPG_On_Pattern_Matches,
-	PPG_On_User
-};
+typedef int8_t PPG_Event_Buffer_Index_Type;
 
-/** @brief The data type used to identify slots
- */
-typedef uint8_t PPG_Slot_Id;
+// The event buffer is a ring buffer
+//
+typedef struct {
+	
+	PPG_Event events[PPG_MAX_EVENTS];
+	
+	PPG_Event_Buffer_Index_Type start;
+	PPG_Event_Buffer_Index_Type end;
+	PPG_Event_Buffer_Index_Type cur;
+	
+	PPG_Count size;
+	
+} PPG_Event_Buffer;
+
+PPG_Count ppg_event_buffer_size(void);
+
+void ppg_event_buffer_store_event(PPG_Event *event);
+
+void ppg_event_buffer_init(PPG_Event_Buffer *eb);
+
+void ppg_event_buffer_iterate_events(PPG_Slot_Id slot_id, PPG_Event_Processor_Fun fun, void *user_data);
 
 #endif

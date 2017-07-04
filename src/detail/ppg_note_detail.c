@@ -42,7 +42,7 @@ static PPG_Processing_State ppg_note_match_event(
 			if(note->active) {
 	// 		PPG_PRINTF("note successfully finished\n");
 				PPG_PRINTF("N");
-				note->super.state = PPG_Token_Completed;
+				note->super.state = PPG_Token_Matches;
 			}
 		}
 	}

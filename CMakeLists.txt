@@ -23,9 +23,12 @@ set(source_files
 	./detail/ppg_token_detail.c                                                                                                           
 	./detail/ppg_input_detail.c                                                                                                           
 	./detail/ppg_note_detail.c                                                                                                            
+	./detail/ppg_global_detail.c     
+	./detail/ppg_event_buffer_detail.c
 	./ppg_input.c                                                                                                                         
 	./ppg_chord.c                                                                                                                         
-	./ppg_time.c
+	./ppg_time.c                                                                                                                       
+	./ppg_timeout.c
 )
 
 set(source_files_full_path "")

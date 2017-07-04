@@ -198,3 +198,18 @@ In its interior Papageno uses object oriented C to implement a polymorphic token
 Token types that were initially implemented are notes, chords and clusters.
 The token-class family is extensible. New types of tokens are quite easy to implement.
 See the chord and cluster implementations as code example.
+
+## Ideas and TODO
+
+### Token Timeouts
+
+- token timeout: Every token has its own timeout. It must match before the timeout elapses
+- token time-interval: A token must match before timeout and can only match if a given time already elapsed
+
+### Enhanced Token Types
+
+- Repetition: Requires a pattern to be repeated N times
+- Tremolo: Requires a note to be repeated N times (the same can be achieved by a Tap Dance or a single note line of N individual notes but a token that does the job would be by far more memory efficient)
+- Random Chord: N random inputs must be active at the same time
+- Random Cluster: N different inputs must have been active
+- Random Sequence: N inputs must have been active (and inactive)

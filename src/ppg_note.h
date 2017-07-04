@@ -27,8 +27,8 @@
 /** @brief Defines a stand alone pattern that consists of single notes.
  * 
  * @param layer The layer the pattern is associated with
- * @param action The action that is supposed to be carried out if the pattern is completed
- * @param inputs Inputpositions that represent the notes of the single note line.
+ * @param action The action that is supposed to be carried out if the pattern matches
+ * @param inputs Inputpositions that represent the notes of the single note line
  * @returns The constructed token
  */
 PPG_Token ppg_single_note_line(
@@ -36,6 +36,10 @@ PPG_Token ppg_single_note_line(
 							PPG_Action action, 
 							PPG_Count n_inputs,
 							PPG_Input inputs[]);
+
+/** An alias for ppg_single_note_line
+ */
+#define ppg_sequence(...) ppg_single_note_line(__VA_ARGS__)
 
 /** @brief Generates a note token.
  *

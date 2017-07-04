@@ -25,15 +25,6 @@
 
 #include <stdlib.h>
 
-static void ppg_store_event(PPG_Event *event)
-{
-	PPG_ASSERT(ppg_context->n_events < PPG_MAX_KEYCHANGES);
-	
-	ppg_context->events[ppg_context->n_events] = *event;
-	
-	++ppg_context->n_events;
-}
-
 void ppg_token_store_action(PPG_Token__ *token, 
 											  PPG_Action action)
 {
@@ -64,10 +55,10 @@ void ppg_token_reset_successors(PPG_Token__ *token)
 
 bool ppg_token_trigger_action(PPG_Token__ *token, PPG_Slot_Id slot_id) {
 	
-	/* Actions of completed subtokens have already been triggered during 
+	/* Actions of matching tokens have already been triggered during 
 	 * pattern processing.
 	 */
-	if(	(slot_id != PPG_On_Token_Completed)
+	if(	(slot_id != PPG_On_Token_Matches)
 		&&	(token->action.flags & PPG_Action_Immediate)) {
 		return false;
 	}
@@ -102,7 +93,7 @@ PPG_Processing_State ppg_token_match_event(
 	
 	PPG_Token__ *a_current_token = *current_token;
 	
-	ppg_store_event(event);
+	ppg_event_buffer_store_event(event);
 	
 // 	PPG_PRINTF("Processing input\n");
 	
@@ -115,7 +106,7 @@ PPG_Processing_State ppg_token_match_event(
 // 	}
 // 	#endif
 	
-	bool any_token_completed = false;
+	bool any_token_matches = false;
 		
 	/* Pass the inputpress to the tokens and let them decide it they 
 	 * can use it. If a token cannot it becomes invalid and is not
@@ -148,10 +139,10 @@ PPG_Processing_State ppg_token_match_event(
 				
 				break;
 				
-			case PPG_Token_Completed:
+			case PPG_Token_Matches:
 				
 				all_successors_invalid = false;
-				any_token_completed = true;
+				any_token_matches = true;
 
 				break;
 			case PPG_Token_Invalid:
@@ -168,12 +159,12 @@ PPG_Processing_State ppg_token_match_event(
 		return PPG_Token_Invalid;
 	}
 	
-	/* If any token completed we have to find the most suitable one
+	/* If any token matches we have to find the most suitable one
 	 * and either terminate pattern processing if the matching successor
 	 * is a leaf node, or replace the current token to await further 
 	 * inputstrokes.
 	 */
-	else if(any_token_completed) {
+	else if(any_token_matches) {
 		
 		PPG_Layer highest_layer = -1;
 		PPG_Id match_id = -1;
@@ -189,7 +180,7 @@ PPG_Processing_State ppg_token_match_event(
 			*/
 			if(a_current_token->successors[i]->layer > cur_layer) { continue; }
 			
-			if(a_current_token->successors[i]->state != PPG_Token_Completed) {
+			if(a_current_token->successors[i]->state != PPG_Token_Matches) {
 				continue;
 			}
 			
@@ -212,12 +203,12 @@ PPG_Processing_State ppg_token_match_event(
 		a_current_token = *current_token;
 		
 		if(a_current_token->action.flags & PPG_Action_Immediate) {
-			ppg_token_trigger_action(a_current_token, PPG_On_Token_Completed);
+			ppg_token_trigger_action(a_current_token, PPG_On_Token_Matches);
 		}
 			
 		if(0 == a_current_token->n_successors) {
 			
-			return PPG_Pattern_Completed;
+			return PPG_Pattern_Matches;
 		}
 		else {
 			
