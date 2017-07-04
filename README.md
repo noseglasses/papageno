@@ -15,6 +15,8 @@ The library itself is named after Papageno one of
 the protagonists of Mozart's opera "The Magic Flute". With the help of a magic glockenspiel he was given as a present,
 Papageno is able to cope with many sorts of obstacles and mischief he encounters on his way. 
 
+# Introduction
+
 ## Basic Concepts
 
 Imagine a magic piano that does crazy things when certain
@@ -30,7 +32,7 @@ Tokens are considered as matching if they match a given series of events.
 It is e.g. necesarry that all inputs that are associted with a chord have been active at the same time for the chord to be matched.
 Once a token matches, the series of arriving events is scanned for the next match. This is done until a whole sequence of tokens, a pattern, matches.
 
-# Use of Musical Terminology
+## Use of Musical Terminology
 
 Although the concept is inspired by the word of music ane some basic concepts are more or less the same, there is not necessarily 
 any music involved at all.
@@ -56,6 +58,8 @@ out the major differences between regex and Papageno.
 - Events trigger the activation or deactivation of inputs.
 - Several inputs can be active at the same time (e.g. chords). A regex character does have neither state, nor can characters share a common spot. 
 - There is no simple way to specify a regex pattern that defines that multiple characters must occur in arbitrary order, every one at least once (clusters).
+
+# Working with Patterns
 
 ## Notes
 
@@ -150,6 +154,8 @@ on the currently active context. This makes it very easy to use different instan
 in one program and to switch between these instances by activating different
 contexts. 
 Context switching is implemented through a global context pointer. Please note that due to this implementation detail, Papageno is not quaranteed to be thread safe.
+
+# The Library
 
 ## Implementation
 
