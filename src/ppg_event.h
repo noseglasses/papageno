@@ -17,6 +17,10 @@
 #ifndef PPG_EVENT_H
 #define PPG_EVENT_H
 
+#include "ppg_input.h"
+#include "ppg_slots.h"
+#include "ppg_time.h"
+
 /** @brief Specification of an input event
  */
 typedef struct {
@@ -34,7 +38,7 @@ typedef struct {
  * @returns A boolean value that decides about whether input event processing is continued (true) or aborted (false).
  */
 typedef bool (*PPG_Event_Processor_Fun)(PPG_Event *event,
-														 uint8_t slot_id, 
+														 PPG_Slot_Id slot_id, 
 														 void *user_data);
 
 #endif

@@ -14,25 +14,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef PPG_TOKEN_DETAIL_H
+#define PPG_TOKEN_DETAIL_H
+
+#include "ppg_token.h"
+#include "ppg_event.h"
+#include "ppg_action.h"
+#include "ppg_layer.h"
 
 struct PPG_TokenStruct;
 
-typedef uint8_t (*PPG_Token_Consider_Inputchange_Fun)(	
-														struct PPG_TokenStruct *a_This, 
-														PPG_Event *event,
-														uint8_t cur_layer
-																	);
+typedef uint8_t PPG_Processing_State;
 
-typedef uint8_t (*PPG_Token_Successor_Consider_Inputchange_Fun)(
-														struct PPG_TokenStruct *a_This, 
+typedef PPG_Processing_State (*PPG_Token_Match_Event_Fun)(
+														struct PPG_TokenStruct *token, 
 														PPG_Event *event
  													);
 
-typedef void (*PPG_Token_Reset_Fun)(	struct PPG_TokenStruct *a_This);
+typedef void (*PPG_Token_Reset_Fun)(	struct PPG_TokenStruct *token);
 
-typedef bool (*PPG_Token_Trigger_Action_Fun)(	struct PPG_TokenStruct *a_This, uint8_t slot_id);
+typedef bool (*PPG_Token_Trigger_Action_Fun)(	struct PPG_TokenStruct *token, PPG_Slot_Id slot_id);
 
-typedef struct PPG_TokenStruct * (*PPG_Token_Destroy_Fun)(struct PPG_TokenStruct *a_This);
+typedef struct PPG_TokenStruct * (*PPG_Token_Destroy_Fun)(struct PPG_TokenStruct *token);
 
 typedef bool (*PPG_Token_Equals_Fun)(struct PPG_TokenStruct *p1, struct PPG_TokenStruct *p2);
 
@@ -42,8 +45,8 @@ typedef void (*PPG_Token_Print_Self_Fun)(struct PPG_TokenStruct *p);
 
 typedef struct {
 									
-	PPG_Token_Successor_Consider_Inputchange_Fun 
-									successor_consider_event;
+	PPG_Token_Match_Event_Fun 
+									match_event;
 									
 	PPG_Token_Reset_Fun
 									reset;
@@ -63,6 +66,9 @@ typedef struct {
 	#endif								
 } PPG_Token_Vtable;
 
+#define PPG_CALL_VIRT_METHOD(THIS, METHOD, ...) \
+	THIS->vtable->METHOD(THIS, ##__VA_ARGS__);
+
 typedef struct PPG_TokenStruct {
 
 	PPG_Token_Vtable *vtable;
@@ -71,25 +77,25 @@ typedef struct PPG_TokenStruct {
 	
 	struct PPG_TokenStruct **successors;
 	
-	uint8_t n_allocated_successors;
-	uint8_t n_successors;
+	PPG_Count n_allocated_successors;
+	PPG_Count n_successors;
 	
 	PPG_Action action;
 	
-	uint8_t state;
+	PPG_Processing_State state;
 	
-	uint8_t layer;
+	PPG_Layer layer;
 	 
 } PPG_Token__;
 
-enum {
+enum PPG_Processing_State {
 	PPG_Token_In_Progress = 0,
 	PPG_Token_Completed,
 	PPG_Token_Invalid,
 	PPG_Pattern_Completed
 };
 
-static void ppg_token_free_successors(PPG_Token__ *a_This);
+void ppg_token_free_successors(PPG_Token__ *a_This);
 
 void ppg_token_store_action(PPG_Token__ *token, 
 											  PPG_Action action);
@@ -98,10 +104,24 @@ void ppg_token_reset(	PPG_Token__ *token);
 
 void ppg_token_reset_successors(PPG_Token__ *token);
 
-bool ppg_token_trigger_action(PPG_Token__ *token, uint8_t slot_id);
+bool ppg_token_trigger_action(PPG_Token__ *token, PPG_Slot_Id slot_id);
 
-uint8_t ppg_token_consider_event(	
+PPG_Processing_State ppg_token_match_event(	
 												PPG_Token__ **current_token,
 												PPG_Event *event,
-												uint8_t cur_layer
+												PPG_Layer cur_layer
  										);
+
+PPG_Token__ *ppg_token_new(PPG_Token__ *token);
+
+PPG_Token__* ppg_token_destroy(PPG_Token__ *token);
+
+void ppg_token_free(PPG_Token__ *token);
+
+void ppg_token_add_successor(PPG_Token__ *token, PPG_Token__ *successor);
+
+PPG_Token__* ppg_token_get_equivalent_successor(
+														PPG_Token__ *parent_token,
+														PPG_Token__ *sample);
+
+#endif

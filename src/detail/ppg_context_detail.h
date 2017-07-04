@@ -17,11 +17,16 @@
 #ifndef PPG_CONTEXT_DETAIL_H
 #define PPG_CONTEXT_DETAIL_H
 
+#include "ppg_event.h"
+#include "detail/ppg_token_detail.h"
+
+#include <stddef.h>
+
 #define PPG_MAX_KEYCHANGES 100
 
 typedef struct PPG_Context_Struct
 {
-	uint16_t n_events;
+	PPG_Count n_events;
 	PPG_Event events[PPG_MAX_KEYCHANGES];
 
 	PPG_Token__ pattern_root;
@@ -49,7 +54,7 @@ typedef struct PPG_Context_Struct
   
 } PPG_Context;
 
-static PPG_Context *ppg_context = NULL;
+PPG_Context *ppg_context;
 
 void ppg_initialize_context(PPG_Context *context);
 

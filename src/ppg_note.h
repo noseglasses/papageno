@@ -17,12 +17,10 @@
 #ifndef PPG_NOTE_H
 #define PPG_NOTE_H
 
-#include "detail/token.h"
-
-PPG_Note *ppg_note_new(PPG_Note *note);
-
-PPG_Note *ppg_note_alloc(void);
-
+#include "ppg_token.h"
+#include "ppg_action.h"
+#include "ppg_input.h"
+#include "ppg_layer.h"
 
 /** @brief Defines a stand alone pattern that consists of single notes.
  * 
@@ -32,9 +30,9 @@ PPG_Note *ppg_note_alloc(void);
  * @returns The constructed token
  */
 PPG_Token ppg_single_note_line(
-							uint8_t layer, 
+							PPG_Layer layer, 
 							PPG_Action action, 
-							uint8_t n_inputs,
+							PPG_Count n_inputs,
 							PPG_Input inputs[]);
 
 /** @brief Generates a note token.

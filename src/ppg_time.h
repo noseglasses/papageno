@@ -17,6 +17,8 @@
 #ifndef PPG_TIME_H
 #define PPG_TIME_H
 
+#include <stdint.h>
+
 /** @brief Time identifier type.
  */
 typedef void * PPG_Time;
@@ -51,6 +53,8 @@ typedef void (*PPG_Time_Difference_Fun)(PPG_Time time1, PPG_Time time2, PPG_Time
  */
 PPG_Time_Difference_Fun ppg_set_time_difference_function(PPG_Time_Difference_Fun fun);
 
+typedef int8_t PPG_Time_Comparison_Result_Type;
+
 /** @brief Function type for time comparisons.
  * 
  * The function is expected to return a positive value when time1 is greater time2, 
@@ -59,7 +63,8 @@ PPG_Time_Difference_Fun ppg_set_time_difference_function(PPG_Time_Difference_Fun
  * @param time1 The first time value
  * @param time2 The second time value
  */
-typedef int8_t (*PPG_Time_Comparison_Fun)(PPG_Time time1, PPG_Time time2);
+typedef PPG_Time_Comparison_Result_Type (*PPG_Time_Comparison_Fun)(
+									PPG_Time time1, PPG_Time time2);
 
 /** @brief Defines a custom function to compare time values
  * 

@@ -14,18 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PPG_AGGREGATE_H
-#define PPG_AGGREGATE_H
+#ifndef PPG_PATTERN_DETAIL_H
+#define PPG_PATTERN_DETAIL_H
 
-typedef struct {
-	
-	PPG_Token__ token_inventory;
-	 
-	uint8_t n_members;
-	PPG_Input *inputs;
-	bool *member_active;
-	uint8_t n_inputs_active;
-	 
-} PPG_Aggregate;
+#include "ppg_token.h"
+#include "ppg_layer.h"
+
+PPG_Token ppg_pattern_from_list(	
+												PPG_Layer layer,
+												PPG_Count n_tokens,
+												PPG_Token tokens[]);
 
 #endif

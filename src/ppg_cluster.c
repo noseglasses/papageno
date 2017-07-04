@@ -15,12 +15,14 @@
  */
 
 #include "ppg_cluster.h"
-#include "ppg_aggregate.h"
-
+#include "ppg_debug.h"
+#include "detail/ppg_context_detail.h"
+#include "detail/ppg_aggregate_detail.h"
+#include "detail/ppg_pattern_detail.h"
 
 typedef PPG_Aggregate PPG_Cluster;
 
-static uint8_t ppg_cluster_successor_consider_event(	
+static PPG_Processing_State ppg_cluster_match_event(	
 											PPG_Cluster *cluster,
 											PPG_Event *event) 
 {
@@ -28,11 +30,11 @@ static uint8_t ppg_cluster_successor_consider_event(
 	
 	PPG_ASSERT(cluster->n_members != 0);
 	
-	PPG_ASSERT(cluster->token_inventory.state == PPG_Token_In_Progress);
+	PPG_ASSERT(cluster->super.state == PPG_Token_In_Progress);
 	
 	/* Check it the input is part of the current chord 
 	 */
-	for(uint8_t i = 0; i < cluster->n_members; ++i) {
+	for(PPG_Count i = 0; i < cluster->n_members; ++i) {
 		
 		if(ppg_context->input_id_equal(cluster->inputs[i].input_id, event->input_id)) {
 			
@@ -56,8 +58,8 @@ static uint8_t ppg_cluster_successor_consider_event(
 	
 	if(!input_part_of_cluster) {
 // 		if(event->pressed) {
-			cluster->token_inventory.state = PPG_Token_Invalid;
-			return cluster->token_inventory.state;
+			cluster->super.state = PPG_Token_Invalid;
+			return cluster->super.state;
 // 		}
 	}
 	
@@ -65,11 +67,11 @@ static uint8_t ppg_cluster_successor_consider_event(
 		
 		/* Cluster completed
 		 */
-		cluster->token_inventory.state = PPG_Token_Completed;
+		cluster->super.state = PPG_Token_Completed;
  		PPG_PRINTF("O");
 	}
 	
-	return cluster->token_inventory.state;
+	return cluster->super.state;
 }
 
 
@@ -82,7 +84,7 @@ static void ppg_cluster_print_self(PPG_Cluster *c)
 	PPG_PRINTF("   n_members: %d\n", c->n_members);
 	PPG_PRINTF("   n_inputs_active: %d\n", c->n_inputs_active);
 	
-	for(uint8_t i = 0; i < c->n_members; ++i) {
+	for(PPG_Count i = 0; i < c->n_members; ++i) {
 		PPG_PRINTF("      input_id: %d, active: %d\n", 
 				  c->inputs[i].input_id, c->member_active[i]);
 	}
@@ -91,8 +93,8 @@ static void ppg_cluster_print_self(PPG_Cluster *c)
 
 static PPG_Token_Vtable ppg_cluster_vtable =
 {
-	.successor_consider_event 
-		= (PPG_Token_Successor_Consider_Inputchange_Fun) ppg_cluster_successor_consider_event,
+	.match_event 
+		= (PPG_Token_Match_Event_Fun) ppg_cluster_match_event,
 	.reset 
 		= (PPG_Token_Reset_Fun) ppg_aggregate_reset,
 	.trigger_action 
@@ -110,40 +112,20 @@ static PPG_Token_Vtable ppg_cluster_vtable =
 };
 	
 PPG_Token ppg_create_cluster(
-								uint8_t n_inputs,
+								PPG_Count n_inputs,
 									PPG_Input inputs[])
 {
 	PPG_Cluster *cluster = (PPG_Cluster*)ppg_aggregate_new(ppg_aggregate_alloc());
 	 
-	cluster->token_inventory.vtable = &ppg_cluster_vtable;
+	cluster->super.vtable = &ppg_cluster_vtable;
 	
 	return ppg_initialize_aggregate(cluster, n_inputs, inputs);
 }
 
 PPG_Token ppg_cluster(		
-							uint8_t layer, 
+							PPG_Layer layer, 
 							PPG_Action action, 
-							uint8_t n_inputs,
-							PPG_Input inputs[])
-{   	
-	PPG_PRINTF("Adding cluster\n");
-	
-	PPG_Token__ *token = 
-		(PPG_Token__ *)ppg_create_cluster(n_inputs, inputs);
-		
-	token->action = action;
-	
-	PPG_Token tokens[1] = { token };
-	
-	PPG_Token__ *leaf_token 
-		= ppg_pattern_from_list(layer, 1, tokens);
-		
-	return leaf_token;
-}
-PPG_Token ppg_cluster(		
-							uint8_t layer, 
-							PPG_Action action, 
-							uint8_t n_inputs,
+							PPG_Count n_inputs,
 							PPG_Input inputs[])
 {   	
 	PPG_PRINTF("Adding cluster\n");

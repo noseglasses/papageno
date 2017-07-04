@@ -17,6 +17,8 @@
 #ifndef PPG_ACTION_FLAGS_H
 #define PPG_ACTION_FLAGS_H
 
+#include <stdint.h>
+
 /** @brief Action flags are defined as power of two to be compined using bitwise operations
  */
 enum PPG_Action_Flags {
@@ -25,5 +27,7 @@ enum PPG_Action_Flags {
 	PPG_Action_Fall_Back = 1 << 2,
 	PPG_Action_Immediate = 1 << 3
 };
+
+typedef uint8_t PPG_Action_Flags_Type;
 
 #endif

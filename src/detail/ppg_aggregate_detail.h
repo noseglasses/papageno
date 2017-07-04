@@ -14,24 +14,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PPG_USER_CALLBACK_H
-#define PPG_USER_CALLBACK_H
+#ifndef PPG_AGGREGATE_DETAIL_H
+#define PPG_AGGREGATE_DETAIL_H
 
-#include "ppg_slots.h"
+#include "detail/ppg_token_detail.h"
+#include "ppg_input.h"
+#include "ppg_types.h"
 
-/** @brief Function type of user callback functions
- * 
- *	 @param slot_id
- *  @param user_data Optional user data.
- */
-typedef void (*PPG_User_Callback_Fun)(PPG_Slot_Id slot_id, void *user_data);
-
-/** @brief The PPG_User_Callback struct groups use callback information
- *  in an object oriented fashion (functor).
- */
 typedef struct {
-	PPG_User_Callback_Fun func; ///< The callback function
-	void *	user_data; ///< Optional user data that is passed to the callback when called
-} PPG_User_Callback;
+	
+	PPG_Token__ super;
+	 
+	PPG_Count n_members;
+	PPG_Input *inputs;
+	bool *member_active;
+	PPG_Count n_inputs_active;
+	 
+} PPG_Aggregate;
+
+PPG_Token ppg_initialize_aggregate(	
+								PPG_Aggregate *aggregate,
+								PPG_Count n_inputs,
+								PPG_Input inputs[]);
+
+void *ppg_aggregate_new(void *aggregate__);
+
+void ppg_aggregate_reset(PPG_Aggregate *aggregate);
+
+PPG_Aggregate* ppg_aggregate_destroy(PPG_Aggregate *aggregate);
+
+PPG_Aggregate *ppg_aggregate_alloc(void);
+
+bool ppg_aggregates_equal(PPG_Aggregate *c1, PPG_Aggregate *c2);
 
 #endif

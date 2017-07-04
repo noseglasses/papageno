@@ -14,8 +14,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "papageno.h"
-#include "detail/token.h"
+#include "detail/ppg_token_detail.h"
+#include "ppg_global.h"
+#include "ppg_debug.h"
+#include "ppg_action.h"
+#include "ppg_action.h"
+#include "ppg_action_flags.h"
+#include "ppg_slots.h"
+#include "detail/ppg_context_detail.h"
+
+#include <stdlib.h>
+
+static void ppg_store_event(PPG_Event *event)
+{
+	PPG_ASSERT(ppg_context->n_events < PPG_MAX_KEYCHANGES);
+	
+	ppg_context->events[ppg_context->n_events] = *event;
+	
+	++ppg_context->n_events;
+}
 
 void ppg_token_store_action(PPG_Token__ *token, 
 											  PPG_Action action)
@@ -23,7 +40,7 @@ void ppg_token_store_action(PPG_Token__ *token,
 	token->action = action; 
 	
 	PPG_PRINTF("Action of token 0x%" PRIXPTR ": %u\n",
-				  token, (uint16_t)token->action.user_callback.user_data);
+				  token, (uintptr_t)token->action.user_callback.user_data);
 }
 
 void ppg_token_reset(	PPG_Token__ *token)
@@ -40,17 +57,17 @@ void ppg_token_reset_successors(PPG_Token__ *token)
 {
 	/* Reset all successor tokens if there are any
 	 */
-	for(uint8_t i = 0; i < token->n_successors; ++i) {
+	for(PPG_Count i = 0; i < token->n_successors; ++i) {
 		PPG_CALL_VIRT_METHOD(token->successors[i], reset);
 	}
 }
 
-bool ppg_token_trigger_action(PPG_Token__ *token, uint8_t slot_id) {
+bool ppg_token_trigger_action(PPG_Token__ *token, PPG_Slot_Id slot_id) {
 	
 	/* Actions of completed subtokens have already been triggered during 
 	 * pattern processing.
 	 */
-	if(	(slot_id != PPG_On_Subtoken_Completed)
+	if(	(slot_id != PPG_On_Token_Completed)
 		&&	(token->action.flags & PPG_Action_Immediate)) {
 		return false;
 	}
@@ -58,7 +75,7 @@ bool ppg_token_trigger_action(PPG_Token__ *token, uint8_t slot_id) {
 	if(token->action.user_callback.func) {
 
 // 		PPG_PRINTF("Action of token 0x%" PRIXPTR ": %u\n",
-// 				  token, (uint16_t)token->action.user_callback.user_data);
+// 				  token, (uintptr_t)token->action.user_callback.user_data);
 		
 		PPG_PRINTF("*\n");
 	
@@ -72,10 +89,10 @@ bool ppg_token_trigger_action(PPG_Token__ *token, uint8_t slot_id) {
 	return false;
 }
 
-static uint8_t ppg_token_consider_event(	
+PPG_Processing_State ppg_token_match_event(	
 												PPG_Token__ **current_token,
 												PPG_Event *event,
-												uint8_t cur_layer
+												PPG_Layer cur_layer
  														) 
 {
 	/* Loop over all tokens and inform them about the 
@@ -104,7 +121,7 @@ static uint8_t ppg_token_consider_event(
 	 * can use it. If a token cannot it becomes invalid and is not
 	 * processed further on this node level. This speeds up processing.
 	 */
-	for(uint8_t i = 0; i < a_current_token->n_successors; ++i) {
+	for(PPG_Count i = 0; i < a_current_token->n_successors; ++i) {
 		
 		// PPG_CALL_VIRT_METHOD(a_current_token->successors[i], print_self);
 		
@@ -117,9 +134,9 @@ static uint8_t ppg_token_consider_event(
 			continue;
 		}
 		
-		uint8_t successor_process_result 
+		PPG_Processing_State successor_process_result 
 			= a_current_token->successors[i]
-					->vtable->successor_consider_event(	
+					->vtable->match_event(	
 								a_current_token->successors[i], 
 								event
 						);
@@ -158,12 +175,12 @@ static uint8_t ppg_token_consider_event(
 	 */
 	else if(any_token_completed) {
 		
-		int8_t highest_layer = -1;
-		int8_t match_id = -1;
+		PPG_Layer highest_layer = -1;
+		PPG_Id match_id = -1;
 		
 		/* Find the most suitable token with respect to the current cur_layer.
 		 */
-		for(uint8_t i = 0; i < a_current_token->n_successors; ++i) {
+		for(PPG_Count i = 0; i < a_current_token->n_successors; ++i) {
 		
 // 			PPG_CALL_VIRT_METHOD(a_current_token->successors[i], print_self);
 		
@@ -195,7 +212,7 @@ static uint8_t ppg_token_consider_event(
 		a_current_token = *current_token;
 		
 		if(a_current_token->action.flags & PPG_Action_Immediate) {
-			ppg_token_trigger_action(a_current_token, PPG_On_Subtoken_Completed);
+			ppg_token_trigger_action(a_current_token, PPG_On_Token_Completed);
 		}
 			
 		if(0 == a_current_token->n_successors) {
@@ -215,7 +232,7 @@ static uint8_t ppg_token_consider_event(
 }
 
 
-static void ppg_token_allocate_successors(PPG_Token__ *a_This, uint8_t n_successors) {
+static void ppg_token_allocate_successors(PPG_Token__ *a_This, PPG_Count n_successors) {
 
 	 a_This->successors 
 		= (struct PPG_TokenStruct **)malloc(n_successors*sizeof(struct PPG_TokenStruct*));
@@ -233,7 +250,7 @@ static void ppg_token_grow_successors(PPG_Token__ *a_This) {
 		
 		ppg_token_allocate_successors(a_This, 2*a_This->n_allocated_successors);
 			
-		for(uint8_t i = 0; i < a_This->n_successors; ++i) {
+		for(PPG_Count i = 0; i < a_This->n_successors; ++i) {
 			a_This->successors[i] = oldSucessors[i];
 		}
 		
@@ -241,7 +258,7 @@ static void ppg_token_grow_successors(PPG_Token__ *a_This) {
 	}
 }
 
-static void ppg_token_add_successor(PPG_Token__ *token, PPG_Token__ *successor) {
+void ppg_token_add_successor(PPG_Token__ *token, PPG_Token__ *successor) {
 	
 	if(token->n_allocated_successors == token->n_successors) {
 		ppg_token_grow_successors(token);
@@ -254,13 +271,11 @@ static void ppg_token_add_successor(PPG_Token__ *token, PPG_Token__ *successor) 
 	++token->n_successors;
 }
 
-static void ppg_token_free(PPG_Token__ *token);
-
-static void ppg_token_free_successors(PPG_Token__ *token)
+void ppg_token_free_successors(PPG_Token__ *token)
 {
 	if(!token->successors) { return; }
 	
-	for(uint8_t i = 0; i < token->n_allocated_successors; ++i) {
+	for(PPG_Count i = 0; i < token->n_allocated_successors; ++i) {
 		
 		ppg_token_free(token->successors[i]);
 	}
@@ -271,7 +286,7 @@ static void ppg_token_free_successors(PPG_Token__ *token)
 	token->n_allocated_successors = 0;
 }
 
-static PPG_Token__* ppg_token_destroy(PPG_Token__ *token) {
+PPG_Token__* ppg_token_destroy(PPG_Token__ *token) {
 
 	ppg_token_free_successors(token);
 	
@@ -285,20 +300,20 @@ static bool ppg_token_equals(PPG_Token__ *p1, PPG_Token__ *p2)
 	return p1->vtable->equals(p1, p2);
 }
 
-static void ppg_token_free(PPG_Token__ *token) {
+void ppg_token_free(PPG_Token__ *token) {
 	
 	PPG_CALL_VIRT_METHOD(token, destroy);
 
 	free(token);
 }
 
-static PPG_Token__* ppg_token_get_equivalent_successor(
+PPG_Token__* ppg_token_get_equivalent_successor(
 														PPG_Token__ *parent_token,
 														PPG_Token__ *sample) {
 	
 	if(parent_token->n_successors == 0) { return NULL; }
 	
-	for(uint8_t i = 0; i < parent_token->n_successors; ++i) {
+	for(PPG_Count i = 0; i < parent_token->n_successors; ++i) {
 		if(ppg_token_equals(
 											parent_token->successors[i], 
 											sample)
@@ -328,7 +343,7 @@ static void ppg_token_print_self(PPG_Token__ *p)
 
 static PPG_Token_Vtable ppg_token_vtable =
 {
-	.successor_consider_event 
+	.match_event 
 		= NULL,
 	.reset 
 		= (PPG_Token_Reset_Fun) ppg_token_reset,
@@ -346,7 +361,7 @@ static PPG_Token_Vtable ppg_token_vtable =
 	#endif
 };
 
-static PPG_Token__ *ppg_token_new(PPG_Token__ *token) {
+PPG_Token__ *ppg_token_new(PPG_Token__ *token) {
 	
     token->vtable = &ppg_token_vtable;
 	 
@@ -383,7 +398,7 @@ PPG_Action ppg_token_get_action(PPG_Token token__)
 
 PPG_Token ppg_token_set_action_flags(
 									PPG_Token token__,
-									uint8_t action_flags)
+									PPG_Action_Flags_Type action_flags)
 {
 	PPG_Token__ *token = (PPG_Token__ *)token__;
 	
@@ -392,7 +407,7 @@ PPG_Token ppg_token_set_action_flags(
 	return token;
 }
 
-uint8_t ppg_token_get_action_flags(PPG_Token token__)
+PPG_Action_Flags_Type ppg_token_get_action_flags(PPG_Token token__)
 {
 	PPG_Token__ *token = (PPG_Token__ *)token__;
 	

@@ -15,9 +15,32 @@
  */
 
 #include "detail/ppg_context_detail.h"
+#include "detail/ppg_input_detail.h"
 #include "ppg_debug.h"
 
-static PPG_Context *ppg_context = NULL;
+PPG_Context *ppg_context = NULL;
+
+static bool ppg_input_id_simple_equal(PPG_Input_Id kp1, PPG_Input_Id kp2)
+{
+	return 	kp1 == kp2;
+}
+
+static void ppg_default_time(PPG_Time *time)
+{
+	*time = 0;
+}
+
+static void ppg_default_time_difference(PPG_Time time1, PPG_Time time2, PPG_Time *delta)
+{
+	*delta = 0;
+}
+
+PPG_Time_Comparison_Result_Type ppg_default_time_comparison(
+								PPG_Time time1,
+								PPG_Time time2)
+{
+	return 0;
+}
 
 void ppg_initialize_context(PPG_Context *context) {
 	

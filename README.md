@@ -34,6 +34,17 @@ in turn form melodies.
 - computer games (trigger special moves after complicated motion of input devices or controller key combinations)
 - ...
 
+## Distinctive Features
+
+There are other approaches to pattern matching, e.g. Regular Expressions. There are several differences
+between the approach that Papageno takes and Regular Expressions.
+
+- Papageno is based on events instead of characters.
+- Actions can be assigned and triggered when specific tokens or patterns are encountered.
+- Events can mean the activation or deactivation of an input.
+- several inputs can be active at the same time (e.g. chords). A regex character does not have any state.
+- There is no simple way to specify a regex pattern where multiple characters must occur in arbitrary order, every one at least once (clusters).
+
 ## Notes
 
 Notes are the basic building blocks of melodies. They can be arranged to form single note

@@ -17,6 +17,8 @@
 #ifndef PPG_SLOTS_H
 #define PPG_SLOTS_H
 
+#include <inttypes.h>
+
 /** @brief Input processing slot identifiers
  * 
  * Slot identifiers are used during flushing input events to 
@@ -29,5 +31,7 @@ enum PPG_Slots {
 	PPG_On_Pattern_Completed,
 	PPG_On_User
 };
+
+typedef uint8_t PPG_Slot_Id;
 
 #endif

@@ -14,25 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PPG_PATTERN_H
-#define PPG_PATTERN_H
+#ifndef PPG_LAYER_H
+#define PPG_LAYER_H
 
-#include "ppg_token.h"
+#ifndef PPG_LAYER_TYPE 
+#define PPG_LAYER_TYPE int8_t
+#endif
 
-/** @brief Defines a pattern that consists of tokens
- * 
- * @note Use setter functions that operate on tokens to change attributes of the tokens
- *       that make up the pattern. This is e.g. required to assign an action to a token,
- * 		or to modify fall through behavior.
- * 
- * @param layer The layer the pattern is associated with
- * @param n_tokens The number of tokens combined to form the pattern
- * @param tokens The tokens that make up the pattern
- * @returns The constructed token
- */
-PPG_Token ppg_pattern(		
-							PPG_Layer layer,
-							PPG_Count n_tokens,
-							PPG_Token tokens[]);
+typedef PPG_LAYER_TYPE PPG_Layer;
 
 #endif

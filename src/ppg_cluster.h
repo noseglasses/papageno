@@ -17,6 +17,10 @@
 #ifndef PPG_CLUSTER_H
 #define PPG_CLUSTER_H
 
+#include "ppg_token.h"
+#include "ppg_input.h"
+#include "ppg_layer.h"
+
 /** @brief Defines a stand alone note cluster. 
  * 
  * All members must be activated/pressed at 
@@ -30,9 +34,9 @@
  * @returns The constructed token
  */
 PPG_Token ppg_cluster(		
-							uint8_t layer, 
+							PPG_Layer layer, 
 							PPG_Action action,
-							uint8_t n_inputs, 
+							PPG_Count n_inputs, 
 							PPG_Input inputs[]);
 
 /** @brief Generates a cluster token.
@@ -50,7 +54,7 @@ PPG_Token ppg_cluster(
  * @returns The constructed token
  */
 PPG_Token ppg_create_cluster(
-							uint8_t n_inputs,
+							PPG_Count n_inputs,
 							PPG_Input inputs[]);
 
 /** @brief Auxiliary macro to create a cluster based on a set of input specifications
@@ -58,6 +62,6 @@ PPG_Token ppg_create_cluster(
  * @param ... A list of inputs
  */
 #define PPG_CREATE_CLUSTER(...) \
-	ppg_create_cluster(PPG_KEYS(__VA_ARGS__))
+	ppg_create_cluster(PPG_INPUTS(__VA_ARGS__))
 
 #endif

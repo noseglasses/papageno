@@ -14,8 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "detail/ppg_context.h"
+#include "ppg_context.h"
+#include "detail/ppg_context_detail.h"
 #include "ppg_debug.h"
+
+#include <stdlib.h>
 
 void* ppg_create_context(void)
 {

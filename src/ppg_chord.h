@@ -17,6 +17,10 @@
 #ifndef PPG_CHORD_H	
 #define PPG_CHORD_H
 
+#include "ppg_token.h"
+#include "ppg_input.h"
+#include "ppg_layer.h"
+
 /** @brief Defines a stand alone magic chord. 
  * 
  * All members must be activated/pressed simultaneously
@@ -30,9 +34,9 @@
  * @returns The constructed token
  */
 PPG_Token ppg_chord(		
-							uint8_t layer,
+							PPG_Layer layer,
 							PPG_Action action,
-							uint8_t n_inputs,
+							PPG_Count n_inputs,
 							PPG_Input inputs[]);
 
 /** @brief Generates a chord token.
@@ -50,7 +54,7 @@ PPG_Token ppg_chord(
  * @returns The constructed token
  */
 PPG_Token ppg_create_chord(	
-							uint8_t n_inputs,
+							PPG_Count n_inputs,
 							PPG_Input inputs[]
 							);
 
@@ -59,6 +63,6 @@ PPG_Token ppg_create_chord(
  * @param ... A list of inputs
  */
 #define PPG_CREATE_CHORD(...) \
-	ppg_create_chord(PPG_KEYS(__VA_ARGS__))
+	ppg_create_chord(PPG_INPUTS(__VA_ARGS__))
 	
 #endif

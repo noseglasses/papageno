@@ -14,60 +14,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "papageno.h"
+#include "ppg_global.h"
+#include "ppg_token.h"
+#include "ppg_debug.h"
+#include "ppg_action_flags.h"
+#include "detail/ppg_context_detail.h"
+#include "ppg_context.h"
 
 #include <stdlib.h>
 #include <stddef.h>
 #include <inttypes.h>
 #include <stdarg.h>
 
-#include "detail/ppg_token.h"
-#include ppg_debug.h"is
-
-#define PPG_CALL_VIRT_METHOD(THIS, METHOD, ...) \
-	THIS->vtable->METHOD(THIS, ##__VA_ARGS__);
-
-static bool ppg_input_id_simple_equal(PPG_Input_Id kp1, PPG_Input_Id kp2)
-{
-	return 	kp1 == kp2;
-}
-
-static bool ppg_recurse_and_process_actions(uint8_t slot_id);
-
-static void ppg_default_time(PPG_Time *time)
-{
-	*time = 0;
-}
-
-static void ppg_default_time_difference(PPG_Time time1, PPG_Time time2, PPG_Time *delta)
-{
-	*delta = 0;
-}
-
-int8_t ppg_default_time_comparison(
-								PPG_Time time1,
-								PPG_Time time2)
-{
-	return 0;
-}
-
-static void ppg_init_input(PPG_Input *input)
-{
-	input->input_id = (PPG_Input_Id)((uint16_t)-1);
-	input->check_active = NULL;
-}
-
-static void ppg_store_event(PPG_Event *event)
-{
-	PPG_ASSERT(ppg_context->n_events < PPG_MAX_KEYCHANGES);
-	
-	ppg_context->events[ppg_context->n_events] = *event;
-	
-	++ppg_context->n_events;
-}
+static bool ppg_recurse_and_process_actions(PPG_Slot_Id slot_id);
 
 void ppg_flush_stored_events(
-								uint8_t slot_id, 
+								PPG_Slot_Id slot_id, 
 								PPG_Event_Processor_Fun input_processor,
 								void *user_data)
 {
@@ -83,7 +45,7 @@ void ppg_flush_stored_events(
 	 */
 	ppg_context->papageno_temporarily_disabled = true;
 	
-	for(uint16_t i = 0; i < ppg_context->n_events; ++i) {
+	for(PPG_Count i = 0; i < ppg_context->n_events; ++i) {
 		
 		if(!kp(&ppg_context->events[i], slot_id, user_data)) { 
 			break;
@@ -125,7 +87,7 @@ void ppg_abort_pattern(void)
 
 /* Returns if an action has been triggered.
  */
-static bool ppg_recurse_and_process_actions(uint8_t slot_id)
+static bool ppg_recurse_and_process_actions(PPG_Slot_Id slot_id)
 {			
 	if(!ppg_context->current_token) { return false; }
 	
@@ -270,7 +232,7 @@ bool ppg_check_timeout(void)
 }
 
 bool ppg_process_event(PPG_Event *event,
-								  uint8_t cur_layer)
+								  PPG_Layer cur_layer)
 { 
 	if(!ppg_context->papageno_enabled) {
 		return true;
@@ -328,8 +290,8 @@ bool ppg_process_event(PPG_Event *event,
 		}
 	}
 	
-	uint8_t result 
-		= ppg_token_consider_event(	
+	PPG_Processing_State result 
+		= ppg_token_match_event(	
 										&ppg_context->current_token,
 										event,
 										cur_layer
@@ -430,31 +392,4 @@ bool ppg_set_enabled(bool state)
 	ppg_context->papageno_enabled = state;
 
 	return old_state;
-}
-
-PPG_Time_Fun ppg_set_time_function(PPG_Time_Fun fun)
-{
-	PPG_Time_Fun old_fun = fun;
-	
-	ppg_context->time = fun;
-	
-	return old_fun;
-}
-
-PPG_Time_Difference_Fun ppg_set_time_difference_function(PPG_Time_Difference_Fun fun)
-{
-	PPG_Time_Difference_Fun old_fun = ppg_context->time_difference;
-	
-	ppg_context->time_difference = fun;
-	
-	return old_fun;
-}
-
-PPG_Time_Comparison_Fun ppg_set_time_comparison_function(PPG_Time_Comparison_Fun fun)
-{
-	PPG_Time_Comparison_Fun old_fun = ppg_context->time_comparison;
-	
-	ppg_context->time_comparison = fun;
-	
-	return old_fun;
 }

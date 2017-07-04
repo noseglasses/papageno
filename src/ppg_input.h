@@ -17,6 +17,8 @@
 #ifndef PPG_INPUT_H
 #define PPG_INPUT_H
 
+#include <stdbool.h>
+
 /** @brief The type used as input identifier.
  * 
  * This type is used as an identifier for inputs.
@@ -31,16 +33,16 @@ typedef void * PPG_Input_State;
 
 /** @brief The input activation check callback function type
  */
-typedef bool (*PPG_Input_Activation_Check_Fun)(PPG_Input_Id input_id,
+typedef bool (*PPG_Input_Active_Check_Fun)(PPG_Input_Id input_id,
 															PPG_Input_State state);
 
 /** @brief Definition of an input
  */
 typedef struct {
 	PPG_Input_Id	input_id; ///< The Input identifier
-	PPG_Input_Activation_Check_Fun check_active; ///< A callback that provides checking if an input is activated
+	PPG_Input_Active_Check_Fun check_active; ///< A callback that provides checking if an input is activated
 } PPG_Input;
-is
+
 /** @brief Function type of a callback function that compares user defined input ids
  * 
  * @param input_id1 The first input identifier
@@ -55,5 +57,14 @@ typedef bool (*PPG_Input_Id_Equal_Fun)(PPG_Input_Id input_id1, PPG_Input_Id inpu
  * @param fun The function callback to be registered
  */
 void ppg_set_input_id_equal_function(PPG_Input_Id_Equal_Fun fun);
+
+/** @brief Auxiliary macro to simplify passing input arrays to functions such as
+ * ppg_cluster or ppg_chord
+ * 
+ * @param ... The array members
+ */
+#define PPG_INPUTS(...) \
+	sizeof((PPG_Input[]){ __VA_ARGS__ })/sizeof(PPG_Input), \
+	(PPG_Input[]){ __VA_ARGS__ }
 
 #endif
