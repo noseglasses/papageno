@@ -19,16 +19,6 @@
 
 /** @file */
 
-#ifndef PPG_LAYER_TYPE 
-
-/** This macro enables to define the layer type from outside the
- * compile process, e.g. from a build system
- */
-#define PPG_LAYER_TYPE int8_t
-#endif
-
-/** The data type that is used to reference layers
- */
-typedef PPG_LAYER_TYPE PPG_Layer;
+#include "ppg_settings.h"
 
 #endif

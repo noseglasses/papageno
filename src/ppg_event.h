@@ -22,6 +22,7 @@
 #include "ppg_input.h"
 #include "ppg_slots.h"
 #include "ppg_time.h"
+#include "ppg_layer.h"
 
 /** @brief Specification of an input event
  */
@@ -42,5 +43,12 @@ typedef struct {
 typedef bool (*PPG_Event_Processor_Fun)(PPG_Event *event,
 														 PPG_Slot_Id slot_id, 
 														 void *user_data);
+
+/** @brief This is the main entry function for input event processing.
+ * 
+ * @param event A pointer to an input event to process by papagenop
+ * @returns If further input event processing by other input event processors is desired
+ */
+bool ppg_event_process(PPG_Event *event);
 
 #endif

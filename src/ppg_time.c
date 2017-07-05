@@ -18,7 +18,7 @@
 #include "ppg_global.h"
 #include "detail/ppg_context_detail.h"
 
-PPG_Time_Fun ppg_set_time_function(PPG_Time_Fun fun)
+PPG_Time_Fun ppg_global_set_time_function(PPG_Time_Fun fun)
 {
 	PPG_Time_Fun old_fun = fun;
 	
@@ -27,7 +27,7 @@ PPG_Time_Fun ppg_set_time_function(PPG_Time_Fun fun)
 	return old_fun;
 }
 
-PPG_Time_Difference_Fun ppg_set_time_difference_function(PPG_Time_Difference_Fun fun)
+PPG_Time_Difference_Fun ppg_global_set_time_difference_function(PPG_Time_Difference_Fun fun)
 {
 	PPG_Time_Difference_Fun old_fun = ppg_context->time_difference;
 	
@@ -36,7 +36,7 @@ PPG_Time_Difference_Fun ppg_set_time_difference_function(PPG_Time_Difference_Fun
 	return old_fun;
 }
 
-PPG_Time_Comparison_Fun ppg_set_time_comparison_function(PPG_Time_Comparison_Fun fun)
+PPG_Time_Comparison_Fun ppg_global_set_time_comparison_function(PPG_Time_Comparison_Fun fun)
 {
 	PPG_Time_Comparison_Fun old_fun = ppg_context->time_comparison;
 	

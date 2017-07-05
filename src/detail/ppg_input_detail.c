@@ -15,12 +15,12 @@
  */
 
 #include "detail/ppg_input_detail.h"
-#include "ppg_types.h"
+#include "ppg_settings.h"
 
 #include <stdint.h>
 #include <stddef.h>
 
-void ppg_init_input(PPG_Input *input)
+void ppg_global_init_input(PPG_Input *input)
 {
 	input->input_id = (PPG_Input_Id)((uintptr_t)-1);
 	input->check_active = NULL;

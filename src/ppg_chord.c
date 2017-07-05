@@ -77,6 +77,11 @@ static PPG_Processing_State ppg_chord_match_event(
 	return chord->super.state;
 }
 
+static PPG_Count ppg_chord_token_precedence(void)
+{
+	return 80;
+}
+
 #if PAPAGENO_PRINT_SELF_ENABLED
 static void ppg_chord_print_self(PPG_Chord *c)
 {
@@ -104,7 +109,9 @@ static PPG_Token_Vtable ppg_chord_vtable =
 	.destroy 
 		= (PPG_Token_Destroy_Fun) ppg_aggregate_destroy,
 	.equals
-		= (PPG_Token_Equals_Fun) ppg_aggregates_equal
+		= (PPG_Token_Equals_Fun) ppg_aggregates_equal,
+	.token_precedence
+		= (PPG_Token_Precedence_Fun)ppg_chord_token_precedence
 	#if PAPAGENO_PRINT_SELF_ENABLED
 	,
 	.print_self
@@ -112,7 +119,7 @@ static PPG_Token_Vtable ppg_chord_vtable =
 	#endif
 };
 
-PPG_Token ppg_create_chord(	
+PPG_Token ppg_chord_create(	
 								PPG_Count n_inputs,
 								PPG_Input inputs[])
 {
@@ -120,7 +127,7 @@ PPG_Token ppg_create_chord(
 	
 	chord->super.vtable = &ppg_chord_vtable;
 	
-	return ppg_initialize_aggregate(chord, n_inputs, inputs);
+	return ppg_global_initialize_aggregate(chord, n_inputs, inputs);
 }
 
 PPG_Token ppg_chord(		
@@ -132,7 +139,7 @@ PPG_Token ppg_chord(
 	PPG_PRINTF("Adding chord\n");
 	
 	PPG_Token__ *token = 
-		(PPG_Token__ *)ppg_create_chord(n_inputs, inputs);
+		(PPG_Token__ *)ppg_chord_create(n_inputs, inputs);
 		
 	token->action = action;
 		

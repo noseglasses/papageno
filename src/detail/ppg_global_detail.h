@@ -22,3 +22,5 @@
 bool ppg_recurse_and_process_actions(PPG_Slot_Id slot_id);
 
 void ppg_delete_stored_events(void);
+
+void ppg_global_abort_pattern_matching(void);

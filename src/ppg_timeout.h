@@ -20,6 +20,10 @@
 /** @file */
 #include <stdbool.h>
 
-bool ppg_check_timeout(void);
+/** @brief Check if timeout happened
+ * 
+ * @returns true if timeout happened, false else
+ */
+bool ppg_timeout_check(void);
 
 #endif

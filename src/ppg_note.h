@@ -53,6 +53,6 @@ PPG_Token ppg_single_note_line(
  * @param input The input that is represented by the note
  * @returns The constructed tokenis
  */
-PPG_Token ppg_create_note(PPG_Input input);
+PPG_Token ppg_note_create(PPG_Input input);
 
 #endif

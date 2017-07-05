@@ -74,6 +74,10 @@ static PPG_Processing_State ppg_cluster_match_event(
 	return cluster->super.state;
 }
 
+static PPG_Count ppg_cluster_token_precedence(void)
+{
+	return 70;
+}
 
 #if PAPAGENO_PRINT_SELF_ENABLED
 static void ppg_cluster_print_self(PPG_Cluster *c)
@@ -102,8 +106,9 @@ static PPG_Token_Vtable ppg_cluster_vtable =
 	.destroy 
 		= (PPG_Token_Destroy_Fun) ppg_aggregate_destroy,
 	.equals
-		= (PPG_Token_Equals_Fun) ppg_aggregates_equal
-	
+		= (PPG_Token_Equals_Fun) ppg_aggregates_equal,
+	.token_precedence
+		= (PPG_Token_Precedence_Fun)ppg_cluster_token_precedence
 	#if PAPAGENO_PRINT_SELF_ENABLED
 	,
 	.print_self
@@ -111,7 +116,7 @@ static PPG_Token_Vtable ppg_cluster_vtable =
 	#endif
 };
 	
-PPG_Token ppg_create_cluster(
+PPG_Token ppg_cluster_create(
 								PPG_Count n_inputs,
 									PPG_Input inputs[])
 {
@@ -119,7 +124,7 @@ PPG_Token ppg_create_cluster(
 	 
 	cluster->super.vtable = &ppg_cluster_vtable;
 	
-	return ppg_initialize_aggregate(cluster, n_inputs, inputs);
+	return ppg_global_initialize_aggregate(cluster, n_inputs, inputs);
 }
 
 PPG_Token ppg_cluster(		
@@ -131,7 +136,7 @@ PPG_Token ppg_cluster(
 	PPG_PRINTF("Adding cluster\n");
 	
 	PPG_Token__ *token = 
-		(PPG_Token__ *)ppg_create_cluster(n_inputs, inputs);
+		(PPG_Token__ *)ppg_cluster_create(n_inputs, inputs);
 		
 	token->action = action;
 	

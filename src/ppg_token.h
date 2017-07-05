@@ -21,7 +21,7 @@
 
 #include "ppg_action.h"
 #include "ppg_action_flags.h"
-#include "ppg_types.h"
+#include "ppg_settings.h"
 
 /** @brief The token type
  */

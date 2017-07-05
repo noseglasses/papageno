@@ -35,7 +35,7 @@
 #include "ppg_time.h"
 #include "ppg_timeout.h"
 #include "ppg_token.h"
-#include "ppg_types.h"
+#include "ppg_settings.h"
 #include "ppg_user_callback.h"
 
 #endif

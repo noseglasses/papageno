@@ -40,7 +40,7 @@ PPG_Token ppg_pattern(
 { 
 	PPG_PRINTF("Adding pattern\n");
 	
-	ppg_init();
+	ppg_global_init();
 		
 	return ppg_pattern_from_list(layer, n_tokens, tokens);
 }

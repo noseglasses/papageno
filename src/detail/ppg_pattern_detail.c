@@ -32,16 +32,16 @@ PPG_Token ppg_pattern_from_list(
 		
 		PPG_Token__ *cur_token = (PPG_Token__*)tokens[i];
 		
-		PPG_Token__ *equivalent_successor 
-			= ppg_token_get_equivalent_successor(parent_token, cur_token);
+		PPG_Token__ *equivalent_child 
+			= ppg_token_get_equivalent_child(parent_token, cur_token);
 			
 		PPG_PRINTF("   member %d: ", i);
 		
-		if(	equivalent_successor
+		if(	equivalent_child
 			
 			/* Only share interior nodes and ...
 			 */
-			&& equivalent_successor->successors
+			&& equivalent_child->children
 			/* ... only if the 
 			 * newly registered node on the respective level is 
 			 * not a leaf node.
@@ -50,21 +50,21 @@ PPG_Token ppg_pattern_from_list(
 		) {
 			
 // 			#if DEBUG_PAPAGENO
-// 			if(cur_token->action.type != equivalent_successor->action.type) {
+// 			if(cur_token->action.type != equivalent_child->action.type) {
 // 				PPG_ERROR("Incompatible action types detected\n");
 // 			}
 // 			#endif
 			
-			PPG_PRINTF("already present: 0x%" PRIXPTR "\n", equivalent_successor);
+			PPG_PRINTF("already present: 0x%" PRIXPTR "\n", equivalent_child);
 			
-			parent_token = equivalent_successor;
+			parent_token = equivalent_child;
 			
-			if(layer < equivalent_successor->layer) {
+			if(layer < equivalent_child->layer) {
 				
-				equivalent_successor->layer = layer;
+				equivalent_child->layer = layer;
 			}
 			
-			/* The successor is already registered in the search tree. Delete the newly created version.
+			/* The child is already registered in the search tree. Delete the newly created version.
 			 */			
 			ppg_token_free(cur_token);
 		}
@@ -76,17 +76,17 @@ PPG_Token ppg_pattern_from_list(
 			
 			/* Detect pattern ambiguities
 			 */
-			if(equivalent_successor) {
+			if(equivalent_child) {
 				if(	
 					/* Melodies are ambiguous if ...
 					 * the conflicting nodes/tokens are both leaf tokens
 					 */
 						(i == (n_tokens - 1))
-					&&	!equivalent_successor->successors
+					&&	!equivalent_child->children
 					
 					/* And defined for the same layer
 					 */
-					&& (equivalent_successor->layer == layer)
+					&& (equivalent_child->layer == layer)
 				) {
 					PPG_ERROR("Conflicting melodies detected.\n")
 					
@@ -95,7 +95,7 @@ PPG_Token ppg_pattern_from_list(
 						"The tokens of the conflicting melodies are listed below.\n");
 					
 					PPG_ERROR("Previously defined:\n");
-					ppg_recursively_print_pattern(equivalent_successor);
+					ppg_recursively_print_pattern(equivalent_child);
 					
 					PPG_ERROR("Conflicting:\n");
 					for (PPG_Count i = 0; i < n_tokens; i++) {
@@ -108,7 +108,7 @@ PPG_Token ppg_pattern_from_list(
 					
 			cur_token->layer = layer;
 			
-			ppg_token_add_successor(parent_token, cur_token);
+			ppg_token_add_child(parent_token, cur_token);
 			
 			parent_token = cur_token;
 		}
@@ -117,4 +117,28 @@ PPG_Token ppg_pattern_from_list(
 	/* Return the leaf token 
 	 */
 	return parent_token;
+}
+
+PPG_Count ppg_branch_depth(PPG_Token__ *token)
+{
+	if(!token) { return 0; }
+	
+	PPG_Count max_depth = 0;
+	
+	for(PPG_Count i = 0; i < token->n_children; ++i) {
+		
+		PPG_Count cur_depth = 
+			ppg_branch_depth(token->children[i]);
+			
+		if(cur_depth > max_depth) {
+			max_depth = cur_depth;
+		}
+	}
+	
+	return 1 + max_depth;
+}
+
+PPG_Count ppg_pattern_tree_depth(void)
+{
+	return ppg_branch_depth(&ppg_context->pattern_root);
 }

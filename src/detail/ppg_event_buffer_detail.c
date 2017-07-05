@@ -17,6 +17,7 @@
 #include "detail/ppg_event_buffer_detail.h"
 #include "detail/ppg_context_detail.h"
 #include "ppg_debug.h"
+#include "ppg_settings.h"
 
 #define PPG_EB ppg_context->event_buffer
 
@@ -86,3 +87,68 @@ void ppg_event_buffer_iterate_events(PPG_Slot_Id slot_id, PPG_Event_Processor_Fu
 		}
 	}
 }
+
+bool ppg_event_buffer_events_left(void)
+{
+	return 	(PPG_EB.cur != PPG_EB.end)
+			&& (PPG_EB.end != -1);
+}
+
+void ppg_event_buffer_advance(void)
+{
+	if(PPG_EB.end == -1) { return; }
+	
+	if(PPG_EB.cur == PPG_MAX_EVENTS - 1) {
+		PPG_EB.cur = 0;
+	}
+	else {
+		++PPG_EB.cur;
+	}
+} 
+
+static void ppg_even_buffer_recompute_size(void)
+{
+	if(PPG_EB.end >= PPG_EB.start) {
+		
+		PPG_EB.size = PPG_EB.end + 1 - PPG_EB.start;
+	}
+	else {
+		
+		PPG_EB.size = PPG_MAX_EVENTS + PPG_EB.end - PPG_EB.start;
+	}
+}
+
+void ppg_event_buffer_truncate_at_front(void)
+{
+	if(PPG_EB.cur == PPG_EB.end) {
+		ppg_event_buffer_init(&PPG_EB);
+	}
+	else {
+		ppg_event_buffer_advance();
+		
+		PPG_EB.start = PPG_EB.cur;
+		
+		ppg_even_buffer_recompute_size();
+	}
+}
+
+void ppg_even_buffer_flush_and_remove_first_event(
+							PPG_Slot_Id slot_id)
+{
+	ppg_context->input_processor(&PPG_EB.events[PPG_EB.start], slot_id, NULL);
+	
+	if(PPG_EB.size > 1) {
+		if(PPG_EB.start < PPG_MAX_EVENTS - 1) {
+			++PPG_EB.start;
+		}
+		else {
+			PPG_EB.start = 0;
+		}
+		
+		--PPG_EB.size;
+	}
+	else {
+		ppg_event_buffer_init(&PPG_EB);
+	}
+}
+

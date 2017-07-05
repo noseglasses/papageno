@@ -137,9 +137,9 @@ is also set for this previous token also its predecessor is checked, and so on.
 
 Papageno temporarily stores all events that occured from the beginning of current pattern matching. The default behavior is to forget these events once a pattern was completely matched. When Papageno is e.g. used to recognice previously defined key combinations that are entered on a programmable keyboard, the action that is associated with the key combination often triggers configuration changes or outputs special characters. In most cases the character sequence that triggered the action is supposed to be ignored, i.e. not to be passed to the host system.
 However, it may be desired to actively process these cached events even after a whole pattern matches. They could e.g. be passed on to another part of a program to interpret them. To enable this, an event processing
-callback may be registered that is passed the series of stored events. It is also possible to use the function ppg_flush_stored_events to pass all currently stored events through a user defined event processing callback at any time, e.g. from an action callback.
+callback may be registered that is passed the series of stored events. It is also possible to use the function ppg_event_buffer_flush to pass all currently stored events through a user defined event processing callback at any time, e.g. from an action callback.
 
-An example application of deliberate flushing of events emerges again from the world of programmable keyboards: One might want to define a character/key sequence that is supposed to be automatically output uppercase. By assigning a user callback action to a single note line, it is possible to activate the shift key, then process the key sequence  by calling ppg_flush_stored_events and then deactivate the shift key. The character sequence would then appear to the host system as if it had originally been typed uppercase. 
+An example application of deliberate flushing of events emerges again from the world of programmable keyboards: One might want to define a character/key sequence that is supposed to be automatically output uppercase. By assigning a user callback action to a single note line, it is possible to activate the shift key, then process the key sequence  by calling ppg_event_buffer_flush and then deactivate the shift key. The character sequence would then appear to the host system as if it had originally been typed uppercase. 
 
 ## Slots
 
@@ -159,24 +159,66 @@ Context switching is implemented through a global context pointer. Please note t
 
 ## Implementation
 
-Papageon efficiently deals with the task of finding matching patterns by using a search tree.
-Tree nodes thereby represent 
+### Search Tree
+
+Papageon efficiently solves the task of finding matching patterns by using a search tree.
+With this approach nodes of the search tree represent 
 tokens, i.e. notes, chords or clusters. Every newly defined pattern is
 automatically incorporated into the search tree of the current context.
-Once an event occurs, the tree search algorithm tries to determine whether
-the event is associated with a token of any pattern. This is done by looking for matching tokens on the 
-current level of the search tree that is associated with the current layer or any layer below. Events are
-passed to the child nodes of the current token/tree node to let the dedicated 
-token implementation decide if the input the event is associated with is part of the token definition.
-Child tokens signal match or invalidation. The latter happens 
-as soon as an event occurs that is not part of the respective token.
-If one or more suitable child tokens signal match, the most
-suitable one of them is selected with respect to the current layer. It then replaces the current token 
-and thus the current level of the search tree for the next event to process. 
-It may sometimes happen that all child tokens 
-signal neither match nor invalidation e.g. if all child tokens are clusters or chords that require several events to match.
-If the most suitable child token that just matched is a leaf node of the search tree, 
-the current pattern is considered as a match.
+
+Papageno is designed in a way that supports on-the-fly detection of patterns.
+This means that a pattern search is carried out or continued whenever a 
+new event is registered.
+
+There are two possible states of the pattern matching automaton. When a pattern
+was detected or detection failed, it falls back to initialize state. Else it
+is waiting for the next event to occur.
+
+When a new event occurs it is added to an event cache whose purpose is described
+below. After that, the algorithm checks it the new event allows for a
+match of one of the child (successor) tokens of the current token, i.e. the 
+token that matched the last event to arrive previously. 
+
+If one of the child nodes matches, it becomes the new current token and the algorithm waits for
+the next token to arrive. If there were multiple candidates for a new current token,
+the current token is marked as current furcation. The marked furcation will be 
+required if a branch of the search tree is detected as not matching. Marking
+furcations speeds up tree traversal.
+
+If no child tokens are left that could match the current event. The 
+the algorithm continues with one of the 
+candidates of the most recently marked furcation.
+
+If a furcation has no further child nodes, that were not yet tried for 
+matchesr, the search continues with
+the second latest furcation.
+Thus, if necessary all partially matching parts of the search tree are traversed
+when searching for a matching pattern.
+
+If no pattern does match after traversing all possible branches of the search tree, 
+the oldest of the cached events is dropped and the pattern matching is resumed
+starting from the second oldest cached event. 
+
+Events are cached using a a ring buffer.
+
+If the current token has several candidates that all do not match yet, the algorithm waits
+for the next event to arrive and then resumes matching based on the new event 
+and all the recent events that are still in the event buffer.
+
+During the search for suitable child tokens to continue event matching, 
+the following tokens are excluded:
+
+- invalid tokens (those that do not match)
+- tokens that still require further events to match
+- tokens with an assigned layers that is greater than the current layer
+
+When after applying this rule several children of a current token match, 
+several rules decide about which child token to try first:
+
+- the token with the highest type precedence wins
+- if two tokens have same type precedence, the one with the higher assigned layer wins
+
+The precedence order from highest to lowest is thereby note, chord, cluster.
 
 ## Supported Platforms
 

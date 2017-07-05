@@ -21,10 +21,9 @@
 #include "ppg_event.h"
 #include "ppg_action.h"
 #include "ppg_layer.h"
+#include "ppg_settings.h"
 
 struct PPG_TokenStruct;
-
-typedef uint8_t PPG_Processing_State;
 
 typedef PPG_Processing_State (*PPG_Token_Match_Event_Fun)(
 														struct PPG_TokenStruct *token, 
@@ -38,6 +37,8 @@ typedef bool (*PPG_Token_Trigger_Action_Fun)(	struct PPG_TokenStruct *token, PPG
 typedef struct PPG_TokenStruct * (*PPG_Token_Destroy_Fun)(struct PPG_TokenStruct *token);
 
 typedef bool (*PPG_Token_Equals_Fun)(struct PPG_TokenStruct *p1, struct PPG_TokenStruct *p2);
+
+typedef PPG_Count (*PPG_Token_Precedence_Fun)(void);
 
 #if PAPAGENO_PRINT_SELF_ENABLED
 typedef void (*PPG_Token_Print_Self_Fun)(struct PPG_TokenStruct *p);
@@ -60,6 +61,9 @@ typedef struct {
 	PPG_Token_Equals_Fun
 									equals;
 									
+	PPG_Token_Precedence_Fun
+									token_precedence;
+									
 	#if PAPAGENO_PRINT_SELF_ENABLED
 	PPG_Token_Print_Self_Fun
 									print_self;
@@ -75,10 +79,10 @@ typedef struct PPG_TokenStruct {
 	
 	struct PPG_TokenStruct *parent;
 	
-	struct PPG_TokenStruct **successors;
+	struct PPG_TokenStruct **children;
 	
-	PPG_Count n_allocated_successors;
-	PPG_Count n_successors;
+	PPG_Count n_allocated_children;
+	PPG_Count n_children;
 	
 	PPG_Action action;
 	
@@ -92,25 +96,24 @@ enum PPG_Processing_State {
 	PPG_Token_In_Progress = 0,
 	PPG_Token_Matches,
 	PPG_Token_Invalid,
-	PPG_Pattern_Matches
+	PPG_Pattern_Matches,
+	PPG_Branch_Invalid
 };
 
-void ppg_token_free_successors(PPG_Token__ *a_This);
+void ppg_token_free_children(PPG_Token__ *a_This);
 
 void ppg_token_store_action(PPG_Token__ *token, 
 											  PPG_Action action);
 
 void ppg_token_reset(	PPG_Token__ *token);
 
-void ppg_token_reset_successors(PPG_Token__ *token);
+void ppg_token_reset_children(PPG_Token__ *token);
 
 bool ppg_token_trigger_action(PPG_Token__ *token, PPG_Slot_Id slot_id);
 
 PPG_Processing_State ppg_token_match_event(	
 												PPG_Token__ **current_token,
-												PPG_Event *event,
-												PPG_Layer cur_layer
- 										);
+												PPG_Event *event);
 
 PPG_Token__ *ppg_token_new(PPG_Token__ *token);
 
@@ -118,9 +121,9 @@ PPG_Token__* ppg_token_destroy(PPG_Token__ *token);
 
 void ppg_token_free(PPG_Token__ *token);
 
-void ppg_token_add_successor(PPG_Token__ *token, PPG_Token__ *successor);
+void ppg_token_add_child(PPG_Token__ *token, PPG_Token__ *child);
 
-PPG_Token__* ppg_token_get_equivalent_successor(
+PPG_Token__* ppg_token_get_equivalent_child(
 														PPG_Token__ *parent_token,
 														PPG_Token__ *sample);
 

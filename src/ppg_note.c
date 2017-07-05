@@ -21,7 +21,7 @@
 #include "detail/ppg_note_detail.h"
 #include "detail/ppg_pattern_detail.h"
 
-PPG_Token ppg_create_note(PPG_Input input)
+PPG_Token ppg_note_create(PPG_Input input)
 {
     PPG_Note *note = (PPG_Note*)ppg_note_new(ppg_note_alloc());
 	 
@@ -45,7 +45,7 @@ PPG_Token ppg_single_note_line(
 		
 	for (PPG_Count i = 0; i < n_inputs; i++) {
 
-		tokens[i] = ppg_create_note(inputs[i]);
+		tokens[i] = ppg_note_create(inputs[i]);
 	}
 	
 	ppg_token_store_action(tokens[n_inputs - 1], action);

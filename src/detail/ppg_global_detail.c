@@ -59,3 +59,28 @@ void ppg_delete_stored_events(void)
 {
 	ppg_event_buffer_init(&ppg_context->event_buffer);	
 }
+
+void ppg_global_abort_pattern_matching(void)
+{		
+	if(!ppg_context->current_token) { return; }
+	
+// 	PPG_PRINTF("Aborting pattern\n");
+	
+	/* The frase could not be parsed. Reset any child tokens.
+	*/
+	ppg_token_reset_children(ppg_context->current_token);
+	
+	if(ppg_context->process_actions_if_aborted) {
+		ppg_recurse_and_process_actions(PPG_On_Abort);
+	}
+	
+	/* Cleanup and issue all inputpresses as if they happened without parsing a pattern
+	*/
+	ppg_event_buffer_flush(	PPG_On_Abort, 
+										NULL /* input_processor */, 
+										NULL /* user data */);
+	
+	ppg_delete_stored_events();
+	
+	ppg_context->current_token = NULL;
+}

@@ -16,33 +16,36 @@
 
 #include "ppg_context.h"
 #include "detail/ppg_context_detail.h"
+#include "detail/ppg_furcation_detail.h"
 #include "ppg_debug.h"
 
 #include <stdlib.h>
 
-void* ppg_create_context(void)
+void* ppg_context_create(void)
 {
 	PPG_PRINTF("Creating new context\n");
 	
 	PPG_Context *context = (PPG_Context *)malloc(sizeof(PPG_Context));
 	
-	ppg_initialize_context(context);
+	ppg_global_initialize_context(context);
 	
 	return context;
 }
 
 #ifndef PAPAGENO_DISABLE_CONTEXT_SWITCHING
 
-void ppg_destroy_context(void *context_void)
+void ppg_context_destroy(void *context_void)
 {
 	PPG_Context *context = (PPG_Context *)context_void;
 	
-	ppg_token_free_successors(&context->pattern_root);
+	ppg_furcation_buffer_free(&context->furcation_buffer);
+	
+	ppg_token_free_children(&context->pattern_root);
 	
 	free(context);
 }
 
-void* ppg_set_context(void *context_void)
+void* ppg_global_set_current_context(void *context_void)
 {
 	void *old_context = ppg_context;
 	
@@ -51,7 +54,7 @@ void* ppg_set_context(void *context_void)
 	return old_context;
 }
 
-void* ppg_get_current_context(void)
+void* ppg_global_get_current_context(void)
 {
 	return ppg_context;
 }

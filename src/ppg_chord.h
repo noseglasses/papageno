@@ -32,7 +32,6 @@
  * @param action The action that is supposed to be carried out if the overall pattern matches
  * @param n_inputs The number of inputs
  * @param inputs A pointer to an array of input definitions.
- * @param n_members The number of chord members that must match the size of the inputs array.
  * @returns The constructed token
  */
 PPG_Token ppg_chord(		
@@ -55,7 +54,7 @@ PPG_Token ppg_chord(
  * @param inputs An array of inputs that represent the notes of the chord
  * @returns The constructed token
  */
-PPG_Token ppg_create_chord(	
+PPG_Token ppg_chord_create(	
 							PPG_Count n_inputs,
 							PPG_Input inputs[]
 							);
@@ -64,7 +63,7 @@ PPG_Token ppg_create_chord(
  * 
  * @param ... A list of inputs
  */
-#define PPG_CREATE_CHORD(...) \
-	ppg_create_chord(PPG_INPUTS(__VA_ARGS__))
+#define PPG_CHORD_CREATE(...) \
+	ppg_chord_create(PPG_INPUTS(__VA_ARGS__))
 	
 #endif

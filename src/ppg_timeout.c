@@ -25,7 +25,7 @@ static void ppg_on_timeout(void)
 	
 	/* The frase could not be parsed. Reset any previous tokens.
 	*/
-	ppg_token_reset_successors(ppg_context->current_token);
+	ppg_token_reset_children(ppg_context->current_token);
 	
 	/* It timeout was hit, we either trigger the most recent action
 	 * (e.g. necessary for tap dances) or flush the inputevents
@@ -38,7 +38,7 @@ static void ppg_on_timeout(void)
 	/* Cleanup and issue all inputpresses as if they happened without parsing a pattern
 	*/
 	if(!action_triggered) {
-		ppg_flush_stored_events(	PPG_On_Timeout, 
+		ppg_event_buffer_flush(	PPG_On_Timeout, 
 											NULL /* input_processor */, 
 											NULL /* user data */);
 	}
@@ -48,9 +48,11 @@ static void ppg_on_timeout(void)
 	ppg_context->current_token = NULL;
 }
 
-bool ppg_check_timeout(void)
+bool ppg_timeout_check(void)
 {
 // 	PPG_PRINTF("Checking timeout\n");
+	
+	if(!ppg_context->timeout_enabled) { return false; }
 	
 	#ifdef DEBUG_PAPAGENO
 	if(!ppg_context->time) {
@@ -70,9 +72,11 @@ bool ppg_check_timeout(void)
 	
 	PPG_Time delta;
 	ppg_context->time_difference(
-					ppg_context->time_last_inputpress, 
+					ppg_context->time_last_event, 
 					cur_time, 
 					&delta);
+	
+	bool timeout_hit = false;
 	
 	if(ppg_context->current_token
 		&& (ppg_context->time_comparison(
@@ -87,8 +91,10 @@ bool ppg_check_timeout(void)
 			*/
 		ppg_on_timeout();
 	
-		return true;
+		timeout_hit = true;
 	}
 	
-	return false;
+	ppg_context->time(&ppg_context->time_last_event);
+	
+	return timeout_hit;
 }

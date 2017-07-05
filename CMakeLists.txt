@@ -12,7 +12,8 @@ set(source_directory "${CMAKE_SOURCE_DIR}/src")
 
 set(source_files
 	./ppg_global.c   
-	./ppg_note.c                                                                                                                          
+	./ppg_note.c      
+	./ppg_event.c                                                                                                                         
 	./ppg_context.c                                                                                                                        
 	./ppg_tap_dance.c                                                                                                                     
 	./ppg_cluster.c                                                                                                                       
@@ -25,6 +26,7 @@ set(source_files
 	./detail/ppg_note_detail.c                                                                                                            
 	./detail/ppg_global_detail.c     
 	./detail/ppg_event_buffer_detail.c
+	./detail/ppg_furcation_detail.c
 	./ppg_input.c                                                                                                                         
 	./ppg_chord.c                                                                                                                         
 	./ppg_time.c                                                                                                                       

@@ -37,17 +37,17 @@
  * @param input The abort input
  * @returns The abort input id that was previously set
  */
-PPG_Input ppg_set_abort_input(PPG_Input input);
+PPG_Input ppg_global_set_abort_trigger(PPG_Input input);
 
 /** @brief Retreives the current abort input. 
  * 
- * See ppg_set_abort_input for further information.
+ * See ppg_global_set_abort_trigger for further information.
  */
-PPG_Input ppg_get_abort_input(void);
+PPG_Input ppg_global_get_abort_trigger(void);
 
 /** @brief Aborts processing of the current pattern
  */
-void ppg_abort_pattern_processing(void);
+void ppg_global_abort_pattern_matching(void);
 
 /** @brief Defines whether actions are supposed to be processed along the token
  * chain of the current pattern, based on the last token that matched. 
@@ -59,15 +59,15 @@ void ppg_abort_pattern_processing(void);
  * 
  * @returns The previous setting
  */
-bool ppg_set_process_actions_if_aborted(bool state);
+bool ppg_global_set_process_actions_if_aborted(bool state);
 
 /** @brief Retreives the current settings of the process action if aborted.
  * 
- * See the documentation of ppg_set_process_actions_if_aborted
+ * See the documentation of ppg_global_set_process_actions_if_aborted
  * 
  * @returns The current boolean value
  */
-bool ppg_get_process_actions_if_aborted(void);
+bool ppg_global_get_process_actions_if_aborted(void);
 
 /** @brief Set the current timeout for pattern processing. 
  * 
@@ -78,25 +78,25 @@ bool ppg_get_process_actions_if_aborted(void);
  * @param timeout The timeout time value
  * @returns The previous setting
  */
-PPG_Time ppg_set_timeout(PPG_Time timeout);
+PPG_Time ppg_global_set_timeout(PPG_Time timeout);
 
 /** @brief Returns the current timeout value
  * 
  * @returns The current timeout value
  */
-PPG_Time ppg_get_timeout(void);
+PPG_Time ppg_global_get_timeout(void);
 
 
 /** @brief Defines the default input processor callback. 
  * 
- * Some functions, e.g. ppg_flush_stored_events
+ * Some functions, e.g. ppg_event_buffer_flush
  * can be supplied with a custom input processor. If non is specified the default one is used
  * if defined.
  * 
  * @param fun The default input processor callback
  * @returns The callback that was active before resetting
  */
-PPG_Event_Processor_Fun ppg_set_default_input_processor(PPG_Event_Processor_Fun fun);
+PPG_Event_Processor_Fun ppg_global_set_default_event_processor(PPG_Event_Processor_Fun fun);
 
 /** @brief Call this function to actively flush any input events that occured since the last flush.
  * 
@@ -105,10 +105,10 @@ PPG_Event_Processor_Fun ppg_set_default_input_processor(PPG_Event_Processor_Fun 
  * @param slot_id The slot where this method was called. Pass PPG_On_User if you call this 
  * 					method from user code.
  * @param input_processor A custom input processor callback. If NULL the default processor registered by
- *                ppg_set_default_input_processor is used.
+ *                ppg_global_set_default_event_processor is used.
  * @param user_data Optional user data is passed on to the input processor callback
  */
-void ppg_flush_stored_events(
+void ppg_event_buffer_flush(
 								PPG_Slot_Id slot_id, 
 								PPG_Event_Processor_Fun input_processor,
 								void *user_data);
@@ -120,34 +120,29 @@ void ppg_flush_stored_events(
  * @param state The new state. Enables if true, disables if false.
  * @returns The previous state
  */
-bool ppg_set_enabled(bool state);
+bool ppg_global_set_enabled(bool state);
 
 /** @brief Initialize Papageno
  */
-void ppg_init(void);
+void ppg_global_init(void);
+
+/** @brief Compiles the Papageno pattern tree
+ */
+void ppg_global_compile(void);
 
 /** @brief Finalizes Papageno, i.e. clears all patterns and frees all allocated memory.
  * 
  * Please not that this operation only operates on the current context. It you have created
  * several contexts, set and finalize them in a loop.
  */
-void ppg_finalize(void);
+void ppg_global_finalize(void);
 
 /** @brief Resets papageno to initial state
  * 
  * This creates and initializes a new context. Other contexts are not affected. 
  * The currently active context is finalized before the reset operation takes place.
  */
-void ppg_reset(void);
-
-/** @brief This is the main entry function for input event processing.
- * 
- * @param event A pointer to an input event to process by papageno
- * @param cur_layer The current layer
- * @returns If further input event processing by other input event processors is desired
- */
-bool ppg_process_event(PPG_Event *event,
-								  PPG_Layer cur_layer);
+void ppg_global_reset(void);
 
 /** @brief The timeout check function
  * 
@@ -156,7 +151,7 @@ bool ppg_process_event(PPG_Event *event,
  * @returns True if timeout happend, i.e. the time elapsed since the last inputpress event 
  * 			exceeded the user defined timeout threshold.
  */
-bool ppg_check_timeout(void);
+bool ppg_timeout_check(void);
 
 /** @brief Toggles global timeout
  * 
@@ -164,12 +159,24 @@ bool ppg_check_timeout(void);
  * 
  * @returns The previous state of global timeout enabled
  */
-bool ppg_set_enable_timeout(bool state);
+bool ppg_global_set_timeout_enabled(bool state);
 
 /** @brief Determines if global timeout is enabled
  * 
  * @returns The current state of global timeout enabled
  */
-bool ppg_get_enable_timeout(void);
+bool ppg_global_get_timeout_enabled(void);
+
+/** @brief Set the current layer
+ * 
+ * @returns The previously active layer
+ */
+PPG_Layer ppg_global_set_layer(PPG_Layer layer);
+
+/** @brief Retreives the currently active layer
+ * 
+ * @returns The currently active layer
+ */
+PPG_Layer ppg_global_get_layer(void);
 
 #endif

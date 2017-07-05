@@ -32,7 +32,6 @@
  * @param action The action that is supposed to be carried out if the pattern matches
  * @param n_inputs The number of inputs
  * @param inputs A pointer to an array of input definitions.
- * @param n_members The number of cluster members that must match the size of the inputs array.
  * @returns The constructed token
  */
 PPG_Token ppg_cluster(		
@@ -55,7 +54,7 @@ PPG_Token ppg_cluster(
  * @param inputs An array of input ids that represent the notes of the cluster
  * @returns The constructed token
  */
-PPG_Token ppg_create_cluster(
+PPG_Token ppg_cluster_create(
 							PPG_Count n_inputs,
 							PPG_Input inputs[]);
 
@@ -63,7 +62,7 @@ PPG_Token ppg_create_cluster(
  * 
  * @param ... A list of inputs
  */
-#define PPG_CREATE_CLUSTER(...) \
-	ppg_create_cluster(PPG_INPUTS(__VA_ARGS__))
+#define PPG_CLUSTER_CREATE(...) \
+	ppg_cluster_create(PPG_INPUTS(__VA_ARGS__))
 
 #endif

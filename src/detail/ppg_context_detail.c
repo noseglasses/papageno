@@ -42,11 +42,12 @@ PPG_Time_Comparison_Result_Type ppg_default_time_comparison(
 	return 0;
 }
 
-void ppg_initialize_context(PPG_Context *context) {
+void ppg_global_initialize_context(PPG_Context *context) {
 	
 	PPG_PRINTF("Initializing context\n");
 	
 	ppg_event_buffer_init(&context->event_buffer);
+	ppg_furcation_buffer_init(&context->furcation_buffer);
 	
 	context->pattern_root_initialized = false;
 	context->process_actions_if_aborted = false;
@@ -54,7 +55,8 @@ void ppg_initialize_context(PPG_Context *context) {
 	context->timeout_enabled = true;
 	context->papageno_enabled = true;
 	context->papageno_temporarily_disabled = false;
-	ppg_init_input(&context->abort_input);
+	context->layer = 0;
+	ppg_global_init_input(&context->abort_input);
 	context->inputpress_timeout = NULL;
 	context->input_id_equal = (PPG_Input_Id_Equal_Fun)ppg_input_id_simple_equal;
 	context->time = ppg_default_time;

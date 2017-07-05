@@ -19,6 +19,8 @@
 
 /** @file */
 
+#include "ppg_settings.h"
+
 #include <inttypes.h>
 
 /** @brief Input processing slot identifiers
@@ -31,11 +33,8 @@ enum PPG_Slots {
 	PPG_On_Timeout,
 	PPG_On_Token_Matches,
 	PPG_On_Pattern_Matches,
-	PPG_On_User
+	PPG_On_User,
+	PPG_On_Match_Failed
 };
-
-/** @brief The data type used to identify slots
- */
-typedef uint8_t PPG_Slot_Id;
 
 #endif

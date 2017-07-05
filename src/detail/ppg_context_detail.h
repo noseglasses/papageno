@@ -20,12 +20,15 @@
 #include "ppg_event.h"
 #include "detail/ppg_token_detail.h"
 #include "detail/ppg_event_buffer_detail.h"
+#include "detail/ppg_event_buffer_detail.h"
+#include "detail/ppg_furcation_detail.h"
 
 #include <stddef.h>
 
 typedef struct PPG_Context_Struct
 {
 	PPG_Event_Buffer event_buffer;
+	PPG_Furcation_Buffer furcation_buffer;
 	
 	PPG_Token__ pattern_root;
 	bool pattern_root_initialized;
@@ -36,10 +39,12 @@ typedef struct PPG_Context_Struct
 	bool timeout_enabled;
 	bool papageno_enabled;
 	bool papageno_temporarily_disabled;
+	
+	PPG_Layer layer;
 
 	PPG_Input abort_input;
 
-	PPG_Time time_last_inputpress;
+	PPG_Time time_last_event;
 
 	PPG_Time inputpress_timeout;
 	
@@ -55,7 +60,7 @@ typedef struct PPG_Context_Struct
 
 PPG_Context *ppg_context;
 
-void ppg_initialize_context(PPG_Context *context);
+void ppg_global_initialize_context(PPG_Context *context);
 
 /* The following macros influence the build
 

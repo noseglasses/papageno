@@ -75,7 +75,7 @@ static void ppg_aggregate_resize(PPG_Aggregate *aggregate,
 	
 	for(PPG_Count i = 0; i < n_members; ++i) {
 		aggregate->member_active[i] = false;
-		ppg_init_input(&aggregate->inputs[i]);
+		ppg_global_init_input(&aggregate->inputs[i]);
 	}
 }
 
@@ -108,7 +108,7 @@ bool ppg_aggregates_equal(PPG_Aggregate *c1, PPG_Aggregate *c2)
 	return n_equalities == c1->n_members;
 }
 
-PPG_Token ppg_initialize_aggregate(	
+PPG_Token ppg_global_initialize_aggregate(	
 								PPG_Aggregate *aggregate,
 								PPG_Count n_inputs,
 								PPG_Input inputs[])

@@ -24,7 +24,7 @@
 /** @brief The type used as input identifier.
  * 
  * This type is used as an identifier for inputs.
- * Please supply a comparison callback via ppg_set_input_id_equal_function.
+ * Please supply a comparison callback via ppg_global_set_input_id_equal_function.
  * The default behavior is to compare input ids by value.
  */
 typedef void * PPG_Input_Id;
@@ -58,7 +58,7 @@ typedef bool (*PPG_Input_Id_Equal_Fun)(PPG_Input_Id input_id1, PPG_Input_Id inpu
  * 
  * @param fun The function callback to be registered
  */
-void ppg_set_input_id_equal_function(PPG_Input_Id_Equal_Fun fun);
+void ppg_global_set_input_id_equal_function(PPG_Input_Id_Equal_Fun fun);
 
 /** @brief Auxiliary macro to simplify passing input arrays to functions such as
  * ppg_cluster or ppg_chord

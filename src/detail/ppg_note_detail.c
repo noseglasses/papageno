@@ -66,6 +66,11 @@ static bool ppg_note_equals(PPG_Note *n1, PPG_Note *n2)
 	return ppg_context->input_id_equal(n1->input.input_id, n2->input.input_id);
 }
 
+static PPG_Count ppg_note_token_precedence(void)
+{
+	return 100;
+}
+
 #if PAPAGENO_PRINT_SELF_ENABLED
 static void ppg_note_print_self(PPG_Note *p)
 {
@@ -88,7 +93,9 @@ static PPG_Token_Vtable ppg_note_vtable =
 	.destroy 
 		= (PPG_Token_Destroy_Fun) ppg_token_destroy,
 	.equals
-		= (PPG_Token_Equals_Fun) ppg_note_equals
+		= (PPG_Token_Equals_Fun) ppg_note_equals,
+	.token_precedence
+		= (PPG_Token_Precedence_Fun)ppg_note_token_precedence
 		
 	#if PAPAGENO_PRINT_SELF_ENABLED
 	,
@@ -105,7 +112,7 @@ PPG_Note *ppg_note_new(PPG_Note *note)
 
     note->super.vtable = &ppg_note_vtable;
 	 
-	 ppg_init_input(&note->input);
+	 ppg_global_init_input(&note->input);
 	 
     return note;
 }

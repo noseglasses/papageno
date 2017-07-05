@@ -23,7 +23,7 @@
  * 
  * @returns The newly created context
  */
-void* ppg_create_context(void);
+void* ppg_context_create(void);
 
 /** @brief Destroys a papageno context
  * 
@@ -32,19 +32,19 @@ void* ppg_create_context(void);
  * 
  * @param context The context to destroy
  */
-void ppg_destroy_context(void *context);
+void ppg_context_destroy(void *context);
 
 /** @brief Sets a new current context
  * 
  * @param context The context to be activated
  * @returns The previously active context
  */
-void* ppg_set_context(void *context);
+void* ppg_global_set_current_context(void *context);
 
 /** @brief Retreives the current context
  * 
  * @returns The current context
  */
-void* ppg_get_current_context(void);
+void* ppg_global_get_current_context(void);
 
 #endif

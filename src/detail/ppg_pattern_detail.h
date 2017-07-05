@@ -25,4 +25,6 @@ PPG_Token ppg_pattern_from_list(
 												PPG_Count n_tokens,
 												PPG_Token tokens[]);
 
+PPG_Count ppg_pattern_tree_depth(void);
+
 #endif

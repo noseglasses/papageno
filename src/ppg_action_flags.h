@@ -30,6 +30,4 @@ enum PPG_Action_Flags {
 	PPG_Action_Immediate = 1 << 3
 };
 
-typedef uint8_t PPG_Action_Flags_Type;
-
 #endif

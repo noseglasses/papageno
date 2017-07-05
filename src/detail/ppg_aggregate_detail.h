@@ -19,7 +19,7 @@
 
 #include "detail/ppg_token_detail.h"
 #include "ppg_input.h"
-#include "ppg_types.h"
+#include "ppg_settings.h"
 
 typedef struct {
 	
@@ -32,7 +32,7 @@ typedef struct {
 	 
 } PPG_Aggregate;
 
-PPG_Token ppg_initialize_aggregate(	
+PPG_Token ppg_global_initialize_aggregate(	
 								PPG_Aggregate *aggregate,
 								PPG_Count n_inputs,
 								PPG_Input inputs[]);
