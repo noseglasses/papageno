@@ -134,4 +134,24 @@ typedef PPG_SMALL_SIGNED_INT_TYPE PPG_Event_Buffer_Index_Type;
  */
 typedef PPG_PROCESSING_STATE_TYPE PPG_Processing_State;
 
+#ifndef PPG_TIME_IDENTIFIER_TYPE
+
+#ifdef __AVR_ATmega32U4__ 
+
+/** @brief This macro enables to define the time identifier type from outside the
+ * compile process, e.g. from a build system
+ */
+#define PPG_TIME_IDENTIFIER_TYPE void *
+#else
+
+#include <time.h>
+
+#define PPG_TIME_IDENTIFIER_TYPE clock_t
+#endif
+#endif
+
+/** @brief Time identifier type.
+ */
+typedef PPG_TIME_IDENTIFIER_TYPE PPG_Time;
+
 #endif

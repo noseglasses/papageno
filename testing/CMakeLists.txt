@@ -1,0 +1,1 @@
+subdirs(char_strings)

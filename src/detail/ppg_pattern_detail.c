@@ -55,7 +55,7 @@ PPG_Token ppg_pattern_from_list(
 // 			}
 // 			#endif
 			
-			PPG_PRINTF("already present: 0x%" PRIXPTR "\n", equivalent_child);
+			PPG_PRINTF("already present: 0x%" PRIXPTR "\n", (uintptr_t)equivalent_child);
 			
 			parent_token = equivalent_child;
 			
@@ -70,7 +70,7 @@ PPG_Token ppg_pattern_from_list(
 		}
 		else {
 			
-			PPG_PRINTF("newly defined: 0x%" PRIXPTR "\n", cur_token);
+			PPG_PRINTF("newly defined: 0x%" PRIXPTR "\n", (uintptr_t)cur_token);
 			
 			#if DEBUG_PAPAGENO
 			

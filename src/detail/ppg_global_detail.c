@@ -30,8 +30,11 @@ bool ppg_recurse_and_process_actions(PPG_Slot_Id slot_id)
 	
 	while(cur_token) {
 		
-		bool action_present = ppg_token_trigger_action(cur_token, slot_id);
+		PPG_PRINTF("Triggering actions of token 0x%"
+			PRIXPTR "\n", (uintptr_t)cur_token);
 		
+		bool action_present = ppg_token_trigger_action(cur_token, slot_id);
+
 		if(action_present) {
 			if(cur_token->action.flags &= PPG_Action_Fall_Through) {
 				cur_token = cur_token->parent;
@@ -53,6 +56,27 @@ bool ppg_recurse_and_process_actions(PPG_Slot_Id slot_id)
 	PPG_PRINTF("Done\n");
 	
 	return false;
+}
+
+void ppg_recurse_and_cleanup_active_branch(void)
+{			
+	if(!ppg_context->current_token) { return; }
+	
+// 	PPG_PRINTF("Triggering action of most recent token\n");
+	
+	PPG_Token__ *cur_token = ppg_context->current_token;
+	
+	while(cur_token) {
+		
+		PPG_PRINTF("Cleaning up children of token 0x%"
+			PRIXPTR "\n", (uintptr_t)cur_token);
+		
+		// Reset all children (data structures and state)
+		//
+		ppg_token_reset_children(cur_token);
+
+		cur_token = cur_token->parent;
+	}
 }
 
 void ppg_delete_stored_events(void)

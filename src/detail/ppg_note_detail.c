@@ -35,13 +35,18 @@ static PPG_Processing_State ppg_note_match_event(
 			= note->input.check_active(note->input.input_id, event->state);
 			
 		if(input_active) {
+			
+			PPG_PRINTF("Input activated\n");
+			
 			note->active = true;
 			note->super.state = PPG_Token_In_Progress;
 		}
 		else {
+			PPG_PRINTF("Input deactivated\n");
+			
 			if(note->active) {
-	// 		PPG_PRINTF("note successfully finished\n");
-				PPG_PRINTF("N");
+				PPG_PRINTF("Note finished\n");
+// 				PPG_PRINTF("N");
 				note->super.state = PPG_Token_Matches;
 			}
 		}

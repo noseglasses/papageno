@@ -57,7 +57,7 @@ void ppg_global_initialize_context(PPG_Context *context) {
 	context->papageno_temporarily_disabled = false;
 	context->layer = 0;
 	ppg_global_init_input(&context->abort_input);
-	context->inputpress_timeout = NULL;
+	context->event_timeout = 0;
 	context->input_id_equal = (PPG_Input_Id_Equal_Fun)ppg_input_id_simple_equal;
 	context->time = ppg_default_time;
 	context->time_difference = ppg_default_time_difference;

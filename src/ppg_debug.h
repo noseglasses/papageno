@@ -29,19 +29,26 @@
 #endif
 
 #ifdef __AVR_ATmega32U4__ 
-#include "debug.h"
-#define PPG_PRINTF(...) \
-	uprintf(__VA_ARGS__);
-#define PPG_ERROR(...) PPG_PRINTF("*** Error: " __VA_ARGS__)
-#else
-#define PPG_PRINTF(...)
-#define PPG_ERROR(...)
-#endif
+#	include "debug.h"
+#	define PPG_PRINTF(...) \
+		uprintf(__VA_ARGS__);
 	
 #define PPG_ASSERT(...) \
 	if(!(__VA_ARGS__)) { \
 		PPG_ERROR("Assertion failed: " #__VA_ARGS__ "\n"); \
 	}
+#else
+
+#	include <stdio.h>
+
+#	define PPG_PRINTF(...) \
+		printf(__VA_ARGS__);
+		
+#	include <assert.h>
+#	define PPG_ASSERT(...) assert(__VA_ARGS__)
+#endif
+
+#	define PPG_ERROR(...) PPG_PRINTF("*** Error: " __VA_ARGS__)
 
 #else //DEBUG_PAPAGENO
 

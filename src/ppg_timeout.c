@@ -81,7 +81,7 @@ bool ppg_timeout_check(void)
 	if(ppg_context->current_token
 		&& (ppg_context->time_comparison(
 					delta,
-					ppg_context->inputpress_timeout
+					ppg_context->event_timeout
 			) > 0)
 	  ) {
 		

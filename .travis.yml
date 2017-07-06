@@ -1,9 +1,6 @@
 language: c
   
 dist: trusty
-
-install:
-  - git clone --depth 1 --recurse-submodules https://github.com/keyboardio/Arduino-Boards hardware/keyboardio/avr
   
 script: 
   - mkdir -p build/release
@@ -18,7 +15,6 @@ notifications:
     
 cache:
   ccache: true
-
   
 #compiler:
   #- clang

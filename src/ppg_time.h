@@ -23,10 +23,6 @@
 
 #include <stdint.h>
 
-/** @brief Time identifier type.
- */
-typedef void * PPG_Time;
-
 /** @brief Function type of a callback that computes the current time
  * 
  * @param The pointer to the time value to receive current time

@@ -30,8 +30,8 @@ void ppg_token_store_action(PPG_Token__ *token,
 {
 	token->action = action; 
 	
-	PPG_PRINTF("Action of token 0x%" PRIXPTR ": %u\n",
-				  token, (uintptr_t)token->action.user_callback.user_data);
+	PPG_PRINTF("Action of token 0x%" PRIXPTR ": 0x%" PRIXPTR "\n",
+				  (uintptr_t)token, (uintptr_t)token->action.user_callback.user_data);
 }
 
 void ppg_token_reset(	PPG_Token__ *token)
@@ -66,7 +66,7 @@ bool ppg_token_trigger_action(PPG_Token__ *token, PPG_Slot_Id slot_id) {
 	if(token->action.user_callback.func) {
 
 // 		PPG_PRINTF("Action of token 0x%" PRIXPTR ": %u\n",
-// 				  token, (uintptr_t)token->action.user_callback.user_data);
+// 				  (uintptr_t)token, (uintptr_t)token->action.user_callback.user_data);
 		
 		PPG_PRINTF("*\n");
 	
@@ -317,14 +317,14 @@ PPG_Token__* ppg_token_get_equivalent_child(
 #if PAPAGENO_PRINT_SELF_ENABLED
 static void ppg_token_print_self(PPG_Token__ *p)
 {
-	PPG_PRINTF("token (0x%" PRIXPTR ")\n", (void*)p);
-	PPG_PRINTF("   parent: 0x%" PRIXPTR "\n", (void*)&p->parent);
-	PPG_PRINTF("   children: 0x%" PRIXPTR "\n", (void*)&p->children);
+	PPG_PRINTF("token (0x%" PRIXPTR ")\n", (uintptr_t)p);
+	PPG_PRINTF("   parent: 0x%" PRIXPTR "\n", (uintptr_t)&p->parent);
+	PPG_PRINTF("   children: 0x%" PRIXPTR "\n", (uintptr_t)&p->children);
 	PPG_PRINTF("   n_allocated_children: %d\n", p->n_allocated_children);
 	PPG_PRINTF("   n_children: %d\n", p->n_children);
 	PPG_PRINTF("   action.flags: %d\n", p->action.flags);
-	PPG_PRINTF("   action_user_func: %0x%" PRIXPTR "\n", p->action.user_callback.func);
-	PPG_PRINTF("   action_user_data: %0x%" PRIXPTR "\n", p->action.user_callback.user_data);
+	PPG_PRINTF("   action_user_func: %0x%" PRIXPTR "\n", (uintptr_t)p->action.user_callback.func);
+	PPG_PRINTF("   action_user_data: %0x%" PRIXPTR "\n", (uintptr_t)p->action.user_callback.user_data);
 	PPG_PRINTF("   state: %d\n", p->state);
 	PPG_PRINTF("   layer: %d\n", p->layer);
 }

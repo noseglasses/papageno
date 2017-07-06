@@ -2,11 +2,25 @@ cmake_minimum_required(VERSION 2.8)
 
 project(Papageno)
 
+macro(use_c99)
+  if (CMAKE_VERSION VERSION_LESS "3.1")
+    if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
+      set (CMAKE_C_FLAGS "--std=gnu99 ${CMAKE_C_FLAGS}")
+    endif ()
+  else ()
+    set (CMAKE_C_STANDARD 99)
+  endif ()
+endmacro(use_c99)
+
+use_c99()
+
 # Enforce pedantic compiler behavior
 #
 if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror")
 endif()
+
+add_definitions(-DDEBUG_PAPAGENO)
 
 set(source_directory "${CMAKE_SOURCE_DIR}/src")
 
@@ -45,8 +59,6 @@ include_directories(
 
 add_library(papageno ${source_files_full_path})
 
-set_property(TARGET papageno PROPERTY C_STANDARD 99)
-
 find_package(Doxygen)
 
 option(PAPAGENO_DOXYGEN "Build the doxygen documentation of the Papageno API" ${DOXYGEN_FOUND})
@@ -81,3 +93,5 @@ if(PAPAGENO_DOXYGEN)
 		VERBATIM
 	)
 endif()
+
+subdirs(testing)

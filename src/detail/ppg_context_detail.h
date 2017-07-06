@@ -46,7 +46,7 @@ typedef struct PPG_Context_Struct
 
 	PPG_Time time_last_event;
 
-	PPG_Time inputpress_timeout;
+	PPG_Time event_timeout;
 	
 	PPG_Input_Id_Equal_Fun input_id_equal;
 	

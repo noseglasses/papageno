@@ -127,16 +127,16 @@ bool ppg_global_get_process_actions_if_aborted(void)
 
 PPG_Time ppg_global_set_timeout(PPG_Time timeout)
 {
-	PPG_Time old_value = ppg_context->inputpress_timeout;
+	PPG_Time old_value = ppg_context->event_timeout;
 	
-	ppg_context->inputpress_timeout = timeout;
+	ppg_context->event_timeout = timeout;
 	
 	return old_value;
 }
 
 PPG_Time ppg_global_get_timeout(void)
 {
-	return ppg_context->inputpress_timeout;
+	return ppg_context->event_timeout;
 }
 
 void ppg_global_set_input_id_equal_function(PPG_Input_Id_Equal_Fun fun)

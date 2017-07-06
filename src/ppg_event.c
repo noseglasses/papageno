@@ -1,4 +1,4 @@
-﻿/* Copyright 2017 Florian Fleissner
+/* Copyright 2017 Florian Fleissner
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -329,7 +329,9 @@ static bool ppg_check_ignore_event(PPG_Event *event, bool *swallow_event)
 }
 	
 static PPG_Count ppg_process_next_event(void)
-{
+{	
+	//PPG_PRINTF("ppg_process_next_event\n");
+	
 	if(!ppg_context->current_token) {
 		ppg_context->current_token = &ppg_context->pattern_root;
 	}
@@ -337,6 +339,12 @@ static PPG_Count ppg_process_next_event(void)
 	PPG_Count n_tokens_in_progress = 0;
 		
 	bool any_token_matches = false;
+	
+	PPG_PRINTF("Checking %d children of token 0x%" PRIXPTR "\n", 
+				 ppg_context->current_token->n_children, (uintptr_t)ppg_context->current_token);
+	
+	PPG_PRINTF("start: %u, cur: %u, end: %u, size: %u\n", 
+				  PPG_EB.start, PPG_EB.cur, PPG_EB.end, PPG_EB.size);
 	
 	// Check the subtokens of the current branch
 	//  to find a match based on the current event
@@ -357,12 +365,16 @@ static PPG_Count ppg_process_next_event(void)
 				
 			case PPG_Token_Matches:
 				any_token_matches = true;
+				++n_tokens_in_progress;
 
 				break;
 		}
 	}
 	
 	PPG_Id branch_id = -1;
+	
+	PPG_PRINTF("any_token_matches: %d\n", any_token_matches);
+	PPG_PRINTF("n_tokens_in_progress: %d\n", n_tokens_in_progress);
 	
 	if(any_token_matches) {
 		
@@ -376,7 +388,7 @@ static PPG_Count ppg_process_next_event(void)
 		//    increase the current event id and 
 		//    signal furcation by returning an appiopriate value
 		//    (this pushes a furcation node on the furcation stack
-	if(n_tokens_in_progress > 0) {
+	if(n_tokens_in_progress > 1) {
 		
 		ppg_furcation_push_or_update(
 						n_tokens_in_progress,
@@ -384,6 +396,8 @@ static PPG_Count ppg_process_next_event(void)
 	}
 
 	if(any_token_matches) {
+		
+		PPG_PRINTF("Advancing with child token\n");
 		
 		ppg_context->current_token 
 				= ppg_context->current_token->children[branch_id];
@@ -397,16 +411,20 @@ static PPG_Count ppg_process_next_event(void)
 		}
 		else {
 
-			return PPG_Token_In_Progress;
+			return PPG_Token_Matches;
 		}
 	}
-	else {
+	else if(n_tokens_in_progress == 0) {
 		return PPG_Token_Invalid;
 	}
+			
+	return PPG_Token_In_Progress;
 }
 
 static void ppg_event_process_all_possible(void)
 {
+	//PPG_PRINTF("ppg_event_process_all_possible\n");
+	
 	while(ppg_event_buffer_events_left()) {
 		
 		PPG_Count process_event_result = ppg_process_next_event();
@@ -416,6 +434,8 @@ static void ppg_event_process_all_possible(void)
 			case PPG_Pattern_Matches:
 				
 				ppg_recurse_and_process_actions(PPG_On_Pattern_Matches);
+				
+				ppg_recurse_and_cleanup_active_branch();
 				
 				// Even though the pattern matches, it is possible that not
 				// all events were consumed as there might have been a
@@ -427,7 +447,15 @@ static void ppg_event_process_all_possible(void)
 				//
 				ppg_event_buffer_truncate_at_front();
 				
+				ppg_context->current_token = NULL;
+				
 				break;
+				
+			case PPG_Token_Matches:
+				
+				// TODO: Trigger event on token match
+				
+				// No break statement to fall through to PPG_Token_In_Progress
 				
 			case PPG_Token_In_Progress:
 				
