@@ -154,4 +154,20 @@ typedef PPG_PROCESSING_STATE_TYPE PPG_Processing_State;
  */
 typedef PPG_TIME_IDENTIFIER_TYPE PPG_Time;
 
+#ifdef PAPAGENO_PRINT_SELF_ENABLED
+
+#include <stdio.h>
+
+inline
+static void ppg_indent(int tabs)
+{
+	for(int i = 0; i < tabs; ++i) {
+		printf("   ");
+	}
+}
+
+#define PPG_I ppg_indent(indent);
+
+#endif
+
 #endif

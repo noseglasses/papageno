@@ -41,7 +41,7 @@ typedef bool (*PPG_Token_Equals_Fun)(struct PPG_TokenStruct *p1, struct PPG_Toke
 typedef PPG_Count (*PPG_Token_Precedence_Fun)(void);
 
 #if PAPAGENO_PRINT_SELF_ENABLED
-typedef void (*PPG_Token_Print_Self_Fun)(struct PPG_TokenStruct *p);
+typedef void (*PPG_Token_Print_Self_Fun)(struct PPG_TokenStruct *p, PPG_Count indent, bool recurse);
 #endif
 
 typedef struct {
@@ -71,7 +71,7 @@ typedef struct {
 } PPG_Token_Vtable;
 
 #define PPG_CALL_VIRT_METHOD(THIS, METHOD, ...) \
-	THIS->vtable->METHOD(THIS, ##__VA_ARGS__);
+	((PPG_Token__*)THIS)->vtable->METHOD(THIS, ##__VA_ARGS__);
 
 typedef struct PPG_TokenStruct {
 
@@ -126,5 +126,10 @@ void ppg_token_add_child(PPG_Token__ *token, PPG_Token__ *child);
 PPG_Token__* ppg_token_get_equivalent_child(
 														PPG_Token__ *parent_token,
 														PPG_Token__ *sample);
+
+#if PAPAGENO_PRINT_SELF_ENABLED
+void ppg_token_print_self_start(PPG_Token__ *p, PPG_Count indent);
+void ppg_token_print_self_end(PPG_Token__ *p, PPG_Count indent, bool recurse);
+#endif
 
 #endif

@@ -95,11 +95,12 @@ PPG_Token ppg_pattern_from_list(
 						"The tokens of the conflicting melodies are listed below.\n");
 					
 					PPG_ERROR("Previously defined:\n");
-					ppg_recursively_print_pattern(equivalent_child);
+					
+					PPG_CALL_VIRT_METHOD(equivalent_child, print_self, 0, false /* do not recurse */);
 					
 					PPG_ERROR("Conflicting:\n");
 					for (PPG_Count i = 0; i < n_tokens; i++) {
-						PPG_CALL_VIRT_METHOD(tokens[i], print_self);
+						PPG_CALL_VIRT_METHOD(tokens[i], print_self, 0, false /* do not recurse */);
 					}
 					#endif
 				}

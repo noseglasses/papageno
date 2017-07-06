@@ -15,23 +15,10 @@
  */
 
 #include "detail/ppg_token_detail.h"
+#include "detail/ppg_pattern_detail.h"
+#include "detail/ppg_context_detail.h"
 #include "ppg_debug.h"
 #include "ppg_global.h"
-#include "detail/ppg_pattern_detail.h"
-
-#if PAPAGENO_PRINT_SELF_ENABLED
-static void ppg_recursively_print_pattern(PPG_Token__ *p)
-{
-	if(	p->parent
-		&& p->parent != &ppg_context->pattern_root) {
-		
-		ppg_recursively_print_pattern(p->parent);
-	}
-	
-	PPG_CALL_VIRT_METHOD(p, print_self);
-}
-#endif
-
 
 PPG_Token ppg_pattern(		
 							PPG_Layer layer, 
@@ -45,15 +32,9 @@ PPG_Token ppg_pattern(
 	return ppg_pattern_from_list(layer, n_tokens, tokens);
 }
 
-#if PAPAGENO_PRINT_SELF_ENABLED
-static void ppg_recursively_print_pattern(PPG_Token__ *p)
+#ifdef PAPAGENO_PRINT_SELF_ENABLED
+void ppg_pattern_print_tree(void)
 {
-	if(	p->parent
-		&& p->parent != &ppg_context->pattern_root) {
-		
-		ppg_recursively_print_pattern(p->parent);
-	}
-	
-	PPG_CALL_VIRT_METHOD(p, print_self);
+	PPG_CALL_VIRT_METHOD(&ppg_context->pattern_root, print_self, 0, true /* recurse */);
 }
 #endif

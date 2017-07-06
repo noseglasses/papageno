@@ -21,6 +21,7 @@ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
 endif()
 
 add_definitions(-DDEBUG_PAPAGENO)
+add_definitions(-DPAPAGENO_PRINT_SELF_ENABLED)
 
 set(source_directory "${CMAKE_SOURCE_DIR}/src")
 

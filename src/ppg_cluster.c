@@ -19,6 +19,7 @@
 #include "detail/ppg_context_detail.h"
 #include "detail/ppg_aggregate_detail.h"
 #include "detail/ppg_pattern_detail.h"
+#include "detail/ppg_token_detail.h"
 
 typedef PPG_Aggregate PPG_Cluster;
 
@@ -80,18 +81,18 @@ static PPG_Count ppg_cluster_token_precedence(void)
 }
 
 #if PAPAGENO_PRINT_SELF_ENABLED
-static void ppg_cluster_print_self(PPG_Cluster *c)
+static void ppg_cluster_print_self(PPG_Cluster *c, PPG_Count indent, bool recurse)
 {
-	ppg_token_print_self((PPG_Token__*)c);
-	
-	PPG_PRINTF("cluster\n");
-	PPG_PRINTF("   n_members: %d\n", c->n_members);
-	PPG_PRINTF("   n_inputs_active: %d\n", c->n_inputs_active);
+	PPG_I PPG_PRINTF("<*** cluster (0x%" PRIXPTR ") ***>\n", (uintptr_t)c);
+	ppg_token_print_self_start((PPG_Token__*)c, indent);
+	PPG_I PPG_PRINTF("   n_members: %d\n", c->n_members);
+	PPG_I PPG_PRINTF("   n_inputs_active: %d\n", c->n_inputs_active);
 	
 	for(PPG_Count i = 0; i < c->n_members; ++i) {
-		PPG_PRINTF("      input_id: %d, active: %d\n", 
-				  c->inputs[i].input_id, c->member_active[i]);
+		PPG_PRINTF("      input_id: 0x%" PRIXPTR ", active: %d\n", 
+				  (uintptr_t)c->inputs[i].input_id, c->member_active[i]);
 	}
+	ppg_token_print_self_end((PPG_Token__*)c, indent, recurse);
 }
 #endif
 

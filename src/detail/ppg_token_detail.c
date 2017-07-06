@@ -315,18 +315,36 @@ PPG_Token__* ppg_token_get_equivalent_child(
 }
 
 #if PAPAGENO_PRINT_SELF_ENABLED
-static void ppg_token_print_self(PPG_Token__ *p)
+
+void ppg_token_print_self_start(PPG_Token__ *p, PPG_Count indent)
 {
-	PPG_PRINTF("token (0x%" PRIXPTR ")\n", (uintptr_t)p);
-	PPG_PRINTF("   parent: 0x%" PRIXPTR "\n", (uintptr_t)&p->parent);
-	PPG_PRINTF("   children: 0x%" PRIXPTR "\n", (uintptr_t)&p->children);
-	PPG_PRINTF("   n_allocated_children: %d\n", p->n_allocated_children);
-	PPG_PRINTF("   n_children: %d\n", p->n_children);
-	PPG_PRINTF("   action.flags: %d\n", p->action.flags);
-	PPG_PRINTF("   action_user_func: %0x%" PRIXPTR "\n", (uintptr_t)p->action.user_callback.func);
-	PPG_PRINTF("   action_user_data: %0x%" PRIXPTR "\n", (uintptr_t)p->action.user_callback.user_data);
-	PPG_PRINTF("   state: %d\n", p->state);
-	PPG_PRINTF("   layer: %d\n", p->layer);
+	PPG_I PPG_PRINTF("   parent: 0x%" PRIXPTR "\n", (uintptr_t)p->parent);
+	PPG_I PPG_PRINTF("   action.flags: %d\n", p->action.flags);
+	PPG_I PPG_PRINTF("   action_user_func: 0x%" PRIXPTR "\n", (uintptr_t)p->action.user_callback.func);
+	PPG_I PPG_PRINTF("   action_user_data: 0x%" PRIXPTR "\n", (uintptr_t)p->action.user_callback.user_data);
+	PPG_I PPG_PRINTF("   state: %d\n", p->state);
+	PPG_I PPG_PRINTF("   layer: %d\n", p->layer);
+}
+
+void ppg_token_print_self_end(PPG_Token__ *p, PPG_Count indent, bool recurse)
+{
+// 	PPG_I PPG_PRINTF("   children: 0x%" PRIXPTR "\n", (uintptr_t)&p->children);
+	PPG_I PPG_PRINTF("   n_allocated_children: %d\n", p->n_allocated_children);
+	PPG_I PPG_PRINTF("   n_children: %d\n", p->n_children);
+	
+	if(recurse) {
+		for(PPG_Count i = 0; i < p->n_children; ++i) {
+			PPG_I PPG_PRINTF("   child: %d\n", i);
+			PPG_CALL_VIRT_METHOD(p->children[i], print_self, indent + 1, recurse);
+		}
+	}
+}
+
+static void ppg_token_print_self(PPG_Token__ *p, PPG_Count indent, bool recurse)
+{
+	PPG_I PPG_PRINTF("<*** token (0x%" PRIXPTR ") ***>\n", (uintptr_t)p);
+	ppg_token_print_self_start(p, indent);
+	ppg_token_print_self_end(p, indent, recurse);
 }
 #endif
 

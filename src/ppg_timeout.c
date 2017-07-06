@@ -50,7 +50,7 @@ static void ppg_on_timeout(void)
 
 bool ppg_timeout_check(void)
 {
-// 	PPG_PRINTF("Checking timeout\n");
+	PPG_PRINTF("Checking timeout\n");
 	
 	if(!ppg_context->timeout_enabled) { return false; }
 	
@@ -78,6 +78,8 @@ bool ppg_timeout_check(void)
 	
 	bool timeout_hit = false;
 	
+	PPG_PRINTF("   delta: %ld\n", delta);
+	
 	if(ppg_context->current_token
 		&& (ppg_context->time_comparison(
 					delta,
@@ -93,8 +95,6 @@ bool ppg_timeout_check(void)
 	
 		timeout_hit = true;
 	}
-	
-	ppg_context->time(&ppg_context->time_last_event);
 	
 	return timeout_hit;
 }

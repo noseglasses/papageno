@@ -18,6 +18,7 @@
 #include "ppg_debug.h"
 #include "detail/ppg_context_detail.h"
 #include "detail/ppg_input_detail.h"
+#include "detail/ppg_token_detail.h"
 
 #include <stdlib.h>
 
@@ -77,13 +78,13 @@ static PPG_Count ppg_note_token_precedence(void)
 }
 
 #if PAPAGENO_PRINT_SELF_ENABLED
-static void ppg_note_print_self(PPG_Note *p)
+static void ppg_note_print_self(PPG_Note *p, PPG_Count indent, bool recurse)
 {
-	ppg_token_print_self((PPG_Token__*)p);
-	
-	PPG_PRINTF("note\n");
-	PPG_PRINTF("   input_id: %d\n", p->input.input_id);
-	PPG_PRINTF("   active: %d\n", p->active);
+	PPG_I PPG_PRINTF("<*** note (0x%" PRIXPTR ") ***>\n", (uintptr_t)p);
+	ppg_token_print_self_start((PPG_Token__*)p, indent);
+	PPG_I PPG_PRINTF("   input_id: 0x%" PRIXPTR "\n", (uintptr_t)p->input.input_id);
+	PPG_I PPG_PRINTF("   active: %d\n", p->active);
+	ppg_token_print_self_end((PPG_Token__*)p, indent, recurse);
 }
 #endif
 

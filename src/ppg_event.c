@@ -512,7 +512,15 @@ bool ppg_event_process(PPG_Event *event)
 	
 	ppg_event_buffer_store_event(event);
 	
-	if(ppg_timeout_check()) {
+	bool timeout_hit = ppg_timeout_check();
+	
+	// Register the time of arrival to check for timeout
+	//
+	ppg_context->time(&ppg_context->time_last_event);
+	
+	PPG_PRINTF("clock: %ld\n", ppg_context->time_last_event);
+	
+	if(timeout_hit) {
 			
 		// Timeout hit. Cleanup already done.
 		//
