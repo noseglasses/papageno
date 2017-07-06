@@ -6,152 +6,252 @@ Papageno
 A pattern matching library
 --------------
 
-Turn input devices into magic musical instruments...
-Define magic melodies that can consist of phrases (notes, chords or note clusters) and 
-assign actions that are triggered when phrases or a whole melody is completed.
+Define patterns consisting of tokens (notes, chords or note clusters) and 
+assign actions that are triggered when tokens or a whole pattern are matched.
 
-The idea of magic melodies is inspired by magic musical instruments from
-opera and phantasy fiction. The library itself is named after Papageno one of 
-the protagonists of Mozard's opera "The Magic Flute". With the help ot a magic glockenspiel is given as a present,
-Papageno is able to cope with different sorts of obstacles and threads he encounters on his way. 
+The idea of this type of pattern matching was inspired by magic musical instruments from
+opera and phantasy fiction that trigger all sorts of magic when certain melodies are played.
+The library itself is named after Papageno one of 
+the protagonists of Mozart's opera "The Magic Flute". With the help of a magic glockenspiel he was given as a present,
+Papageno is able to cope with many sorts of obstacles and mischief he encounters on his way. 
+
+# Introduction
 
 ## Basic Concepts
 
 Imagine a magic piano that does crazy things when certain
-melodies are played. Melodies can consist of single notes, chords and note clusters
-that must be played in a well defined order for magic to happen.
-Although the naming and basic concepts are taken from the world of music, there is not necessarily 
+melodies are played. Musical melodies can consist of single notes, chords and note clusters.
+We take these basic concepts and extend them a bit. Instead of a definition of a well defined way to created sound, 
+we interpret melodies as a well defined pattern of notes. In the present context notes
+are generalized to the concept of pattern tokens that form the pattern. A token can conceptually still be seen as a note
+but also a chord or a cluster. Abstract inputs replace the original notes and are grouped to define tokens.
+Input can depending on the application represent keys on a keyboard or measurements that are assigned a threshold value.
+
+Events represent activation or deactivation of inputs. 
+Tokens are considered as matching if they match a given series of events.
+It is e.g. necesarry that all inputs that are associted with a chord have been active at the same time for the chord to be matched.
+Once a token matches, the series of arriving events is scanned for the next match. This is done until a whole sequence of tokens, a pattern, matches.
+
+## Use of Musical Terminology
+
+Although the concept is inspired by the word of music ane some basic concepts are more or less the same, there is not necessarily 
 any music involved at all.
-However, we consider the use of such musical terms helpful as they already cover basic ideas that are a good start for abstraction.
-Whether it is a key on a magic piano or a key on a computer keyboard, keys represent notes that
-in turn form melodies.
+However, we consider the use of some musical terms helpful as they already cover basic ideas that do not need to be explained again or that are a good start for abstraction.
 
 ## Possible Fields of Applications
 
-- general multi-input environments (handling of exceptions when specific events occur in a predefined order)
 - input devices such as programmable keyboards, mouses, etc. (trigger actions through predefined key-combinations)
-- musical instruments supporting Midi (e.g. toggle a specific sound effect once a certain melody has been played)
+- musical instruments supporting Midi (e.g. toggle a specific sound effect once a specific melody has been played)
 - computer games (trigger special moves after complicated motion of input devices or controller key combinations)
+- general multiple-input environments (trigger actions when specific events occur in a predefined order)
 - ...
+
+## Distinctive Features
+
+There are other approaches to pattern matching. We do not have an overview 
+over all those approaches. Regular Expressions are probably one 
+of the most common types of pattern matching. Therefore, we will point
+out the major differences between regex and Papageno.
+
+- Papageno is based on stateful inputs instead of characters.
+- Actions can be assigned and triggered when specific tokens or patterns are matched.
+- Events trigger the activation or deactivation of inputs.
+- Several inputs can be active at the same time (e.g. chords). A regex character does have neither state, nor can characters share a common spot. 
+- There is no simple way to specify a regex pattern that defines that multiple characters must occur in arbitrary order, every one at least once (clusters).
+
+# Working with Patterns
 
 ## Notes
 
-Notes are the basic building blocks of melodies. They can be arranged to form single note
-lines, chords or clusters.
-A note can e.g. represent a key on an input device but it can also represent any
-variable. Activation of a note is queried as a boolean result ot a callback function. Thus even non-boolean 
-variables can be mapped to a boolean activation state.
+Notes are the most simple type of a token. They are the basic building blocks of patterns. They can e.g. be arranged to form single note
+lines or tap dances.
+A note can represent any
+input. Activation of a note is queried through the boolean result of a callback function that is associated with the input. Thus, even non-boolean input 
+variables can easily be mapped to a boolean activation state.
 
 ## Chords
 
-Chords are very similar to musical chords. The common property is that all
-keys that are associated with the chord have to be activated at the same time for the
+Chords are quite similar to musical chords. They share the common property that all
+inputs that are associated with the chord have to be activated at the same time for the
 chord to be considered complete.
 
 ## Note Clusters
 
-Clusters are sets of keys that can be activated in arbitrary order. It is only required
-that every cluster member must have been active at least once for the cluster-phrase
-to be accepted as complete.
+Clusters are sets of inputs that may be activated in arbitrary order. It is only required
+that every cluster member must have been active at least once for the cluster-token
+to be matched.
 
-## Definitions of Melodies
+## Patterns
 
-The implementation allows for definitions of single note lines, isolated chords
-or clusters as well as complex melodies that may consist of arbitrary combinations of
-the afforementioned types of phrases. Also tap dances are provided that blend in well with the concept of magic melodies.
+Patterns may consist of arbitrary combinations of
+the afforementioned types of tokens, notes, chords and clusters.
 
 ## Tap Dances
 
-Tap dances are a concept that emerged in the context of mechanical keyboard firmwares. A single key can trigger
-different actions depending on how many times the key is consecutively activated. Papageno allows for gaps between tap definitions.
-It is e.g. possible to trigger an action after 2 and another action after 4 key strokes. 
-It depends thereby on the specified action flags what is going to happen after three keypresses. See the description of action fall back.
+Tap dances are a concept that emerged in the context of mechanical keyboard firmwares. A single input can trigger
+different actions depending on how many times the input is consecutively activated. Papageno allows for gaps between tap definitions.
+It is e.g. possible to trigger an action after 2 and another action after 4 consecutive activations of an input. 
+It depends thereby on the specified action flags what is going to happen after three consecutive activations. See the description of action fall back.
+Tap dances can be seen as a set of single note lines that chain the same token several times. Every tap definition hereby represents an individual pattern.
 
-## Melodies and Layers
+## Patterns and Layers
 
-Melodies are associated with layers. During key event processing, an integer identifier of the current layer must be passed
-as a parameter to allow for a selection of matching melodies.
-Only melodies that are associated with 
-the current layer or those associated with layers whose layer id is lower than the id of the 
-current layer are available. As a consequence, the same melody can be associated 
-with a different action on a higher layer. Moreover, melodies can also be overidden with noops on higher layers.
+Papageno supports a layer system.
+Patterns are associated with layers.
+During event processing, the current layer affects the choice of patterns that can be matched.
+Only patterns that are associated with 
+the current layer or layers whose layer id is lower than that of the
+current layer are accessible. As a consequence, the same pattern can be associated 
+with a different action on a higher layer, thus overriding it. Patterns can of course also be overidden with noops on higher layers.
 
 ## Actions
 
-Actions are defined via callback functions supplied with optional user data that is passed to
+Actions are defined as callback functions supplied with optional user data that is passed to
 the callbacks when the action is triggered. The most common behavior is to assign 
-an action only to the completion of a melody. However, it is also possible to assign 
-actions to intermediate phrases which are triggered upon phrase completion. To obtain this behavior,
+an action that is triggered only when a pattern entirely matches. However, it is also possible to assign 
+actions to intermediate tokens which are triggered upon token match. To obtain this behavior,
 add the action flag PPG_Action_Immediate by means of a bitwise or operation to the provieded action flags.
 
 ## Timeout
 
-If a user defined time interval elapses since the last key event occured, timeout is detected.
-If a melody was already in progress, it is aborted in this case.
-On timeout the default behavior is that the action associated with the last phrase that completed is triggered, or no action if there was no action associated with the respective phrase. The latter is the typical case for single note 
-lines where an action is assigned only to the last note.
+If a user defined time interval elapses after the last event occured, a timeout is detected.
+If pattern matching was already in progress, it is aborted when timeout occurs.
+The default timeout behavior is to trigger the action that is associated with the last token that matched, or no action if there was no action associated with the respective token. 
 
 ## Action Fall Back
 
-In case of timeout under certain circumstances, it may be desired to traverse the line of completed phrases back to the point where the next phrase is found that
-is assigned an action. This behavior is obtained by adding the flag PPG_Action_Fall_Back to all intermediate notes that have not been
+Under certain circumstances in case of timeout, it may be desired to traverse the line of already matched tokens back to the point where a token is found that
+was assigned an action. This behavior can be obtained by adding the flag PPG_Action_Fall_Back to all intermediate tokens that have not been
 assigned any action.
-Action fall back can be a desired behavior for defining tap dances, e.g. when the actions are assigned to three and to five keystrokes of a specific key and the three keystroke action is supposed to happen if only four keystrokes occur before timeout.
+Action fall back is e.g. internally applied when processing tap dances, 
+when e.g. actions were assigned to three and to five activations of a specific input and the action associated with three consecutive activations of the input is supposed to happen also if four activations occured before timeout.
 
 ## Action Fall Through
 
-An extension to the fall back behavior is fall through. If a phrase that is assigned an action is also flagged PPG_Action_Fall_Through, 
-the phrase that completed before is also checked for an action that is then triggered if assigned. It PPG_Action_Fall_Through
-is also set for this previous phrase also the phrase that completed before is checked, and so on.
+Fall through takes the idea of fall back even a bit further.
+If a token that is assigned an action is also flagged PPG_Action_Fall_Through, 
+the token that matched just before is also checked for an action that is triggered if assigned. It PPG_Action_Fall_Through
+is also set for this previous token also its predecessor is checked, and so on.
 
-## Consumed Key Actions and Timeout/Abort
+## Events and Timeout/Abort
 
-Papageno temporarily stores all key events that occured from the beginning of a melody. The default behavior is to ignore these key events once a melody 
-is completed. The respective action is normally wanted as a replacement for the key events. However, it may be desired to actively process these key events even after melody completion. To enable this, a key processor
-call back can be registered that is passed the the key events and a slot id that identifies at which point during melody processing the callback was called (see PPG_Slots). It is also possible to use the function ppg_flush_stored_key_events to pass all stored key events through a user defined key event processor callback at any time, e.g. from an action callback.
+Papageno temporarily stores all events that occured from the beginning of current pattern matching. The default behavior is to forget these events once a pattern was completely matched. When Papageno is e.g. used to recognice previously defined key combinations that are entered on a programmable keyboard, the action that is associated with the key combination often triggers configuration changes or outputs special characters. In most cases the character sequence that triggered the action is supposed to be ignored, i.e. not to be passed to the host system.
+However, it may be desired to actively process these cached events even after a whole pattern matches. They could e.g. be passed on to another part of a program to interpret them. To enable this, an event processing
+callback may be registered that is passed the series of stored events. It is also possible to use the function ppg_event_buffer_flush to pass all currently stored events through a user defined event processing callback at any time, e.g. from an action callback.
 
-An example application in the context of programmable keyboards would be to define a character sequence, e.g. a sentence that always should automatically be uppercase. By assigning a user callback action to melody completion, it is possible to activate the shift key, then process the key sequence as if it was just typed and then remove the shift key. 
+An example application of deliberate flushing of events emerges again from the world of programmable keyboards: One might want to define a character/key sequence that is supposed to be automatically output uppercase. By assigning a user callback action to a single note line, it is possible to activate the shift key, then process the key sequence  by calling ppg_event_buffer_flush and then deactivate the shift key. The character sequence would then appear to the host system as if it had originally been typed uppercase. 
+
+## Slots
+
+To distinguish where flushing of cached events occured, a slot id is 
+passed to the respective processing callback.
+
+## Context Switching
+
+To allow for a flexible use of Papageno, its implementation supports context switches.
+Any function of its programming interface operates 
+on the currently active context. This makes it very easy to use different instances of Papageno
+in one program and to switch between these instances by activating different
+contexts. 
+Context switching is implemented through a global context pointer. Please note that due to this implementation detail, Papageno is not quaranteed to be thread safe.
+
+# The Library
 
 ## Implementation
 
-Papageon efficiently deals with the task of finding matching melodies by using a search tree.
-Tree nodes thereby represent 
-phrases, i.e. notes, chords or clusters. Every newly defined melody is
+### Search Tree
+
+Papageon efficiently solves the task of finding matching patterns by using a search tree.
+With this approach nodes of the search tree represent 
+tokens, i.e. notes, chords or clusters. Every newly defined pattern is
 automatically incorporated into the search tree of the current context.
-Once a keystroke happens, the tree search algorithm tries to determine whether
-the key is associated with a phrase of any melody. This is done by looking for matching phrases on the 
-current level of the search tree that is associated with the current layer or any layer below. Key events are
-passed to the child nodes of the current phrase/tree node to let the dedicated 
-phrase implementation decide if the key is part of the phrase definition.
-Child phrases signal completion or invalidation. The latter happens 
-as soon as a key event arrives that is not part of the respective phrase.
-If one or more suitable child phrases signal completion, the most
-suitable one is selected with respect to the current layer id. It then replaces the current phrase 
-and thus the current level of the search tree for the next key event to process. 
-It may sometimes happen that no child phrases 
-signal completion or invalidation e.g. if all child phrases are clusters or chords that require several key events until completion.
-If the most suitable child phrase that just completed is a leaf node of the search tree, 
-the current magic melody is considered as completed.
 
-## Papageno Context
+Papageno is designed in a way that supports on-the-fly detection of patterns.
+This means that a pattern search is carried out or continued whenever a 
+new event is registered.
 
-To allow for a flexible use of Papageno, its implementation is based on a
-global context pointer. Any function of its programming interface operates 
-on this pointer. This makes it very easy to use different instances of Papageno
-in one program and to switch between these instances by activating different
-contexts. 
+There are two possible states of the pattern matching automaton. When a pattern
+was detected or detection failed, it falls back to initialize state. Else it
+is waiting for the next event to occur.
 
-Please note that due to this implementation detail, Papageno is not thread safe.
-Although this is not thread safe, it provides great flexibility.
+When a new event occurs it is added to an event cache whose purpose is described
+below. After that, the algorithm checks it the new event allows for a
+match of one of the child (successor) tokens of the current token, i.e. the 
+token that matched the last event to arrive previously. 
+
+If one of the child nodes matches, it becomes the new current token and the algorithm waits for
+the next token to arrive. If there were multiple candidates for a new current token,
+the current token is marked as current furcation. The marked furcation will be 
+required if a branch of the search tree is detected as not matching. Marking
+furcations speeds up tree traversal.
+
+If no child tokens are left that could match the current event. The 
+the algorithm continues with one of the 
+candidates of the most recently marked furcation.
+
+If a furcation has no further child nodes, that were not yet tried for 
+matchesr, the search continues with
+the second latest furcation.
+Thus, if necessary all partially matching parts of the search tree are traversed
+when searching for a matching pattern.
+
+If no pattern does match after traversing all possible branches of the search tree, 
+the oldest of the cached events is dropped and the pattern matching is resumed
+starting from the second oldest cached event. 
+
+Events are cached using a a ring buffer.
+
+If the current token has several candidates that all do not match yet, the algorithm waits
+for the next event to arrive and then resumes matching based on the new event 
+and all the recent events that are still in the event buffer.
+
+During the search for suitable child tokens to continue event matching, 
+the following tokens are excluded:
+
+- invalid tokens (those that do not match)
+- tokens that still require further events to match
+- tokens with an assigned layers that is greater than the current layer
+
+When after applying this rule several children of a current token match, 
+several rules decide about which child token to try first:
+
+- the token with the highest type precedence wins
+- if two tokens have same type precedence, the one with the higher assigned layer wins
+
+The precedence order from highest to lowest is thereby note, chord, cluster.
+
+## Supported Platforms
+
+The libray supports any platform that comes with a C99 capable compiler.
+It is developed on an x86-64 system but also runs well on embedded 
+systems with small memory, such as Arduino or Teensy boards. 
+Actually it
+is a major design criterion to keep the implementation as compact as possible 
+to safe memory on platforms with restricted resources.
 
 ## Choice of Language
 
-To make it as flexible as possible, Papageno is written in C99. This makes it 
+To make it as flexible as possible, Papageno is written in C. This makes it 
 possible to integrate with other projects, a C99 compiler provided. This decision
-was hard to take as it means to live without all those neat C++ features such as
+was hard to take as it means to live without many neat C++ features such as
 type safefy and templates.
 
-In its interior Papageno uses object oriented C to implement a polymorphic phrase class hierarchy.
-Phrase types that were initially implemented are notes, chords and clusters.
-The phrase-class family is extensible, so new types of phrases are comparably easy to implement.
-Just follow the example of the chord and cluster implementations.
+In its interior Papageno uses object oriented C to implement a polymorphic token class hierarchy.
+Token types that were initially implemented are notes, chords and clusters.
+The token-class family is extensible. New types of tokens are quite easy to implement.
+See the chord and cluster implementations as code example.
+
+## Ideas and TODO
+
+### Token Timeouts
+
+- token timeout: Every token has its own timeout. It must match before the timeout elapses
+- token time-interval: A token must match before timeout and can only match if a given time already elapsed
+
+### Enhanced Token Types
+
+- Repetition: Requires a pattern to be repeated N times
+- Tremolo: Requires a note to be repeated N times (the same can be achieved by a Tap Dance or a single note line of N individual notes but a token that does the job would be by far more memory efficient)
+- Random Chord: N random inputs must be active at the same time
+- Random Cluster: N different inputs must have been active
+- Random Sequence: N inputs must have been active (and inactive)

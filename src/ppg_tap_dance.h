@@ -17,13 +17,20 @@
 #ifndef PPG_TAP_DANCE_H
 #define PPG_TAP_DANCE_H
 
+/** @file */
+
+#include "ppg_action.h"
+#include "ppg_token.h"
+#include "ppg_input.h"
+#include "ppg_layer.h"
+
 /** @brief A tap specification
  * 
  * Defines an action for a given number of taps
  */
 typedef struct {
 	PPG_Action action; ///< The action associated with the given number of taps
-	uint8_t tap_count; ///< The number of taps necessary to trigger the action
+	PPG_Count tap_count; ///< The number of taps necessary to trigger the action
 } PPG_Tap_Definition;
 
 /** @brief Auxiliary macro to simplify passing tap definitions
@@ -34,6 +41,11 @@ typedef struct {
 	sizeof((PPG_Tap_Definition[]){ __VA_ARGS__ })/sizeof(PPG_Tap_Definition), \
 	(PPG_Tap_Definition[]){ __VA_ARGS__ }
 
+/** @brief This macro simplifies the specification of taps as actions that are associated with specific a number of taps 
+ * 
+ * @param TAP_COUNT The number of taps the action is associated with
+ * @param ACTION The action
+ */
 #define PPG_TAP(TAP_COUNT, ACTION) \
 	(PPG_Tap_Definition) { .action = ACTION, .tap_count = TAP_COUNT }
 
@@ -56,10 +68,10 @@ typedef struct {
  * @returns The constructed token
  */
 PPG_Token ppg_tap_dance(	
-							uint8_t layer,
+							PPG_Layer layer,
 							PPG_Input input,
-							uint8_t default_action_flags,
-							uint8_t n_tap_definitions,
+							PPG_Action_Flags_Type default_action_flags,
+							PPG_Count n_tap_definitions,
 							PPG_Tap_Definition tap_definitions[]);
 
 #endif

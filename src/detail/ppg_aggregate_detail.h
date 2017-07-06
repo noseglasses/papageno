@@ -14,27 +14,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PPG_SLOTS_H
-#define PPG_SLOTS_H
+#ifndef PPG_AGGREGATE_DETAIL_H
+#define PPG_AGGREGATE_DETAIL_H
 
-/** @file */
-
+#include "detail/ppg_token_detail.h"
+#include "ppg_input.h"
 #include "ppg_settings.h"
 
-#include <inttypes.h>
+typedef struct {
+	
+	PPG_Token__ super;
+	 
+	PPG_Count n_members;
+	PPG_Input *inputs;
+	bool *member_active;
+	PPG_Count n_inputs_active;
+	 
+} PPG_Aggregate;
 
-/** @brief Input processing slot identifiers
- * 
- * Slot identifiers are used during flushing input events to 
- * distinguish the different reasons for flushing
- */
-enum PPG_Slots {
-	PPG_On_Abort = 0,
-	PPG_On_Timeout,
-	PPG_On_Token_Matches,
-	PPG_On_Pattern_Matches,
-	PPG_On_User,
-	PPG_On_Match_Failed
-};
+PPG_Token ppg_global_initialize_aggregate(	
+								PPG_Aggregate *aggregate,
+								PPG_Count n_inputs,
+								PPG_Input inputs[]);
+
+void *ppg_aggregate_new(void *aggregate__);
+
+void ppg_aggregate_reset(PPG_Aggregate *aggregate);
+
+PPG_Aggregate* ppg_aggregate_destroy(PPG_Aggregate *aggregate);
+
+PPG_Aggregate *ppg_aggregate_alloc(void);
+
+bool ppg_aggregates_equal(PPG_Aggregate *c1, PPG_Aggregate *c2);
 
 #endif

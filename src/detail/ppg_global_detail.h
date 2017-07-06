@@ -14,37 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PPG_CONTEXT_H
-#define PPG_CONTEXT_H
+#include "ppg_slots.h"
+#include "ppg_global.h"
 
-/** @file */
+#include <stdbool.h>
 
-/** @brief Creates a new papageno context
- * 
- * @returns The newly created context
- */
-void* ppg_context_create(void);
+bool ppg_recurse_and_process_actions(PPG_Slot_Id slot_id);
 
-/** @brief Destroys a papageno context
- * 
- * Make sure to unset a context before 
- * destroying it.
- * 
- * @param context The context to destroy
- */
-void ppg_context_destroy(void *context);
+void ppg_delete_stored_events(void);
 
-/** @brief Sets a new current context
- * 
- * @param context The context to be activated
- * @returns The previously active context
- */
-void* ppg_global_set_current_context(void *context);
-
-/** @brief Retreives the current context
- * 
- * @returns The current context
- */
-void* ppg_global_get_current_context(void);
-
-#endif
+void ppg_global_abort_pattern_matching(void);

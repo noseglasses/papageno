@@ -17,9 +17,14 @@
 #ifndef PPG_DEBUG_H
 #define PPG_DEBUG_H
 
+/** @file */
+
 #ifdef DEBUG_PAPAGENO
 
 #if PAPAGENO_PRINT_SELF_ENABLED
+
+/** @brief This macro toggles class output
+ */
 #define PAPAGENO_PRINT_SELF_ENABLED 1
 #endif
 
@@ -41,12 +46,22 @@
 #else //DEBUG_PAPAGENO
 
 #ifndef PAPAGENO_PRINT_SELF_ENABLED
+
+/** @brief This macro toggles class output
+ */
 #define PAPAGENO_PRINT_SELF_ENABLED 0
 #endif
 
+/** @brief A macro for printf style output
+ */
 #define PPG_PRINTF(...)
+
+/** @brief A macro for printf style error output
+ */
 #define PPG_ERROR(...)
 
+/** @brief A macro for assertions of boolean expressions
+ */
 #define PPG_ASSERT(...)
 
 #endif //DEBUG_PAPAGENO

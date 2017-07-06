@@ -17,6 +17,10 @@
 #ifndef PPG_ACTION_FLAGS_H
 #define PPG_ACTION_FLAGS_H
 
+/** @file */
+
+#include <stdint.h>
+
 /** @brief Action flags are defined as power of two to be compined using bitwise operations
  */
 enum PPG_Action_Flags {

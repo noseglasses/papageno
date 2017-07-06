@@ -14,37 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PPG_CONTEXT_H
-#define PPG_CONTEXT_H
+#ifndef PPG_INPUT_DETAIL_H
+#define PPG_INPUT_DETAIL_H
 
-/** @file */
+#include "ppg_input.h"
 
-/** @brief Creates a new papageno context
+/** @brief Initializes an input
  * 
- * @returns The newly created context
+ * @param input The input to intialize
  */
-void* ppg_context_create(void);
-
-/** @brief Destroys a papageno context
- * 
- * Make sure to unset a context before 
- * destroying it.
- * 
- * @param context The context to destroy
- */
-void ppg_context_destroy(void *context);
-
-/** @brief Sets a new current context
- * 
- * @param context The context to be activated
- * @returns The previously active context
- */
-void* ppg_global_set_current_context(void *context);
-
-/** @brief Retreives the current context
- * 
- * @returns The current context
- */
-void* ppg_global_get_current_context(void);
+void ppg_global_init_input(PPG_Input *input);
 
 #endif

@@ -17,12 +17,16 @@
 #ifndef PPG_USER_CALLBACK_H
 #define PPG_USER_CALLBACK_H
 
+/** @file */
+
+#include "ppg_slots.h"
+
 /** @brief Function type of user callback functions
  * 
  *	 @param slot_id
  *  @param user_data Optional user data.
  */
-typedef void (*PPG_User_Callback_Fun)(uint8_t slot_id, void *user_data);
+typedef void (*PPG_User_Callback_Fun)(PPG_Slot_Id slot_id, void *user_data);
 
 /** @brief The PPG_User_Callback struct groups use callback information
  *  in an object oriented fashion (functor).

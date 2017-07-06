@@ -17,6 +17,10 @@
 #ifndef PPG_PATTERN_H
 #define PPG_PATTERN_H
 
+/** @file */
+
+#include "ppg_token.h"
+
 /** @brief Defines a pattern that consists of tokens
  * 
  * @note Use setter functions that operate on tokens to change attributes of the tokens
@@ -29,8 +33,8 @@
  * @returns The constructed token
  */
 PPG_Token ppg_pattern(		
-							uint8_t layer,
-							uint8_t n_tokens,
+							PPG_Layer layer,
+							PPG_Count n_tokens,
 							PPG_Token tokens[]);
 
 #endif

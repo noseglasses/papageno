@@ -14,18 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PPG_AGGREGATE_H
-#define PPG_AGGREGATE_H
+#ifndef PPG_LAYER_H
+#define PPG_LAYER_H
 
-typedef struct {
-	
-	PPG_Token__ token_inventory;
-	 
-	uint8_t n_members;
-	PPG_Input *inputs;
-	bool *member_active;
-	uint8_t n_inputs_active;
-	 
-} PPG_Aggregate;
+/** @file */
+
+#include "ppg_settings.h"
 
 #endif

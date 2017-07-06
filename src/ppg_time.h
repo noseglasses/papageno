@@ -17,6 +17,12 @@
 #ifndef PPG_TIME_H
 #define PPG_TIME_H
 
+/** @file */
+
+#include "ppg_settings.h"
+
+#include <stdint.h>
+
 /** @brief Time identifier type.
  */
 typedef void * PPG_Time;
@@ -32,7 +38,7 @@ typedef void (*PPG_Time_Fun)(PPG_Time *time);
  * @param fun The function callback to be registered
  * @returns The callback previously active
  */
-PPG_Time_Fun ppg_set_time_function(PPG_Time_Fun fun);
+PPG_Time_Fun ppg_global_set_time_function(PPG_Time_Fun fun);
 
 /** @brief Function type of a callback that computes differences between time values.
  * 
@@ -49,7 +55,7 @@ typedef void (*PPG_Time_Difference_Fun)(PPG_Time time1, PPG_Time time2, PPG_Time
  * @param fun The function callback to be registered
  * @returns The callback previously active
  */
-PPG_Time_Difference_Fun ppg_set_time_difference_function(PPG_Time_Difference_Fun fun);
+PPG_Time_Difference_Fun ppg_global_set_time_difference_function(PPG_Time_Difference_Fun fun);
 
 /** @brief Function type for time comparisons.
  * 
@@ -59,13 +65,14 @@ PPG_Time_Difference_Fun ppg_set_time_difference_function(PPG_Time_Difference_Fun
  * @param time1 The first time value
  * @param time2 The second time value
  */
-typedef int8_t (*PPG_Time_Comparison_Fun)(PPG_Time time1, PPG_Time time2);
+typedef PPG_Time_Comparison_Result_Type (*PPG_Time_Comparison_Fun)(
+									PPG_Time time1, PPG_Time time2);
 
 /** @brief Defines a custom function to compare time values
  * 
  * @param fun The function callback to be registered
  * @returns The callback previously active
  */
-PPG_Time_Comparison_Fun ppg_set_time_comparison_function(PPG_Time_Comparison_Fun fun);
+PPG_Time_Comparison_Fun ppg_global_set_time_comparison_function(PPG_Time_Comparison_Fun fun);
 
 #endif

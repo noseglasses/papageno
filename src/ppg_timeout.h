@@ -14,37 +14,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PPG_CONTEXT_H
-#define PPG_CONTEXT_H
+#ifndef PPG_TIMEOUT_H
+#define PPG_TIMEOUT_H
 
 /** @file */
+#include <stdbool.h>
 
-/** @brief Creates a new papageno context
+/** @brief Check if timeout happened
  * 
- * @returns The newly created context
+ * @returns true if timeout happened, false else
  */
-void* ppg_context_create(void);
-
-/** @brief Destroys a papageno context
- * 
- * Make sure to unset a context before 
- * destroying it.
- * 
- * @param context The context to destroy
- */
-void ppg_context_destroy(void *context);
-
-/** @brief Sets a new current context
- * 
- * @param context The context to be activated
- * @returns The previously active context
- */
-void* ppg_global_set_current_context(void *context);
-
-/** @brief Retreives the current context
- * 
- * @returns The current context
- */
-void* ppg_global_get_current_context(void);
+bool ppg_timeout_check(void);
 
 #endif

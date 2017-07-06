@@ -14,19 +14,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "ppg_tap_dance.h"
+#include "ppg_debug.h"
+#include "ppg_note.h"
+#include "ppg_global.h"
+#include "detail/ppg_token_detail.h"
+#include "detail/ppg_pattern_detail.h"
+
+#include <stddef.h>
+
 PPG_Token ppg_tap_dance(	
-							uint8_t layer,
+							PPG_Layer layer,
 							PPG_Input input,
-							uint8_t default_action_flags,
-							uint8_t n_tap_definitions,
+							PPG_Action_Flags_Type default_action_flags,
+							PPG_Count n_tap_definitions,
 							PPG_Tap_Definition tap_definitions[])
 {
 	PPG_PRINTF("Adding tap dance\n");
 	
-	ppg_init();
+	ppg_global_init();
 	
-	int n_taps = 0;
-	for (uint8_t i = 0; i < n_tap_definitions; i++) { 
+	PPG_Count n_taps = 0;
+	for (PPG_Count i = 0; i < n_tap_definitions; i++) { 
 		
 		if(tap_definitions[i].tap_count > n_taps) {
 			n_taps = tap_definitions[i].tap_count;
@@ -37,15 +46,15 @@ PPG_Token ppg_tap_dance(
 		
 	PPG_Token tokens[n_taps];
 	
-	for (int i = 0; i < n_taps; i++) {
+	for (PPG_Count i = 0; i < n_taps; i++) {
 		
-		PPG_Token__ *new_note = (PPG_Token__*)ppg_create_note(input);
+		PPG_Token__ *new_note = (PPG_Token__*)ppg_note_create(input);
 			new_note->action.flags = default_action_flags;
 		
 		tokens[i] = new_note;
 	}
 	
-	for (uint8_t i = 0; i < n_tap_definitions; i++) {
+	for (PPG_Count i = 0; i < n_tap_definitions; i++) {
 		
 		ppg_token_store_action(
 					tokens[tap_definitions[i].tap_count - 1], 

@@ -17,6 +17,12 @@
 #ifndef PPG_TOKEN_H
 #define PPG_TOKEN_H
 
+/** @file */
+
+#include "ppg_action.h"
+#include "ppg_action_flags.h"
+#include "ppg_settings.h"
+
 /** @brief The token type
  */
 typedef void * PPG_Token;
@@ -51,13 +57,22 @@ PPG_Action ppg_token_get_action(PPG_Token token);
  */
 PPG_Token ppg_token_set_action_flags(
 									PPG_Token token,
-									uint8_t action_flags);
+									PPG_Action_Flags_Type action_flags);
 
 /** @brief Returns the action flags associated with a token
  * 
  * @param token The token whose action flags are supposed to be retreived
  * @returns The current value of the action flags associated with the token.
  */
-uint8_t ppg_token_get_action_flags(PPG_Token token);
+PPG_Action_Flags_Type ppg_token_get_action_flags(PPG_Token token);
+
+/** @brief Auxiliary macro to simplify passing tokens to functions such as
+ * ppg_pattern
+ * 
+ * @param ... The array members
+ */
+#define PPG_TOKENS(...) \
+	sizeof((PPG_Token[]) { __VA_ARGS__ })/sizeof(PPG_Token), \
+	(PPG_Token[]) { __VA_ARGS__ }
 
 #endif

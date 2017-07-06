@@ -14,27 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PPG_SLOTS_H
-#define PPG_SLOTS_H
-
-/** @file */
-
+#include "detail/ppg_input_detail.h"
 #include "ppg_settings.h"
 
-#include <inttypes.h>
+#include <stdint.h>
+#include <stddef.h>
 
-/** @brief Input processing slot identifiers
- * 
- * Slot identifiers are used during flushing input events to 
- * distinguish the different reasons for flushing
- */
-enum PPG_Slots {
-	PPG_On_Abort = 0,
-	PPG_On_Timeout,
-	PPG_On_Token_Matches,
-	PPG_On_Pattern_Matches,
-	PPG_On_User,
-	PPG_On_Match_Failed
-};
-
-#endif
+void ppg_global_init_input(PPG_Input *input)
+{
+	input->input_id = (PPG_Input_Id)((uintptr_t)-1);
+	input->check_active = NULL;
+}
