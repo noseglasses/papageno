@@ -1,7 +1,6 @@
 language: c
-
-os:
-  - linux
+  
+dist: trusty
 
 install:
   - git clone --depth 1 --recurse-submodules https://github.com/keyboardio/Arduino-Boards hardware/keyboardio/avr
@@ -59,9 +58,7 @@ matrix:
             - g++-6
       env:
         - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
-        
-matrix:
-  include:
+
     # works on Precise and Trusty
     - os: linux
       addons:
