@@ -62,7 +62,7 @@ add_library(papageno ${source_files_full_path})
 
 find_package(Doxygen)
 
-option(PAPAGENO_DOXYGEN "Build the doxygen documentation of the Papageno API" ${DOXYGEN_FOUND})
+option(PAPAGENO_DOXYGEN "Build the doxygen documentation of the Papageno API" FALSE)
 
 if(PAPAGENO_DOXYGEN)
 

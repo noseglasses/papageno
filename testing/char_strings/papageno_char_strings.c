@@ -70,9 +70,9 @@ static void ppg_cs_separator(void) {
 	printf("***************************************************************************\n");
 }
 
-inline
-static int my_isalpha_lower(int c) {
-    return ((c >= 'a' && c <= 'z')); } 
+// inline
+// static int my_isalpha_lower(int c) {
+//     return ((c >= 'a' && c <= 'z')); } 
 
 inline
 static int my_isalpha_upper(int c) {
