@@ -33,8 +33,7 @@ void ppg_furcation_push_or_update(PPG_Count n_tokens_in_progress,
 {
 	// Check if there is already a furcation open for the current node
 	//
-	if(	(PPG_FB.cur_furcation != -1)
-		&& (PPG_FB.furcations[PPG_FB.cur_furcation].token != ppg_context->current_token)) {
+	if(PPG_FB.cur_furcation == -1) {
 		
 		// If not, we open a new furcation
 	
@@ -47,7 +46,8 @@ void ppg_furcation_push_or_update(PPG_Count n_tokens_in_progress,
 		PPG_FB.furcations[PPG_FB.cur_furcation].token = ppg_context->current_token;
 		PPG_FB.furcations[PPG_FB.cur_furcation].branch = branch;
 	}
-	else {
+	else if(PPG_FB.furcations[PPG_FB.cur_furcation].token 
+						!= ppg_context->current_token) {
 		
 		// Update the furcation information
 		//
@@ -58,12 +58,14 @@ void ppg_furcation_push_or_update(PPG_Count n_tokens_in_progress,
 
 void ppg_furcation_buffer_resize(void)
 {
-	if(ppg_context->furcation_buffer.furcations) { return; }
+	if(PPG_FB.furcations) { return; }
 	
 	PPG_Count depth = 1 + ppg_pattern_tree_depth();
 	
-	ppg_context->furcation_buffer.furcations 
+	PPG_FB.furcations 
 			= (PPG_Furcation*)malloc(depth*sizeof(PPG_Furcation));
+			
+	PPG_FB.n_furcations = depth;
 }
 
 void ppg_furcation_buffer_free(PPG_Furcation_Buffer *buffer)

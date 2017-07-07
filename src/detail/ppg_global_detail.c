@@ -92,7 +92,9 @@ void ppg_global_abort_pattern_matching(void)
 	
 	/* The frase could not be parsed. Reset any child tokens.
 	*/
-	ppg_token_reset_children(ppg_context->current_token);
+// 	ppg_token_reset_children(ppg_context->current_token);
+	
+	ppg_recurse_and_cleanup_active_branch();
 	
 	if(ppg_context->process_actions_if_aborted) {
 		ppg_recurse_and_process_actions(PPG_On_Abort);

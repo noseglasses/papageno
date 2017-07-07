@@ -36,4 +36,10 @@ typedef struct {
 	void *	user_data; ///< Optional user data that is passed to the callback when called
 } PPG_User_Callback;
 
+/** @brief This function initializes a callback
+ *
+ * @param cb A pointer to the callback struct
+ */
+void ppg_callback_init(PPG_User_Callback *cb);
+
 #endif

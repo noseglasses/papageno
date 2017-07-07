@@ -14,27 +14,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "papageno.h"
 #include "papageno_char_strings.h"
 	
 enum {
-	ppg_cs_layer_0 = 0,
-	ppg_cs_layer_1,
-	ppg_cs_layer_2
+	ppg_cs_layer_0 = 0
 };
 
-enum {
-	PPG_CS_R_Pattern_1 = 1,
-	PPG_CS_R_Pattern_2,
-	PPG_CS_R_Pattern_3,
-	
-	PPG_CS_R_Single_Note_Line_1,
-	
-	PPG_CS_R_3_Taps,
-	PPG_CS_R_5_Taps
-};	
-	
 PPG_CS_START_TEST
+
+	PPG_CS_REGISTER_ACTION(Pattern_1)
+	PPG_CS_REGISTER_ACTION(Pattern_2)
+	PPG_CS_REGISTER_ACTION(Pattern_3)
+	PPG_CS_REGISTER_ACTION(Single_Note_Line_1)
+	PPG_CS_REGISTER_ACTION(3_Taps)
+	PPG_CS_REGISTER_ACTION(5_Taps)
 	
 	ppg_pattern(
 		ppg_cs_layer_0, /* Layer id */
@@ -43,7 +36,7 @@ PPG_CS_START_TEST
 			PPG_CS_N('b'),
 			ppg_token_set_action(
 				PPG_CS_N('c'),
-				PPG_CS_ACTION(PPG_CS_R_Pattern_1)
+				PPG_CS_ACTION(Pattern_1)
 			)
 		)
 	);
@@ -55,7 +48,7 @@ PPG_CS_START_TEST
 			PPG_CS_N('a'),
 			ppg_token_set_action(
 				PPG_CS_N('c'),
-				PPG_CS_ACTION(PPG_CS_R_Pattern_2)
+				PPG_CS_ACTION(Pattern_2)
 			)
 		)
 	);
@@ -67,14 +60,14 @@ PPG_CS_START_TEST
 			PPG_CS_N('b'),
 			ppg_token_set_action(
 				PPG_CS_N('d'),
-				PPG_CS_ACTION(PPG_CS_R_Pattern_3)
+				PPG_CS_ACTION(Pattern_3)
 			)
 		)
 	);
 	
 	ppg_single_note_line(
 		ppg_cs_layer_0,
-		PPG_CS_ACTION(PPG_CS_R_Single_Note_Line_1),
+		PPG_CS_ACTION(Single_Note_Line_1),
 		PPG_INPUTS(
 			PPG_CS_CHAR('r'),
 			PPG_CS_CHAR('n'),
@@ -92,26 +85,28 @@ PPG_CS_START_TEST
 								if only four keypresses arrived before timeout. */
 		PPG_TAP_DEFINITIONS(
 			PPG_TAP(3, 
-				PPG_CS_ACTION(PPG_CS_R_3_Taps)
+				PPG_CS_ACTION(3_Taps)
 			),
 			PPG_TAP(5, 
-				PPG_CS_ACTION(PPG_CS_R_5_Taps)
+				PPG_CS_ACTION(5_Taps)
 			)
 		)
 	);
 	
 	ppg_cs_compile();
 	
-	PPG_CS_PROCESS_ON_OFF("a b c", PPG_CS_R_Pattern_1);
-	PPG_CS_PROCESS_ON_OFF("a a c", PPG_CS_R_Pattern_2);
-	PPG_CS_PROCESS_ON_OFF("a b d", PPG_CS_R_Pattern_3);
+	PPG_CS_PROCESS_ON_OFF("a b c", Pattern_1);
+	PPG_CS_PROCESS_ON_OFF("a a c", Pattern_2);
+	PPG_CS_PROCESS_ON_OFF("a b d", Pattern_3);
 	
-	PPG_CS_PROCESS_ON_OFF("r n m", PPG_CS_R_Single_Note_Line_1);
+	PPG_CS_PROCESS_ON_OFF("r n m", Single_Note_Line_1);
 	
-	PPG_CS_PROCESS_ON_OFF("a a a |", PPG_CS_R_3_Taps);
+	PPG_CS_PROCESS_ON_OFF("a a a |", 3_Taps);
 	
-	PPG_CS_PROCESS_ON_OFF("a a a a |", PPG_CS_R_3_Taps);
+	PPG_PATTERN_PRINT_TREE
 	
-	PPG_CS_PROCESS_ON_OFF("a a a a a |", PPG_CS_R_5_Taps);
+	PPG_CS_PROCESS_ON_OFF("a a a a |", 3_Taps);
+	
+	PPG_CS_PROCESS_ON_OFF("a a a a a |", 5_Taps);
 	
 PPG_CS_END_TEST

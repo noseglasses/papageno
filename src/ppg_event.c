@@ -318,6 +318,14 @@ static bool ppg_check_ignore_event(PPG_Event *event, bool *swallow_event)
 			PPG_PRINTF("Processing melodies interrupted by user\n");
 			
 			*swallow_event = true;
+			
+			if(ppg_context->abort_callback.func) {
+				ppg_context->abort_callback.func(
+					PPG_On_Abort,
+					ppg_context->abort_callback.user_data
+				);
+			}
+			
 			ppg_global_abort_pattern_matching();
 			return true;
 		}
@@ -373,6 +381,8 @@ static PPG_Count ppg_process_next_event(void)
 	
 	PPG_Id branch_id = -1;
 	
+	PPG_Token__ *branch = NULL;
+	
 	PPG_PRINTF("any_token_matches: %d\n", any_token_matches);
 	PPG_PRINTF("n_tokens_in_progress: %d\n", n_tokens_in_progress);
 	
@@ -382,20 +392,18 @@ static PPG_Count ppg_process_next_event(void)
 		//
 		branch_id = ppg_token_get_most_appropriate_branch(
 												ppg_context->current_token);
-	}
-	
-		// 2) If there are several nodes that are not invalid,
-		//    increase the current event id and 
-		//    signal furcation by returning an appiopriate value
-		//    (this pushes a furcation node on the furcation stack
-	if(n_tokens_in_progress > 1) {
 		
-		ppg_furcation_push_or_update(
-						n_tokens_in_progress,
-						ppg_context->current_token->children[branch_id]);
-	}
-
-	if(any_token_matches) {
+		PPG_ASSERT(branch_id >= 0);
+		PPG_ASSERT(branch_id < ppg_context->current_token->n_children);
+		
+		branch = ppg_context->current_token->children[branch_id];
+	
+		if(n_tokens_in_progress > 1) {
+			
+			ppg_furcation_push_or_update(
+							n_tokens_in_progress,
+							branch);
+		}
 		
 		PPG_PRINTF("Advancing with child token\n");
 		
@@ -518,7 +526,7 @@ bool ppg_event_process(PPG_Event *event)
 	//
 	ppg_context->time(&ppg_context->time_last_event);
 	
-	PPG_PRINTF("clock: %ld\n", ppg_context->time_last_event);
+// 	PPG_PRINTF("time: %ld\n", ppg_context->time_last_event);
 	
 	if(timeout_hit) {
 			

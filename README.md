@@ -3,6 +3,8 @@
 Papageno
 ==============
 
+[![Build Status](https://travis-ci.org/noseglasses/papageno.png?branch=master)](https://travis-ci.org/noseglasses/papageno)
+
 A pattern matching library
 --------------
 
@@ -10,10 +12,33 @@ Define patterns consisting of tokens (notes, chords or note clusters) and
 assign actions that are triggered when tokens or a whole pattern are matched.
 
 The idea of this type of pattern matching was inspired by magic musical instruments from
-opera and phantasy fiction that trigger all sorts of magic when certain melodies are played.
+opera and fantasy fiction that trigger all sorts of magic when certain melodies are played.
 The library itself is named after Papageno one of 
 the protagonists of Mozart's opera "The Magic Flute". With the help of a magic glockenspiel he was given as a present,
 Papageno is able to cope with many sorts of obstacles and mischief he encounters on his way. 
+
+# How to Build
+
+```sh
+# Clone the Papageno git repository
+#
+git clone https://github.com/noseglasses/papageno.git papageno.git
+
+cd papageno.git
+
+# Prefer out-of-source builds
+#
+mkdir -p build/release
+cd build/release
+
+# Configure the buile system
+#
+cmake ../..
+
+# Build
+#
+make
+```
 
 # Introduction
 
@@ -29,12 +54,12 @@ Input can depending on the application represent keys on a keyboard or measureme
 
 Events represent activation or deactivation of inputs. 
 Tokens are considered as matching if they match a given series of events.
-It is e.g. necesarry that all inputs that are associted with a chord have been active at the same time for the chord to be matched.
-Once a token matches, the series of arriving events is scanned for the next match. This is done until a whole sequence of tokens, a pattern, matches.
+It is e.g. necessary that all inputs that are associated with a chord have been active at the same time for the chord to be matched.
+Once a token matches, the series of arriving events is scanned for the next match. This is done until a whole sequence of tokens, a pattern matches.
 
 ## Use of Musical Terminology
 
-Although the concept is inspired by the word of music ane some basic concepts are more or less the same, there is not necessarily 
+Although the concept is inspired by the word of music and some basic concepts are more or less the same, there is not necessarily 
 any music involved at all.
 However, we consider the use of some musical terms helpful as they already cover basic ideas that do not need to be explained again or that are a good start for abstraction.
 
@@ -84,7 +109,7 @@ to be matched.
 ## Patterns
 
 Patterns may consist of arbitrary combinations of
-the afforementioned types of tokens, notes, chords and clusters.
+the afformentioned types of tokens, notes, chords and clusters.
 
 ## Tap Dances
 
@@ -102,7 +127,7 @@ During event processing, the current layer affects the choice of patterns that c
 Only patterns that are associated with 
 the current layer or layers whose layer id is lower than that of the
 current layer are accessible. As a consequence, the same pattern can be associated 
-with a different action on a higher layer, thus overriding it. Patterns can of course also be overidden with noops on higher layers.
+with a different action on a higher layer, thus overriding it. Patterns can of course also be overridden with noops on higher layers.
 
 ## Actions
 
@@ -110,40 +135,40 @@ Actions are defined as callback functions supplied with optional user data that 
 the callbacks when the action is triggered. The most common behavior is to assign 
 an action that is triggered only when a pattern entirely matches. However, it is also possible to assign 
 actions to intermediate tokens which are triggered upon token match. To obtain this behavior,
-add the action flag PPG_Action_Immediate by means of a bitwise or operation to the provieded action flags.
+add the action flag `PPG_Action_Immediate` by means of a bitwise or operation to the provided action flags.
 
 ## Timeout
 
-If a user defined time interval elapses after the last event occured, a timeout is detected.
+If a user defined time interval elapses after the last event occurred, a timeout is detected.
 If pattern matching was already in progress, it is aborted when timeout occurs.
 The default timeout behavior is to trigger the action that is associated with the last token that matched, or no action if there was no action associated with the respective token. 
 
 ## Action Fall Back
 
 Under certain circumstances in case of timeout, it may be desired to traverse the line of already matched tokens back to the point where a token is found that
-was assigned an action. This behavior can be obtained by adding the flag PPG_Action_Fall_Back to all intermediate tokens that have not been
+was assigned an action. This behavior can be obtained by adding the flag `PPG_Action_Fall_Back` to all intermediate tokens that have not been
 assigned any action.
 Action fall back is e.g. internally applied when processing tap dances, 
-when e.g. actions were assigned to three and to five activations of a specific input and the action associated with three consecutive activations of the input is supposed to happen also if four activations occured before timeout.
+when e.g. actions were assigned to three and to five activations of a specific input and the action associated with three consecutive activations of the input is supposed to happen also if four activations occurred before timeout.
 
 ## Action Fall Through
 
 Fall through takes the idea of fall back even a bit further.
-If a token that is assigned an action is also flagged PPG_Action_Fall_Through, 
-the token that matched just before is also checked for an action that is triggered if assigned. It PPG_Action_Fall_Through
+If a token that is assigned an action is also flagged `PPG_Action_Fall_Through`, 
+the token that matched just before is also checked for an action that is triggered if assigned. If `PPG_Action_Fall_Through`
 is also set for this previous token also its predecessor is checked, and so on.
 
 ## Events and Timeout/Abort
 
-Papageno temporarily stores all events that occured from the beginning of current pattern matching. The default behavior is to forget these events once a pattern was completely matched. When Papageno is e.g. used to recognice previously defined key combinations that are entered on a programmable keyboard, the action that is associated with the key combination often triggers configuration changes or outputs special characters. In most cases the character sequence that triggered the action is supposed to be ignored, i.e. not to be passed to the host system.
+Papageno temporarily stores all events that occurred from the beginning of current pattern matching. The default behavior is to forget these events once a pattern was completely matched. When Papageno is e.g. used to recognize previously defined key combinations that are entered on a programmable keyboard, the action that is associated with the key combination often triggers configuration changes or outputs special characters. In most cases the character sequence that triggered the action is supposed to be ignored, i.e. not to be passed to the host system.
 However, it may be desired to actively process these cached events even after a whole pattern matches. They could e.g. be passed on to another part of a program to interpret them. To enable this, an event processing
-callback may be registered that is passed the series of stored events. It is also possible to use the function ppg_event_buffer_flush to pass all currently stored events through a user defined event processing callback at any time, e.g. from an action callback.
+callback may be registered that is passed the series of stored events. It is also possible to use the function `ppg_event_buffer_flush` to pass all currently stored events through a user defined event processing callback at any time, e.g. from an action callback.
 
-An example application of deliberate flushing of events emerges again from the world of programmable keyboards: One might want to define a character/key sequence that is supposed to be automatically output uppercase. By assigning a user callback action to a single note line, it is possible to activate the shift key, then process the key sequence  by calling ppg_event_buffer_flush and then deactivate the shift key. The character sequence would then appear to the host system as if it had originally been typed uppercase. 
+An example application of deliberate flushing of events emerges again from the world of programmable keyboards: One might want to define a character/key sequence that is supposed to be automatically output uppercase. By assigning a user callback action to a single note line, it is possible to activate the shift key, then process the key sequence  by calling `ppg_event_buffer_flush` and then deactivate the shift key. The character sequence would then appear to the host system as if it had originally been typed uppercase. 
 
 ## Slots
 
-To distinguish where flushing of cached events occured, a slot id is 
+To distinguish where flushing of cached events occurred, a slot id is 
 passed to the respective processing callback.
 
 ## Context Switching
@@ -153,7 +178,7 @@ Any function of its programming interface operates
 on the currently active context. This makes it very easy to use different instances of Papageno
 in one program and to switch between these instances by activating different
 contexts. 
-Context switching is implemented through a global context pointer. Please note that due to this implementation detail, Papageno is not quaranteed to be thread safe.
+Context switching is implemented through a global context pointer. Please note that due to this implementation detail, Papageno is not guaranteed to be thread safe.
 
 # The Library
 
@@ -205,7 +230,7 @@ If the current token has several candidates that all do not match yet, the algor
 for the next event to arrive and then resumes matching based on the new event 
 and all the recent events that are still in the event buffer.
 
-During the search for suitable child tokens to continue event matching, 
+During the search for suitable child tokens, 
 the following tokens are excluded:
 
 - invalid tokens (those that do not match)
@@ -222,9 +247,9 @@ The precedence order from highest to lowest is thereby note, chord, cluster.
 
 ## Supported Platforms
 
-The libray supports any platform that comes with a C99 capable compiler.
+The library supports any platform that comes with a C99 capable compiler.
 It is developed on an x86-64 system but also runs well on embedded 
-systems with small memory, such as Arduino or Teensy boards. 
+systems with small memory, such as Atmel boards (Teensy/Arduino). 
 Actually it
 is a major design criterion to keep the implementation as compact as possible 
 to safe memory on platforms with restricted resources.
@@ -234,14 +259,14 @@ to safe memory on platforms with restricted resources.
 To make it as flexible as possible, Papageno is written in C. This makes it 
 possible to integrate with other projects, a C99 compiler provided. This decision
 was hard to take as it means to live without many neat C++ features such as
-type safefy and templates.
+type safety and templates.
 
 In its interior Papageno uses object oriented C to implement a polymorphic token class hierarchy.
 Token types that were initially implemented are notes, chords and clusters.
 The token-class family is extensible. New types of tokens are quite easy to implement.
 See the chord and cluster implementations as code example.
 
-## Ideas and TODO
+## Ideas and To Do
 
 ### Token Timeouts
 

@@ -45,7 +45,8 @@ set(source_files
 	./ppg_input.c                                                                                                                         
 	./ppg_chord.c                                                                                                                         
 	./ppg_time.c                                                                                                                       
-	./ppg_timeout.c
+	./ppg_timeout.c                                                                                                                
+	./ppg_user_callback.c
 )
 
 set(source_files_full_path "")

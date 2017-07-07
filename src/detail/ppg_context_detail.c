@@ -62,4 +62,7 @@ void ppg_global_initialize_context(PPG_Context *context) {
 	context->time = ppg_default_time;
 	context->time_difference = ppg_default_time_difference;
 	context->time_comparison = ppg_default_time_comparison;
+	
+	ppg_callback_init(&context->abort_callback);
+	ppg_callback_init(&context->timeout_callback);
 };

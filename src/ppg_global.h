@@ -23,6 +23,7 @@
 #include "ppg_time.h"
 #include "ppg_event.h"
 #include "ppg_layer.h"
+#include "ppg_user_callback.h"
 
 #include <stdbool.h>
 #include <inttypes.h>
@@ -178,5 +179,32 @@ PPG_Layer ppg_global_set_layer(PPG_Layer layer);
  * @returns The currently active layer
  */
 PPG_Layer ppg_global_get_layer(void);
+
+/** @brief Set a callback that is executed on timeout
+ *
+ * @param callback The user callback
+ * @returns The previous callback
+ */
+PPG_User_Callback ppg_global_set_timeout_action(PPG_User_Callback callback);
+
+/** @brief Get the current callback that is executed on timeout
+ *
+ * @returns The current callback
+ */
+PPG_User_Callback ppg_global_get_timeout_action(void);
+
+/** @brief Set a callback that is executed on abort
+ *
+ * @param callback The user callback
+ * @returns The previous callback
+ */
+PPG_User_Callback ppg_global_set_abort_action(PPG_User_Callback callback);
+
+/** @brief Get the current callback that is executed on abort
+ *
+ * @returns The current callback
+ */
+PPG_User_Callback ppg_global_get_abort_action(void);
+
 
 #endif

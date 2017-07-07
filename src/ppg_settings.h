@@ -144,9 +144,7 @@ typedef PPG_PROCESSING_STATE_TYPE PPG_Processing_State;
 #define PPG_TIME_IDENTIFIER_TYPE void *
 #else
 
-#include <time.h>
-
-#define PPG_TIME_IDENTIFIER_TYPE clock_t
+#define PPG_TIME_IDENTIFIER_TYPE long unsigned
 #endif
 #endif
 

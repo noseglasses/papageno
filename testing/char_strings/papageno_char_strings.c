@@ -19,14 +19,62 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <unistd.h>
+#include <sys/timeb.h> 
 
-int ppg_cs_result = PPG_CS_Result_Uninitialized;
+int ppg_cs_result = PPG_Action_Initialized;
 
-static int ppg_cs_timeout_ms = 0;
+static long unsigned ppg_cs_timeout_ms = 0;
+
+static long unsigned ppg_cs_start_time_s = 0;
+static long unsigned ppg_cs_start_time_ms = 0;
+
+#define MMG_MAX_ACTION_NAMES 100
+static char *ppg_cs_action_names[MMG_MAX_ACTION_NAMES];
+static int ppg_cs_next_action_id = 0;
+
+int ppg_cs_register_action(char *action_name)
+{
+	ppg_cs_action_names[ppg_cs_next_action_id] = action_name;
+	return ppg_cs_next_action_id++;
+}
+
+char *ppg_cs_get_action_name(int action_id)
+{
+	if(	(action_id < 0)
+		||	(action_id >= ppg_cs_next_action_id)) {
+		return NULL;
+	}
+	
+	return ppg_cs_action_names[action_id];
+}
+
+static void ppg_cs_store_start_time(void)
+{
+	struct timeb a_timeb;
+	
+	ftime(&a_timeb);
+	
+	ppg_cs_start_time_s = a_timeb.time;
+	ppg_cs_start_time_ms = a_timeb.millitm;
+}
+
+static long unsigned ppg_cs_run_time_ms(void)
+{
+	struct timeb a_timeb;
+	
+	ftime(&a_timeb);
+	
+// 	if(ppg_cs_start_time_ms >= a_timeb.millitm) {
+ 
+		return (a_timeb.time - ppg_cs_start_time_s)*1000 + a_timeb.millitm - ppg_cs_start_time_ms;
+// 	}
+// 
+// 	return (a_timeb.time - ppg_cs_start_time_s - 1)*1000 + a_timeb.millitm - ppg_cs_start_time_ms;
+}
 
 void ppg_cs_reset_result(void)
 {
-	ppg_cs_result = PPG_CS_Result_Uninitialized;
+	ppg_cs_result = PPG_Action_Initialized;
 }
 
 bool ppg_cs_process_event_callback(	
@@ -58,7 +106,7 @@ void ppg_cs_process_action(uint8_t slot_id, void *user_data) {
 	
 	ppg_cs_result = (int)(uintptr_t)user_data;
 	
-	printf("***** Action: %d\n", ppg_cs_result);
+	printf("***** Action: %s\n", ppg_cs_action_names[ppg_cs_result]);
 }
 
 static void ppg_cs_break(void) {
@@ -88,7 +136,7 @@ bool ppg_cs_process_event(char the_char)
 	
 	PPG_Event event = {
 		.input_id = (PPG_Input_Id)(uintptr_t)lower_char,
-		.time = (PPG_Time)clock(),
+		.time = (PPG_Time)ppg_cs_run_time_ms(),
 		.state = (PPG_Input_State)(uintptr_t)my_isalpha_upper(the_char)
 	};
 	
@@ -101,11 +149,19 @@ bool ppg_cs_check_and_process_control_char(char c)
 	
 	switch(c) {
 		case PPG_CS_CC_Short_Delay:
-			usleep((int)((double)ppg_cs_timeout_ms*0.3*1000));
+		{
+			int microseconds = (int)((double)ppg_cs_timeout_ms*0.3*1000);
+			printf("Short delay: %d\n", microseconds);
+			usleep(microseconds);
+		}
 			break;
 			
 		case PPG_CS_CC_Long_Delay:
-			usleep((int)((double)ppg_cs_timeout_ms*3*1000));
+		{
+			int microseconds = (int)((double)ppg_cs_timeout_ms*3*1000);
+			printf("Long delay: %d\n", microseconds);
+			usleep(microseconds);
+		}
 			break;
 		case PPG_CS_CC_Noop:
 			break;
@@ -154,7 +210,9 @@ void ppg_cs_process_on_off(char *string)
 
 void ppg_cs_time(PPG_Time *time)
 {
-	*time = clock();
+	*time = ppg_cs_run_time_ms();
+	
+// 	printf("time [ms]: %ld\n", *time);
 }
 
 void  ppg_cs_time_difference(PPG_Time time1, PPG_Time time2, PPG_Time *delta)
@@ -176,11 +234,10 @@ int8_t ppg_cs_time_comparison(
 	return -1;
 }
 
-void ppg_cs_set_timeout_ms(int timeout_ms)
-{
+void ppg_cs_set_timeout_ms(long unsigned timeout_ms)
+{	
 	ppg_cs_timeout_ms = timeout_ms;
-	
-	ppg_global_set_timeout((PPG_Time)CLOCKS_PER_SEC*timeout_ms);
+	ppg_global_set_timeout((PPG_Time)timeout_ms);
 }
 
 int ppg_cs_get_timeout_ms(void)
@@ -212,7 +269,47 @@ bool ppg_cs_input_id_equal(PPG_Input_Id input_id1, PPG_Input_Id input_id2)
 
 void ppg_cs_compile(void)
 {
+	// Store the start time as a reference
+	//
+	ppg_cs_store_start_time();
+	
 	ppg_global_compile();
 	
 	PPG_PATTERN_PRINT_TREE
+}
+
+void ppg_cs_print_action_names(int expected, int actual)
+{
+	char *expected_action_name = ppg_cs_get_action_name(expected);
+	char *actual_action_name = ppg_cs_get_action_name(ppg_cs_result);
+	
+	printf("   expected: ");
+	if(expected_action_name) {
+		printf("%s\n", expected_action_name);
+	}
+	else {
+		printf("%d\n", expected);
+	}
+	
+	printf("   actual: ");
+	if(actual_action_name) {
+		printf("%s\n", actual_action_name);
+	}
+	else {
+		printf("%d\n", ppg_cs_result);
+	}
+}
+
+void ppg_cs_on_timeout(
+								uint8_t slot_id, 
+								void *user_data)
+{
+	ppg_cs_result = PPG_Action_Exception_Timeout;
+}
+
+void ppg_cs_on_abort(
+								uint8_t slot_id, 
+								void *user_data)
+{
+	ppg_cs_result = PPG_Action_Exception_Aborted;
 }

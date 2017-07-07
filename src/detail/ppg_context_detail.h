@@ -55,6 +55,9 @@ typedef struct PPG_Context_Struct
 	PPG_Time_Fun time;
 	PPG_Time_Difference_Fun time_difference;
 	PPG_Time_Comparison_Fun time_comparison;
+	
+	PPG_User_Callback abort_callback;
+	PPG_User_Callback timeout_callback;
   
 } PPG_Context;
 

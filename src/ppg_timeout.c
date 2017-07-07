@@ -32,16 +32,17 @@ static void ppg_on_timeout(void)
 	 * that happend until this point
 	 */
 	
-	bool action_triggered 
-		= ppg_recurse_and_process_actions(PPG_On_Timeout);
+	ppg_recurse_and_process_actions(PPG_On_Timeout);
 	
-	/* Cleanup and issue all inputpresses as if they happened without parsing a pattern
-	*/
-	if(!action_triggered) {
-		ppg_event_buffer_flush(	PPG_On_Timeout, 
-											NULL /* input_processor */, 
-											NULL /* user data */);
+		
+	if(ppg_context->timeout_callback.func) {
+		ppg_context->timeout_callback.func(
+			PPG_On_Timeout,
+			ppg_context->timeout_callback.user_data
+		);
 	}
+	
+	ppg_recurse_and_cleanup_active_branch();
 	
 	ppg_delete_stored_events();
 	
@@ -49,10 +50,12 @@ static void ppg_on_timeout(void)
 }
 
 bool ppg_timeout_check(void)
-{
-	PPG_PRINTF("Checking timeout\n");
-	
+{	
 	if(!ppg_context->timeout_enabled) { return false; }
+	
+	if(!ppg_context->current_token) { return false; }
+	
+	PPG_PRINTF("Checking timeout\n");
 	
 	#ifdef DEBUG_PAPAGENO
 	if(!ppg_context->time) {
@@ -78,7 +81,7 @@ bool ppg_timeout_check(void)
 	
 	bool timeout_hit = false;
 	
-	PPG_PRINTF("   delta: %ld\n", delta);
+// 	PPG_PRINTF("   delta: %ld\n", delta);
 	
 	if(ppg_context->current_token
 		&& (ppg_context->time_comparison(
