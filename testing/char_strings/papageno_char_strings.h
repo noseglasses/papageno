@@ -79,7 +79,6 @@ enum { PPG_CS_CC_Noop = ' ' };
 
 bool ppg_cs_process_event_callback(	
 								PPG_Event *key_event,
-								uint8_t slot_id, 
 								void *user_data);
 
 void ppg_cs_flush_key_events(void);

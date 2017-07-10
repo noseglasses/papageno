@@ -45,8 +45,7 @@ set(source_files
 	./ppg_input.c                                                                                                                         
 	./ppg_chord.c                                                                                                                         
 	./ppg_time.c                                                                                                                       
-	./ppg_timeout.c                                                                                                                
-	./ppg_signal_callback.c                                                                                                       
+	./ppg_timeout.c                                                                                                              
 	./ppg_bitfield.c
 )
 

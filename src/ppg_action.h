@@ -19,6 +19,8 @@
 
 /** @file */
 
+#include "ppg_slots.h"
+
 /** @brief Function type of user callback functions
  * 
  *	 @param slot_id

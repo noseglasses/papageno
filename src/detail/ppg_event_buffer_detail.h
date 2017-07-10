@@ -19,6 +19,7 @@
 
 #include "ppg_event.h"
 #include "ppg_settings.h"
+#include "ppg_bitfield.h"
 
 // The event buffer is a ring buffer
 //
@@ -52,6 +53,10 @@ void ppg_event_buffer_truncate_at_front(void);
 
 void ppg_even_buffer_flush_and_remove_first_event(
 							PPG_Slot_Id slot_id);
+
+void ppg_event_buffer_iterate(
+								PPG_Event_Processor_Fun kp,
+								void *user_data);
 
 #define PPG_EB ppg_context->event_buffer
 

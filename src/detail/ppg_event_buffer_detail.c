@@ -64,47 +64,6 @@ void ppg_event_buffer_init(PPG_Event_Buffer *eb)
 	eb->size = 0;
 }
 
-static bool ppg_consider_event_in_iteration(PPG_Count pos)
-{
-	bool was_considered = ppg_bitfield_get_bit(&PPG_EB.events_considered,
-															pos);
-			
-	return (was_considered && (flush_type & PPG_Flush_Considered))
-						||	(!was_considered && (flush_type & PPG_Flush_Non_Considered));
-}
-
-void ppg_event_buffer_iterate_events(
-							PPG_Flush_Type flush_type,
-							PPG_Event_Processor_Fun fun,
-							void *user_data)
-{
-	if(PPG_EB.size == 0) { return; }
-	
-	if(PPG_EB.start > PPG_EB.end) {
-		
-		for(PPG_Count i = PPG_EB.start; i < PPG_MAX_EVENTS; ++i) {
-						
-			if(!ppg_consider_event_in_iteration(i)) { continue; }
-		
-			fun(&PPG_EB.events[i], user_data);
-		}
-		for(PPG_Count i = 0; i < PPG_EB.end; ++i) {
-			
-			if(!ppg_consider_event_in_iteration(i)) { continue; }
-			
-			fun(&PPG_EB.events[i], user_data);
-		}
-	}
-	else {
-		for(PPG_Count i = PPG_EB.start; i < PPG_EB.end; ++i) {
-			
-			if(!ppg_consider_event_in_iteration(i)) { continue; }
-		
-			fun(&PPG_EB.events[i], user_data);
-		}
-	}
-}
-
 bool ppg_event_buffer_events_left(void)
 {
 	return 	(PPG_EB.cur != PPG_EB.end);
@@ -137,15 +96,48 @@ static void ppg_even_buffer_recompute_size(void)
 	}
 }
 
+static void ppg_mark_active_inputs(PPG_Event *event, void* user_data)
+{
+	if(event->flags & PPG_Event_Considered) {
+#ifndef PPG_PEDANTIC_ACTIONS
+		ppg_bitfield_set_bit(&ppg_context->active_inputs,
+									event->input_id,
+									(event->flags & PPG_Event_Active)
+		);
+#endif
+	}
+	else {
+		// Events that were not considered are flushed
+		//
+		ppg_context->input_processor(event, NULL);
+	}
+}
+
 void ppg_event_buffer_truncate_at_front(void)
 {
 	if(PPG_EB.cur == PPG_EB.end) {
 		ppg_event_buffer_init(&PPG_EB);
 	}
 	else {
+		
 		ppg_event_buffer_advance();
 		
-		PPG_EB.start = PPG_EB.cur;
+		// Loop over all stored events and mark those that were 
+		// considered as currently active. Any events that were not
+		// considered, e.g. intermixed deactivations of currently
+		// unrelated inputs are flushed.
+		
+		// Temporarily reset the end of the event buffer to
+		// simplify flushing
+		//
+		PPG_Count old_end = PPG_EB.end;
+		PPG_EB.end = PPG_EB.cur;
+		
+		ppg_event_buffer_iterate(ppg_mark_active_inputs, NULL);
+		
+		PPG_EB.end = old_end; // Revert the original end
+		
+		PPG_EB.start = PPG_EB.cur; // Truncate the front of the queue
 		
 		ppg_even_buffer_recompute_size();
 	}
@@ -154,7 +146,7 @@ void ppg_event_buffer_truncate_at_front(void)
 void ppg_even_buffer_flush_and_remove_first_event(
 							PPG_Slot_Id slot_id)
 {
-	ppg_context->input_processor(&PPG_EB.events[PPG_EB.start], slot_id, NULL);
+	ppg_context->input_processor(&PPG_EB.events[PPG_EB.start], NULL);
 	
 	if(PPG_EB.size > 1) {
 		if(PPG_EB.start < PPG_MAX_EVENTS - 1) {
@@ -171,3 +163,29 @@ void ppg_even_buffer_flush_and_remove_first_event(
 	}
 }
 
+void ppg_event_buffer_iterate(
+								PPG_Event_Processor_Fun kp,
+								void *user_data)
+{
+	if(ppg_event_buffer_size() == 0) { return; }
+	
+	if(PPG_EB.size == 0) { return; }
+	
+	if(PPG_EB.start > PPG_EB.end) {
+		
+		for(PPG_Count i = PPG_EB.start; i < PPG_MAX_EVENTS; ++i) {
+		
+			kp(&PPG_EB.events[i], user_data);
+		}
+		for(PPG_Count i = 0; i < PPG_EB.end; ++i) {
+			
+			kp(&PPG_EB.events[i], user_data);
+		}
+	}
+	else {
+		for(PPG_Count i = PPG_EB.start; i < PPG_EB.end; ++i) {
+		
+			kp(&PPG_EB.events[i], user_data);
+		}
+	}
+}

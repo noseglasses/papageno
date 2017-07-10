@@ -20,6 +20,7 @@
 /** @file */
 
 #include <stdbool.h>
+#include <stdint.h>
 
 /** @brief The type used as input identifier.
  * 

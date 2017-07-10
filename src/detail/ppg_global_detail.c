@@ -100,12 +100,6 @@ void ppg_global_abort_pattern_matching(void)
 		ppg_recurse_and_process_actions(PPG_On_Abort);
 	}
 	
-	/* Cleanup and issue all inputpresses as if they happened without parsing a pattern
-	*/
-	ppg_event_buffer_flush(	PPG_On_Abort, 
-										NULL /* input_processor */, 
-										NULL /* user data */);
-	
 	ppg_delete_stored_events();
 	
 	ppg_context->current_token = NULL;

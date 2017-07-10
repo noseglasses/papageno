@@ -43,6 +43,10 @@
 #define PPG_MEDIUM_SIGNED_INT_TYPE int16_t
 #endif
 
+// Define PPG_PEDANTIC_ACTIONS
+// to ensure that any match requires a
+// matching deactivation of an input for 
+// every activation event
 
 #ifndef PPG_COUNT_TYPE
 

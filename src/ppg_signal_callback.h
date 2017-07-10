@@ -41,7 +41,7 @@ typedef struct {
  * @param cb A pointer to the callback struct
  */
 inline
-void ppg_signal_callback_init(PPG_Action_Callback *cb)
+void ppg_signal_callback_init(PPG_Signal_Callback *cb)
 {
 	cb->func = NULL;
 	cb->user_data = NULL;

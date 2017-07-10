@@ -32,21 +32,31 @@ static bool ppg_note_match_event(
 	 */
 	if(ppg_context->input_id_equal(note->input.input_id, event->input_id)) {
 			
-		if(event->active) {
+		if(event->flags & PPG_Event_Active) {
 			
 			PPG_PRINTF("Input activated\n");
 			
 			note->active = true;
+			
+#ifdef PPG_PEDANTIC_ACTIONS
 			note->super.state = PPG_Token_In_Progress;
+#else 
+			
+			PPG_PRINTF("Note finished\n");
+// 				PPG_PRINTF("N");
+			note->super.state = PPG_Token_Matches;
+#endif
 		}
 		else {
 			PPG_PRINTF("Input deactivated\n");
 			
+#ifdef PPG_PEDANTIC_ACTIONS
 			if(note->active) {
 				PPG_PRINTF("Note finished\n");
 // 				PPG_PRINTF("N");
 				note->super.state = PPG_Token_Matches;
 			}
+#endif
 		}
 	}
 	else {

@@ -34,6 +34,9 @@ void *ppg_aggregate_new(void *aggregate__) {
 	aggregate->n_members = 0;
 	aggregate->inputs = NULL;
 	aggregate->member_active = NULL;
+#ifdef PPG_PEDANTIC_ACTIONS
+	aggregate->all_activated = false;
+#endif
 	aggregate->n_inputs_active = 0;
 
 	return aggregate;
@@ -42,6 +45,10 @@ void *ppg_aggregate_new(void *aggregate__) {
 void ppg_aggregate_reset(PPG_Aggregate *aggregate) 
 {
 	ppg_token_reset((PPG_Token__*)aggregate);
+	
+#ifdef PPG_PEDANTIC_ACTIONS
+	aggregate->all_activated = false;
+#endif
 	
 	aggregate->n_inputs_active = 0;
 	
@@ -71,6 +78,9 @@ static void ppg_aggregate_resize(PPG_Aggregate *aggregate,
 	aggregate->n_members = n_members;
 	aggregate->inputs = (PPG_Input *)malloc(n_members*sizeof(PPG_Input));
 	aggregate->member_active = (bool *)malloc(n_members*sizeof(bool));
+#ifdef PPG_PEDANTIC_ACTIONS
+	aggregate->all_activated = false;
+#endif
 	aggregate->n_inputs_active = 0;
 	
 	for(PPG_Count i = 0; i < n_members; ++i) {

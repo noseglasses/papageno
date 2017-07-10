@@ -99,29 +99,6 @@ PPG_Time ppg_global_get_timeout(void);
  */
 PPG_Event_Processor_Fun ppg_global_set_default_event_processor(PPG_Event_Processor_Fun fun);
 
-enum PPG_Flush_Type {
-	PPG_Flush_None = 0,
-	PPG_Flush_Considered = (1 << 0),
-	PPG_Flush_Non_Considered = (1 << 1),
-	PPG_Flush_All = 	PPG_Flush_Considered 
-						& 	PPG_Flush_Non_Considered
-};
-
-/** @brief Call this function to actively flush any input events that occured since the last flush.
- * 
- * This function is called internally when melodies complete, on abort and on timeout.
- * 
- * @param slot_id The slot where this method was called. Pass PPG_On_User if you call this 
- * 					method from user code.
- * @param input_processor A custom input processor callback. If NULL the default processor registered by
- *                ppg_global_set_default_event_processor is used.
- * @param user_data Optional user data is passed on to the input processor callback
- */
-void ppg_event_buffer_flush(
-								PPG_Flush_Type flush_type,
-								PPG_Event_Processor_Fun input_processor,
-								void *user_data);
-
 /** @brief Use this function to temporarily disable/enable pattern processing. 
  * 
  * Processing is enabled by default.

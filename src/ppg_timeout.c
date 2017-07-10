@@ -28,17 +28,14 @@ static void ppg_on_timeout(void)
 	ppg_token_reset_children(ppg_context->current_token);
 	
 	/* It timeout was hit, we either trigger the most recent action
-	 * (e.g. necessary for tap dances) or flush the inputevents
-	 * that happend until this point
+	 * (e.g. necessary for tap dances).
 	 */
-	
 	ppg_recurse_and_process_actions(PPG_On_Timeout);
-	
 		
-	if(ppg_context->timeout_callback.func) {
-		ppg_context->timeout_callback.func(
+	if(ppg_context->signal_callback.func) {
+		ppg_context->signal_callback.func(
 			PPG_On_Timeout,
-			ppg_context->timeout_callback.user_data
+			ppg_context->signal_callback.user_data
 		);
 	}
 	

@@ -25,8 +25,7 @@
 
 /** @brief Input processing slot identifiers
  * 
- * Slot identifiers are used during flushing input events to 
- * distinguish the different reasons for flushing
+ * Slot identifiers are used during signal processing.
  */
 enum PPG_Slots {
 	PPG_On_Abort = 0,

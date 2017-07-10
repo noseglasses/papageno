@@ -28,28 +28,6 @@
 #include <inttypes.h>
 #include <stdarg.h>
 
-void ppg_event_buffer_flush(
-								PPG_Slot_Id slot_id, 
-								PPG_Event_Processor_Fun input_processor,
-								void *user_data)
-{
-	if(ppg_event_buffer_size() == 0) { return; }
-	
-	PPG_Event_Processor_Fun kp	=
-		(input_processor) ? input_processor : ppg_context->input_processor;
-	
-	if(!kp) { return; }
-	
-	/* Make sure that no recursion is possible if the input processor 
-	 * invokes ppg_event_process 
-	 */
-	ppg_context->papageno_temporarily_disabled = true;
-	
-	ppg_event_buffer_iterate_events(slot_id, kp, user_data);
-	
-	ppg_context->papageno_temporarily_disabled = false;
-}
-
 void ppg_global_init(void) {
 
 	if(!ppg_context) {

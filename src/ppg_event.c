@@ -305,13 +305,6 @@ static bool ppg_check_ignore_event(PPG_Event *event, bool *swallow_event)
 		return true;
 	}
 	
-	/* When a pattern could not be finished, all inputstrokes are
-	 * processed through the process_record_quantum method.
-	 * To prevent infinite recursion, we have to temporarily disable 
-	 * processing patterns.
-	 */
-	if(ppg_context->papageno_temporarily_disabled) { return true; }
-	
 	/* Early exit if no pattern was registered 
 	 */
 	if(!ppg_context->pattern_root_initialized) { return true; }
@@ -364,12 +357,12 @@ static PPG_Count ppg_process_next_event(void)
 	
 	bool event_considered = false;
 	
+	PPG_Event *event = &PPG_EB.events[PPG_EB.cur];
+		
 	// Check the subtokens of the current branch
 	//  to find a match based on the current event
 	//
 	for(PPG_Count i = 0; i < ppg_context->current_token->n_children; ++i) {
-		
-		PPG_Event *event = &PPG_EB.events[PPG_EB.cur];
 		
 		PPG_Processing_State p_state;
 		
@@ -391,10 +384,29 @@ static PPG_Count ppg_process_next_event(void)
 				break;
 		}
 	}
+		
+#ifndef PPG_PEDANTIC_ACTIONS
+	// Check it the event is a deactivation of
+	// a previously active input. If so, we 
+	// consider and thereby suppress it.
+	//
+	if (	!(event->flags & PPG_Event_Active)
+			&& ppg_bitfield_get_bit(&ppg_context->active_inputs,
+									event->input_id)) {
+		event_considered = true;
 	
-	ppg_bitfield_set_bit(&PPG_EB.events_considered, 
-								PPG_EB.cur,
-								event_considered);
+		// Note: The respective bit in ppg_context->active_inputs
+		//       is cleared in ppg_mark_active_inputs
+	}
+#endif
+	
+	if(event_considered) {
+		event->flags |= PPG_Event_Considered;
+	}
+	else {
+
+		event->flags &= ~PPG_Event_Considered;
+	}
 	
 	PPG_Id branch_id = -1;
 	
@@ -465,9 +477,10 @@ static void ppg_event_process_all_possible(void)
 				// Even though the pattern matches, it is possible that not
 				// all events were considered as there might have been a
 				// a tree furcation traverse involved. This might leave events
-				// beyond the current event that might be part of
-				// a following match.
-				// Thus, we remove all events that were considered and leave the
+				// after the current event that might be part of
+				// a future match.
+				//
+				// Thus, we remove all events up to the current one and leave the
 				// rest.
 				//
 				ppg_event_buffer_truncate_at_front();
@@ -555,4 +568,51 @@ bool ppg_event_process(PPG_Event *event)
 	ppg_event_process_all_possible();
 	
 	return false;
+}
+
+
+static bool ppg_consider_event_in_iteration(
+							PPG_Count flush_type,
+							PPG_Count pos)
+{
+	bool was_considered = ppg_bitfield_get_bit(&PPG_EB.events_considered,
+															pos);
+			
+	return (was_considered && (flush_type & PPG_Flush_Considered))
+						||	(!was_considered && (flush_type & PPG_Flush_Non_Considered));
+}
+
+void ppg_event_buffer_flush(
+								PPG_Count flush_type,
+								PPG_Event_Processor_Fun input_processor,
+								void *user_data)
+{
+	PPG_Event_Processor_Fun kp	=
+		(input_processor) ? input_processor : ppg_context->input_processor;
+	
+	if(!kp) { return; }
+	
+	if(PPG_EB.start > PPG_EB.end) {
+		
+		for(PPG_Count i = PPG_EB.start; i < PPG_MAX_EVENTS; ++i) {
+						
+			if(!ppg_consider_event_in_iteration(flush_type, i)) { continue; }
+		
+			kp(&PPG_EB.events[i], user_data);
+		}
+		for(PPG_Count i = 0; i < PPG_EB.end; ++i) {
+			
+			if(!ppg_consider_event_in_iteration(flush_type, i)) { continue; }
+			
+			kp(&PPG_EB.events[i], user_data);
+		}
+	}
+	else {
+		for(PPG_Count i = PPG_EB.start; i < PPG_EB.end; ++i) {
+			
+			if(!ppg_consider_event_in_iteration(flush_type, i)) { continue; }
+		
+			kp(&PPG_EB.events[i], user_data);
+		}
+	}
 }

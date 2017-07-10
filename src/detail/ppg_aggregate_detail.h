@@ -28,6 +28,10 @@ typedef struct {
 	PPG_Count n_members;
 	PPG_Input *inputs;
 	bool *member_active;
+	
+#ifdef PPG_PEDANTIC_ACTIONS
+	bool all_activated;
+#endif
 	PPG_Count n_inputs_active;
 	 
 } PPG_Aggregate;

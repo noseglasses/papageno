@@ -54,7 +54,6 @@ void ppg_global_initialize_context(PPG_Context *context) {
 	context->current_token = NULL;
 	context->timeout_enabled = true;
 	context->papageno_enabled = true;
-	context->papageno_temporarily_disabled = false;
 	context->layer = 0;
 	ppg_global_init_input(&context->abort_input);
 	context->event_timeout = 0;

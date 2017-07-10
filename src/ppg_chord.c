@@ -41,7 +41,7 @@ static bool ppg_chord_match_event(
 			
 			input_part_of_chord = true;
 			
-			if(event->active) {
+			if(event->flags & PPG_Event_Active) {
 				if(!chord->member_active[i]) {
 					chord->member_active[i] = true;
 					++chord->n_inputs_active;
@@ -58,7 +58,7 @@ static bool ppg_chord_match_event(
 	}
 	
 	if(!input_part_of_chord) {
- 		if(event->active) {
+ 		if(event->flags & PPG_Event_Active) {
 			chord->super.state = PPG_Token_Invalid;
  		}
  		
@@ -67,11 +67,28 @@ static bool ppg_chord_match_event(
 	
 	if(chord->n_inputs_active == chord->n_members) {
 		
+#ifdef PPG_PEDANTIC_ACTIONS
+		chord->all_activated = true;
+#else
+		
 		/* Chord matches
 		 */
 		chord->super.state = PPG_Token_Matches;
  		PPG_PRINTF("C");
+#endif
 	}
+#ifdef PPG_PEDANTIC_ACTIONS
+	else if(chord->n_inputs_active == 0) {
+		
+		if(chord->all_activated) {
+		
+			/* Chord matches
+			*/
+			chord->super.state = PPG_Token_Matches;
+			PPG_PRINTF("C");
+		}
+	}
+#endif
 	
 	return true;
 }

@@ -79,7 +79,6 @@ void ppg_cs_reset_result(void)
 
 bool ppg_cs_process_event_callback(	
 										PPG_Event *event,
-										uint8_t slot_id, 
 										void *user_data)
 { 
 	char the_char = (char)(uintptr_t)event->input_id;
@@ -137,7 +136,7 @@ bool ppg_cs_process_event(char the_char)
 	PPG_Event event = {
 		.input_id = (PPG_Input_Id)(uintptr_t)lower_char,
 		.time = (PPG_Time)ppg_cs_run_time_ms(),
-		.active = my_isalpha_upper(the_char)
+		.flags = (my_isalpha_upper(the_char)) ? PPG_Event_Active : PPG_Event_Flags_Empty
 	};
 	
 	return ppg_event_process(&event);

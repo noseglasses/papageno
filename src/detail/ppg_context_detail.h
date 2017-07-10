@@ -22,6 +22,7 @@
 #include "detail/ppg_event_buffer_detail.h"
 #include "detail/ppg_event_buffer_detail.h"
 #include "detail/ppg_furcation_detail.h"
+#include "ppg_signal_callback.h"
 
 #include <stddef.h>
 
@@ -39,7 +40,6 @@ typedef struct PPG_Context_Struct
 
 	bool timeout_enabled;
 	bool papageno_enabled;
-	bool papageno_temporarily_disabled;
 	
 	PPG_Layer layer;
 
@@ -57,7 +57,7 @@ typedef struct PPG_Context_Struct
 	PPG_Time_Difference_Fun time_difference;
 	PPG_Time_Comparison_Fun time_comparison;
 	
-	PPG_Signal_Callback_Fun signal_callback;
+	PPG_Signal_Callback signal_callback;
   
 } PPG_Context;
 

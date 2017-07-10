@@ -41,7 +41,7 @@ static bool ppg_cluster_match_event(
 			
 			input_part_of_cluster = true;
 			
-			if(event->active) {
+			if(event->flags & PPG_Event_Active) {
 				if(!cluster->member_active[i]) {
 					cluster->member_active[i] = true;
 					++cluster->n_inputs_active;
@@ -55,7 +55,7 @@ static bool ppg_cluster_match_event(
 	}
 	
 	if(!input_part_of_cluster) {
-		if(event->active) {
+		if(event->flags & PPG_Event_Active) {
 			cluster->super.state = PPG_Token_Invalid;
 		}
 		
@@ -64,11 +64,28 @@ static bool ppg_cluster_match_event(
 	
 	if(cluster->n_inputs_active == cluster->n_members) {
 		
+#ifdef PPG_PEDANTIC_ACTIONS
+		chord->all_activated = true;
+#else
+		
 		/* Cluster matches
 		 */
 		cluster->super.state = PPG_Token_Matches;
  		PPG_PRINTF("O");
+#endif
 	}
+#ifdef PPG_PEDANTIC_ACTIONS
+	else if(cluster->n_inputs_active == 0) {
+		
+		if(chord->all_activated) {
+			
+			/* Cluster matches
+			*/
+			cluster->super.state = PPG_Token_Matches;
+			PPG_PRINTF("O");
+		}
+	}
+#endif
 	
 	return true;
 }
