@@ -29,6 +29,7 @@ typedef struct PPG_Context_Struct
 {
 	PPG_Event_Buffer event_buffer;
 	PPG_Furcation_Buffer furcation_buffer;
+	PPG_Bitfield active_inputs;
 	
 	PPG_Token__ pattern_root;
 	bool pattern_root_initialized;
@@ -56,8 +57,7 @@ typedef struct PPG_Context_Struct
 	PPG_Time_Difference_Fun time_difference;
 	PPG_Time_Comparison_Fun time_comparison;
 	
-	PPG_User_Callback abort_callback;
-	PPG_User_Callback timeout_callback;
+	PPG_Signal_Callback_Fun signal_callback;
   
 } PPG_Context;
 

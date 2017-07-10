@@ -29,7 +29,7 @@
 typedef struct {
 	PPG_Input_Id input_id; ///< The input identifier associated with the input that is pressed or released
 	PPG_Time time; ///< The time at which the input event occured
-	PPG_Input_State state; ///< The state of the input when the event occured
+	bool active; ///< Whether the input is active
 } PPG_Event;
 
 /** @brief A callback function that is used during processing of stored input events

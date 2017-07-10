@@ -32,6 +32,8 @@ typedef struct {
 	
 	PPG_Count size;
 	
+	PPG_Bitfield events_considered;
+	
 } PPG_Event_Buffer;
 
 PPG_Count ppg_event_buffer_size(void);

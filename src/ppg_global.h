@@ -23,7 +23,7 @@
 #include "ppg_time.h"
 #include "ppg_event.h"
 #include "ppg_layer.h"
-#include "ppg_user_callback.h"
+#include "ppg_signal_callback.h"
 
 #include <stdbool.h>
 #include <inttypes.h>
@@ -99,6 +99,14 @@ PPG_Time ppg_global_get_timeout(void);
  */
 PPG_Event_Processor_Fun ppg_global_set_default_event_processor(PPG_Event_Processor_Fun fun);
 
+enum PPG_Flush_Type {
+	PPG_Flush_None = 0,
+	PPG_Flush_Considered = (1 << 0),
+	PPG_Flush_Non_Considered = (1 << 1),
+	PPG_Flush_All = 	PPG_Flush_Considered 
+						& 	PPG_Flush_Non_Considered
+};
+
 /** @brief Call this function to actively flush any input events that occured since the last flush.
  * 
  * This function is called internally when melodies complete, on abort and on timeout.
@@ -110,7 +118,7 @@ PPG_Event_Processor_Fun ppg_global_set_default_event_processor(PPG_Event_Process
  * @param user_data Optional user data is passed on to the input processor callback
  */
 void ppg_event_buffer_flush(
-								PPG_Slot_Id slot_id, 
+								PPG_Flush_Type flush_type,
 								PPG_Event_Processor_Fun input_processor,
 								void *user_data);
 
@@ -180,31 +188,17 @@ PPG_Layer ppg_global_set_layer(PPG_Layer layer);
  */
 PPG_Layer ppg_global_get_layer(void);
 
-/** @brief Set a callback that is executed on timeout
+/** @brief Set a callback that is used to signal specific events
  *
- * @param callback The user callback
+ * @param callback The signal callback
  * @returns The previous callback
  */
-PPG_User_Callback ppg_global_set_timeout_action(PPG_User_Callback callback);
+PPG_Signal_Callback ppg_global_set_signal_callback(PPG_Signal_Callback callback);
 
-/** @brief Get the current callback that is executed on timeout
+/** @brief Get the current signal callback
  *
  * @returns The current callback
  */
-PPG_User_Callback ppg_global_get_timeout_action(void);
-
-/** @brief Set a callback that is executed on abort
- *
- * @param callback The user callback
- * @returns The previous callback
- */
-PPG_User_Callback ppg_global_set_abort_action(PPG_User_Callback callback);
-
-/** @brief Get the current callback that is executed on abort
- *
- * @returns The current callback
- */
-PPG_User_Callback ppg_global_get_abort_action(void);
-
+PPG_Signal_Callback ppg_global_get_signal_callback(void);
 
 #endif

@@ -19,12 +19,36 @@
 
 /** @file */
 
-#include "ppg_user_callback.h"
+/** @brief Function type of user callback functions
+ * 
+ *	 @param slot_id
+ *  @param user_data Optional user data.
+ */
+typedef void (*PPG_Action_Callback_Fun)(PPG_Slot_Id slot_id, void *user_data);
+
+/** @brief The PPG_Action_Callback struct groups use callback information
+ *  in an object oriented fashion (functor).
+ */
+typedef struct {
+	PPG_Action_Callback_Fun func; ///< The callback function
+	void *	user_data; ///< Optional user data that is passed to the callback when called
+} PPG_Action_Callback;
+
+/** @brief This function initializes an action callback
+ *
+ * @param cb A pointer to the callback struct
+ */
+inline
+void ppg_action_callback_init(PPG_Action_Callback *cb)
+{
+	cb->func = NULL;
+	cb->user_data = NULL;
+}
 
 /** @brief Action information
  */
 typedef struct {
-	PPG_User_Callback user_callback; ///< The user callback that represents that action
+	PPG_Action_Callback callback; ///< The user callback that represents that action
 	uint8_t flags; ///< A bitfield that codes specific attributes associated with the action
 } PPG_Action;
 
@@ -35,8 +59,8 @@ typedef struct {
 #define PPG_ACTION_USER_CALLBACK(FUNC, USER_DATA) \
 	(PPG_Action) { \
 		.flags = PPG_Action_Default, \
-		.user_callback = (PPG_User_Callback) { \
-			.func = (PPG_User_Callback_Fun)FUNC, \
+		.callback = (PPG_Action_Callback) { \
+			.func = (PPG_Action_Callback_Fun)FUNC, \
 			.user_data = USER_DATA \
 		} \
 	}
@@ -46,7 +70,7 @@ typedef struct {
 #define PPG_ACTION_NOOP \
 	(PPG_Action) { \
 		.flags = PPG_Action_None, \
-		.user_callback = (PPG_User_Callback) { \
+		.callback = (PPG_Action_Callback) { \
 			.func = NULL, \
 			.user_data = NULL \
 		} \

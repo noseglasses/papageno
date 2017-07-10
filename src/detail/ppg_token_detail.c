@@ -31,7 +31,7 @@ void ppg_token_store_action(PPG_Token__ *token,
 	token->action = action; 
 	
 	PPG_PRINTF("Action of token 0x%" PRIXPTR ": 0x%" PRIXPTR "\n",
-				  (uintptr_t)token, (uintptr_t)token->action.user_callback.user_data);
+				  (uintptr_t)token, (uintptr_t)token->action.callback.user_data);
 }
 
 void ppg_token_reset(	PPG_Token__ *token)
@@ -63,16 +63,15 @@ bool ppg_token_trigger_action(PPG_Token__ *token, PPG_Slot_Id slot_id) {
 		return false;
 	}
 			
-	if(token->action.user_callback.func) {
+	if(token->action.callback.func) {
 
 // 		PPG_PRINTF("Action of token 0x%" PRIXPTR ": %u\n",
-// 				  (uintptr_t)token, (uintptr_t)token->action.user_callback.user_data);
+// 				  (uintptr_t)token, (uintptr_t)token->action.callback.user_data);
 		
 		PPG_PRINTF("*\n");
 	
-		token->action.user_callback.func(
-			slot_id,
-			token->action.user_callback.user_data);
+		token->action.callback.func(
+			token->action.callback.user_data);
 		
 		return true;
 	}
@@ -80,6 +79,7 @@ bool ppg_token_trigger_action(PPG_Token__ *token, PPG_Slot_Id slot_id) {
 	return false;
 }
 
+#if 0
 PPG_Processing_State ppg_token_match_event(	
 												PPG_Token__ **current_token,
 												PPG_Event *event) 
@@ -219,7 +219,7 @@ PPG_Processing_State ppg_token_match_event(
 	
 	return PPG_Token_In_Progress;
 }
-
+#endif
 
 static void ppg_token_allocate_children(PPG_Token__ *a_This, PPG_Count n_children) {
 
@@ -320,8 +320,8 @@ void ppg_token_print_self_start(PPG_Token__ *p, PPG_Count indent)
 {
 	PPG_I PPG_PRINTF("   parent: 0x%" PRIXPTR "\n", (uintptr_t)p->parent);
 	PPG_I PPG_PRINTF("   action.flags: %d\n", p->action.flags);
-	PPG_I PPG_PRINTF("   action_user_func: 0x%" PRIXPTR "\n", (uintptr_t)p->action.user_callback.func);
-	PPG_I PPG_PRINTF("   action_user_data: 0x%" PRIXPTR "\n", (uintptr_t)p->action.user_callback.user_data);
+	PPG_I PPG_PRINTF("   action_user_func: 0x%" PRIXPTR "\n", (uintptr_t)p->action.callback.func);
+	PPG_I PPG_PRINTF("   action_user_data: 0x%" PRIXPTR "\n", (uintptr_t)p->action.callback.user_data);
 	PPG_I PPG_PRINTF("   state: %d\n", p->state);
 	PPG_I PPG_PRINTF("   layer: %d\n", p->layer);
 }
@@ -377,8 +377,8 @@ PPG_Token__ *ppg_token_new(PPG_Token__ *token) {
 	 token->n_allocated_children = 0;
     token->n_children = 0;
     token->action.flags = PPG_Action_Default;
-    token->action.user_callback.func = NULL;
-    token->action.user_callback.user_data = NULL;
+    token->action.callback.func = NULL;
+    token->action.callback.user_data = NULL;
     token->state = PPG_Token_In_Progress;
     token->layer = 0;
 	 

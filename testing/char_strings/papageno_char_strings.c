@@ -137,7 +137,7 @@ bool ppg_cs_process_event(char the_char)
 	PPG_Event event = {
 		.input_id = (PPG_Input_Id)(uintptr_t)lower_char,
 		.time = (PPG_Time)ppg_cs_run_time_ms(),
-		.state = (PPG_Input_State)(uintptr_t)my_isalpha_upper(the_char)
+		.active = my_isalpha_upper(the_char)
 	};
 	
 	return ppg_event_process(&event);
@@ -245,18 +245,6 @@ int ppg_cs_get_timeout_ms(void)
 	return ppg_cs_timeout_ms;
 }
 
-inline
-static uint16_t ppg_cs_get_event_state(PPG_Input_State *state)
-{
-	return *(uint16_t*)&state;
-}
-
-bool ppg_cs_check_char_uppercase(PPG_Input_Id input_id,
-										PPG_Input_State state)
-{
-	return (ppg_cs_get_event_state(state) == true);
-}
-
 bool ppg_cs_input_id_equal(PPG_Input_Id input_id1, PPG_Input_Id input_id2)
 {
 	char the_char_1 = toupper((char)(uintptr_t)input_id1);
@@ -300,16 +288,15 @@ void ppg_cs_print_action_names(int expected, int actual)
 	}
 }
 
-void ppg_cs_on_timeout(
+void ppg_cs_on_signal(
 								uint8_t slot_id, 
 								void *user_data)
 {
-	ppg_cs_result = PPG_Action_Exception_Timeout;
-}
-
-void ppg_cs_on_abort(
-								uint8_t slot_id, 
-								void *user_data)
-{
-	ppg_cs_result = PPG_Action_Exception_Aborted;
+	switch(slot_id) {
+		case PPG_On_Abort:
+				ppg_cs_result = PPG_Action_Exception_Aborted;
+			break;
+		case PPG_On_Timeout:
+				ppg_cs_result = PPG_Action_Exception_Timeout;
+			break;
 }

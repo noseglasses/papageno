@@ -23,7 +23,7 @@
 
 typedef PPG_Aggregate PPG_Chord;
 
-static PPG_Processing_State ppg_chord_match_event(	
+static bool ppg_chord_match_event(	
 											PPG_Chord *chord,
 											PPG_Event *event) 
 {
@@ -41,10 +41,7 @@ static PPG_Processing_State ppg_chord_match_event(
 			
 			input_part_of_chord = true;
 			
-			bool input_active 
-				= chord->inputs[i].check_active(chord->inputs[i].input_id, event->state);
-			
-			if(input_active) {
+			if(event->active) {
 				if(!chord->member_active[i]) {
 					chord->member_active[i] = true;
 					++chord->n_inputs_active;
@@ -61,10 +58,11 @@ static PPG_Processing_State ppg_chord_match_event(
 	}
 	
 	if(!input_part_of_chord) {
-// 		if(event->pressed) {
+ 		if(event->active) {
 			chord->super.state = PPG_Token_Invalid;
-			return chord->super.state;
-// 		}
+ 		}
+ 		
+ 		return false;
 	}
 	
 	if(chord->n_inputs_active == chord->n_members) {
@@ -75,7 +73,7 @@ static PPG_Processing_State ppg_chord_match_event(
  		PPG_PRINTF("C");
 	}
 	
-	return chord->super.state;
+	return true;
 }
 
 static PPG_Count ppg_chord_token_precedence(void)

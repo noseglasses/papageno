@@ -21,25 +21,30 @@
 
 #include "ppg_slots.h"
 
-/** @brief Function type of user callback functions
+/** @brief Function type of signal callback functions
  * 
  *	 @param slot_id
  *  @param user_data Optional user data.
  */
-typedef void (*PPG_User_Callback_Fun)(PPG_Slot_Id slot_id, void *user_data);
+typedef void (*PPG_Signal_Callback_Fun)(PPG_Slot_Id slot_id, void *user_data);
 
-/** @brief The PPG_User_Callback struct groups use callback information
+/** @brief The PPG_Signal_Callback_Fun struct groups use callback information
  *  in an object oriented fashion (functor).
  */
 typedef struct {
-	PPG_User_Callback_Fun func; ///< The callback function
+	PPG_Signal_Callback_Fun func; ///< The callback function
 	void *	user_data; ///< Optional user data that is passed to the callback when called
-} PPG_User_Callback;
+} PPG_Signal_Callback;
 
-/** @brief This function initializes a callback
+/** @brief This function initializes an action callback
  *
  * @param cb A pointer to the callback struct
  */
-void ppg_callback_init(PPG_User_Callback *cb);
+inline
+void ppg_signal_callback_init(PPG_Action_Callback *cb)
+{
+	cb->func = NULL;
+	cb->user_data = NULL;
+}
 
 #endif

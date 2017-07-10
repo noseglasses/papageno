@@ -14,13 +14,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "detail/ppg_input_detail.h"
-#include "ppg_settings.h"
+#ifndef PPG_BITFIELD_H
+#define PPG_BITFIELD_H
 
-#include <stdint.h>
-#include <stddef.h>
+typedef struct {
+	
+	// Use a bitarray to store input state
+	//
+	uint8_t bitarray[PPG_MAX_INPUTS/8];
+	
+	uint8_t n_inputs;
+	
+} PPG_Bitfield;
 
-void ppg_global_init_input(PPG_Input *input)
-{
-	input->input_id = (PPG_Input_Id)((uintptr_t)-1);
-}
+void ppg_bitfield_clear(void);
+
+bool ppg_bitfield_get_bit(PPG_Bitfield *bitfield, 
+									PPG_Count pos);
+
+void ppg_bitfield_set_bit(PPG_Bitfield *bitfield, 
+									PPG_Count pos, 
+									bool state);
+
+#endif

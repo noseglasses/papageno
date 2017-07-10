@@ -194,30 +194,16 @@ PPG_Layer ppg_global_get_layer(void)
 	return ppg_context->layer;
 }
 
-PPG_User_Callback ppg_global_set_timeout_action(PPG_User_Callback callback)
+PPG_Signal_Callback ppg_global_set_signal_callback(PPG_Signal_Callback callback)
 {
-	PPG_User_Callback previous_callback = ppg_context->timeout_callback;
+	PPG_Signal_Callback previous_callback = ppg_context->signal_callback;
 	
-	ppg_context->timeout_callback = callback;
-	
-	return previous_callback;
-}
-
-PPG_User_Callback ppg_global_get_timeout_action(void)
-{
-	return ppg_context->timeout_callback;
-}
-
-PPG_User_Callback ppg_global_set_abort_action(PPG_User_Callback callback)
-{
-	PPG_User_Callback previous_callback = ppg_context->abort_callback;
-	
-	ppg_context->abort_callback = callback;
+	ppg_context->signal_callback = callback;
 	
 	return previous_callback;
 }
 
-PPG_User_Callback ppg_global_get_abort_action(void)
+PPG_Signal_Callback ppg_global_get_signal_callback(void)
 {
-	return ppg_context->abort_callback;
+	return ppg_context->signal_callback;
 }

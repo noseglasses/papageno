@@ -125,10 +125,7 @@ int ppg_cs_get_timeout_ms(void);
  */
 void ppg_cs_flush_key_events(void);
 
-bool ppg_cs_check_char_uppercase(PPG_Input_Id input_id,
-										PPG_Input_State state);
-
-void ppg_cs_on_timeout(
+void ppg_cs_on_signal(
 								uint8_t slot_id, 
 								void *user_data);
 
@@ -143,14 +140,13 @@ uint16_t ppg_cs_input_id_from_keypos(uint8_t row, uint8_t col);
 #define PPG_CS_CHAR(CHAR) \
 	(PPG_Input) { \
 		.input_id = (PPG_Input_Id)(uintptr_t)CHAR, \
-		.check_active = (PPG_Input_Active_Check_Fun)ppg_cs_check_char_uppercase \
 	}	
 
 #define PPG_CS_ACTION(ACTION_NAME) \
 	(PPG_Action) {	\
 		.flags = PPG_Action_Default, \
-		.user_callback = (PPG_User_Callback) { \
-			.func = (PPG_User_Callback_Fun)ppg_cs_process_action,  \
+		.callback = (PPG_Action_Callback) { \
+			.func = (PPG_Action_Callback_Fun)ppg_cs_process_action,  \
 			.user_data = (void*)(uintptr_t)PPG_CS_ACTION_VAR(ACTION_NAME) \
 		} \
 	}
@@ -166,18 +162,12 @@ uint16_t ppg_cs_input_id_from_keypos(uint8_t row, uint8_t col);
 	ppg_global_set_time_comparison_function((PPG_Time_Comparison_Fun)ppg_cs_time_comparison); \
 	ppg_global_set_input_id_equal_function((PPG_Input_Id_Equal_Fun)ppg_cs_input_id_equal); \
 	\
-	ppg_global_set_timeout_action( \
+	ppg_global_set_signal_callback( \
 		(PPG_User_Callback) { \
-			.func = (PPG_User_Callback_Fun)ppg_cs_on_timeout,  \
+			.func = (PPG_Action_Callback_Fun)ppg_cs_on_signal,  \
 			.user_data = NULL \
 		} \
 	); \
-	ppg_global_set_abort_action( \
-		(PPG_User_Callback) { \
-			.func = (PPG_User_Callback_Fun)ppg_cs_on_abort,  \
-			.user_data = NULL \
-		} \
-	);
 	
 #define PPG_CS_START_TEST \
 \

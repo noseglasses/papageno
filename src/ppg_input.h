@@ -27,22 +27,12 @@
  * Please supply a comparison callback via ppg_global_set_input_id_equal_function.
  * The default behavior is to compare input ids by value.
  */
-typedef void * PPG_Input_Id;
-
-/** @brief The type that represents input state.
- */
-typedef void * PPG_Input_State;
-
-/** @brief The input activation check callback function type
- */
-typedef bool (*PPG_Input_Active_Check_Fun)(PPG_Input_Id input_id,
-															PPG_Input_State state);
+typedef uint8_t PPG_Input_Id;
 
 /** @brief Definition of an input
  */
 typedef struct {
 	PPG_Input_Id	input_id; ///< The Input identifier
-	PPG_Input_Active_Check_Fun check_active; ///< A callback that provides checking if an input is activated
 } PPG_Input;
 
 /** @brief Function type of a callback function that compares user defined input ids

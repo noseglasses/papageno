@@ -25,7 +25,9 @@
 
 struct PPG_TokenStruct;
 
-typedef PPG_Processing_State (*PPG_Token_Match_Event_Fun)(
+/** @returns Whether the event was considered
+ */
+typedef bool (*PPG_Token_Match_Event_Fun)(
 														struct PPG_TokenStruct *token, 
 														PPG_Event *event
  													);
@@ -111,9 +113,9 @@ void ppg_token_reset_children(PPG_Token__ *token);
 
 bool ppg_token_trigger_action(PPG_Token__ *token, PPG_Slot_Id slot_id);
 
-PPG_Processing_State ppg_token_match_event(	
-												PPG_Token__ **current_token,
-												PPG_Event *event);
+// PPG_Processing_State ppg_token_match_event(	
+// 												PPG_Token__ **current_token,
+// 												PPG_Event *event);
 
 PPG_Token__ *ppg_token_new(PPG_Token__ *token);
 

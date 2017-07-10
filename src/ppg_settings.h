@@ -27,6 +27,10 @@
 #define PPG_MAX_EVENTS 100
 #endif
 
+#ifndef PPG_MAX_INPUTS
+#define PPG_MAX_INPUTS 256
+#endif
+
 #ifndef PPG_SMALL_UNSIGNED_INT_TYPE
 #define PPG_SMALL_UNSIGNED_INT_TYPE uint8_t
 #endif

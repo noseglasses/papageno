@@ -23,7 +23,7 @@
 
 typedef PPG_Aggregate PPG_Cluster;
 
-static PPG_Processing_State ppg_cluster_match_event(	
+static bool ppg_cluster_match_event(	
 											PPG_Cluster *cluster,
 											PPG_Event *event) 
 {
@@ -41,10 +41,7 @@ static PPG_Processing_State ppg_cluster_match_event(
 			
 			input_part_of_cluster = true;
 			
-			bool input_active 
-				= cluster->inputs[i].check_active(cluster->inputs[i].input_id, event->state);
-			
-			if(input_active) {
+			if(event->active) {
 				if(!cluster->member_active[i]) {
 					cluster->member_active[i] = true;
 					++cluster->n_inputs_active;
@@ -58,10 +55,11 @@ static PPG_Processing_State ppg_cluster_match_event(
 	}
 	
 	if(!input_part_of_cluster) {
-// 		if(event->pressed) {
+		if(event->active) {
 			cluster->super.state = PPG_Token_Invalid;
-			return cluster->super.state;
-// 		}
+		}
+		
+		return false;
 	}
 	
 	if(cluster->n_inputs_active == cluster->n_members) {
@@ -72,7 +70,7 @@ static PPG_Processing_State ppg_cluster_match_event(
  		PPG_PRINTF("O");
 	}
 	
-	return cluster->super.state;
+	return true;
 }
 
 static PPG_Count ppg_cluster_token_precedence(void)

@@ -64,30 +64,43 @@ void ppg_event_buffer_init(PPG_Event_Buffer *eb)
 	eb->size = 0;
 }
 
-void ppg_event_buffer_iterate_events(PPG_Slot_Id slot_id, PPG_Event_Processor_Fun fun, void *user_data)
+static bool ppg_consider_event_in_iteration(PPG_Count pos)
+{
+	bool was_considered = ppg_bitfield_get_bit(&PPG_EB.events_considered,
+															pos);
+			
+	return (was_considered && (flush_type & PPG_Flush_Considered))
+						||	(!was_considered && (flush_type & PPG_Flush_Non_Considered));
+}
+
+void ppg_event_buffer_iterate_events(
+							PPG_Flush_Type flush_type,
+							PPG_Event_Processor_Fun fun,
+							void *user_data)
 {
 	if(PPG_EB.size == 0) { return; }
 	
 	if(PPG_EB.start > PPG_EB.end) {
 		
 		for(PPG_Count i = PPG_EB.start; i < PPG_MAX_EVENTS; ++i) {
+						
+			if(!ppg_consider_event_in_iteration(i)) { continue; }
 		
-			if(!fun(&PPG_EB.events[i], slot_id, user_data)) { 
-				return;
-			}
+			fun(&PPG_EB.events[i], user_data);
 		}
 		for(PPG_Count i = 0; i < PPG_EB.end; ++i) {
-			if(!fun(&PPG_EB.events[i], slot_id, user_data)) { 
-				return;
-			}
+			
+			if(!ppg_consider_event_in_iteration(i)) { continue; }
+			
+			fun(&PPG_EB.events[i], user_data);
 		}
 	}
 	else {
 		for(PPG_Count i = PPG_EB.start; i < PPG_EB.end; ++i) {
+			
+			if(!ppg_consider_event_in_iteration(i)) { continue; }
 		
-			if(!fun(&PPG_EB.events[i], slot_id, user_data)) { 
-				return;
-			}
+			fun(&PPG_EB.events[i], user_data);
 		}
 	}
 }

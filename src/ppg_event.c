@@ -121,11 +121,13 @@ bool ppg_event_process(PPG_Event *event)
 	
 /** @brief Check if a branch matches the current event chain
  * 
- * @returns PPG_Token_State
+ * @returns Whether the event was considered
  */
-static PPG_Count ppg_branch_check_match(
+static bool ppg_branch_check_match(
 										PPG_Token__ *start_token,
-										PPG_Event *event)
+										PPG_Event *event,
+										PPG_Processing_State *processing_state
+													)
 {
 	/* Accept only paths through the search tree whose
 		* nodes' ppg_context->layer tags are lower or equal the current ppg_context->layer
@@ -133,14 +135,20 @@ static PPG_Count ppg_branch_check_match(
 	if(start_token->layer > ppg_context->layer) { return PPG_Branch_Invalid; }
 	
 	if(start_token->state == PPG_Token_Invalid) {
-		return PPG_Branch_Invalid;
+		*processing_state = PPG_Branch_Invalid;
+		return false;
 	}
 	
-	return start_token
+	bool event_considered
+		= start_token
 				->vtable->match_event(	
 							start_token, 
 							event
 					);
+				
+	*processing_state = start_token->state;
+				
+	return event_considered;
 }
 
 /** @brief Cleanup a branch going backward the token chain
@@ -319,10 +327,10 @@ static bool ppg_check_ignore_event(PPG_Event *event, bool *swallow_event)
 			
 			*swallow_event = true;
 			
-			if(ppg_context->abort_callback.func) {
-				ppg_context->abort_callback.func(
+			if(ppg_context->signal_callback.func) {
+				ppg_context->signal_callback.func(
 					PPG_On_Abort,
-					ppg_context->abort_callback.user_data
+					ppg_context->signal_callback.user_data
 				);
 			}
 			
@@ -354,6 +362,8 @@ static PPG_Count ppg_process_next_event(void)
 	PPG_PRINTF("start: %u, cur: %u, end: %u, size: %u\n", 
 				  PPG_EB.start, PPG_EB.cur, PPG_EB.end, PPG_EB.size);
 	
+	bool event_considered = false;
+	
 	// Check the subtokens of the current branch
 	//  to find a match based on the current event
 	//
@@ -361,11 +371,14 @@ static PPG_Count ppg_process_next_event(void)
 		
 		PPG_Event *event = &PPG_EB.events[PPG_EB.cur];
 		
-		PPG_Count event_check_result = ppg_branch_check_match(
-										ppg_context->current_token->children[i],
-										event);
+		PPG_Processing_State p_state;
 		
-		switch(event_check_result) {
+		event_considered |= ppg_branch_check_match(
+										ppg_context->current_token->children[i],
+										event,
+										&p_state);
+		
+		switch(p_state) {
 			
 			case PPG_Token_In_Progress:
 				++n_tokens_in_progress;
@@ -378,6 +391,10 @@ static PPG_Count ppg_process_next_event(void)
 				break;
 		}
 	}
+	
+	ppg_bitfield_set_bit(&PPG_EB.events_considered, 
+								PPG_EB.cur,
+								event_considered);
 	
 	PPG_Id branch_id = -1;
 	
@@ -446,11 +463,11 @@ static void ppg_event_process_all_possible(void)
 				ppg_recurse_and_cleanup_active_branch();
 				
 				// Even though the pattern matches, it is possible that not
-				// all events were consumed as there might have been a
+				// all events were considered as there might have been a
 				// a tree furcation traverse involved. This might leave events
 				// beyond the current event that might be part of
 				// a following match.
-				// Thus, we remove all events that were consumed and leave the
+				// Thus, we remove all events that were considered and leave the
 				// rest.
 				//
 				ppg_event_buffer_truncate_at_front();

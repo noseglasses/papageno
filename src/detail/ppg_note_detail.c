@@ -22,7 +22,7 @@
 
 #include <stdlib.h>
 
-static PPG_Processing_State ppg_note_match_event(	
+static bool ppg_note_match_event(	
 											PPG_Note *note,
 											PPG_Event *event) 
 {	
@@ -31,11 +31,8 @@ static PPG_Processing_State ppg_note_match_event(
 	/* Set state appropriately 
 	 */
 	if(ppg_context->input_id_equal(note->input.input_id, event->input_id)) {
-		
-		bool input_active 
-			= note->input.check_active(note->input.input_id, event->state);
 			
-		if(input_active) {
+		if(event->active) {
 			
 			PPG_PRINTF("Input activated\n");
 			
@@ -55,9 +52,10 @@ static PPG_Processing_State ppg_note_match_event(
 	else {
 // 		PPG_PRINTF("note invalid\n");
 		note->super.state = PPG_Token_Invalid;
+		return false;
 	}
 	
-	return note->super.state;
+	return true;
 }
 
 static void ppg_note_reset(PPG_Note *note) 

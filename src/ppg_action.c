@@ -14,10 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ppg_user_callback.h"
+#include "ppg_action.h"
 
-void ppg_callback_init(PPG_User_Callback *cb)
-{
-	cb->func = NULL;
-	cb->user_data = NULL;
-}
+
