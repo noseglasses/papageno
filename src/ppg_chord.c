@@ -52,6 +52,15 @@ static bool ppg_chord_match_event(
 					chord->member_active[i] = false;
 					--chord->n_inputs_active;
 				}
+				else {
+					
+					// The event deactivates an input that
+					// was not previously registered as active.
+					// Thus, we conclude that the event must be related
+					// to a previous match. Ignore the event.
+					//
+					return false;
+				}
 			}
 			break;
 		}

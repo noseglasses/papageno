@@ -23,10 +23,9 @@
 
 /** @brief Function type of user callback functions
  * 
- *	 @param slot_id
  *  @param user_data Optional user data.
  */
-typedef void (*PPG_Action_Callback_Fun)(PPG_Slot_Id slot_id, void *user_data);
+typedef void (*PPG_Action_Callback_Fun)(void *user_data);
 
 /** @brief The PPG_Action_Callback struct groups use callback information
  *  in an object oriented fashion (functor).

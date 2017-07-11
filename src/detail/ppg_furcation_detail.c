@@ -45,6 +45,8 @@ void ppg_furcation_push_or_update(PPG_Count n_tokens_in_progress,
 		PPG_FB.furcations[PPG_FB.cur_furcation].event_id = PPG_EB.cur;
 		PPG_FB.furcations[PPG_FB.cur_furcation].token = ppg_context->current_token;
 		PPG_FB.furcations[PPG_FB.cur_furcation].branch = branch;
+		PPG_FB.furcations[PPG_FB.cur_furcation].active_inputs 
+														= ppg_context->active_inputs;
 	}
 	else if(PPG_FB.furcations[PPG_FB.cur_furcation].token 
 						!= ppg_context->current_token) {

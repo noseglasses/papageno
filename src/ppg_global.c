@@ -22,6 +22,7 @@
 #include "detail/ppg_global_detail.h"
 #include "detail/ppg_event_buffer_detail.h"
 #include "ppg_context.h"
+#include "detail/ppg_signal_detail.h"
 
 #include <stdlib.h>
 #include <stddef.h>
@@ -184,4 +185,29 @@ PPG_Signal_Callback ppg_global_set_signal_callback(PPG_Signal_Callback callback)
 PPG_Signal_Callback ppg_global_get_signal_callback(void)
 {
 	return ppg_context->signal_callback;
+}
+
+void ppg_global_abort_pattern_matching(void)
+{		
+	if(!ppg_context->current_token) { return; }
+	
+// 	PPG_PRINTF("Aborting pattern\n");
+	
+	/* The frase could not be parsed. Reset any child tokens.
+	*/
+// 	ppg_token_reset_children(ppg_context->current_token);
+	
+	ppg_recurse_and_cleanup_active_branch();
+	
+	ppg_event_buffer_prepare_on_failure();
+			
+	ppg_signal(PPG_On_Abort);
+	
+	if(ppg_context->process_actions_if_aborted) {
+		ppg_recurse_and_process_actions(PPG_On_Abort);
+	}
+	
+	ppg_delete_stored_events();
+	
+	ppg_context->current_token = NULL;
 }

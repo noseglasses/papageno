@@ -17,17 +17,22 @@
 #ifndef PPG_BITFIELD_H
 #define PPG_BITFIELD_H
 
+#include "ppg_settings.h"
+
+#include <stdint.h>
+#include <stdbool.h>
+
 typedef struct {
 	
 	// Use a bitarray to store input state
 	//
 	uint8_t bitarray[PPG_MAX_INPUTS/8];
 	
-	uint8_t n_inputs;
+	uint8_t n_bits;
 	
 } PPG_Bitfield;
 
-void ppg_bitfield_clear(void);
+void ppg_bitfield_clear(PPG_Bitfield *bitfield);
 
 bool ppg_bitfield_get_bit(PPG_Bitfield *bitfield, 
 									PPG_Count pos);

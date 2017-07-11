@@ -19,6 +19,7 @@
 
 #include "ppg_settings.h"
 #include "detail/ppg_token_detail.h"
+#include "ppg_bitfield.h"
 
 typedef struct {
 	PPG_Count n_possible_branches; ///< The number of remaining
@@ -29,6 +30,8 @@ typedef struct {
 							// one of the tokens in the branch
 	PPG_Token__ *token;
 	PPG_Token__ *branch;
+	
+	PPG_Bitfield	active_inputs;
 } PPG_Furcation;
 
 typedef struct {

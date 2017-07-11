@@ -16,6 +16,7 @@
 
 #include "detail/ppg_event_buffer_detail.h"
 #include "detail/ppg_context_detail.h"
+#include "detail/ppg_global_detail.h"
 #include "ppg_debug.h"
 #include "ppg_settings.h"
 
@@ -96,17 +97,11 @@ static void ppg_even_buffer_recompute_size(void)
 	}
 }
 
-static void ppg_mark_active_inputs(PPG_Event *event, void* user_data)
+static void ppg_flush_non_considered_events(PPG_Event *event, 
+														  void* user_data)
 {
-	if(event->flags & PPG_Event_Considered) {
-#ifndef PPG_PEDANTIC_ACTIONS
-		ppg_bitfield_set_bit(&ppg_context->active_inputs,
-									event->input_id,
-									(event->flags & PPG_Event_Active)
-		);
-#endif
-	}
-	else {
+	if(!(event->flags & PPG_Event_Considered)) {
+
 		// Events that were not considered are flushed
 		//
 		ppg_context->input_processor(event, NULL);
@@ -122,10 +117,9 @@ void ppg_event_buffer_truncate_at_front(void)
 		
 		ppg_event_buffer_advance();
 		
-		// Loop over all stored events and mark those that were 
-		// considered as currently active. Any events that were not
-		// considered, e.g. intermixed deactivations of currently
-		// unrelated inputs are flushed.
+		// Any events that were not
+		// considered by the last match, e.g. intermixed deactivations 
+		// of currently unrelated inputs are flushed.
 		
 		// Temporarily reset the end of the event buffer to
 		// simplify flushing
@@ -133,7 +127,9 @@ void ppg_event_buffer_truncate_at_front(void)
 		PPG_Count old_end = PPG_EB.end;
 		PPG_EB.end = PPG_EB.cur;
 		
-		ppg_event_buffer_iterate(ppg_mark_active_inputs, NULL);
+		ppg_event_buffer_iterate(
+			(PPG_Event_Processor_Fun)ppg_flush_non_considered_events, 
+			NULL);
 		
 		PPG_EB.end = old_end; // Revert the original end
 		
@@ -162,30 +158,102 @@ void ppg_even_buffer_flush_and_remove_first_event(
 		ppg_event_buffer_init(&PPG_EB);
 	}
 }
-
-void ppg_event_buffer_iterate(
-								PPG_Event_Processor_Fun kp,
-								void *user_data)
+	
+static void ppg_event_buffer_check_and_tag_considered(PPG_Event *event, 
+														  void *user_data)
 {
-	if(ppg_event_buffer_size() == 0) { return; }
+	bool on_success = (bool)user_data;
 	
-	if(PPG_EB.size == 0) { return; }
-	
-	if(PPG_EB.start > PPG_EB.end) {
+	// Mark all those events that are activated and consumed. This
+	// must only be called on success.
+	//
+	if(ppg_bitfield_get_bit(&ppg_context->active_inputs,
+									event->input_id)) {
 		
-		for(PPG_Count i = PPG_EB.start; i < PPG_MAX_EVENTS; ++i) {
-		
-			kp(&PPG_EB.events[i], user_data);
-		}
-		for(PPG_Count i = 0; i < PPG_EB.end; ++i) {
+		if(event->flags & PPG_Event_Active) {
 			
-			kp(&PPG_EB.events[i], user_data);
+			// Something goes wrong here, as
+			// an event must not be activated twice in a row
+			//
+			PPG_ERROR("Input %d was activated twice in a row without deactivating\n", event->input_id);
+			assert(0);
+		}
+		else {
+			event->flags |= PPG_Event_Considered;
+			
+			ppg_bitfield_set_bit(&ppg_context->active_inputs,
+									event->input_id,
+									false /* inactivate */
+  								);
 		}
 	}
 	else {
-		for(PPG_Count i = PPG_EB.start; i < PPG_EB.end; ++i) {
 		
-			kp(&PPG_EB.events[i], user_data);
+		if(event->flags & PPG_Event_Active) {
+			
+			if(on_success) {
+				ppg_bitfield_set_bit(&ppg_context->active_inputs,
+										event->input_id,
+										true /* active */
+									);
+			}
 		}
+// 		else {
+// 						
+// 			// Something goes wrong here, as
+// 			// an event must not be deactivated twice in a row
+// 			//
+// 			PPG_ERROR("Input %d was deactivated twice in a row without deactivating\n", event->input_id);
+// 			assert(0);
+// 		}
 	}
+}
+	
+void ppg_event_buffer_prepare_on_success(void)
+{
+	PPG_PRINTF("Preparing event buffer on success\n");
+	
+	ppg_event_buffer_iterate(
+			(PPG_Event_Processor_Fun)ppg_event_buffer_check_and_tag_considered,
+			(void*)true
+	);
+}
+
+static void ppg_clear_considered_flag_aux(PPG_Event *event, 
+														  void *user_data)
+{
+	event->flags &= ~PPG_Event_Considered;
+}
+
+void ppg_event_buffer_prepare_on_failure(void)
+{
+	PPG_PRINTF("Preparing event buffer on failure\n");
+	
+	ppg_event_buffer_iterate(
+			(PPG_Event_Processor_Fun)ppg_clear_considered_flag_aux,
+			NULL
+	);
+		
+	ppg_event_buffer_iterate(
+			(PPG_Event_Processor_Fun)ppg_event_buffer_check_and_tag_considered,
+			(void*)false
+	);
+}
+
+void ppg_event_buffer_on_match_success(void)
+{
+	ppg_recurse_and_cleanup_active_branch();
+				
+	ppg_event_buffer_prepare_on_success();
+	
+	// Even though the pattern matches, it is possible that not
+	// all events were considered as there might have been a
+	// a tree furcation traverse involved. This might leave events
+	// after the current event that might be part of
+	// a future match.
+	//
+	// Thus, we remove all events up to the current one and leave the
+	// rest.
+	//
+	ppg_event_buffer_truncate_at_front();
 }

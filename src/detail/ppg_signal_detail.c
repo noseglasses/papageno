@@ -14,26 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PPG_SIGNAL_CALLBACK_H
-#define PPG_SIGNAL_CALLBACK_H
+#include "detail/ppg_signal_detail.h"
+#include "detail/ppg_context_detail.h"
 
-/** @file */
-
-#include "ppg_slots.h"
-
-/** @brief Function type of signal callback functions
- * 
- *	 @param slot_id
- *  @param user_data Optional user data.
- */
-typedef void (*PPG_Signal_Callback_Fun)(PPG_Slot_Id slot_id, void *user_data);
-
-/** @brief The PPG_Signal_Callback_Fun struct groups use callback information
- *  in an object oriented fashion (functor).
- */
-typedef struct {
-	PPG_Signal_Callback_Fun func; ///< The callback function
-	void *	user_data; ///< Optional user data that is passed to the callback when called
-} PPG_Signal_Callback;
-
-#endif
+void ppg_signal(PPG_Count slot_id)
+{	
+	if(ppg_context->signal_callback.func) {
+		ppg_context->signal_callback.func(
+			slot_id,
+			ppg_context->signal_callback.user_data
+		);
+	}
+}

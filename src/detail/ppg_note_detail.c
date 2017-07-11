@@ -48,20 +48,40 @@ static bool ppg_note_match_event(
 #endif
 		}
 		else {
-			PPG_PRINTF("Input deactivated\n");
+			
+			if(note->active) {
+				PPG_PRINTF("Input deactivated\n");
 			
 #ifdef PPG_PEDANTIC_ACTIONS
-			if(note->active) {
 				PPG_PRINTF("Note finished\n");
 // 				PPG_PRINTF("N");
 				note->super.state = PPG_Token_Matches;
-			}
 #endif
+			}
+			else {
+				
+				// The input is not active but this is a deactivation 
+				// event. Thus, we ignore it as it belongs 
+				// to the activation of another token.
+				//
+				return false;
+			}
 		}
 	}
 	else {
 // 		PPG_PRINTF("note invalid\n");
-		note->super.state = PPG_Token_Invalid;
+		
+#ifndef PPG_PEDANTIC_ACTIONS
+		if(event->flags & PPG_Event_Active) {
+			
+			// Only if the non matching input is activated, we
+			// complain
+			//
+#endif
+			note->super.state = PPG_Token_Invalid;
+#ifndef PPG_PEDANTIC_ACTIONS
+		}
+#endif
 		return false;
 	}
 	

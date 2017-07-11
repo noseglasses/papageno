@@ -87,10 +87,9 @@ PPG_Time ppg_global_set_timeout(PPG_Time timeout);
  */
 PPG_Time ppg_global_get_timeout(void);
 
-
 /** @brief Defines the default input processor callback. 
  * 
- * Some functions, e.g. ppg_event_buffer_flush
+ * Some functions, e.g. ppg_event_buffer_iterate
  * can be supplied with a custom input processor. If non is specified the default one is used
  * if defined.
  * 

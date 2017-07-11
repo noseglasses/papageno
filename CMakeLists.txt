@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 2.8)
 
 project(Papageno)
 
+enable_testing()
+
 macro(use_c99)
   if (CMAKE_VERSION VERSION_LESS "3.1")
     if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
@@ -42,6 +44,7 @@ set(source_files
 	./detail/ppg_global_detail.c     
 	./detail/ppg_event_buffer_detail.c
 	./detail/ppg_furcation_detail.c
+	./detail/ppg_signal_detail.c
 	./ppg_input.c                                                                                                                         
 	./ppg_chord.c                                                                                                                         
 	./ppg_time.c                                                                                                                       

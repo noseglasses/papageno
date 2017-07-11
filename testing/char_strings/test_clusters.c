@@ -22,12 +22,12 @@ enum {
 
 PPG_CS_START_TEST
 
-	PPG_CS_REGISTER_ACTION(Chord_1)
-	PPG_CS_REGISTER_ACTION(Chord_2)
+	PPG_CS_REGISTER_ACTION(Cluster_1)
+	PPG_CS_REGISTER_ACTION(Cluster_2)
 	
-	ppg_chord(
+	ppg_cluster(
 		ppg_cs_layer_0,
-		PPG_CS_ACTION(Chord_1),
+		PPG_CS_ACTION(Cluster_1),
 		PPG_INPUTS(
 			PPG_CS_CHAR('a'),
 			PPG_CS_CHAR('b'),
@@ -35,9 +35,9 @@ PPG_CS_START_TEST
 		)
 	);
 	
-	ppg_chord(
+	ppg_cluster(
 		ppg_cs_layer_0,
-		PPG_CS_ACTION(Chord_2),
+		PPG_CS_ACTION(Cluster_2),
 		PPG_INPUTS(
 			PPG_CS_CHAR('a'),
 			PPG_CS_CHAR('b'),
@@ -48,68 +48,68 @@ PPG_CS_START_TEST
 	ppg_cs_compile();
 	
 	//***********************************************
-	// Check chord 1
+	// Check cluster 1
 	//***********************************************
 	
-	PPG_CS_PROCESS_STRING(	"A B C c b a",
+	PPG_CS_PROCESS_STRING(	"A B C c b a", 
 									PPG_CS_EMPTY_FLUSH,
-									PPG_CS_EXP(Chord_1));
+									PPG_CS_EXP(Cluster_1));
 	
 	PPG_PATTERN_PRINT_TREE
 	
 	// Allow to release keys and then repress them 
 	//
-	PPG_CS_PROCESS_STRING(	"A a A B C c b a",
+	PPG_CS_PROCESS_STRING(	"A a A B C c b a", 
 									PPG_CS_EMPTY_FLUSH,
-									PPG_CS_EXP(Chord_1));
+									PPG_CS_EXP(Cluster_1));
 	
 	PPG_PATTERN_PRINT_TREE
 	
 	PPG_CS_PROCESS_STRING(	"A B b C B c b a", 
 									PPG_CS_EMPTY_FLUSH,
-									PPG_CS_EXP(Chord_1));
+									PPG_CS_EXP(Cluster_1));
 	
 	PPG_PATTERN_PRINT_TREE
 	
 	// Do not allow keys being released
 	//
 	PPG_CS_PROCESS_STRING(	"A B b C c a |", 
-									"ABbCca", 
-									PPG_CS_ET);
+									PPG_CS_EMPTY_FLUSH,
+									PPG_CS_EXP(Cluster_1) | PPG_CS_ET);
 	
 	PPG_PATTERN_PRINT_TREE
 	
 	// Check for match fails
 	//
 	PPG_CS_PROCESS_STRING(	"A B E C c a |", 
-									"ABECca", 
+									"ABECca",
 									PPG_CS_EMF | PPG_CS_ET);
 	
 	PPG_PATTERN_PRINT_TREE
 	
 	//***********************************************
-	// Check chord 2
+	// Check cluster 2
 	//***********************************************
 	
-	PPG_CS_PROCESS_STRING(	"A B D d b a",
+	PPG_CS_PROCESS_STRING(	"A B D d b a", 
 									PPG_CS_EMPTY_FLUSH,
-									PPG_CS_EXP(Chord_2));
+									PPG_CS_EXP(Cluster_2));
 	
 	// Allow to release keys and then repress them 
 	//
 	PPG_CS_PROCESS_STRING(	"A a A B D d b a",
 									PPG_CS_EMPTY_FLUSH,
-									PPG_CS_EXP(Chord_2));
+									PPG_CS_EXP(Cluster_2));
 	
 	PPG_CS_PROCESS_STRING(	"A B b D B d b a",
-									PPG_CS_EMPTY_FLUSH, 
-									PPG_CS_EXP(Chord_2));
+									PPG_CS_EMPTY_FLUSH,
+									PPG_CS_EXP(Cluster_2));
 
 	// Do not allow keys being released
 	//
 	PPG_CS_PROCESS_STRING(	"A B b d D d a |", 
-									"ABbdDda", 
-									PPG_CS_ET);
+									PPG_CS_EMPTY_FLUSH,
+									PPG_CS_EXP(Cluster_2) | PPG_CS_ET);
 	
 // 	PPG_PATTERN_PRINT_TREE
 	

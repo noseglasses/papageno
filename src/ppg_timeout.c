@@ -18,6 +18,7 @@
 #include "ppg_debug.h"
 #include "detail/ppg_context_detail.h"
 #include "detail/ppg_global_detail.h"
+#include "detail/ppg_signal_detail.h"
 
 static void ppg_on_timeout(void)
 {
@@ -26,22 +27,38 @@ static void ppg_on_timeout(void)
 	/* The frase could not be parsed. Reset any previous tokens.
 	*/
 	ppg_token_reset_children(ppg_context->current_token);
-	
+			
 	/* It timeout was hit, we either trigger the most recent action
 	 * (e.g. necessary for tap dances).
 	 */
-	ppg_recurse_and_process_actions(PPG_On_Timeout);
+	bool action_processed = ppg_recurse_and_process_actions(PPG_On_Timeout);
+	
+	if(action_processed) { 
 		
-	if(ppg_context->signal_callback.func) {
-		ppg_context->signal_callback.func(
-			PPG_On_Timeout,
-			ppg_context->signal_callback.user_data
-		);
+		// If an action was processed, we consider the processing as a match
+		//
+		ppg_event_buffer_on_match_success();
+		
+		// Prevent the timeout signal handler from processig events
+		//
+		ppg_delete_stored_events();
+	}
+	else {
+		
+		ppg_event_buffer_prepare_on_failure();
+		
 	}
 	
+	ppg_signal(PPG_On_Timeout);
+
 	ppg_recurse_and_cleanup_active_branch();
 	
-	ppg_delete_stored_events();
+	if(!action_processed) { 
+		
+		// if action_processed is true, the events have already been deleted above
+
+		ppg_delete_stored_events();
+	}
 	
 	ppg_context->current_token = NULL;
 }

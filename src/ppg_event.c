@@ -19,7 +19,9 @@
 #include "detail/ppg_global_detail.h"
 #include "detail/ppg_furcation_detail.h"
 #include "detail/ppg_event_buffer_detail.h"
+#include "detail/ppg_signal_detail.h"
 #include "ppg_debug.h"
+#include "ppg_bitfield.h"
 
 #if 0
 bool ppg_event_process(PPG_Event *event)
@@ -171,9 +173,13 @@ static PPG_Token__ *ppg_branch_cleanup(
 	// 
 	while(cur_token != end_token) {
 		
-		PPG_CALL_VIRT_METHOD(cur_token, reset);
+// 		PPG_CALL_VIRT_METHOD(cur_token, reset);
+// 		
+// 		ppg_token_reset(cur_token);
 		
-		ppg_token_reset(cur_token);
+		// Reset all children (data structures and state)
+		//
+		ppg_token_reset_children(cur_token);
 		
 		return_token = cur_token;
 		
@@ -248,6 +254,13 @@ static bool ppg_branch_revert_to_next_possible_furcation(PPG_Token__ *start_toke
 	if(PPG_FB.cur_furcation == -1) {
 		return false;
 	}
+	else {
+		
+		// Restore the active inputs set
+		//
+		ppg_context->active_inputs
+			= PPG_FB.furcations[PPG_FB.cur_furcation].active_inputs;
+	}
 	
 	return true;
 }
@@ -320,13 +333,6 @@ static bool ppg_check_ignore_event(PPG_Event *event, bool *swallow_event)
 			
 			*swallow_event = true;
 			
-			if(ppg_context->signal_callback.func) {
-				ppg_context->signal_callback.func(
-					PPG_On_Abort,
-					ppg_context->signal_callback.user_data
-				);
-			}
-			
 			ppg_global_abort_pattern_matching();
 			return true;
 		}
@@ -384,23 +390,9 @@ static PPG_Count ppg_process_next_event(void)
 				break;
 		}
 	}
-		
-#ifndef PPG_PEDANTIC_ACTIONS
-	// Check it the event is a deactivation of
-	// a previously active input. If so, we 
-	// consider and thereby suppress it.
-	//
-	if (	!(event->flags & PPG_Event_Active)
-			&& ppg_bitfield_get_bit(&ppg_context->active_inputs,
-									event->input_id)) {
-		event_considered = true;
-	
-		// Note: The respective bit in ppg_context->active_inputs
-		//       is cleared in ppg_mark_active_inputs
-	}
-#endif
-	
+
 	if(event_considered) {
+	
 		event->flags |= PPG_Event_Considered;
 	}
 	else {
@@ -472,18 +464,7 @@ static void ppg_event_process_all_possible(void)
 				
 				ppg_recurse_and_process_actions(PPG_On_Pattern_Matches);
 				
-				ppg_recurse_and_cleanup_active_branch();
-				
-				// Even though the pattern matches, it is possible that not
-				// all events were considered as there might have been a
-				// a tree furcation traverse involved. This might leave events
-				// after the current event that might be part of
-				// a future match.
-				//
-				// Thus, we remove all events up to the current one and leave the
-				// rest.
-				//
-				ppg_event_buffer_truncate_at_front();
+				ppg_event_buffer_on_match_success();
 				
 				ppg_context->current_token = NULL;
 				
@@ -513,11 +494,19 @@ static void ppg_event_process_all_possible(void)
 					
 				if(!furcation_found) {
 					
+					// Prepare the event buffer for 
+					// user processing
+					//
+					ppg_event_buffer_prepare_on_failure();
+					
 					// If no furcation was found, there is no chance
 					// for a match. Thus we remove the first stored event
 					// and rerun the overall pattern matching based on a
 					// new first event.
 					//
+					ppg_signal(PPG_On_Match_Failed);			
+					
+					PPG_PRINTF("Match failed\n");
 					ppg_even_buffer_flush_and_remove_first_event(PPG_On_Match_Failed);
 					
 					ppg_context->current_token = NULL;
@@ -548,6 +537,9 @@ bool ppg_event_process(PPG_Event *event)
 		return !swallow_event;
 	}
 	
+	PPG_PRINTF("Input %d: %d\n", event->input_id, 
+				  event->flags & PPG_Event_Active);
+	
 	ppg_event_buffer_store_event(event);
 	
 	bool timeout_hit = ppg_timeout_check();
@@ -570,47 +562,27 @@ bool ppg_event_process(PPG_Event *event)
 	return false;
 }
 
-
-static bool ppg_consider_event_in_iteration(
-							PPG_Count flush_type,
-							PPG_Count pos)
-{
-	bool was_considered = ppg_bitfield_get_bit(&PPG_EB.events_considered,
-															pos);
-			
-	return (was_considered && (flush_type & PPG_Flush_Considered))
-						||	(!was_considered && (flush_type & PPG_Flush_Non_Considered));
-}
-
-void ppg_event_buffer_flush(
-								PPG_Count flush_type,
-								PPG_Event_Processor_Fun input_processor,
+void ppg_event_buffer_iterate(
+								PPG_Event_Processor_Fun kp,
 								void *user_data)
 {
-	PPG_Event_Processor_Fun kp	=
-		(input_processor) ? input_processor : ppg_context->input_processor;
+	if(ppg_event_buffer_size() == 0) { return; }
 	
-	if(!kp) { return; }
+	if(PPG_EB.size == 0) { return; }
 	
 	if(PPG_EB.start > PPG_EB.end) {
 		
 		for(PPG_Count i = PPG_EB.start; i < PPG_MAX_EVENTS; ++i) {
-						
-			if(!ppg_consider_event_in_iteration(flush_type, i)) { continue; }
 		
 			kp(&PPG_EB.events[i], user_data);
 		}
 		for(PPG_Count i = 0; i < PPG_EB.end; ++i) {
-			
-			if(!ppg_consider_event_in_iteration(flush_type, i)) { continue; }
 			
 			kp(&PPG_EB.events[i], user_data);
 		}
 	}
 	else {
 		for(PPG_Count i = PPG_EB.start; i < PPG_EB.end; ++i) {
-			
-			if(!ppg_consider_event_in_iteration(flush_type, i)) { continue; }
 		
 			kp(&PPG_EB.events[i], user_data);
 		}

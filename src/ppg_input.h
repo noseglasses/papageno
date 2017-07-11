@@ -51,6 +51,10 @@ typedef bool (*PPG_Input_Id_Equal_Fun)(PPG_Input_Id input_id1, PPG_Input_Id inpu
  */
 void ppg_global_set_input_id_equal_function(PPG_Input_Id_Equal_Fun fun);
 
+/** @brief Lists all active inputs for debugging purposes
+ */
+void ppg_input_list_all_active(void);
+
 /** @brief Auxiliary macro to simplify passing input arrays to functions such as
  * ppg_cluster or ppg_chord
  * 

@@ -12,6 +12,7 @@ script:
   - cd build/release
   - cmake ../..
   - make
+  - ctest
 
 notifications:
   email:

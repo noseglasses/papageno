@@ -18,15 +18,15 @@
 
 void ppg_bitfield_clear(PPG_Bitfield *bitfield)
 {
-	uint8_t max_id = bitfield->n_inputs/8 + 1;
+	PPG_Count max_id = bitfield->n_bits/8 + 1;
 	
-	for(PPG_Id i = 0; i < max_id; ++i) {
+	for(PPG_Count i = 0; i < max_id; ++i) {
 		bitfield->bitarray[i] = 0;
 	}
 }
 
 bool ppg_bitfield_get_bit(PPG_Bitfield *bitfield, 
-							  PPG_Input_Id pos)
+							  PPG_Count pos)
 {
 	PPG_Count byte = pos/8;
 	PPG_Count bit = pos%8;
@@ -35,10 +35,10 @@ bool ppg_bitfield_get_bit(PPG_Bitfield *bitfield,
 }
 
 void ppg_bitfield_set_bit(PPG_Bitfield *bitfield, 
-							  PPG_Input_Id pos, 
+							  PPG_Count pos, 
 							  bool state)
 {
-	PPG_Count id = pos/8;
+	PPG_Count byte = pos/8;
 	PPG_Count bit = pos%8;
 	
 	if(state) {

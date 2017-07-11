@@ -95,18 +95,34 @@ PPG_CS_START_TEST
 	
 	ppg_cs_compile();
 	
-	PPG_CS_PROCESS_ON_OFF("a b c", Pattern_1);
-	PPG_CS_PROCESS_ON_OFF("a a c", Pattern_2);
-	PPG_CS_PROCESS_ON_OFF("a b d", Pattern_3);
+	PPG_CS_PROCESS_ON_OFF(	"a b c", 
+									PPG_CS_EMPTY_FLUSH,
+									PPG_CS_EXP(Pattern_1));
 	
-	PPG_CS_PROCESS_ON_OFF("r n m", Single_Note_Line_1);
+	PPG_CS_PROCESS_ON_OFF(	"a a c", 
+									PPG_CS_EMPTY_FLUSH,
+									PPG_CS_EXP(Pattern_2));
 	
-	PPG_CS_PROCESS_ON_OFF("a a a |", 3_Taps);
+	PPG_CS_PROCESS_ON_OFF(	"a b d", 
+									PPG_CS_EMPTY_FLUSH,
+									PPG_CS_EXP(Pattern_3));
+	
+	PPG_CS_PROCESS_ON_OFF(	"r n m", 
+									PPG_CS_EMPTY_FLUSH,
+									PPG_CS_EXP(Single_Note_Line_1));
+	
+	PPG_CS_PROCESS_ON_OFF(	"a a a |", 
+									PPG_CS_EMPTY_FLUSH,
+									PPG_CS_EXP(3_Taps) | PPG_CS_ET);
 	
 	PPG_PATTERN_PRINT_TREE
 	
-	PPG_CS_PROCESS_ON_OFF("a a a a |", 3_Taps);
+	PPG_CS_PROCESS_ON_OFF(	"a a a a |", 
+									PPG_CS_EMPTY_FLUSH,
+									PPG_CS_EXP(3_Taps) | PPG_CS_ET);
 	
-	PPG_CS_PROCESS_ON_OFF("a a a a a |", 5_Taps);
+	PPG_CS_PROCESS_ON_OFF(	"a a a a a |",  
+									PPG_CS_EMPTY_FLUSH,
+									PPG_CS_EXP(5_Taps) | PPG_CS_ET);
 	
 PPG_CS_END_TEST

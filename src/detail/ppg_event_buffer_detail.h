@@ -33,8 +33,6 @@ typedef struct {
 	
 	PPG_Count size;
 	
-	PPG_Bitfield events_considered;
-	
 } PPG_Event_Buffer;
 
 PPG_Count ppg_event_buffer_size(void);
@@ -42,8 +40,6 @@ PPG_Count ppg_event_buffer_size(void);
 void ppg_event_buffer_store_event(PPG_Event *event);
 
 void ppg_event_buffer_init(PPG_Event_Buffer *eb);
-
-void ppg_event_buffer_iterate_events(PPG_Slot_Id slot_id, PPG_Event_Processor_Fun fun, void *user_data);
 
 bool ppg_event_buffer_events_left(void);
 
@@ -57,6 +53,14 @@ void ppg_even_buffer_flush_and_remove_first_event(
 void ppg_event_buffer_iterate(
 								PPG_Event_Processor_Fun kp,
 								void *user_data);
+
+// The two following functions prepare the
+// event buffer for iteration from signal callbacks.
+//
+void ppg_event_buffer_prepare_on_success(void);
+void ppg_event_buffer_prepare_on_failure(void);
+
+void ppg_event_buffer_on_match_success(void);
 
 #define PPG_EB ppg_context->event_buffer
 

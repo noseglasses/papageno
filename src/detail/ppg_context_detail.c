@@ -42,12 +42,29 @@ PPG_Time_Comparison_Result_Type ppg_default_time_comparison(
 	return 0;
 }
 
+/** @brief This function initializes an action callback
+ *
+ * @param cb A pointer to the callback struct
+ */
+inline
+static void ppg_signal_callback_init(PPG_Signal_Callback *cb)
+{
+	cb->func = NULL;
+	cb->user_data = NULL;
+}
+
 void ppg_global_initialize_context(PPG_Context *context) {
 	
 	PPG_PRINTF("Initializing context\n");
 	
 	ppg_event_buffer_init(&context->event_buffer);
 	ppg_furcation_buffer_init(&context->furcation_buffer);
+	
+	// TODO: Replace this with the actual number of inputs
+	//
+	context->active_inputs.n_bits = 255;
+	
+	ppg_bitfield_clear(&context->active_inputs);
 	
 	context->pattern_root_initialized = false;
 	context->process_actions_if_aborted = false;
