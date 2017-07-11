@@ -140,6 +140,11 @@ matrix:
             - avr-libc
       env:
          - MATRIX_EVAL="CC=avr-gcc"
+      script: 
+         - mkdir -p build/release
+         - cd build/release
+         - cmake -DCMAKE_TOOLCHAIN_FILE=../../cmake/toolchains/Toolchain-avr-gcc.cmake ../..
+         - make
 
 before_install:
     - eval "${MATRIX_EVAL}"
