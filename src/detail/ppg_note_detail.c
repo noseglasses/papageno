@@ -105,7 +105,7 @@ static PPG_Count ppg_note_token_precedence(void)
 	return 100;
 }
 
-#if PAPAGENO_PRINT_SELF_ENABLED
+#ifdef PAPAGENO_PRINT_SELF_ENABLED
 static void ppg_note_print_self(PPG_Note *p, PPG_Count indent, bool recurse)
 {
 	PPG_I PPG_PRINTF("<*** note (0x%" PRIXPTR ") ***>\n", (uintptr_t)p);
@@ -131,7 +131,7 @@ static PPG_Token_Vtable ppg_note_vtable =
 	.token_precedence
 		= (PPG_Token_Precedence_Fun)ppg_note_token_precedence
 		
-	#if PAPAGENO_PRINT_SELF_ENABLED
+	#ifdef PAPAGENO_PRINT_SELF_ENABLED
 	,
 	.print_self
 		= (PPG_Token_Print_Self_Fun) ppg_note_print_self

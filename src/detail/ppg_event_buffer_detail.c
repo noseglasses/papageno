@@ -20,6 +20,8 @@
 #include "ppg_debug.h"
 #include "ppg_settings.h"
 
+#include <stdlib.h>
+
 #define PPG_EB ppg_context->event_buffer
 
 PPG_Count ppg_event_buffer_size(void)
@@ -176,7 +178,8 @@ static void ppg_event_buffer_check_and_tag_considered(PPG_Event *event,
 			// an event must not be activated twice in a row
 			//
 			PPG_ERROR("Input %d was activated twice in a row without deactivating\n", event->input_id);
-			assert(0);
+			PPG_ASSERT(0);
+			exit(1);
 		}
 		else {
 			event->flags |= PPG_Event_Considered;

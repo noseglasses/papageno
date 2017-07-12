@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 2.8)
 
 project(Papageno)
 
-enable_testing()
-
 macro(use_c99)
   if (CMAKE_VERSION VERSION_LESS "3.1")
     if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
@@ -22,8 +20,11 @@ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror")
 endif()
 
-add_definitions(-DDEBUG_PAPAGENO)
-add_definitions(-DPAPAGENO_PRINT_SELF_ENABLED)
+if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+
+	add_definitions(-DDEBUG_PAPAGENO)
+	add_definitions(-DPAPAGENO_PRINT_SELF_ENABLED)
+endif()
 
 set(source_directory "${CMAKE_SOURCE_DIR}/src")
 
@@ -99,4 +100,9 @@ if(PAPAGENO_DOXYGEN)
 	)
 endif()
 
-subdirs(testing)
+option(PAPAGENO_TESTING "Build and run testing environment" TRUE)
+
+if(PAPAGENO_TESTING)
+	enable_testing()
+	add_subdirectory(testing)
+endif()

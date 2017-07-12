@@ -90,7 +90,7 @@ PPG_Token ppg_pattern_from_list(
 				) {
 					PPG_ERROR("Conflicting melodies detected.\n")
 					
-					#if PAPAGENO_PRINT_SELF_ENABLED
+					#ifdef PAPAGENO_PRINT_SELF_ENABLED
 					PPG_ERROR(
 						"The tokens of the conflicting melodies are listed below.\n");
 					

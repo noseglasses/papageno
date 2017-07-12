@@ -21,12 +21,8 @@
 
 #ifdef DEBUG_PAPAGENO
 
-#if PAPAGENO_PRINT_SELF_ENABLED
-
-/** @brief This macro toggles class output
- */
-#define PAPAGENO_PRINT_SELF_ENABLED 1
-#endif
+// Define the preprocessor macro PAPAGENO_PRINT_SELF_ENABLED
+// to enable verbose class output of token classes
 
 #ifdef __AVR_ATmega32U4__ 
 #	include "debug.h"
@@ -51,13 +47,6 @@
 #	define PPG_ERROR(...) PPG_PRINTF("*** Error: " __VA_ARGS__)
 
 #else //DEBUG_PAPAGENO
-
-#ifndef PAPAGENO_PRINT_SELF_ENABLED
-
-/** @brief This macro toggles class output
- */
-#define PAPAGENO_PRINT_SELF_ENABLED 0
-#endif
 
 /** @brief A macro for printf style output
  */

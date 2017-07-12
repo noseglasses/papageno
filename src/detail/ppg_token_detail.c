@@ -314,7 +314,7 @@ PPG_Token__* ppg_token_get_equivalent_child(
 	return NULL;
 }
 
-#if PAPAGENO_PRINT_SELF_ENABLED
+#ifdef PAPAGENO_PRINT_SELF_ENABLED
 
 void ppg_token_print_self_start(PPG_Token__ *p, PPG_Count indent)
 {
@@ -361,7 +361,7 @@ static PPG_Token_Vtable ppg_token_vtable =
 	.equals
 		= NULL
 	
-	#if PAPAGENO_PRINT_SELF_ENABLED
+	#ifdef PAPAGENO_PRINT_SELF_ENABLED
 	,
 	.print_self
 		= (PPG_Token_Print_Self_Fun) ppg_token_print_self,

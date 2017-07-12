@@ -10,7 +10,7 @@ install:
 script: 
   - mkdir -p build/release
   - cd build/release
-  - cmake ../..
+  - cmake -DCMAKE_BUILD_TYPE=Debug ../..
   - make
   - ctest
 
@@ -143,7 +143,7 @@ matrix:
       script: 
          - mkdir -p build/release
          - cd build/release
-         - cmake -DCMAKE_TOOLCHAIN_FILE=../../cmake/toolchains/Toolchain-avr-gcc.cmake ../..
+         - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../../cmake/toolchains/Toolchain-avr-gcc.cmake -DPAPAGENO_TESTING=FALSE ../..
          - make
 
 before_install:

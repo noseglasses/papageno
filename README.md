@@ -31,7 +31,7 @@ cd papageno.git
 mkdir -p build/release
 cd build/release
 
-# Configure the buile system
+# Configure the build system
 #
 cmake ../..
 

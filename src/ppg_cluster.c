@@ -95,7 +95,7 @@ static PPG_Count ppg_cluster_token_precedence(void)
 	return 70;
 }
 
-#if PAPAGENO_PRINT_SELF_ENABLED
+#ifdef PAPAGENO_PRINT_SELF_ENABLED
 static void ppg_cluster_print_self(PPG_Cluster *c, PPG_Count indent, bool recurse)
 {
 	PPG_I PPG_PRINTF("<*** cluster (0x%" PRIXPTR ") ***>\n", (uintptr_t)c);
@@ -125,7 +125,7 @@ static PPG_Token_Vtable ppg_cluster_vtable =
 		= (PPG_Token_Equals_Fun) ppg_aggregates_equal,
 	.token_precedence
 		= (PPG_Token_Precedence_Fun)ppg_cluster_token_precedence
-	#if PAPAGENO_PRINT_SELF_ENABLED
+	#ifdef PAPAGENO_PRINT_SELF_ENABLED
 	,
 	.print_self
 		= (PPG_Token_Print_Self_Fun) ppg_cluster_print_self

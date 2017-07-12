@@ -370,7 +370,7 @@ static PPG_Count ppg_process_next_event(void)
 	//
 	for(PPG_Count i = 0; i < ppg_context->current_token->n_children; ++i) {
 		
-		PPG_Processing_State p_state;
+		PPG_Processing_State p_state = 0;
 		
 		event_considered |= ppg_branch_check_match(
 										ppg_context->current_token->children[i],

@@ -21,6 +21,8 @@
 
 #include "ppg_slots.h"
 
+#include <stddef.h>
+
 /** @brief Function type of user callback functions
  * 
  *  @param user_data Optional user data.
