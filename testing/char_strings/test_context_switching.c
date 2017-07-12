@@ -87,7 +87,7 @@ PPG_CS_START_TEST
 									PPG_CS_EXPECT_EMPTY_FLUSH
 									PPG_CS_EXPECT_NO_EXCEPTIONS
 									PPG_CS_EXPECT_ACTION_SERIES(
-										PPG_CS_A(Chord_1)
+										PPG_CS_A(Chord_2)
 									)
 	);
 	

@@ -111,6 +111,7 @@ endif()
 option(PAPAGENO_TESTING "Build and run testing environment" TRUE)
 
 if(PAPAGENO_TESTING)
+	include(CTest)
 	enable_testing()
 	add_subdirectory(testing)
 endif()
