@@ -76,7 +76,7 @@ static bool ppg_chord_match_event(
 	
 	if(chord->n_inputs_active == chord->n_members) {
 		
-#ifdef PPG_PEDANTIC_ACTIONS
+#ifdef PPG_PEDANTIC_TOKENS
 		chord->all_activated = true;
 #else
 		
@@ -86,7 +86,7 @@ static bool ppg_chord_match_event(
  		PPG_PRINTF("C");
 #endif
 	}
-#ifdef PPG_PEDANTIC_ACTIONS
+#ifdef PPG_PEDANTIC_TOKENS
 	else if(chord->n_inputs_active == 0) {
 		
 		if(chord->all_activated) {

@@ -38,7 +38,7 @@ static bool ppg_note_match_event(
 			
 			note->active = true;
 			
-#ifdef PPG_PEDANTIC_ACTIONS
+#ifdef PPG_PEDANTIC_TOKENS
 			note->super.state = PPG_Token_In_Progress;
 #else 
 			
@@ -52,7 +52,7 @@ static bool ppg_note_match_event(
 			if(note->active) {
 				PPG_PRINTF("Input deactivated\n");
 			
-#ifdef PPG_PEDANTIC_ACTIONS
+#ifdef PPG_PEDANTIC_TOKENS
 				PPG_PRINTF("Note finished\n");
 // 				PPG_PRINTF("N");
 				note->super.state = PPG_Token_Matches;
@@ -71,7 +71,7 @@ static bool ppg_note_match_event(
 	else {
 // 		PPG_PRINTF("note invalid\n");
 		
-#ifndef PPG_PEDANTIC_ACTIONS
+#ifndef PPG_PEDANTIC_TOKENS
 		if(event->flags & PPG_Event_Active) {
 			
 			// Only if the non matching input is activated, we
@@ -79,7 +79,7 @@ static bool ppg_note_match_event(
 			//
 #endif
 			note->super.state = PPG_Token_Invalid;
-#ifndef PPG_PEDANTIC_ACTIONS
+#ifndef PPG_PEDANTIC_TOKENS
 		}
 #endif
 		return false;

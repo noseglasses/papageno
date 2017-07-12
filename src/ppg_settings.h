@@ -65,7 +65,7 @@
 #define PPG_MEDIUM_SIGNED_INT_TYPE int16_t
 #endif
 
-// Define PPG_PEDANTIC_ACTIONS
+// Define PPG_PEDANTIC_TOKENS
 // to ensure that any match requires a
 // matching deactivation of an input for 
 // every activation event

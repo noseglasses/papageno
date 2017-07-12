@@ -64,7 +64,7 @@ static bool ppg_cluster_match_event(
 	
 	if(cluster->n_inputs_active == cluster->n_members) {
 		
-#ifdef PPG_PEDANTIC_ACTIONS
+#ifdef PPG_PEDANTIC_TOKENS
 		chord->all_activated = true;
 #else
 		
@@ -74,7 +74,7 @@ static bool ppg_cluster_match_event(
  		PPG_PRINTF("O");
 #endif
 	}
-#ifdef PPG_PEDANTIC_ACTIONS
+#ifdef PPG_PEDANTIC_TOKENS
 	else if(cluster->n_inputs_active == 0) {
 		
 		if(chord->all_activated) {

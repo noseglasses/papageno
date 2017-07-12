@@ -29,7 +29,7 @@ typedef struct {
 	PPG_Input_Id *inputs;
 	bool *member_active;
 	
-#ifdef PPG_PEDANTIC_ACTIONS
+#ifdef PPG_PEDANTIC_TOKENS
 	bool all_activated;
 #endif
 	PPG_Count n_inputs_active;

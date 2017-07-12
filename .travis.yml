@@ -12,8 +12,8 @@ script:
   - cd build/release
   - cmake -DCMAKE_BUILD_TYPE=Debug ../..
   - ctest -D ExperimentalBuild 
-  - ctest -R testName -D ExperimentalTest
-  - ctest -R testName -D ExperimentalMemCheck
+  - ctest -D ExperimentalTest
+  - ctest -D ExperimentalMemCheck
 
 notifications:
   email:
