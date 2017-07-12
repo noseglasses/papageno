@@ -21,6 +21,11 @@
 #include "ppg_settings.h"
 #include "ppg_bitfield.h"
 
+enum 
+{
+	PPG_Event_Control_Tag = (PPG_Event_Considered << 1)
+};
+
 // The event buffer is a ring buffer
 //
 typedef struct {

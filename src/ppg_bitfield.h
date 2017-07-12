@@ -22,13 +22,15 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+/** @brief A bitfield data type that can efficiently store boolean variables
+ */
 typedef struct {
 	
 	// Use a bitarray to store input state
 	//
-	uint8_t bitarray[PPG_MAX_INPUTS/8];
+	uint8_t bitarray[PPG_MAX_INPUTS/8]; ///< The actual storage
 	
-	uint8_t n_bits;
+	uint8_t n_bits; ///< The number of bits that are considered as mutable
 	
 } PPG_Bitfield;
 

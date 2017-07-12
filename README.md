@@ -86,31 +86,124 @@ out the major differences between regex and Papageno.
 
 # Working with Patterns
 
-## Notes
+## Inputs
+
+Inputs are considered as boolean variables that can change state (true/false). 
+Papageno considers an input either as active (true) or inactive (false).
+Changes between the states of inputs toggle an event that informs Papageno
+about the state transition. By default Papageno can deal with 256 different inputs.
+If more are required, the library must be compiled with an increased value of
+the preprocessor macro `PPG_MAX_INPUTS`.
+
+Papageno works with integer identifiers for inputs. Use the function `ppg_global_set_number_of_inputs`
+to define the number of inputs.
+
+## Event Series
+
+Input state changes can form a series. Even though inputs are represented by integer numbers, we use
+alphabetic letters in the following examples. An upper case character means that an input is activated,
+a lower case character symbolizes the deactivation of an input. 
+
+Imagine e.g. three inputs A, B and C. The following could be a possible event series that toggles the state of all three inputs.
+
+Example:
+
+```
+A B a C c b
+```
+
+This means:
+1. Inputs A and B are activated,
+2. Input A is deactivated,
+3. Input C is activated and deactivated,
+4. Input B is deactivated.
+
+It is important that before and input can be deactivated, it must first be 
+activated. Two consecutive activations or deactivations are illegal, even
+if there are other events in between, e.g.
+
+```
+A B C B a b c # Illegal because B is activated twice
+B A C a b a c # Illegal because A is deactivated twice
+```
+
+## Patterns
+
+Patterns may consist of arbitrary combinations of tokens.
+
+## Tokens
+
+A token can represent an activation of one or more inputs. 
+
+### Notes
 
 Notes are the most simple type of a token. They are the basic building blocks of patterns. They can e.g. be arranged to form single note
 lines or tap dances.
 A note can represent any
-input. Activation of a note is queried through the boolean result of a callback function that is associated with the input. Thus, even non-boolean input 
-variables can easily be mapped to a boolean activation state.
+input. Activation of a note is queried through the boolean result of a callback function that is associated with the input. Thus, even non-boolean input variables can easily be mapped to a boolean activation state.
 
-## Chords
+In the following examples a note is replaced by the character that
+represents the associated input.
+
+### Chords
 
 Chords are quite similar to musical chords. They share the common property that all
 inputs that are associated with the chord have to be activated at the same time for the
 chord to be considered complete.
 
-## Note Clusters
+In the following examples a chord is replaced by the set of characters that
+represents the associated inputs written in square brackets.
+
+```
+[A, B, C] # This is a chord that represents the inputs A, B and C
+```
+
+### Note Clusters
 
 Clusters are sets of inputs that may be activated in arbitrary order. It is only required
 that every cluster member must have been active at least once for the cluster-token
 to be matched.
 
-## Patterns
+In the following examples a note cluster is replaced by the set of characters that
+represents the associated inputs written in square brackets.
 
-Patterns may consist of arbitrary combinations of
-the afformentioned types of tokens, notes, chords and clusters.
+```
+{A, B, C} # This is a note cluster that represents the inputs A, B and C
+```
 
+## Token Sequences
+
+Patterns may be defined as token sequences that may consist of notes, chords and
+note clusters.
+
+The following would be a token sequence where a note C is followed by the
+chord `[A, B]` that is followed by the cluster `{B, A}`.
+
+```
+C->[A, B]->{B, A}
+```
+It would be matched e.g. by the following event sequence.
+```
+C A B b B a A
+```
+
+## Pedantic Tokens
+
+By default, tokens are matched if all related inputs are activated as required by the respective token.
+However, by defining the preprocessor macro `PPG_PEDANTIC_TOKENS`, Papageno can be compiled in a more pedantic mode.
+If this is enabled, every token requires all related inputs first to be activated and then deactivated. 
+In pedantic mode, the example above would require the event sequence
+```
+C c A B a b B b A a
+```
+to recognize a match of the token sequence. Please note that even in pedantic mode there is no unique token sequence that
+leads to a match. This is because the inactivations of inputs can occur in arbitrary order. The following event sequences are thus equivalent and all lead to a match of the token sequence of the example.
+```
+C c A B a b B b A a
+C c A B b a B b A a
+C c A B b a B A b a
+C c A B b a B A a b
+```
 ## Tap Dances
 
 Tap dances are a concept that emerged in the context of mechanical keyboard firmwares. A single input can trigger
@@ -163,10 +256,13 @@ callback may be registered that is passed the series of stored events. It is als
 
 An example application of deliberate flushing of events emerges again from the world of programmable keyboards: One might want to define a character/key sequence that is supposed to be automatically output uppercase. By assigning a user callback action to a single note line, it is possible to activate the shift key, then process the key sequence  by calling `ppg_event_buffer_flush` and then deactivate the shift key. The character sequence would then appear to the host system as if it had originally been typed uppercase. 
 
-## Slots
+## Signals
 
-To distinguish where flushing of cached events occurred, a slot id is 
-passed to the respective processing callback.
+During pattern matching there are certain conditions that might be useful to handle in a customized fashion. Therefore, Papageno allows to register a signal callback that is called when
+
+- a pattern matches
+- pattern matching is aborted (either through a function call of the programming API or because the input that is registered special input for aborting is activated)
+- timeout occurs
 
 ## Context Switching
 
@@ -212,7 +308,7 @@ the algorithm continues with one of the
 candidates of the most recently marked furcation.
 
 If a furcation has no further child nodes, that were not yet tried for 
-matchesr, the search continues with
+matches, the search continues with
 the second latest furcation.
 Thus, if necessary all partially matching parts of the search tree are traversed
 when searching for a matching pattern.
@@ -267,13 +363,13 @@ See the chord and cluster implementations as code example.
 
 ### Token Timeouts
 
-- token timeout: Every token has its own timeout. It must match before the timeout elapses
-- token time-interval: A token must match before timeout and can only match if a given time already elapsed
+- [ ] token timeout: Every token has its own timeout. It must match before the timeout elapses
+- [ ] token time-interval: A token must match before timeout and can only match if a given time already elapsed
 
 ### Enhanced Token Types
 
-- Repetition: Requires a pattern to be repeated N times
-- Tremolo: Requires a note to be repeated N times (the same can be achieved by a Tap Dance or a single note line of N individual notes but a token that does the job would be by far more memory efficient)
-- Random Chord: N random inputs must be active at the same time
-- Random Cluster: N different inputs must have been active
-- Random Sequence: N inputs must have been active (and inactive)
+- [ ] Repetition: Requires a pattern to be repeated N times
+- [ ] Tremolo: Requires a note to be repeated N times (the same can be achieved by a Tap Dance or a single note line of N individual notes but a token that does the job would be by far more memory efficient)
+- [ ] Random Chord: N random inputs must be active at the same time
+- [ ] Random Cluster: N different inputs must have been active
+- [ ] Random Sequence: N inputs must have been active (and inactive)

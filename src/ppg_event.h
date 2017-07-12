@@ -24,15 +24,19 @@
 #include "ppg_time.h"
 #include "ppg_layer.h"
 
+/** @brief Flags that are used to tag events
+ * 
+ * Please note that currently only the flag PPG_Event_Active
+ * is supposed to be set by user. Read flags by using the binary
+ * operator & to test a flag value against a variable, 
+ * e.g. if(event->flags & PPG_Event_Considered) { ... }
+ */
 enum PPG_Event_Flags
 {
-	PPG_Event_Flags_Empty = 0,
+	PPG_Event_Flags_Empty = 0, ///< Initial value of the flags variable
 	
-	PPG_Event_Active = (1 << 0),
-	PPG_Event_Considered = (PPG_Event_Active << 1),
-	PPG_Event_Control_Tag = (PPG_Event_Considered << 1),
-	
-	PPG_Event_Flags_All = (PPG_Event_Control_Tag << 1) - 1
+	PPG_Event_Active = (1 << 0), ///< Set to mark the activation of an input through an event
+	PPG_Event_Considered = (PPG_Event_Active << 1) ///< This flag bit tells if an event has been considered as part of a pattern or as control event (e.g. as set by ppg_global_set_abort_trigger
 };
 
 /** @brief Specification of an input event

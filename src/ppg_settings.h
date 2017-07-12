@@ -24,22 +24,44 @@
 // The maximum number of events that can be stored
 //
 #ifndef PPG_MAX_EVENTS
+
+/** @brief The maximum lenght of a sequence of events that can represent a pattern.
+ */
 #define PPG_MAX_EVENTS 100
 #endif
 
 #ifndef PPG_MAX_INPUTS
+
+/** @brief The maximum number of inputs that can be used continuously.
+ * 
+ * Please be careful when increasing this number, as memory
+ * is allocated for the number of inputs. Also larger interger 
+ * data types must be used in some places when this value exceeds 256.
+ */
 #define PPG_MAX_INPUTS 256
 #endif
 
 #ifndef PPG_SMALL_UNSIGNED_INT_TYPE
+
+/** @brief An unsigned integer type that is used to store 
+ * small numbers
+ */
 #define PPG_SMALL_UNSIGNED_INT_TYPE uint8_t
 #endif
 
 #ifndef PPG_SMALL_SIGNED_INT_TYPE
+
+/** @brief A signed integer type that is used to store 
+ * small numbers
+ */
 #define PPG_SMALL_SIGNED_INT_TYPE int8_t
 #endif
 
 #ifndef PPG_MEDIUM_SIGNED_INT_TYPE
+
+/** @brief A signed integer type that is used to store 
+ * larger numbers
+ */
 #define PPG_MEDIUM_SIGNED_INT_TYPE int16_t
 #endif
 
@@ -80,6 +102,8 @@ typedef PPG_ID_TYPE PPG_Id;
 #define PPG_ACTION_FLAGS_TYPE PPG_SMALL_UNSIGNED_INT_TYPE
 #endif
 
+/** @brief The data type used to store action flags
+ */
 typedef PPG_ACTION_FLAGS_TYPE PPG_Action_Flags_Type;
 
 #ifndef PPG_LAYER_TYPE 
@@ -149,9 +173,12 @@ typedef PPG_PROCESSING_STATE_TYPE PPG_Processing_State;
 /** @brief This macro enables to define the time identifier type from outside the
  * compile process, e.g. from a build system
  */
-#define PPG_TIME_IDENTIFIER_TYPE void *
+#define PPG_TIME_IDENTIFIER_TYPE uintptr_t
 #else
 
+/** @brief This macro enables to define the time identifier type from outside the
+ * compile process, e.g. from a build system
+ */
 #define PPG_TIME_IDENTIFIER_TYPE long unsigned
 #endif
 #endif

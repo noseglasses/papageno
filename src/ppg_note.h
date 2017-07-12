@@ -28,6 +28,7 @@
  * 
  * @param layer The layer the pattern is associated with
  * @param action The action that is supposed to be carried out if the pattern matches
+ * @param n_inputs The number of inputs passed as array
  * @param inputs Inputpositions that represent the notes of the single note line
  * @returns The constructed token
  */
