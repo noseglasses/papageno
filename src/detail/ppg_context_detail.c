@@ -20,11 +20,6 @@
 
 PPG_Context *ppg_context = NULL;
 
-static bool ppg_input_id_simple_equal(PPG_Input_Id kp1, PPG_Input_Id kp2)
-{
-	return 	kp1 == kp2;
-}
-
 static void ppg_default_time(PPG_Time *time)
 {
 	*time = 0;
@@ -59,25 +54,23 @@ void ppg_global_initialize_context(PPG_Context *context) {
 	
 	ppg_event_buffer_init(&context->event_buffer);
 	ppg_furcation_buffer_init(&context->furcation_buffer);
-	
-	// TODO: Replace this with the actual number of inputs
-	//
-	context->active_inputs.n_bits = 255;
+
+	context->active_inputs.n_bits = 0;
 	
 	ppg_bitfield_clear(&context->active_inputs);
 	
-	context->pattern_root_initialized = false;
-	context->process_actions_if_aborted = false;
 	context->current_token = NULL;
 	context->timeout_enabled = true;
 	context->papageno_enabled = true;
+	context->tree_depth = 0;
 	context->layer = 0;
 	ppg_global_init_input(&context->abort_input);
 	context->event_timeout = 0;
-	context->input_id_equal = (PPG_Input_Id_Equal_Fun)ppg_input_id_simple_equal;
 	context->time = ppg_default_time;
 	context->time_difference = ppg_default_time_difference;
 	context->time_comparison = ppg_default_time_comparison;
-	
-	ppg_signal_callback_init(&context->signal_callback);
+
+	/* Initialize the pattern root
+	*/
+	ppg_token_new(&context->pattern_root);
 };

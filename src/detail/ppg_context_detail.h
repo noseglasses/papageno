@@ -33,23 +33,21 @@ typedef struct PPG_Context_Struct
 	PPG_Bitfield active_inputs;
 	
 	PPG_Token__ pattern_root;
-	bool pattern_root_initialized;
-	bool process_actions_if_aborted;
 
 	PPG_Token__ *current_token;
 
 	bool timeout_enabled;
 	bool papageno_enabled;
 	
+	PPG_Count tree_depth;
+	
 	PPG_Layer layer;
 
-	PPG_Input abort_input;
+	PPG_Input_Id abort_input;
 
 	PPG_Time time_last_event;
 
 	PPG_Time event_timeout;
-	
-	PPG_Input_Id_Equal_Fun input_id_equal;
 	
 	PPG_Event_Processor_Fun input_processor;
 	

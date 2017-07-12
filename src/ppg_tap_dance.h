@@ -69,7 +69,7 @@ typedef struct {
  */
 PPG_Token ppg_tap_dance(	
 							PPG_Layer layer,
-							PPG_Input input,
+							PPG_Input_Id input,
 							PPG_Action_Flags_Type default_action_flags,
 							PPG_Count n_tap_definitions,
 							PPG_Tap_Definition tap_definitions[]);

@@ -17,12 +17,13 @@
 #include "ppg_global.h"
 #include "ppg_token.h"
 #include "ppg_debug.h"
+#include "ppg_context.h"
 #include "ppg_action_flags.h"
 #include "detail/ppg_context_detail.h"
 #include "detail/ppg_global_detail.h"
 #include "detail/ppg_event_buffer_detail.h"
-#include "ppg_context.h"
 #include "detail/ppg_signal_detail.h"
+#include "detail/ppg_pattern_detail.h"
 
 #include <stdlib.h>
 #include <stddef.h>
@@ -35,20 +36,11 @@ void ppg_global_init(void) {
 		
 		ppg_context = (PPG_Context *)ppg_context_create();
 	}
-	
-	if(!ppg_context->pattern_root_initialized) {
-		
-		/* Initialize the pattern root
-		 */
-		ppg_token_new(&ppg_context->pattern_root);
-		
-		ppg_context->pattern_root_initialized = true;
-	}
 }
 
 void ppg_global_compile(void)
 {
-	// TODO: Possible optimizations of the search tree
+	ppg_context->tree_depth = ppg_pattern_tree_depth();
 	
 	// Initialize the furcation buffer to ensure correct size (the maximum
 	// search tree depth)
@@ -74,34 +66,20 @@ void ppg_global_reset(void)
 	ppg_context = (PPG_Context *)ppg_context_create();
 }
 
-/* Use this function to define a input_id that always aborts a pattern
+/* Use this function to define a input that always aborts a pattern
  */
-PPG_Input ppg_global_set_abort_trigger(PPG_Input input)
+PPG_Input_Id ppg_global_set_abort_trigger(PPG_Input_Id input)
 {
-	PPG_Input old_input = ppg_context->abort_input;
+	PPG_Input_Id old_input = ppg_context->abort_input;
 	
 	ppg_context->abort_input = input;
 	
 	return old_input;
 }
 
-PPG_Input ppg_global_get_abort_trigger(void)
+PPG_Input_Id ppg_global_get_abort_trigger(void)
 {
 	return ppg_context->abort_input;
-}
-
-bool ppg_global_set_process_actions_if_aborted(bool state)
-{
-	bool old_value = ppg_context->process_actions_if_aborted;
-	
-	ppg_context->process_actions_if_aborted = state;
-	
-	return old_value;
-}
-
-bool ppg_global_get_process_actions_if_aborted(void)
-{
-	return ppg_context->process_actions_if_aborted;
 }
 
 PPG_Time ppg_global_set_timeout(PPG_Time timeout)
@@ -116,11 +94,6 @@ PPG_Time ppg_global_set_timeout(PPG_Time timeout)
 PPG_Time ppg_global_get_timeout(void)
 {
 	return ppg_context->event_timeout;
-}
-
-void ppg_global_set_input_id_equal_function(PPG_Input_Id_Equal_Fun fun)
-{
-	ppg_context->input_id_equal = fun;
 }
 
 PPG_Event_Processor_Fun ppg_global_set_default_event_processor(PPG_Event_Processor_Fun input_processor)
@@ -160,7 +133,9 @@ PPG_Layer ppg_global_set_layer(PPG_Layer layer)
 	PPG_Layer previous_layer = ppg_context->layer;
 	
 	if(previous_layer != layer) {
-		ppg_global_abort_pattern_matching();
+		if(ppg_context->current_token) {
+			ppg_global_abort_pattern_matching();
+		}
 	}
 	
 	ppg_context->layer = layer;
@@ -187,15 +162,21 @@ PPG_Signal_Callback ppg_global_get_signal_callback(void)
 	return ppg_context->signal_callback;
 }
 
+void ppg_global_set_number_of_inputs(PPG_Count n_inputs)
+{
+	ppg_context->active_inputs.n_bits = n_inputs;
+}
+
+PPG_Count ppg_global_get_number_of_inputs(void)
+{
+	return ppg_context->active_inputs.n_bits;
+}
+
 void ppg_global_abort_pattern_matching(void)
 {		
 	if(!ppg_context->current_token) { return; }
 	
 // 	PPG_PRINTF("Aborting pattern\n");
-	
-	/* The frase could not be parsed. Reset any child tokens.
-	*/
-// 	ppg_token_reset_children(ppg_context->current_token);
 	
 	ppg_recurse_and_cleanup_active_branch();
 	
@@ -203,11 +184,8 @@ void ppg_global_abort_pattern_matching(void)
 			
 	ppg_signal(PPG_On_Abort);
 	
-	if(ppg_context->process_actions_if_aborted) {
-		ppg_recurse_and_process_actions(PPG_On_Abort);
-	}
-	
 	ppg_delete_stored_events();
 	
 	ppg_context->current_token = NULL;
 }
+

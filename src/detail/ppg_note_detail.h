@@ -24,7 +24,7 @@ typedef struct {
 	
 	PPG_Token__ super;
 	 
-	PPG_Input input;
+	PPG_Input_Id input;
 	
 	bool active;
 	 

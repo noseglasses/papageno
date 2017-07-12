@@ -23,6 +23,6 @@
  * 
  * @param input The input to intialize
  */
-void ppg_global_init_input(PPG_Input *input);
+void ppg_global_init_input(PPG_Input_Id *input);
 
 #endif

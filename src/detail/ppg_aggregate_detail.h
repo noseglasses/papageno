@@ -26,7 +26,7 @@ typedef struct {
 	PPG_Token__ super;
 	 
 	PPG_Count n_members;
-	PPG_Input *inputs;
+	PPG_Input_Id *inputs;
 	bool *member_active;
 	
 #ifdef PPG_PEDANTIC_ACTIONS
@@ -39,7 +39,7 @@ typedef struct {
 PPG_Token ppg_global_initialize_aggregate(	
 								PPG_Aggregate *aggregate,
 								PPG_Count n_inputs,
-								PPG_Input inputs[]);
+								PPG_Input_Id inputs[]);
 
 void *ppg_aggregate_new(void *aggregate__);
 

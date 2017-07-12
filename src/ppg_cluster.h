@@ -38,7 +38,7 @@ PPG_Token ppg_cluster(
 							PPG_Layer layer, 
 							PPG_Action action,
 							PPG_Count n_inputs, 
-							PPG_Input inputs[]);
+							PPG_Input_Id inputs[]);
 
 /** @brief Generates a cluster token.
  *
@@ -56,7 +56,7 @@ PPG_Token ppg_cluster(
  */
 PPG_Token ppg_cluster_create(
 							PPG_Count n_inputs,
-							PPG_Input inputs[]);
+							PPG_Input_Id inputs[]);
 
 /** @brief Auxiliary macro to create a cluster based on a set of input specifications
  * 

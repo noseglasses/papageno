@@ -33,11 +33,11 @@ static bool ppg_chord_match_event(
 	
 	PPG_ASSERT(chord->super.state == PPG_Token_In_Progress);
 	
-	/* Check it the input is part of the current chord 
+	/* Check if the input is part of the current chord 
 	 */
 	for(PPG_Count i = 0; i < chord->n_members; ++i) {
 		
-		if(ppg_context->input_id_equal(chord->inputs[i].input_id, event->input_id)) {
+		if(chord->inputs[i] == event->input) {
 			
 			input_part_of_chord = true;
 			
@@ -116,8 +116,8 @@ static void ppg_chord_print_self(PPG_Chord *c, PPG_Count indent, bool recurse)
 	PPG_I PPG_PRINTF("   n_inputs_active: %d\n", c->n_inputs_active);
 	
 	for(PPG_Count i = 0; i < c->n_members; ++i) {
-		PPG_I PPG_PRINTF("      input_id: 0x%" PRIXPTR ", active: %d\n", 
-				  (uintptr_t)c->inputs[i].input_id, c->member_active[i]);
+		PPG_I PPG_PRINTF("      input: 0x%" PRIXPTR ", active: %d\n", 
+				  (uintptr_t)c->inputs[i], c->member_active[i]);
 	}
 	ppg_token_print_self_end((PPG_Token__*)c, indent, recurse);
 }
@@ -129,8 +129,6 @@ static PPG_Token_Vtable ppg_chord_vtable =
 		= (PPG_Token_Match_Event_Fun) ppg_chord_match_event,
 	.reset 
 		= (PPG_Token_Reset_Fun) ppg_aggregate_reset,
-	.trigger_action 
-		= (PPG_Token_Trigger_Action_Fun) ppg_token_trigger_action,
 	.destroy 
 		= (PPG_Token_Destroy_Fun) ppg_aggregate_destroy,
 	.equals
@@ -146,7 +144,7 @@ static PPG_Token_Vtable ppg_chord_vtable =
 
 PPG_Token ppg_chord_create(	
 								PPG_Count n_inputs,
-								PPG_Input inputs[])
+								PPG_Input_Id inputs[])
 {
 	PPG_Chord *chord = (PPG_Chord*)ppg_aggregate_new(ppg_aggregate_alloc());
 	
@@ -159,7 +157,7 @@ PPG_Token ppg_chord(
 							PPG_Layer layer, 
 							PPG_Action action, 
 							PPG_Count n_inputs,
-							PPG_Input inputs[])
+							PPG_Input_Id inputs[])
 {   	
 	PPG_PRINTF("Adding chord\n");
 	

@@ -76,7 +76,7 @@ static void ppg_aggregate_resize(PPG_Aggregate *aggregate,
 	ppg_aggregate_deallocate_member_storage(aggregate);
 	
 	aggregate->n_members = n_members;
-	aggregate->inputs = (PPG_Input *)malloc(n_members*sizeof(PPG_Input));
+	aggregate->inputs = (PPG_Input_Id *)malloc(n_members*sizeof(PPG_Input_Id));
 	aggregate->member_active = (bool *)malloc(n_members*sizeof(bool));
 #ifdef PPG_PEDANTIC_ACTIONS
 	aggregate->all_activated = false;
@@ -108,7 +108,7 @@ bool ppg_aggregates_equal(PPG_Aggregate *c1, PPG_Aggregate *c2)
 	
 	for(PPG_Count i = 0; i < c1->n_members; ++i) {
 		for(PPG_Count j = 0; j < c1->n_members; ++j) {
-			if(ppg_context->input_id_equal(c1->inputs[i].input_id, c2->inputs[j].input_id)) { 
+			if(c1->inputs[i] == c2->inputs[j]) {
 				++n_equalities;
 				break;
 			}
@@ -121,7 +121,7 @@ bool ppg_aggregates_equal(PPG_Aggregate *c1, PPG_Aggregate *c2)
 PPG_Token ppg_global_initialize_aggregate(	
 								PPG_Aggregate *aggregate,
 								PPG_Count n_inputs,
-								PPG_Input inputs[])
+								PPG_Input_Id inputs[])
 {
 	ppg_aggregate_resize(aggregate, n_inputs);
 	 

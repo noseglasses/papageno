@@ -26,8 +26,7 @@
 enum PPG_Action_Flags {
 	PPG_Action_Default = 0,
 	PPG_Action_Fall_Through = 1 << 0,
-	PPG_Action_Fall_Back = 1 << 2,
-	PPG_Action_Immediate = 1 << 3
+	PPG_Action_Fall_Back = 1 << 2
 };
 
 #endif

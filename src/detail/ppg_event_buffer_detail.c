@@ -29,7 +29,9 @@ PPG_Count ppg_event_buffer_size(void)
 	return PPG_EB.size;
 }
 
-void ppg_event_buffer_store_event(PPG_Event *event)
+// Reurns an in place version of the event
+//
+PPG_Event * ppg_event_buffer_store_event(PPG_Event *event)
 {
 	#ifdef DEBUG_PAPAGENO
 	if(PPG_EB.start > PPG_EB.end) {
@@ -56,6 +58,8 @@ void ppg_event_buffer_store_event(PPG_Event *event)
 	PPG_EB.events[new_pos] = *event;
 	
 	++PPG_EB.size;
+	
+	return &PPG_EB.events[new_pos];
 }
 
 void ppg_event_buffer_init(PPG_Event_Buffer *eb)
@@ -102,9 +106,15 @@ static void ppg_even_buffer_recompute_size(void)
 static void ppg_flush_non_considered_events(PPG_Event *event, 
 														  void* user_data)
 {
-	if(!(event->flags & PPG_Event_Considered)) {
+	if(!(
+				(event->flags & PPG_Event_Considered)
+		 ||	(event->flags & PPG_Event_Control_Tag)
+		)
+	) {
 
-		// Events that were not considered are flushed
+		// Events that were not considered and are 
+		// not control tags such as those used for 
+		// abort input events are flushed
 		//
 		ppg_context->input_processor(event, NULL);
 	}
@@ -170,22 +180,21 @@ static void ppg_event_buffer_check_and_tag_considered(PPG_Event *event,
 	// must only be called on success.
 	//
 	if(ppg_bitfield_get_bit(&ppg_context->active_inputs,
-									event->input_id)) {
+									event->input)) {
 		
 		if(event->flags & PPG_Event_Active) {
 			
 			// Something goes wrong here, as
 			// an event must not be activated twice in a row
 			//
-			PPG_ERROR("Input %d was activated twice in a row without deactivating\n", event->input_id);
+			PPG_ERROR("Input %d was activated twice in a row without deactivating\n", event->input);
 			PPG_ASSERT(0);
-			exit(1);
 		}
 		else {
 			event->flags |= PPG_Event_Considered;
 			
 			ppg_bitfield_set_bit(&ppg_context->active_inputs,
-									event->input_id,
+									event->input,
 									false /* inactivate */
   								);
 		}
@@ -194,9 +203,11 @@ static void ppg_event_buffer_check_and_tag_considered(PPG_Event *event,
 		
 		if(event->flags & PPG_Event_Active) {
 			
-			if(on_success) {
+			if(	on_success
+				|| (event->flags & PPG_Event_Control_Tag)
+			) {
 				ppg_bitfield_set_bit(&ppg_context->active_inputs,
-										event->input_id,
+										event->input,
 										true /* active */
 									);
 			}
@@ -206,9 +217,17 @@ static void ppg_event_buffer_check_and_tag_considered(PPG_Event *event,
 // 			// Something goes wrong here, as
 // 			// an event must not be deactivated twice in a row
 // 			//
-// 			PPG_ERROR("Input %d was deactivated twice in a row without deactivating\n", event->input_id);
+// 			PPG_ERROR("Input %d was deactivated twice in a row without deactivating\n", event->input);
 // 			assert(0);
 // 		}
+	}
+	
+	if(event->flags & PPG_Event_Control_Tag) {
+		
+		PPG_PRINTF("Marking control event %d: %d as considered\n",
+			event->input, (event->flags & PPG_Event_Active)
+		);
+		event->flags |= PPG_Event_Considered;
 	}
 }
 	

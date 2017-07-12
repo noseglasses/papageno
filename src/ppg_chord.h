@@ -38,7 +38,7 @@ PPG_Token ppg_chord(
 							PPG_Layer layer,
 							PPG_Action action,
 							PPG_Count n_inputs,
-							PPG_Input inputs[]);
+							PPG_Input_Id inputs[]);
 
 /** @brief Generates a chord token.
  * 
@@ -56,7 +56,7 @@ PPG_Token ppg_chord(
  */
 PPG_Token ppg_chord_create(	
 							PPG_Count n_inputs,
-							PPG_Input inputs[]
+							PPG_Input_Id inputs[]
 							);
 
 /** @brief Auxiliary macro to create a chord based on a set of input specifications

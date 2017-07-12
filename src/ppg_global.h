@@ -38,37 +38,17 @@
  * @param input The abort input
  * @returns The abort input id that was previously set
  */
-PPG_Input ppg_global_set_abort_trigger(PPG_Input input);
+PPG_Input_Id ppg_global_set_abort_trigger(PPG_Input_Id input);
 
 /** @brief Retreives the current abort input. 
  * 
  * See ppg_global_set_abort_trigger for further information.
  */
-PPG_Input ppg_global_get_abort_trigger(void);
+PPG_Input_Id ppg_global_get_abort_trigger(void);
 
 /** @brief Aborts processing of the current pattern
  */
 void ppg_global_abort_pattern_matching(void);
-
-/** @brief Defines whether actions are supposed to be processed along the token
- * chain of the current pattern, based on the last token that matched. 
- * 
- * The default setting
- * is to process no action in case of an abortion of pattern processing.
- * 
- * @param state The new value to be set
- * 
- * @returns The previous setting
- */
-bool ppg_global_set_process_actions_if_aborted(bool state);
-
-/** @brief Retreives the current settings of the process action if aborted.
- * 
- * See the documentation of ppg_global_set_process_actions_if_aborted
- * 
- * @returns The current boolean value
- */
-bool ppg_global_get_process_actions_if_aborted(void);
 
 /** @brief Set the current timeout for pattern processing. 
  * 
@@ -177,4 +157,15 @@ PPG_Signal_Callback ppg_global_set_signal_callback(PPG_Signal_Callback callback)
  */
 PPG_Signal_Callback ppg_global_get_signal_callback(void);
 
+/** @brief Set number of inputs
+ * 
+ * @param n_inputs The number of inputs
+ */
+void ppg_global_set_number_of_inputs(PPG_Count n_inputs);
+
+/** @brief Retreives the registered number of inputs
+ * 
+ * @returns The number of inputs
+ */
+PPG_Count ppg_global_get_number_of_inputs(void);
 #endif

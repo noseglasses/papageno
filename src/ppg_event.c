@@ -22,104 +22,6 @@
 #include "detail/ppg_signal_detail.h"
 #include "ppg_debug.h"
 #include "ppg_bitfield.h"
-
-#if 0
-bool ppg_event_process(PPG_Event *event)
-{ 
-	if(!ppg_context->papageno_enabled) {
-		return true;
-	}
-	
-	/* When a pattern could not be finished, all inputstrokes are
-	 * processed through the process_record_quantum method.
-	 * To prevent infinite recursion, we have to temporarily disable 
-	 * processing patterns.
-	 */
-	if(ppg_context->papageno_temporarily_disabled) { return true; }
-	
-	/* Early exit if no pattern was registered 
-	 */
-	if(!ppg_context->pattern_root_initialized) { return true; }
-	
-	/* Check if the pattern is being aborted
-	 */
-	if(ppg_context->input_id_equal(ppg_context->abort_input.input_id, event->input_id)) {
-		
-		/* If a pattern is in progress, we abort it and consume the abort input.
-		 */
-		if(ppg_context->current_token) {
-			PPG_PRINTF("Processing melodies interrupted by user\n");
-			ppg_global_abort_pattern_matching();
-			return false;
-		}
-	
-		return false;
-	}
-
-// 	PPG_PRINTF("Starting inputprocessing\n");
-	
-	if(!ppg_context->current_token) {
-		
-// 		PPG_PRINTF("New pattern \n");
-		
-		/* Start of pattern processing
-		 */
-		ppg_event_buffer_init(&ppg_context->event_buffer);
-		
-		ppg_context->current_token = &ppg_context->pattern_root;
-		
-		ppg_context->time(&ppg_context->time_last_event);
-	}
-	else {
-		
-		if(ppg_timeout_check()) {
-			
-			/* Timeout hit. Cleanup already done.
-			 */
-			return false;
-		}
-		else {
-			ppg_context->time(&ppg_context->time_last_event);
-		}
-	}
-	
-	PPG_Processing_State result 
-		= ppg_token_match_event(	
-										&ppg_context->current_token,
-										event,
-										ppg_context->layer
-								);
-		
-	switch(result) {
-		
-		case PPG_Token_In_Progress:
-			
-			return false;
-			
-		case PPG_Pattern_Matches:
-			
-			ppg_recurse_and_process_actions(PPG_On_Pattern_Matches);
-			
-			ppg_context->current_token = NULL;
-			
-			ppg_delete_stored_events();
-											  
-			return false;
-			
-		case PPG_Token_Invalid:
-			
-			PPG_PRINTF("-\n");
-		
-			ppg_global_abort_pattern_matching();
-			
-			return false; /* The input(s) have been already processed */
-			//return true; // Why does this require true to work and 
-			// why is t not written?
-	}
-	
-	return true;
-}
-#endif
 	
 /** @brief Check if a branch matches the current event chain
  * 
@@ -271,11 +173,11 @@ static PPG_Id ppg_token_get_most_appropriate_branch(PPG_Token__ *parent_token)
 	PPG_Id match_id = -1;
 	PPG_Count precedence = 0;
 	
+// 	PPG_PRINTF("Getting most appropriate child\n");
+	
 	/* Find the most suitable token with respect to the current ppg_context->layer.
 		*/
 	for(PPG_Count i = 0; i < parent_token->n_children; ++i) {
-	
-// 			PPG_CALL_VIRT_METHOD(parent_token->children[i], print_self);
 	
 		/* Accept only paths through the search tree whose
 		* nodes' ppg_context->layer tags are lower or equal the current ppg_context->layer
@@ -285,22 +187,33 @@ static PPG_Id ppg_token_get_most_appropriate_branch(PPG_Token__ *parent_token)
 		if(parent_token->children[i]->state != PPG_Token_Matches) {
 			continue;
 		}
+	
+// 		PPG_PRINTF("Child %d\n", i);
+		
+		PPG_CALL_VIRT_METHOD(parent_token->children[i], print_self, 0, false);
 		
 		PPG_Count cur_precedence 
 				= parent_token->children[i]
 						->vtable->token_precedence();
+						
+// 		PPG_PRINTF("Cur precedence %d\n", cur_precedence);
+// 		PPG_PRINTF("precedence %d\n", precedence);
 				
 		if(cur_precedence > precedence) {
 			precedence = cur_precedence;
 			match_id = i;
+			highest_layer = parent_token->children[i]->layer;
 		}
 		else {
+			
+// 			PPG_PRINTF("Equal precedence\n");
 			
 			if(parent_token->children[i]->layer > highest_layer) {
 				highest_layer = parent_token->children[i]->layer;
 				match_id = i;
 			}
 		}
+// 		PPG_PRINTF("match_id %d\n", match_id);
 	}
 	
 	PPG_ASSERT(match_id >= 0);
@@ -310,30 +223,27 @@ static PPG_Id ppg_token_get_most_appropriate_branch(PPG_Token__ *parent_token)
 
 /** @brief Checks if an arriving event can possibly be ignored
  */
-static bool ppg_check_ignore_event(PPG_Event *event, bool *swallow_event)
-{
-	*swallow_event = false;
-	
-	if(!ppg_context->papageno_enabled) {
-		return true;
-	}
-	
-	/* Early exit if no pattern was registered 
-	 */
-	if(!ppg_context->pattern_root_initialized) { return true; }
-	
+static bool ppg_check_ignore_event(PPG_Event *event)
+{	
 	/* Check if the pattern is being aborted
 	 */
-	if(ppg_context->input_id_equal(ppg_context->abort_input.input_id, event->input_id)) {
+	if(	(ppg_context->abort_input == event->input)
+		&& (event->flags & PPG_Event_Active)) {
 		
+		// Mark the event as a control event
+		// to ensure that corresponding deactivation of the
+		// respective input is swallowed (i.e. not flushed)
+		//
+		event->flags |= PPG_Event_Control_Tag;
+	
 		/* If a pattern is in progress, we abort it and consume the abort input.
 		 */
 		if(ppg_context->current_token) {
-			PPG_PRINTF("Processing melodies interrupted by user\n");
 			
-			*swallow_event = true;
+			PPG_PRINTF("Abort input triggered interruption\n");
 			
 			ppg_global_abort_pattern_matching();
+			
 			return true;
 		}
 	
@@ -426,7 +336,7 @@ static PPG_Count ppg_process_next_event(void)
 							branch);
 		}
 		
-		PPG_PRINTF("Advancing with child token\n");
+		PPG_PRINTF("Continuing with child token\n");
 		
 		ppg_context->current_token 
 				= ppg_context->current_token->children[branch_id];
@@ -435,6 +345,8 @@ static PPG_Count ppg_process_next_event(void)
 		// pattern
 		//
 		if(0 == ppg_context->current_token->n_children) {
+			
+			PPG_PRINTF("Pattern tree leaf detected\n");
 			
 			return PPG_Pattern_Matches;
 		}
@@ -462,7 +374,7 @@ static void ppg_event_process_all_possible(void)
 			
 			case PPG_Pattern_Matches:
 				
-				ppg_recurse_and_process_actions(PPG_On_Pattern_Matches);
+				ppg_recurse_and_process_actions();
 				
 				ppg_event_buffer_on_match_success();
 				
@@ -471,8 +383,6 @@ static void ppg_event_process_all_possible(void)
 				break;
 				
 			case PPG_Token_Matches:
-				
-				// TODO: Trigger event on token match
 				
 				// No break statement to fall through to PPG_Token_In_Progress
 				
@@ -527,20 +437,23 @@ static void ppg_event_process_all_possible(void)
 	}
 }
 
-bool ppg_event_process(PPG_Event *event)
+void ppg_event_process(PPG_Event *event)
 {
+	if(!ppg_context->papageno_enabled) {
+		return;
+	}
+	
+	event = ppg_event_buffer_store_event(event);
+	
 	// The return value signals the calling instance to 
 	// process the event (true) or to ignore it (false)
 	//
-	bool swallow_event;
-	if(ppg_check_ignore_event(event, &swallow_event)) {
-		return !swallow_event;
+	if(ppg_check_ignore_event(event)) {
+		return;
 	}
 	
-	PPG_PRINTF("Input %d: %d\n", event->input_id, 
+	PPG_PRINTF("Input %d: %d\n", event->input, 
 				  event->flags & PPG_Event_Active);
-	
-	ppg_event_buffer_store_event(event);
 	
 	bool timeout_hit = ppg_timeout_check();
 	
@@ -554,12 +467,12 @@ bool ppg_event_process(PPG_Event *event)
 			
 		// Timeout hit. Cleanup already done.
 		//
-		return false;
+		return;
 	}
 	
 	ppg_event_process_all_possible();
 	
-	return false;
+	return;
 }
 
 void ppg_event_buffer_iterate(

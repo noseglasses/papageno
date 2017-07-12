@@ -37,7 +37,7 @@ typedef struct {
 
 PPG_Count ppg_event_buffer_size(void);
 
-void ppg_event_buffer_store_event(PPG_Event *event);
+PPG_Event * ppg_event_buffer_store_event(PPG_Event *event);
 
 void ppg_event_buffer_init(PPG_Event_Buffer *eb);
 

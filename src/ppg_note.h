@@ -35,7 +35,7 @@ PPG_Token ppg_single_note_line(
 							PPG_Layer layer, 
 							PPG_Action action, 
 							PPG_Count n_inputs,
-							PPG_Input inputs[]);
+							PPG_Input_Id inputs[]);
 
 /** An alias for ppg_single_note_line
  */
@@ -53,6 +53,6 @@ PPG_Token ppg_single_note_line(
  * @param input The input that is represented by the note
  * @returns The constructed tokenis
  */
-PPG_Token ppg_note_create(PPG_Input input);
+PPG_Token ppg_note_create(PPG_Input_Id input);
 
 #endif

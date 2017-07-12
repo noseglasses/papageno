@@ -53,174 +53,6 @@ void ppg_token_reset_children(PPG_Token__ *token)
 	}
 }
 
-bool ppg_token_trigger_action(PPG_Token__ *token, PPG_Slot_Id slot_id) {
-	
-	/* Actions of matching tokens have already been triggered during 
-	 * pattern processing.
-	 */
-	if(	(slot_id != PPG_On_Token_Matches)
-		&&	(token->action.flags & PPG_Action_Immediate)) {
-		return false;
-	}
-			
-	if(token->action.callback.func) {
-
-// 		PPG_PRINTF("Action of token 0x%" PRIXPTR ": %u\n",
-// 				  (uintptr_t)token, (uintptr_t)token->action.callback.user_data);
-		
-		PPG_PRINTF("*\n");
-	
-		token->action.callback.func(
-			token->action.callback.user_data);
-		
-		return true;
-	}
-	
-	return false;
-}
-
-#if 0
-PPG_Processing_State ppg_token_match_event(	
-												PPG_Token__ **current_token,
-												PPG_Event *event) 
-{
-	/* Loop over all tokens and inform them about the 
-	 * event 
-	 */
-	bool all_children_invalid = true;
-	
-	PPG_Token__ *a_current_token = *current_token;
-	
-	ppg_event_buffer_store_event(event);
-	
-// 	PPG_PRINTF("Processing input\n");
-	
-// 	#if DEBUG_PAPAGENO
-// 	if(event->pressed) {
-// 		PPG_PRINTF("v");
-// 	}
-// 	else {
-// 		PPG_PRINTF("^");
-// 	}
-// 	#endif
-	
-	bool any_token_matches = false;
-		
-	/* Pass the inputpress to the tokens and let them decide it they 
-	 * can use it. If a token cannot it becomes invalid and is not
-	 * processed further on this node level. This speeds up processing.
-	 */
-	for(PPG_Count i = 0; i < a_current_token->n_children; ++i) {
-		
-		// PPG_CALL_VIRT_METHOD(a_current_token->children[i], print_self);
-		
-		/* Accept only paths through the search tree whose
-		 * nodes' ppg_context->layer tags are lower or equal the current ppg_context->layer
-		 */
-		if(a_current_token->children[i]->layer > ppg_context->layer) { continue; }
-		
-		if(a_current_token->children[i]->state == PPG_Token_Invalid) {
-			continue;
-		}
-		
-		PPG_Processing_State child_process_result 
-			= a_current_token->children[i]
-					->vtable->match_event(	
-								a_current_token->children[i], 
-								event
-						);
-								
-		switch(child_process_result) {
-			
-			case PPG_Token_In_Progress:
-				all_children_invalid = false;
-				
-				break;
-				
-			case PPG_Token_Matches:
-				
-				all_children_invalid = false;
-				any_token_matches = true;
-
-				break;
-			case PPG_Token_Invalid:
-// 				PPG_PRINTF("Token invalid");
-				break;
-		}
-	}
-	
-	/* If all children are invalid, the inputstroke chain does not
-	 * match any defined pattern.
-	 */
-	if(all_children_invalid) {
-					
-		return PPG_Token_Invalid;
-	}
-	
-	/* If any token matches we have to find the most suitable one
-	 * and either terminate pattern processing if the matching child
-	 * is a leaf node, or replace the current token to await further 
-	 * inputstrokes.
-	 */
-	else if(any_token_matches) {
-		
-		PPG_Layer highest_layer = -1;
-		PPG_Id match_id = -1;
-		
-		/* Find the most suitable token with respect to the current ppg_context->layer.
-		 */
-		for(PPG_Count i = 0; i < a_current_token->n_children; ++i) {
-		
-// 			PPG_CALL_VIRT_METHOD(a_current_token->children[i], print_self);
-		
-			/* Accept only paths through the search tree whose
-			* nodes' ppg_context->layer tags are lower or equal the current ppg_context->layer
-			*/
-			if(a_current_token->children[i]->layer > ppg_context->layer) { continue; }
-			
-			if(a_current_token->children[i]->state != PPG_Token_Matches) {
-				continue;
-			}
-			
-			if(a_current_token->children[i]->layer > highest_layer) {
-				highest_layer = a_current_token->children[i]->layer;
-				match_id = i;
-			}
-		}
-		
-		PPG_ASSERT(match_id >= 0);
-				
-		/* Cleanup children of the current node for further pattern processing.
-		 */
-		ppg_token_reset_children(a_current_token);
-		
-		/* Replace the current token. From this point on
-		 * a_current_token references the child token
-		*/
-		*current_token = a_current_token->children[match_id];
-		a_current_token = *current_token;
-		
-		if(a_current_token->action.flags & PPG_Action_Immediate) {
-			ppg_token_trigger_action(a_current_token, PPG_On_Token_Matches);
-		}
-			
-		if(0 == a_current_token->n_children) {
-			
-			return PPG_Pattern_Matches;
-		}
-		else {
-			
-			/* The pattern is still in progress. We continue with the 
-			 * new current node as soon as the next inputstroke happens.
-			 */
-			return PPG_Token_In_Progress;
-		}
-	}
-	
-	return PPG_Token_In_Progress;
-}
-#endif
-
 static void ppg_token_allocate_children(PPG_Token__ *a_This, PPG_Count n_children) {
 
 	 a_This->children 
@@ -264,7 +96,7 @@ void ppg_token_free_children(PPG_Token__ *token)
 {
 	if(!token->children) { return; }
 	
-	for(PPG_Count i = 0; i < token->n_allocated_children; ++i) {
+	for(PPG_Count i = 0; i < token->n_children; ++i) {
 		
 		ppg_token_free(token->children[i]);
 	}
@@ -354,8 +186,6 @@ static PPG_Token_Vtable ppg_token_vtable =
 		= NULL,
 	.reset 
 		= (PPG_Token_Reset_Fun) ppg_token_reset,
-	.trigger_action 
-		= (PPG_Token_Trigger_Action_Fun) ppg_token_trigger_action,
 	.destroy 
 		= (PPG_Token_Destroy_Fun) ppg_token_destroy,
 	.equals

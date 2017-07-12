@@ -30,14 +30,15 @@ enum PPG_Event_Flags
 	
 	PPG_Event_Active = (1 << 0),
 	PPG_Event_Considered = (PPG_Event_Active << 1),
+	PPG_Event_Control_Tag = (PPG_Event_Considered << 1),
 	
-	PPG_Event_Flags_All = (PPG_Event_Considered << 1) - 1
+	PPG_Event_Flags_All = (PPG_Event_Control_Tag << 1) - 1
 };
 
 /** @brief Specification of an input event
  */
 typedef struct {
-	PPG_Input_Id input_id; ///< The input identifier associated with the input that is pressed or released
+	PPG_Input_Id input; ///< The input identifier associated with the input that is pressed or released
 	PPG_Time time; ///< The time at which the input event occured
 	PPG_Count flags; ///< Whether the input is active
 } PPG_Event;
@@ -58,7 +59,7 @@ typedef void (*PPG_Event_Processor_Fun)(PPG_Event *event,
  * @param event A pointer to an input event to process by papagenop
  * @returns If further input event processing by other input event processors is desired
  */
-bool ppg_event_process(PPG_Event *event);
+void ppg_event_process(PPG_Event *event);
 
 /** @brief Call this function to actively flush any input events that are in cache.
  * 

@@ -21,13 +21,11 @@
 #include "detail/ppg_note_detail.h"
 #include "detail/ppg_pattern_detail.h"
 
-PPG_Token ppg_note_create(PPG_Input input)
+PPG_Token ppg_note_create(PPG_Input_Id input)
 {
     PPG_Note *note = (PPG_Note*)ppg_note_new(ppg_note_alloc());
 	 
 	 note->input = input;
-	 
-	 ppg_context->input_id_equal(input.input_id, note->input.input_id);
 	 
 	 /* Return the new end of the pattern */
 	 return note;
@@ -37,7 +35,7 @@ PPG_Token ppg_single_note_line(
 							PPG_Layer layer,
 							PPG_Action action,
 							PPG_Count n_inputs,
-							PPG_Input inputs[])
+							PPG_Input_Id inputs[])
 {
 	PPG_PRINTF("Adding single note line\n");
   

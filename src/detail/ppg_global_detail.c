@@ -20,7 +20,7 @@
 
 /* Returns if an action has been triggered.
  */
-bool ppg_recurse_and_process_actions(PPG_Slot_Id slot_id)
+bool ppg_recurse_and_process_actions(void)
 {			
 	if(!ppg_context->current_token) { return false; }
 	
@@ -28,19 +28,23 @@ bool ppg_recurse_and_process_actions(PPG_Slot_Id slot_id)
 	
 	PPG_Token__ *cur_token = ppg_context->current_token;
 	
+	PPG_Token__ *action_tokens[ppg_context->tree_depth];
+	PPG_Count n_actions = 0;
+	
 	while(cur_token) {
-		
-		PPG_PRINTF("Triggering actions of token 0x%"
-			PRIXPTR "\n", (uintptr_t)cur_token);
-		
-		bool action_present = ppg_token_trigger_action(cur_token, slot_id);
 
-		if(action_present) {
+		if(cur_token->action.callback.func) {
+			
+			// Store the tokens that carry actions in reversed order
+			//
+			action_tokens[n_actions] = cur_token;
+			++n_actions;
+			
 			if(cur_token->action.flags &= PPG_Action_Fall_Through) {
 				cur_token = cur_token->parent;
 			}
 			else {
-				return true;
+				break;
 			}
 		}
 		else {
@@ -48,14 +52,26 @@ bool ppg_recurse_and_process_actions(PPG_Slot_Id slot_id)
 				cur_token = cur_token->parent;
 			}
 			else {
-				return false;
+				break;
 			}
 		}
 	}
 	
+	// Traverse and trigger token actions traveling
+	// from the root of the token tree to its leaf
+	//
+	for(PPG_Id i = n_actions - 1; i >= 0; --i) {
+		
+		PPG_PRINTF("Triggering actions of token 0x%"
+			PRIXPTR "\n", (uintptr_t)action_tokens[i]);
+			
+		action_tokens[i]->action.callback.func(
+			action_tokens[i]->action.callback.user_data);
+	}
+	
 	PPG_PRINTF("Done\n");
 	
-	return false;
+	return n_actions > 0;
 }
 
 void ppg_recurse_and_cleanup_active_branch(void)

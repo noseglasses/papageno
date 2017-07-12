@@ -19,7 +19,7 @@
 
 #include <stdbool.h>
 
-bool ppg_recurse_and_process_actions(PPG_Slot_Id slot_id);
+bool ppg_recurse_and_process_actions(void);
 
 void ppg_recurse_and_cleanup_active_branch(void);
 

@@ -24,32 +24,9 @@
 
 /** @brief The type used as input identifier.
  * 
- * This type is used as an identifier for inputs.
- * Please supply a comparison callback via ppg_global_set_input_id_equal_function.
- * The default behavior is to compare input ids by value.
+ * This type is used as an identifier for inputs. Inputs must be numbered contiguously.
  */
 typedef uint8_t PPG_Input_Id;
-
-/** @brief Definition of an input
- */
-typedef struct {
-	PPG_Input_Id	input_id; ///< The Input identifier
-} PPG_Input;
-
-/** @brief Function type of a callback function that compares user defined input ids
- * 
- * @param input_id1 The first input identifier
- * @param input_id2 The second input identifier
- */
-typedef bool (*PPG_Input_Id_Equal_Fun)(PPG_Input_Id input_id1, PPG_Input_Id input_id2);
-
-/** @brief Defines a custom input id comparison function.
- * 
- * The default behavior is to compare input ids by value.
- * 
- * @param fun The function callback to be registered
- */
-void ppg_global_set_input_id_equal_function(PPG_Input_Id_Equal_Fun fun);
 
 /** @brief Lists all active inputs for debugging purposes
  */
@@ -61,7 +38,7 @@ void ppg_input_list_all_active(void);
  * @param ... The array members
  */
 #define PPG_INPUTS(...) \
-	sizeof((PPG_Input[]){ __VA_ARGS__ })/sizeof(PPG_Input), \
-	(PPG_Input[]){ __VA_ARGS__ }
+	sizeof((PPG_Input_Id[]){ __VA_ARGS__ })/sizeof(PPG_Input_Id), \
+	(PPG_Input_Id[]){ __VA_ARGS__ }
 
 #endif

@@ -30,7 +30,7 @@ static bool ppg_note_match_event(
 	
 	/* Set state appropriately 
 	 */
-	if(ppg_context->input_id_equal(note->input.input_id, event->input_id)) {
+	if(note->input == event->input) {
 			
 		if(event->flags & PPG_Event_Active) {
 			
@@ -97,7 +97,7 @@ static void ppg_note_reset(PPG_Note *note)
 
 static bool ppg_note_equals(PPG_Note *n1, PPG_Note *n2) 
 {
-	return ppg_context->input_id_equal(n1->input.input_id, n2->input.input_id);
+	return n1->input == n2->input;
 }
 
 static PPG_Count ppg_note_token_precedence(void)
@@ -110,7 +110,7 @@ static void ppg_note_print_self(PPG_Note *p, PPG_Count indent, bool recurse)
 {
 	PPG_I PPG_PRINTF("<*** note (0x%" PRIXPTR ") ***>\n", (uintptr_t)p);
 	ppg_token_print_self_start((PPG_Token__*)p, indent);
-	PPG_I PPG_PRINTF("   input_id: 0x%" PRIXPTR "\n", (uintptr_t)p->input.input_id);
+	PPG_I PPG_PRINTF("   input: 0x%" PRIXPTR "\n", (uintptr_t)p->input);
 	PPG_I PPG_PRINTF("   active: %d\n", p->active);
 	ppg_token_print_self_end((PPG_Token__*)p, indent, recurse);
 }
@@ -122,8 +122,6 @@ static PPG_Token_Vtable ppg_note_vtable =
 		= (PPG_Token_Match_Event_Fun) ppg_note_match_event,
 	.reset 
 		= (PPG_Token_Reset_Fun) ppg_note_reset,
-	.trigger_action 
-		= (PPG_Token_Trigger_Action_Fun) ppg_token_trigger_action,
 	.destroy 
 		= (PPG_Token_Destroy_Fun) ppg_token_destroy,
 	.equals

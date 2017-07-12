@@ -11,8 +11,9 @@ script:
   - mkdir -p build/release
   - cd build/release
   - cmake -DCMAKE_BUILD_TYPE=Debug ../..
-  - make
-  - ctest
+  - ctest -D ExperimentalBuild 
+  - ctest -R testName -D ExperimentalTest
+  - ctest -R testName -D ExperimentalMemCheck
 
 notifications:
   email:
@@ -139,7 +140,7 @@ matrix:
             - binutils-avr 
             - avr-libc
       env:
-         - MATRIX_EVAL="CC=avr-gcc"
+         - MATRIX_EVAL=""
       script: 
          - mkdir -p build/release
          - cd build/release

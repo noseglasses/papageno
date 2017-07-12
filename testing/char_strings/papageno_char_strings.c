@@ -22,15 +22,20 @@
 #include <sys/timeb.h> 
 #include <string.h>
 
-int ppg_cs_result = PPG_CS_Action_Initialized;
+int ppg_cs_exceptions = PPG_CS_Action_Exception_None;
 
 static long unsigned ppg_cs_timeout_ms = 0;
 
 static long unsigned ppg_cs_start_time_s = 0;
 static long unsigned ppg_cs_start_time_ms = 0;
 
-char ppg_cs_flush_buffer[256];
-int ppg_cs_cur_flush_pos = 0;
+static bool ppg_cs_test_success = true;
+
+static char ppg_cs_flush_buffer[256];
+static int ppg_cs_cur_flush_pos = 0;
+
+static int ppg_cs_action_queue[256];
+static int ppg_cs_n_actions = 0;
 
 #define MMG_MAX_ACTION_NAMES 100
 static char *ppg_cs_action_names[MMG_MAX_ACTION_NAMES];
@@ -76,10 +81,12 @@ static long unsigned ppg_cs_run_time_ms(void)
 // 	return (a_timeb.time - ppg_cs_start_time_s - 1)*1000 + a_timeb.millitm - ppg_cs_start_time_ms;
 }
 
-void ppg_cs_reset_result(void)
+void ppg_cs_reset_testing_environment(void)
 {
-	ppg_cs_result = PPG_CS_Action_Initialized;
+	ppg_cs_exceptions = PPG_CS_Action_Exception_None;
 	ppg_cs_cur_flush_pos = 0;
+	ppg_cs_test_success = true;
+	ppg_cs_n_actions = 0;
 }
 
 void ppg_cs_process_event_callback(	
@@ -90,7 +97,7 @@ void ppg_cs_process_event_callback(
 	//
 	if(event->flags & PPG_Event_Considered) { return; }
 	
-	char the_char = (char)(uintptr_t)event->input_id;
+	char the_char = (char)(uintptr_t)event->input;
 	
 	if((uintptr_t)event->flags & PPG_Event_Active) {
 		the_char = toupper(the_char);
@@ -99,7 +106,7 @@ void ppg_cs_process_event_callback(
 	ppg_cs_flush_buffer[ppg_cs_cur_flush_pos] = the_char;
 	++ppg_cs_cur_flush_pos;
 	
-	printf("%c", the_char);
+// 	printf("%c", the_char);
 }
 
 void ppg_cs_list_flush_buffer(void)
@@ -119,16 +126,18 @@ void ppg_cs_process_action(void *user_data) {
 	
 	PPG_Count action_id = (int)(uintptr_t)user_data;
 	
-	ppg_cs_result |= (action_id << PPG_CS_Flag_Offset);
-	
 	printf("***** Action: %s\n", ppg_cs_action_names[action_id]);
+	
+	ppg_cs_action_queue[ppg_cs_n_actions] = action_id;
+	++ppg_cs_n_actions;
 }
 
 static void ppg_cs_break(void) {
 
 	printf("\n");
 }
-static void ppg_cs_separator(void) {
+
+void ppg_cs_separator(void) {
 
 	printf("***************************************************************************\n");
 }
@@ -141,21 +150,21 @@ inline
 static int my_isalpha_upper(int c) {
         return ((c >= 'A' && c <= 'Z')); } 
 
-bool ppg_cs_process_event(char the_char)
+void ppg_cs_process_event(char the_char)
 {
-	if(!isalpha(the_char)) { return false; }
+	if(!isalpha(the_char)) { return; }
 	
 	char lower_char = tolower(the_char);
 	
 	printf("\nSending char %c, is upper: %d\n", the_char, my_isalpha_upper(the_char));
 	
 	PPG_Event event = {
-		.input_id = (PPG_Input_Id)(uintptr_t)lower_char,
+		.input = (PPG_Input_Id)(uintptr_t)lower_char,
 		.time = (PPG_Time)ppg_cs_run_time_ms(),
 		.flags = (my_isalpha_upper(the_char)) ? PPG_Event_Active : PPG_Event_Flags_Empty
 	};
 	
-	return ppg_event_process(&event);
+	ppg_event_process(&event);
 }
 
 bool ppg_cs_check_and_process_control_char(char c)
@@ -260,16 +269,6 @@ int ppg_cs_get_timeout_ms(void)
 	return ppg_cs_timeout_ms;
 }
 
-bool ppg_cs_input_id_equal(PPG_Input_Id input_id1, PPG_Input_Id input_id2)
-{
-	char the_char_1 = toupper((char)(uintptr_t)input_id1);
-	char the_char_2 = toupper((char)(uintptr_t)input_id2);
-	
-	//printf("checking equality: c1 = %c, c2 = %c\n", the_char_1, the_char_2);
-	
-	return the_char_1 == the_char_2;
-}
-
 void ppg_cs_compile(void)
 {
 	// Store the start time as a reference
@@ -281,31 +280,6 @@ void ppg_cs_compile(void)
 	PPG_PATTERN_PRINT_TREE
 }
 
-void ppg_cs_print_action_names(int expected, int actual)
-{
-	PPG_Count action_id = (ppg_cs_result >> PPG_CS_Flag_Offset);
-	PPG_Count exp_action_id = (expected >> PPG_CS_Flag_Offset);
-	
-	char *expected_action_name = ppg_cs_get_action_name(exp_action_id);
-	char *actual_action_name = ppg_cs_get_action_name(action_id);
-	
-	printf("   expected: ");
-	if(expected_action_name) {
-		printf("%s\n", expected_action_name);
-	}
-	else {
-		printf("%d\n", exp_action_id);
-	}
-	
-	printf("   actual: ");
-	if(actual_action_name) {
-		printf("%s\n", actual_action_name);
-	}
-	else {
-		printf("%d\n", exp_action_id);
-	}
-}
-
 void ppg_cs_on_signal(
 								uint8_t slot_id, 
 								void *user_data)
@@ -313,69 +287,53 @@ void ppg_cs_on_signal(
 // 	printf("Slot id: %d\n", slot_id);
 	
 	ppg_cs_break();
-	ppg_cs_separator();
 	
 	switch(slot_id) {
 		case PPG_On_Abort:
-			printf("Registering abortion\n");
-			ppg_cs_result |= PPG_CS_Action_Exception_Aborted;
+			printf("# Registering abortion\n");
+			ppg_cs_exceptions |= PPG_CS_Action_Exception_Aborted;
+			ppg_cs_flush_events();
 			break;
 		case PPG_On_Timeout:
-			printf("Registering timeout\n");
-			ppg_cs_result |= PPG_CS_Action_Exception_Timeout;
-			
+			printf("# Registering timeout\n");
+			ppg_cs_exceptions |= PPG_CS_Action_Exception_Timeout;
 			ppg_cs_flush_events();
 			break;
 		case PPG_On_Match_Failed:
-			printf("Registering match failed\n");
-			ppg_cs_result |= PPG_CS_Action_Exception_Match_Failed;
+			printf("# Registering match failed\n");
+			ppg_cs_exceptions |= PPG_CS_Action_Exception_Match_Failed;
 			break;
 	}
-
-	ppg_cs_separator();
 }
 
-void ppg_cs_check_test_result(uint8_t expected)
+void ppg_cs_check_test_results(uint8_t expected)
 {
-	bool failed = false;
-	
 	ppg_cs_break();
-	ppg_cs_separator();
 	
-	if(ppg_cs_result != (expected)) {
-		printf("Result assertion failed in %s, line %d\n",
-				 __FILE__, __LINE__);
-		
-		ppg_cs_print_action_names((expected), ppg_cs_result);
-		
-		failed = true;
+	if(ppg_cs_exceptions != (expected)) {
+		printf("! Exception state mismatch\n");
+
+		ppg_cs_test_success = false;
 	}
 	else {
-		printf("Expected result verified: %s\n",
-				 ppg_cs_get_action_name((ppg_cs_result >> PPG_CS_Flag_Offset)));
+		printf("Exception state verified\n");
 	}
 	
 	printf("   aborted: expected: %d, actual: %d\n",
 		((expected) & PPG_CS_Action_Exception_Aborted),
-		(ppg_cs_result & PPG_CS_Action_Exception_Aborted));
+		(ppg_cs_exceptions & PPG_CS_Action_Exception_Aborted));
 	
 	printf("   timeout: expected: %d, actual: %d\n",
 		((expected) & PPG_CS_Action_Exception_Timeout),
-		(ppg_cs_result & PPG_CS_Action_Exception_Timeout)
+		(ppg_cs_exceptions & PPG_CS_Action_Exception_Timeout)
 	);
 	
 	printf("   match failed: expected: %d, actual: %d\n",
 		((expected) & PPG_CS_Action_Exception_Match_Failed),
-		(ppg_cs_result & PPG_CS_Action_Exception_Match_Failed)
+		(ppg_cs_exceptions & PPG_CS_Action_Exception_Match_Failed)
 	);
 	
 	ppg_input_list_all_active();
-	
-	ppg_cs_separator();
-	
-	if(failed) {
-		exit(1);
-	}
 }
 
 void ppg_cs_check_flushed(char *expected)
@@ -384,12 +342,80 @@ void ppg_cs_check_flushed(char *expected)
 	++ppg_cs_cur_flush_pos;
 	
 	if(strcmp(ppg_cs_flush_buffer, expected)) {
-		printf("Flush buffer mismatch\n");
+		printf("! Flush buffer mismatch\n");
 		printf("   expected: \'%s\'\n", expected);
 		printf("   actual:   \'%s\'\n", ppg_cs_flush_buffer);
+		
+		ppg_cs_test_success = false;
 	}
 	else {
-		printf("Flush buffer success\n");
+		printf("Flush buffer test successfully passed (\'%s\')\n", expected);
+	}
+}
+
+void ppg_cs_check_test_success(char *file, int line)
+{
+	if(!ppg_cs_test_success) {
+		printf("! %s: %d\n", file, line);
+		printf("Test failed. Aborting.\n");
+		abort();
+	}
+	else {
+		printf("All assertions passed.\n");
+	}
+}
+
+void ppg_cs_check_action_series(int n_actions, int* expected)
+{
+	ppg_cs_break();
+	
+	bool n_actions_ok = true;
+	bool actions_test_success = true;
+	
+	if(n_actions < ppg_cs_n_actions) {
+		printf("! There occurred more actions than expected\n");
+		n_actions_ok = false;
+	}
+	else if(n_actions > ppg_cs_n_actions) {
+		printf("! There occurred less actions than expected\n");
+		n_actions_ok = false;
+	}
+	else {
+		for(int i = 0; i < ppg_cs_n_actions; ++i) {
+			if(ppg_cs_action_queue[i] != expected[i]) {
+				printf("! Action mismatch of action %d\n", i);
+				printf("   expected: %s\n", ppg_cs_get_action_name(expected[i]));
+				printf("   actual:   %s\n", ppg_cs_get_action_name(ppg_cs_action_queue[i]));
+				
+				actions_test_success = false;
+			}
+		}
+	}
+	
+	actions_test_success &= n_actions_ok;
+	
+	if(!n_actions_ok) {
+		printf("expected:\n");
+		
+		for(int i = 0; i < n_actions; ++i) {
+			printf("   %s\n", ppg_cs_get_action_name(expected[i]));
+		}
+		
+		printf("occurred:\n");
+		
+		for(int i = 0; i < ppg_cs_n_actions; ++i) {
+			printf("   %s\n", ppg_cs_get_action_name(ppg_cs_action_queue[i]));
+		}
+	}
+	
+	if(actions_test_success) {
+		printf("Actions test successfully passed\n");
+		for(int i = 0; i < n_actions; ++i) {
+			printf("   %s\n", ppg_cs_get_action_name(expected[i]));
+		}
+	}
+	else {
+		ppg_cs_test_success = false;
 	}
 }
 

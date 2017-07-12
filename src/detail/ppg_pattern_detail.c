@@ -18,6 +18,7 @@
 #include "detail/ppg_token_detail.h"
 #include "detail/ppg_context_detail.h"
 #include "ppg_debug.h"
+#include "ppg_action.h"
 
 PPG_Token ppg_pattern_from_list(	
 												PPG_Layer layer,
@@ -42,18 +43,21 @@ PPG_Token ppg_pattern_from_list(
 			/* Only share interior nodes and ...
 			 */
 			&& equivalent_child->children
+			
 			/* ... only if the 
 			 * newly registered node on the respective level is 
 			 * not a leaf node.
 			 */ 
 			&& (i < (n_tokens - 1))
-		) {
 			
-// 			#if DEBUG_PAPAGENO
-// 			if(cur_token->action.type != equivalent_child->action.type) {
-// 				PPG_ERROR("Incompatible action types detected\n");
-// 			}
-// 			#endif
+			// And only if the actions associated with both nodes are equal
+			//
+			&& (cur_token->action.callback.func 
+						== equivalent_child->action.callback.func)
+			
+			&& (cur_token->action.callback.user_data 
+						== equivalent_child->action.callback.user_data)
+		) {
 			
 			PPG_PRINTF("already present: 0x%" PRIXPTR "\n", (uintptr_t)equivalent_child);
 			

@@ -62,12 +62,10 @@ void ppg_furcation_buffer_resize(void)
 {
 	if(PPG_FB.furcations) { return; }
 	
-	PPG_Count depth = 1 + ppg_pattern_tree_depth();
-	
 	PPG_FB.furcations 
-			= (PPG_Furcation*)malloc(depth*sizeof(PPG_Furcation));
+			= (PPG_Furcation*)malloc(ppg_context->tree_depth*sizeof(PPG_Furcation));
 			
-	PPG_FB.n_furcations = depth;
+	PPG_FB.n_furcations = ppg_context->tree_depth;
 }
 
 void ppg_furcation_buffer_free(PPG_Furcation_Buffer *buffer)

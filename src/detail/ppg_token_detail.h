@@ -34,8 +34,6 @@ typedef bool (*PPG_Token_Match_Event_Fun)(
 
 typedef void (*PPG_Token_Reset_Fun)(	struct PPG_TokenStruct *token);
 
-typedef bool (*PPG_Token_Trigger_Action_Fun)(	struct PPG_TokenStruct *token, PPG_Slot_Id slot_id);
-
 typedef struct PPG_TokenStruct * (*PPG_Token_Destroy_Fun)(struct PPG_TokenStruct *token);
 
 typedef bool (*PPG_Token_Equals_Fun)(struct PPG_TokenStruct *p1, struct PPG_TokenStruct *p2);
@@ -53,9 +51,6 @@ typedef struct {
 									
 	PPG_Token_Reset_Fun
 									reset;
-									
-	PPG_Token_Trigger_Action_Fun
-									trigger_action;
 									
 	PPG_Token_Destroy_Fun	
 									destroy;
@@ -110,8 +105,6 @@ void ppg_token_store_action(PPG_Token__ *token,
 void ppg_token_reset(	PPG_Token__ *token);
 
 void ppg_token_reset_children(PPG_Token__ *token);
-
-bool ppg_token_trigger_action(PPG_Token__ *token, PPG_Slot_Id slot_id);
 
 // PPG_Processing_State ppg_token_match_event(	
 // 												PPG_Token__ **current_token,

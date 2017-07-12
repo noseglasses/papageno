@@ -20,7 +20,7 @@
 #include <stdint.h>
 #include <stddef.h>
 
-void ppg_global_init_input(PPG_Input *input)
+void ppg_global_init_input(PPG_Input_Id *input)
 {
-	input->input_id = (PPG_Input_Id)((uintptr_t)-1);
+	*input = (PPG_Input_Id)((uintptr_t)-1);
 }

@@ -132,10 +132,7 @@ with a different action on a higher layer, thus overriding it. Patterns can of c
 ## Actions
 
 Actions are defined as callback functions supplied with optional user data that is passed to
-the callbacks when the action is triggered. The most common behavior is to assign 
-an action that is triggered only when a pattern entirely matches. However, it is also possible to assign 
-actions to intermediate tokens which are triggered upon token match. To obtain this behavior,
-add the action flag `PPG_Action_Immediate` by means of a bitwise or operation to the provided action flags.
+the callbacks when the action is triggered.
 
 ## Timeout
 

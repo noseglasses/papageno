@@ -20,6 +20,9 @@ enum {
 	ppg_cs_layer_0 = 0
 };
 
+// To check context switching, we register the same chord with
+// different actions on two contexts.
+
 PPG_CS_START_TEST
 
 	PPG_CS_REGISTER_ACTION(Chord_1)
@@ -35,21 +38,36 @@ PPG_CS_START_TEST
 		)
 	);
 	
+	// Compile the search tree of the first context
+	//
+	ppg_cs_compile();
+	
+	void* context_2 = ppg_context_create();
+	void* context_1 = ppg_global_set_current_context(context_2);
+	
+	// Now the second context is active. First we prepare/customize it.
+	//
+	PPG_CS_PREPARE_CONTEXT
+	
 	ppg_chord(
 		ppg_cs_layer_0,
 		PPG_CS_ACTION(Chord_2),
 		PPG_INPUTS(
 			PPG_CS_CHAR('a'),
 			PPG_CS_CHAR('b'),
-			PPG_CS_CHAR('d')
+			PPG_CS_CHAR('c')
 		)
 	);
 	
+	// Compile the search tree of the second context
+	//
 	ppg_cs_compile();
 	
 	//***********************************************
-	// Check chord 1
+	// Check context 1
 	//***********************************************
+	
+	ppg_global_set_current_context(context_1);
 	
 	PPG_CS_PROCESS_STRING(	"A B C c b a",
 									PPG_CS_EXPECT_EMPTY_FLUSH
@@ -59,11 +77,13 @@ PPG_CS_START_TEST
 									)
 	);
 	
-	PPG_PATTERN_PRINT_TREE
+	//***********************************************
+	// Check context 2
+	//***********************************************
 	
-	// Allow to release keys and then repress them 
-	//
-	PPG_CS_PROCESS_STRING(	"A a A B C c b a",
+	ppg_global_set_current_context(context_2);
+	
+	PPG_CS_PROCESS_STRING(	"A B C c b a",
 									PPG_CS_EXPECT_EMPTY_FLUSH
 									PPG_CS_EXPECT_NO_EXCEPTIONS
 									PPG_CS_EXPECT_ACTION_SERIES(
@@ -71,9 +91,13 @@ PPG_CS_START_TEST
 									)
 	);
 	
-	PPG_PATTERN_PRINT_TREE
+	//***********************************************
+	// Check context 1
+	//***********************************************
 	
-	PPG_CS_PROCESS_STRING(	"A B b C B c b a", 
+	ppg_global_set_current_context(context_1);
+	
+	PPG_CS_PROCESS_STRING(	"A B C c b a",
 									PPG_CS_EXPECT_EMPTY_FLUSH
 									PPG_CS_EXPECT_NO_EXCEPTIONS
 									PPG_CS_EXPECT_ACTION_SERIES(
@@ -81,66 +105,17 @@ PPG_CS_START_TEST
 									)
 	);
 	
-	PPG_PATTERN_PRINT_TREE
-	
-	// Do not allow keys being released
-	//
-	PPG_CS_PROCESS_STRING(	"A B b C c a |", 
-									PPG_CS_EXPECT_FLUSH("ABbCca") 
-									PPG_CS_EXPECT_EXCEPTIONS(PPG_CS_ET)
-									PPG_CS_EXPECT_NO_ACTIONS
-	);
-	
-	PPG_PATTERN_PRINT_TREE
-	
-	// Check for match fails
-	//
-	PPG_CS_PROCESS_STRING(	"A B E C c a |", 
-									PPG_CS_EXPECT_FLUSH("ABECca")
-									PPG_CS_EXPECT_EXCEPTIONS(PPG_CS_EMF | PPG_CS_ET)
-									PPG_CS_EXPECT_NO_ACTIONS
-	);
-	
-	PPG_PATTERN_PRINT_TREE
-	
-	//***********************************************
-	// Check chord 2
-	//***********************************************
-	
-	PPG_CS_PROCESS_STRING(	"A B D d b a",
-									PPG_CS_EXPECT_EMPTY_FLUSH
-									PPG_CS_EXPECT_NO_EXCEPTIONS
-									PPG_CS_EXPECT_ACTION_SERIES(
-										PPG_CS_A(Chord_2)
-									)
-	);
-	
-	// Allow to release keys and then repress them 
-	//
-	PPG_CS_PROCESS_STRING(	"A a A B D d b a",
-									PPG_CS_EXPECT_EMPTY_FLUSH
-									PPG_CS_EXPECT_NO_EXCEPTIONS
-									PPG_CS_EXPECT_ACTION_SERIES(
-										PPG_CS_A(Chord_2)
-									)
-	);
-	
-	PPG_CS_PROCESS_STRING(	"A B b D B d b a",
-									PPG_CS_EXPECT_EMPTY_FLUSH 
-									PPG_CS_EXPECT_NO_EXCEPTIONS
-									PPG_CS_EXPECT_ACTION_SERIES(
-										PPG_CS_A(Chord_2)
-									)
-	);
 
-	// Do not allow keys being released
-	//
-	PPG_CS_PROCESS_STRING(	"A B b d D d a |", 
-									PPG_CS_EXPECT_FLUSH("ABbdDda")
-									PPG_CS_EXPECT_EXCEPTIONS(PPG_CS_ET)
-									PPG_CS_EXPECT_NO_ACTIONS
-	);
+	//***********************************************
+	// Cleanup
+	//***********************************************
 	
-// 	PPG_PATTERN_PRINT_TREE
+	// Context 2 is currently inactive, so we can safely destroy it
+	//
+	ppg_context_destroy(context_2); 
+	
+	// Note: Context 1 is still active and will be destroyed during 
+	//       an automatic call to ppg_global_finalize
+	//       at the end of the test
 	
 PPG_CS_END_TEST

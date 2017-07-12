@@ -26,6 +26,14 @@ if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
 	add_definitions(-DPAPAGENO_PRINT_SELF_ENABLED)
 endif()
 
+option(PAPAGENO_VALGRIND "Run tests using valgrind to detect memory related errors" FALSE)
+
+if(PAPAGENO_VALGRIND)
+
+	find_program( MEMORYCHECK_COMMAND valgrind )
+	set( MEMORYCHECK_COMMAND_OPTIONS "--trace-children=yes --leak-check=full" )
+endif()
+
 set(source_directory "${CMAKE_SOURCE_DIR}/src")
 
 set(source_files
@@ -63,7 +71,7 @@ include_directories(
 	"${source_directory}"
 )
 
-add_library(papageno ${source_files_full_path})
+add_library(papageno SHARED ${source_files_full_path})
 
 find_package(Doxygen)
 

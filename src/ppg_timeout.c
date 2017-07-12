@@ -31,7 +31,7 @@ static void ppg_on_timeout(void)
 	/* It timeout was hit, we either trigger the most recent action
 	 * (e.g. necessary for tap dances).
 	 */
-	bool action_processed = ppg_recurse_and_process_actions(PPG_On_Timeout);
+	bool action_processed = ppg_recurse_and_process_actions();
 	
 	if(action_processed) { 
 		
@@ -65,9 +65,18 @@ static void ppg_on_timeout(void)
 
 bool ppg_timeout_check(void)
 {	
-	if(!ppg_context->timeout_enabled) { return false; }
+	PPG_PRINTF("Checking timeout\n");
 	
-	if(!ppg_context->current_token) { return false; }
+	if(!ppg_context->timeout_enabled) { 
+		
+		PPG_PRINTF("Timeout disabled\n");
+		return false;
+	}
+	
+	if(!ppg_context->current_token) {
+		PPG_PRINTF("No current token\n");
+		return false; 
+	}
 	
 	PPG_PRINTF("Checking timeout\n");
 	

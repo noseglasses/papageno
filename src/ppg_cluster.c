@@ -37,7 +37,7 @@ static bool ppg_cluster_match_event(
 	 */
 	for(PPG_Count i = 0; i < cluster->n_members; ++i) {
 		
-		if(ppg_context->input_id_equal(cluster->inputs[i].input_id, event->input_id)) {
+		if(cluster->inputs[i] == event->input) {
 			
 			input_part_of_cluster = true;
 			
@@ -104,8 +104,8 @@ static void ppg_cluster_print_self(PPG_Cluster *c, PPG_Count indent, bool recurs
 	PPG_I PPG_PRINTF("   n_inputs_active: %d\n", c->n_inputs_active);
 	
 	for(PPG_Count i = 0; i < c->n_members; ++i) {
-		PPG_PRINTF("      input_id: 0x%" PRIXPTR ", active: %d\n", 
-				  (uintptr_t)c->inputs[i].input_id, c->member_active[i]);
+		PPG_PRINTF("      input: 0x%" PRIXPTR ", active: %d\n", 
+				  (uintptr_t)c->inputs[i], c->member_active[i]);
 	}
 	ppg_token_print_self_end((PPG_Token__*)c, indent, recurse);
 }
@@ -117,8 +117,6 @@ static PPG_Token_Vtable ppg_cluster_vtable =
 		= (PPG_Token_Match_Event_Fun) ppg_cluster_match_event,
 	.reset 
 		= (PPG_Token_Reset_Fun) ppg_aggregate_reset,
-	.trigger_action 
-		= (PPG_Token_Trigger_Action_Fun) ppg_token_trigger_action,
 	.destroy 
 		= (PPG_Token_Destroy_Fun) ppg_aggregate_destroy,
 	.equals
@@ -134,7 +132,7 @@ static PPG_Token_Vtable ppg_cluster_vtable =
 	
 PPG_Token ppg_cluster_create(
 								PPG_Count n_inputs,
-									PPG_Input inputs[])
+									PPG_Input_Id inputs[])
 {
 	PPG_Cluster *cluster = (PPG_Cluster*)ppg_aggregate_new(ppg_aggregate_alloc());
 	 
@@ -147,7 +145,7 @@ PPG_Token ppg_cluster(
 							PPG_Layer layer, 
 							PPG_Action action, 
 							PPG_Count n_inputs,
-							PPG_Input inputs[])
+							PPG_Input_Id inputs[])
 {   	
 	PPG_PRINTF("Adding cluster\n");
 	
