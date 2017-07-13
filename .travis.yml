@@ -11,14 +11,13 @@ script:
   - mkdir -p build/release
   - cd build/release
   - cmake -DCMAKE_BUILD_TYPE=Debug ../..
-  - ctest -D ExperimentalBuild 
+  - make
   - ctest -D ExperimentalTest
   - ctest -D ExperimentalMemCheck
 
 notifications:
   email:
-    on_success: change
-    on_failure: change
+    on_failure: flo@holf.de
     
 cache:
   ccache: true
