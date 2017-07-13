@@ -37,7 +37,7 @@ PPG_Time_Comparison_Result_Type ppg_default_time_comparison(
 	return 0;
 }
 
-/** @brief This function initializes an action callback
+/** @brief This function initializes a signal callback
  *
  * @param cb A pointer to the callback struct
  */
@@ -69,6 +69,8 @@ void ppg_global_initialize_context(PPG_Context *context) {
 	context->time = ppg_default_time;
 	context->time_difference = ppg_default_time_difference;
 	context->time_comparison = ppg_default_time_comparison;
+	
+	ppg_signal_callback_init(&context->signal_callback);
 
 	/* Initialize the pattern root
 	*/
