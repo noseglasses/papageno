@@ -14,8 +14,17 @@ The idea of this special type of pattern matching is inspired by magic musical i
 
 This is why the library is named after Papageno one of the protagonists of Mozart's opera "The Magic Flute". A magic glockenspiel that Papageno was given as a present, helps him to deal with trouble and mischief he encounters on his way through the acts.
 
+Possible Fields of Applications
+-------------------------------
+
+-	input devices such as programmable keyboards, mouses, etc. (trigger actions through predefined sequences of keystrokes)
+-	musical instruments supporting Midi (e.g. toggle a specific sound effect once a specific melody was played)
+-	computer games (trigger special moves of avatars after a sequence of controller input)
+-	general multiple-input environments (trigger actions when specific events occur in a predefined order)
+-	...
+
 How to Build
-============
+------------
 
 ```sh
 # Clone the Papageno git repository
@@ -52,15 +61,6 @@ Use of Musical Terminology
 --------------------------
 
 Although the basic concept is inspired by the world of music, there is not necessarily any music involved at all. However, we consider the use of some musical terms advantageous helpful as they typically cover basic ideas that do not need to be re-explained and also are a good start for abstraction.
-
-Possible Fields of Applications
--------------------------------
-
--	input devices such as programmable keyboards, mouses, etc. (trigger actions through predefined sequences of keystrokes)
--	musical instruments supporting Midi (e.g. toggle a specific sound effect once a specific melody was played)
--	computer games (trigger special moves of avatars after a sequence of controller input)
--	general multiple-input environments (trigger actions when specific events occur in a predefined order)
--	...
 
 Distinctive Features
 --------------------
