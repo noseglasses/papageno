@@ -47,6 +47,13 @@ cmake ../..
 make
 ```
 
+Examples
+--------
+
+Currently there are no code examples available apart from the test bench that can be found in the `testing/char_strings` directory of Papageno's code repository.
+
+The test bench tests Papageno's features by using characters to represent inputs just as they are used in the examples below. Some C experience provided it might be quite easy to adapt some of the tests to other applications.
+
 Introduction
 ============
 
@@ -101,9 +108,7 @@ As mentioned before, events represent either an activation or a deactivation of 
 Let's start with a simple example. Imagine e.g. three inputs A, B and C. The following could be a possible event series that toggles the state of all three inputs.
 
 ```
-
 A B a C c b
-
 ```
 
 In Detail this means: 1. Inputs A and B are activated, 2. Input A is deactivated, 3. Input C is activated and deactivated, 4. Input B is deactivated.
@@ -111,13 +116,11 @@ In Detail this means: 1. Inputs A and B are activated, 2. Input A is deactivated
 It is important to note that before and input can be deactivated, it must have been activated beforehand. Two consecutive activations or deactivations of inputs are illegal, even if other events are intermixed, e.g.
 
 ```
-
 A B b C a c   # Legal
 
 A B C B a b c # Illegal because B is activated twice
 
 B A C a b a c # Illegal because A is deactivated twice
-
 ```
 
 Patterns
@@ -141,22 +144,18 @@ Notes may also require an explicit activation or deactivation of an input. This 
 The following is a note that consumes the activation (and deactivation, see above) of an input and requires the activation of an input to match.
 
 ```
-
 (A)
-
 ```
 
 A note that explicitly requires the activation of an input is written as follows.
 
 ```
-
 (A
 ```
 
 Notes can also explicitly require the deactivation of an input to match.
 
 ```
-
 A)
 ```
 
@@ -173,7 +172,6 @@ No activations of other inputs than those associated with the chord must be inte
 What follows is a simple chord. It requires inputs A, B and C to be simultaneously active to match.
 
 ```
-
 [A, B, C]
 ```
 
@@ -190,7 +188,6 @@ No activations of other inputs than those associated with the cluster must be in
 The following is a note cluster. It requires inputs A, B and C to be activated in arbitrary order to match.
 
 ```
-
 {A, B, C}
 ```
 
@@ -202,18 +199,14 @@ Patterns are token sequences that may consist of notes, chords and note clusters
 The following is a simple token sequence where a note `(C)` is followed by the chord `[A, B]` that is followed by the cluster `{B, A}`.
 
 ```
-
 (C) -> [A, B] -> {B, A}
-
 ```
 
 It would be matched e.g. by the following event sequences.
 
 ```
-
 C A B b B a A c
 C A B b a B A c
-
 ```
 
 Unique Matches
@@ -222,9 +215,7 @@ Unique Matches
 As we have seen, token sequences do not necessarily have unique matches. A single note line
 
 ```
-
 (A) -> (B) -> (C)
-
 ```
 
 can e.g. have the following matches.
@@ -241,17 +232,13 @@ If we want to enforce unique matches of single note lines, we have to define the
 The token sequence
 
 ```
-
 (A (B A) B) (C C)
-
 ```
 
 e.g., has the unique match
 
 ```
-
 A B a b C c
-
 ```
 
 Pedantic Tokens
@@ -262,17 +249,13 @@ By default, tokens match if all related inputs are activated as required by the 
 In pedantic mode, the pattern
 
 ```
-
 (C) -> [A, B] -> {B, A}
-
 ```
 
 would require the event sequence
 
 ```
-
 C c    A B a b   B b A a
-
 ```
 
 for an (non-unique) overall match.
@@ -282,7 +265,6 @@ Please note that even in pedantic mode there is no unique token sequence that le
 The following event sequences are thus equivalent and all lead to an overall match of the pattern defined above.
 
 ```
-
 C c    A B a b    B b A a
 C c    A B b a    B b A a
 C c    A B b a    B A b a
@@ -329,9 +311,7 @@ Action fallback is e.g. internally applied when processing tap dances, when e.g.
 If a single note line
 
 ```
-
 (A) -> (B) -> (C)
-
 ```
 
 Would match and the notes `(B)` and `(C)` would be flagged with `PPG_Action_Fall_Back`, the actions associated with all three notes would be executed consecutively.
@@ -417,25 +397,19 @@ It is possible that after applying these sorting rules there are still several p
 The precedence order from highest to lowest is note, chord, cluster. This means that a single note line
 
 ```
-
 (A) -> (B) -> (C)
-
 ```
 
 wins against a chord,
 
 ```
-
 [A, B, C]
-
 ```
 
 that would in turn beat a cluster
 
 ```
-
 {A, B, C}
-
 ```
 
 Supported Platforms
@@ -454,9 +428,7 @@ Documentation
 The programming API is documented using Doxygen. It can be generated as part of the build process by enabling the CMake cache option `PAPAGENO_DOXYGEN`. This requires a Doxygen installation to be available. To build the Doxygen API-Documentation replace the configuration step with the following.
 
 ```sh
-
 cmake -DPAPAGENO_DOXYGEN=TRUE ../..
-
 ```
 
 Testing
@@ -467,7 +439,6 @@ Papageno comes with a test bench that is based on CTest. The test bench is by de
 To run the test bench, execute CTest after the build step.
 
 ```
-
 .
 .
 
@@ -478,7 +449,6 @@ make
 # Execute the test bench
 #
 ctest
-
 ```
 
 Choice of Language
