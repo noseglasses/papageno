@@ -40,7 +40,7 @@ bool ppg_recurse_and_process_actions(void)
 			action_tokens[n_actions] = cur_token;
 			++n_actions;
 			
-			if(cur_token->action.flags &= PPG_Action_Fall_Through) {
+			if(cur_token->action.flags &= PPG_Action_Fallback) {
 				cur_token = cur_token->parent;
 			}
 			else {
@@ -48,7 +48,7 @@ bool ppg_recurse_and_process_actions(void)
 			}
 		}
 		else {
-			if(cur_token->action.flags &= PPG_Action_Fall_Back) {
+			if(cur_token->action.flags &= PPG_Action_Fallback) {
 				cur_token = cur_token->parent;
 			}
 			else {

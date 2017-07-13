@@ -55,7 +55,7 @@ typedef struct {
  * an action can be associated. As an enhancement to the original tap dance idea.
  * It is also possible to fall back to the last action if e.g. an action
  * is defined for three input presses and five input presses. If default_action_flags
- * contains PPG_Action_Fall_Back the action associated with the next lower 
+ * contains PPG_Action_Fallback the action associated with the next lower 
  * amount of input presses is triggered, in this example the action associated with
  * three presses.
  * 

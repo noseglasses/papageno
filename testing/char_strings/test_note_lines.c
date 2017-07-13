@@ -78,8 +78,8 @@ PPG_CS_START_TEST
 	ppg_tap_dance(
 		ppg_cs_layer_0,
 		PPG_CS_CHAR('a'), /* The tap key */
-		PPG_Action_Fall_Back,
-							/* Use PPG_Action_Fall_Back if you want fall back, 
+		PPG_Action_Fallback,
+							/* Use PPG_Action_Fallback if you want fallback, 
 								e.g. if something happens after three and five keypresses
 								and you want to fall back to the three keypress action
 								if only four keypresses arrived before timeout. */

@@ -22,30 +22,26 @@ enum {
 
 PPG_CS_START_TEST
 
-	PPG_CS_REGISTER_ACTION(Action_1)
-	PPG_CS_REGISTER_ACTION(Action_2)
-	PPG_CS_REGISTER_ACTION(Action_3)
+	PPG_CS_REGISTER_ACTION(Fallback_Action)
+	PPG_CS_REGISTER_ACTION(Actual_Action)
 	
 	ppg_pattern(
 		ppg_cs_layer_0, /* Layer id */
 		PPG_TOKENS(
-			ppg_token_set_action(
-				PPG_CS_N('a'),
-				PPG_CS_ACTION(Action_1)
-			),
+			PPG_CS_N('a'),
 			ppg_token_set_action_flags(
 				ppg_token_set_action(
 					PPG_CS_N('b'),
-					PPG_CS_ACTION(Action_2)
+					PPG_CS_ACTION(Fallback_Action)
 				),
-				PPG_Action_Fall_Back | PPG_Action_Fall_Through
+				PPG_Action_Fallback
 			),
 			ppg_token_set_action_flags(
 				ppg_token_set_action(
 					PPG_CS_N('c'),
-					PPG_CS_ACTION(Action_3)
+					PPG_CS_ACTION(Actual_Action)
 				),
-				PPG_Action_Fall_Through
+				PPG_Action_Fallback
 			)
 		)
 	);
@@ -56,9 +52,8 @@ PPG_CS_START_TEST
 									PPG_CS_EXPECT_EMPTY_FLUSH
 									PPG_CS_EXPECT_NO_EXCEPTIONS
 									PPG_CS_EXPECT_ACTION_SERIES(
-										PPG_CS_A(Action_1), 
-										PPG_CS_A(Action_2), 
-										PPG_CS_A(Action_3)
+										PPG_CS_A(Fallback_Action),
+										PPG_CS_A(Actual_Action)
 									)
 	);
 	
@@ -66,8 +61,7 @@ PPG_CS_START_TEST
 									PPG_CS_EXPECT_EMPTY_FLUSH
 									PPG_CS_EXPECT_EXCEPTIONS(PPG_CS_ET)
 									PPG_CS_EXPECT_ACTION_SERIES(
-										PPG_CS_A(Action_1), 
-										PPG_CS_A(Action_2)
+										PPG_CS_A(Fallback_Action)
 									)
 	);
 	
