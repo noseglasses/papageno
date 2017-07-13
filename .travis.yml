@@ -5,7 +5,7 @@ dist: trusty
 before_install:
   - sudo apt-get update -qq
 install:
-- sudo apt-get install -qq gcc-avr binutils-avr avr-libc
+  - sudo apt-get install -qq valgrind
   
 script: 
   - mkdir -p build/release

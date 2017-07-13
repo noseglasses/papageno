@@ -46,5 +46,6 @@ ppg_add_test(test_enable_disable)
 ppg_add_test(test_enable_disable_timeout)
 ppg_add_test(test_layers)
 ppg_add_test(test_token_precedence)
+ppg_add_test(test_strict_notes)
 
 # set_property(TARGET test_char_strings PROPERTY C_STANDARD 99)

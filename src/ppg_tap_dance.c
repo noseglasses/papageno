@@ -48,7 +48,7 @@ PPG_Token ppg_tap_dance(
 	
 	for (PPG_Count i = 0; i < n_taps; i++) {
 		
-		PPG_Token__ *new_note = (PPG_Token__*)ppg_note_create(input);
+		PPG_Token__ *new_note = (PPG_Token__*)ppg_note_create_standard(input);
 			new_note->action.flags = default_action_flags;
 		
 		tokens[i] = new_note;

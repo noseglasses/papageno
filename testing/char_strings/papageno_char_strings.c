@@ -17,7 +17,6 @@
 #include "papageno_char_strings.h"
 
 #include <stdio.h>
-#include <ctype.h>
 #include <unistd.h>
 #include <sys/timeb.h> 
 #include <string.h>

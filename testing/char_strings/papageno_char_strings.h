@@ -20,6 +20,7 @@
 #include "papageno.h"
 
 #include <stdlib.h>
+#include <ctype.h>
 
 enum { PPG_CS_Timeout_MS = 20 };
 
@@ -73,9 +74,6 @@ void ppg_cs_reset_testing_environment(void);
 void ppg_cs_list_flush_buffer(void);
 
 void ppg_cs_check_test_results(uint8_t expected);
-
-#define PPG_CS_N(CHAR) \
-	ppg_note_create(PPG_CS_CHAR(CHAR))
 
 void ppg_cs_compile(void);
 
@@ -163,7 +161,7 @@ void ppg_cs_check_test_success(char *file, int line);
 void ppg_cs_separator(void);
 	
 #define PPG_CS_CHAR(CHAR) \
-	(PPG_Input_Id)(uintptr_t)CHAR
+	(PPG_Input_Id)(uintptr_t)tolower(CHAR)
 
 #define PPG_CS_ACTION(ACTION_NAME) \
 	(PPG_Action) {	\
@@ -218,5 +216,14 @@ int main(int argc, char **argv) \
 	\
 	return 0; \
 }
+
+#define PPG_CS_N(CHAR) \
+	ppg_note_create_standard(PPG_CS_CHAR(CHAR))
+	
+#define PPG_CS_N_A(CHAR) \
+	ppg_note_create(PPG_CS_CHAR(CHAR), PPG_Note_Type_Match_Activation)
+	
+#define PPG_CS_N_D(CHAR) \
+	ppg_note_create(PPG_CS_CHAR(CHAR), PPG_Note_Type_Match_Deactivation)
 
 #endif

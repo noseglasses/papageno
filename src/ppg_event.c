@@ -190,7 +190,7 @@ static PPG_Id ppg_token_get_most_appropriate_branch(PPG_Token__ *parent_token)
 	
 // 		PPG_PRINTF("Child %d\n", i);
 		
-		PPG_CALL_VIRT_METHOD(parent_token->children[i], print_self, 0, false);
+// 		PPG_CALL_VIRT_METHOD(parent_token->children[i], print_self, 0, false);
 		
 		PPG_Count cur_precedence 
 				= parent_token->children[i]
