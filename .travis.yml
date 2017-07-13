@@ -17,7 +17,9 @@ script:
 
 notifications:
   email:
-    on_failure: flo@holf.de
+    recipients:
+      - flo@holf.de
+    on_failure: always
     
 cache:
   ccache: true
