@@ -413,6 +413,10 @@ Please note that due to this implementation detail, Papageno cannot be guarantee
 The Library
 ===========
 
+## C Application Programming Interface
+
+A Doxygen documentation of Papageno's API can be found [here](https://noseglasses.github.io/papageno/index.html).
+
 Implementation
 --------------
 
