@@ -117,7 +117,7 @@ Patterns are defined through Papageno's programming interface. Before you confro
 
 In the following examples we will use different types of brackets to distinguish between types of tokens. We will use alphabetic characters to denote the inputs that are affected by tokens.
 
-The definition of a pattern looks as follows. I will soon be explained in detail.
+The definition of a pattern looks as follows. It will soon be explained in detail.
 ```
 (A) -> [B, C]
 ```
