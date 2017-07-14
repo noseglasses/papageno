@@ -12,14 +12,14 @@ Define patterns consisting of tokens (notes, chords or note clusters) and assign
 
 The idea of this special type of pattern matching is inspired by magic musical instruments as they appear in opera and fantasy fiction. Such instruments let all sorts of magic happen when certain melodies are played.
 
-This is why the library is named after Papageno one of the protagonists of Mozart's opera "The Magic Flute". A magic glockenspiel that Papageno was given as a present, helps him to deal with trouble and mischief he encounters on his way through the acts.
+This is why the library is named after Papageno one of the protagonists of Mozart's opera [The Magic Flute](https://en.wikipedia.org/wiki/The_Magic_Flute). A magic glockenspiel that Papageno was given as a present, helps him to deal with trouble and mischief he encounters on his way through the acts.
 
 Possible Fields of Applications
 -------------------------------
 
 -	input devices such as programmable keyboards, mouses, etc. (trigger actions through predefined sequences of keystrokes)
--	musical instruments supporting Midi (e.g. toggle a specific sound effect once a specific melody was played)
--	computer games (trigger special moves of avatars after a sequence of controller input)
+-	musical instruments supporting [Midi](https://en.wikipedia.org/wiki/MIDI) (e.g. toggle a specific sound effect once a specific melody was played)
+-	computer games (trigger [special moves](https://en.wikipedia.org/wiki/Fighting_game#Special_attacks) of characters after specific sequences of controller input)
 -	general multiple-input environments (trigger actions when specific events occur in a predefined order)
 -	...
 
@@ -47,34 +47,56 @@ cmake ../..
 make
 ```
 
+## Contributing
+
+If you want to contribute to Papageno, please start with reading our [general informations for contributers](CONTRIBUTING.md).
+
 Examples
 --------
 
-Currently there are no code examples available apart from the test bench that can be found in the `testing/char_strings` directory of Papageno's code repository.
+Please see the test bench that resides in the `testing/char_strings` directory of Papageno's code repository for a code example.
 
-The test bench tests Papageno's features by using characters to represent inputs just as they are used in the examples below. Some C experience provided it might be quite easy to adapt some of the tests to other applications.
+This test bench tests Papageno's features by using characters to represent inputs just as they are used in the examples below. Some C experience provided it might be quite easy to adapt some of the tests to other applications.
 
 Introduction
 ============
-
-Basic Concepts
---------------
-
-Musical melodies consist of single notes, chords and possibly note clusters. We take these basic concepts and extend them to our needs. Melodies are also well defined pattern to create sound. Melodies consist of patterns as building blocks. These patterns are the basis for the idea of advanced pattern matching of boolean input events.
-
-We generalize notes, chords and clusters to the general concept of tokens that patterns do consist of. The state of abstract boolean variables, here called inputs replace the pitch of notes in a musical melody or pattern. Depending on the application context, inputs can represent keys on keyboards, sensor data that exceeds a defined threshold or binary state variables in general.
 
 Use of Musical Terminology
 --------------------------
 
 Although the basic concept is inspired by the world of music, there is not necessarily any music involved at all. However, we consider the use of some musical terms advantageous helpful as they typically cover basic ideas that do not need to be re-explained and also are a good start for abstraction.
 
+Basic Concepts
+--------------
+
+A musical melody is  
+> a linear succession of musical tones that the listener perceives as a single entity
+> -- <cite>[Wikipedia](https://en.wikipedia.org/wiki/Melody)</cite>
+
+Melodies or phrases are well defined recipes to create sound and may consist of single notes, chords and possibly note clusters.
+
+We adopt these concepts and extend them to our needs. We take the concepts of melodies or phrases as a basis for the definition of the more general concept of patterns.
+
+Notes, chords and clusters are tokens that may be chained to form patterns. The pitch of notes in a musical melody or phrase is hereby replaced by the boolean state of abstract variables that we call inputs.
+
+Depending on the application context, the boolean states of inputs can represent the activation of switches of input devices, e.g. keyboards, sensor data that exceeds a defined threshold or general any variables that may be mapped to boolean state.
+
+Notes represent the activation and/or deactivation of inputs. Chords and clusters are used to group activations and deactivations of inputs.
+
+By defining a melody, or in general a pattern, we define an expected order of activations and deactivations of inputs. Papageno's task is to scan a continuous series of events, that represent activations or deactivations of inputs for the occurrence of user-defined patterns.
+
+If a pattern is detected, a user-defined action is triggered and the scan is continued.
+
+That's it.
+
 Distinctive Features
 --------------------
 
-There already exist some widely used approaches to pattern matching, regular expressions as the most prominent. We certainly do not want to compete with these approaches, neither do we want to re-invent the wheel. There are, however, some features that no other approach known to us provides.
+There already exist some widely used approaches to pattern matching, [regular expressions (regex)](https://en.wikipedia.org/wiki/Regular_expression) as the most prominent. We certainly do not want to compete with these approaches, neither do we want to re-invent the wheel.
 
-The question about the differences of Papageno's approach against regex is, nevertheless, justified. Therefore, we will point out the main differences and advantages.
+As we did not find a suitable pattern matching approach that solves the problem of pattern matching in sequences of stated transitions of boolean variables, we implemented our own. If we overlooked an suitable existing approach, please [let us know](shinynoseglasses@gmail.com).
+
+The question about the differences of Papageno's approach against regex is, nevertheless, justified.
 
 -	Papageno is based on stateful boolean inputs instead of characters.
 -	Actions can be assigned and triggered when specific tokens or patterns match.
@@ -89,9 +111,21 @@ That's why Papageno is here.
 Working with Patterns
 =====================
 
-Patterns are defined through Papageno's programming interface. Before we go into detail with programming it is necessary that you understand in general how Patterns work.
+Patterns are defined through Papageno's programming interface. Before you confront yourself with programming patterns it is important that you understand how Papageno patterns work.
 
-In the following examples we will use different types of brackets to distinguish between different types of tokens and characters to denote the inputs that are affected by tokens.
+## Example Syntax
+
+In the following examples we will use different types of brackets to distinguish between types of tokens. We will use alphabetic characters to denote the inputs that are affected by tokens.
+
+The definition of a pattern looks as follows. I will soon be explained in detail.
+```
+(A) -> [B, C]
+```
+And this is how a event series is written.
+```
+A B a C c
+```
+Please note the absence of brackets and the use of upper- and lower-case letters in the event series.
 
 Inputs
 ------
@@ -202,7 +236,7 @@ The following is a simple token sequence where a note `(C)` is followed by the c
 (C) -> [A, B] -> {B, A}
 ```
 
-It would be matched e.g. by the following event sequences.
+It would be matched e.g. by the following event seriess.
 
 ```
 C A B b B a A c
@@ -252,7 +286,7 @@ In pedantic mode, the pattern
 (C) -> [A, B] -> {B, A}
 ```
 
-would require the event sequence
+would require the event series
 
 ```
 C c    A B a b   B b A a
@@ -262,7 +296,7 @@ for an (non-unique) overall match.
 
 Please note that even in pedantic mode there is no unique token sequence that leads to a match. This is because the deactivations of inputs that are associated with chords and note clusters are accepted in arbitrary order.
 
-The following event sequences are thus equivalent and all lead to an overall match of the pattern defined above.
+The following event series are thus equivalent and all lead to an overall match of the pattern defined above.
 
 ```
 C c    A B a b    B b A a
@@ -476,4 +510,4 @@ There are many ideas that are still waiting to be implemented. One reason is tha
 -	[ ] Tremolo: Requires a note to be repeated N times. The same can be achieved by a Tap Dance or a single note line of N individual notes but a dedicated token that does the job would be by far more memory efficient in comparison to N individual nodes.
 -	[ ] Random Chord: N random inputs must be active at the same time for a match.
 -	[ ] Random Cluster: N different inputs must have been active for a match.
--	[ ] Random Sequence: N inputs must have been active (and inactive) for a match.
+-	[ ] Random Note Sequence: N inputs must have been active (and inactive) for a match.
