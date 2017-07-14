@@ -147,6 +147,30 @@ matrix:
          - cd build/release
          - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../../cmake/toolchains/Toolchain-avr-gcc.cmake -DPAPAGENO_TESTING=FALSE ../..
          - make
+         
+   # Build the doxygen API documentation and push it to gh-pages branch
+   #
+    - os: linux
+      addons:
+        apt:
+          packages:
+            - doxygen
+            - doxygen-doc
+            - doxygen-latex
+            - doxygen-gui
+            - graphviz
+      script: 
+         - mkdir -p build/release
+         - cd build/release
+         - cmake -DCMAKE_BUILD_TYPE=Release ../..
+         - make doxygen
+      deploy:
+        provider: pages
+        skip_cleanup: true
+        local_dir: $TRAVIS_BUILD_DIR/build/release/doc/doxygen/html
+        github_token: $GITHUB_API_KEY
+        on:
+          branch: master
 
 before_install:
     - eval "${MATRIX_EVAL}"

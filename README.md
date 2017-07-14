@@ -23,6 +23,22 @@ Possible Fields of Applications
 -	general multiple-input environments (trigger actions when specific events occur in a predefined order)
 -	...
 
+Do you remember the game [Simon](https://en.wikipedia.org/wiki/Simon_%28game%29) with four colored buttons. It played a tune that the player had to repeat. In the original version the tune consists of a series of four different single notes.
+
+Why not intermix some chords to spice it a little? Papageno could easily do it.
+
+## Build requirements
+
+The following tools are mandatory to build Papageno.
+
+- a [C99](https://en.wikipedia.org/wiki/C99)-compatible C compiler
+- [CMake](https://cmake.org) as build system
+
+Some tools are optional and only required for special purposes.
+
+- [Doxygen](http://www.stack.nl/~dimitri/doxygen/) to create a documentation of the programming API (optional)
+- [Valgrind](http://valgrind.org/) to run the testbench using a memory debugger
+
 How to Build
 ------------
 
@@ -45,6 +61,14 @@ cmake ../..
 # Build
 #
 make
+```
+
+The following steps are optional.
+
+```sh
+# Run the testbench
+#
+ctest
 ```
 
 ## Contributing
