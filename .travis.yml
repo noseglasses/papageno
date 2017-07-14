@@ -18,7 +18,7 @@ script:
 notifications:
   email:
     recipients:
-      - flo@holf.de
+      - shinynoseglasses@gmail.com
     on_failure: always
     
 cache:
