@@ -164,8 +164,8 @@ matrix:
           packages:
             - clang-5.0
       env:
-         - CFLAGS="-fsanitize=memory -fno-omit-frame-pointer"
-         - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
+        - CFLAGS="-fsanitize=memory -fno-omit-frame-pointer"
+        - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
          
     # Clang with undefined behavior sanitizer
     #
@@ -189,14 +189,14 @@ matrix:
             - binutils-avr 
             - avr-libc
       script: 
-         - mkdir -p build/release
-         - cd build/release
-         - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../../cmake/toolchains/Toolchain-avr-gcc.cmake -DPAPAGENO_TESTING=FALSE ../..
-         - make
+        - mkdir -p build/release
+        - cd build/release
+        - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../../cmake/toolchains/Toolchain-avr-gcc.cmake -DPAPAGENO_TESTING=FALSE ../..
+        - make
          
-   # Build the doxygen API documentation and push it to gh-pages branch
-   # Generate coverage information in the same run
-   #
+    # Build the doxygen API documentation and push it to gh-pages branch
+    # Generate coverage information in the same run
+    #
     - os: linux
       addons:
         apt:
@@ -213,28 +213,27 @@ matrix:
       env:
         - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
       script: 
-         - mkdir -p build/debug
-         - cd build/debug
-         - cmake -DCMAKE_BUILD_TYPE=Debug -DPAPAGENO_TEST_COVERAGE=TRUE -DPAPAGENO_DOXYGEN=TRUE ../..
-         - make doxygen coverage
+        - mkdir -p build/debug
+        - cd build/debug
+        - cmake -DCMAKE_BUILD_TYPE=Debug -DPAPAGENO_TEST_COVERAGE=TRUE -DPAPAGENO_DOXYGEN=TRUE ../..
+        - make doxygen coverage
       deploy:
-        provider: pages
-        skip_cleanup: true
-        local_dir: $TRAVIS_BUILD_DIR/build/debug/html
-        github_token: $GITHUB_API_KEY
-        on:
-          branch: master
-          
-   # Check for broken links on the Papageno github page
-   #
-   - os: linux
+      provider: pages
+      skip_cleanup: true
+      local_dir: $TRAVIS_BUILD_DIR/build/debug/html
+      github_token: $GITHUB_API_KEY
+      on:
+        branch: master
+         
+    # Check for broken links on the Papageno github page
+    #
+    - os: linux
       addons:
         apt:
           packages:
             - linkchecker
       script:
-         - linkchecker https://github.com/noseglasses/papageno
-
+        - linkchecker https://github.com/noseglasses/papageno
 
 before_install:
     - eval "${MATRIX_EVAL}"
