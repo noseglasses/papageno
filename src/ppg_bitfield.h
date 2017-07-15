@@ -25,22 +25,22 @@
 /** @brief A bitfield data type that can efficiently store boolean variables
  */
 typedef struct {
-	
-	// Use a bitarray to store input state
-	//
-	uint8_t bitarray[PPG_MAX_INPUTS/8]; ///< The actual storage
-	
-	uint8_t n_bits; ///< The number of bits that are considered as mutable
-	
+   
+   // Use a bitarray to store input state
+   //
+   uint8_t bitarray[PPG_MAX_INPUTS/8]; ///< The actual storage
+   
+   uint8_t n_bits; ///< The number of bits that are considered as mutable
+   
 } PPG_Bitfield;
 
 void ppg_bitfield_clear(PPG_Bitfield *bitfield);
 
 bool ppg_bitfield_get_bit(PPG_Bitfield *bitfield, 
-									PPG_Count pos);
+                           PPG_Count pos);
 
 void ppg_bitfield_set_bit(PPG_Bitfield *bitfield, 
-									PPG_Count pos, 
-									bool state);
+                           PPG_Count pos, 
+                           bool state);
 
 #endif

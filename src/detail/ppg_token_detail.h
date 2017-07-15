@@ -28,11 +28,11 @@ struct PPG_TokenStruct;
 /** @returns Whether the event was considered
  */
 typedef bool (*PPG_Token_Match_Event_Fun)(
-														struct PPG_TokenStruct *token, 
-														PPG_Event *event
- 													);
+                                          struct PPG_TokenStruct *token, 
+                                          PPG_Event *event
+                                        );
 
-typedef void (*PPG_Token_Reset_Fun)(	struct PPG_TokenStruct *token);
+typedef void (*PPG_Token_Reset_Fun)(   struct PPG_TokenStruct *token);
 
 typedef struct PPG_TokenStruct * (*PPG_Token_Destroy_Fun)(struct PPG_TokenStruct *token);
 
@@ -45,70 +45,70 @@ typedef void (*PPG_Token_Print_Self_Fun)(struct PPG_TokenStruct *p, PPG_Count in
 #endif
 
 typedef struct {
-									
-	PPG_Token_Match_Event_Fun 
-									match_event;
-									
-	PPG_Token_Reset_Fun
-									reset;
-									
-	PPG_Token_Destroy_Fun	
-									destroy;
-			
-	PPG_Token_Equals_Fun
-									equals;
-									
-	PPG_Token_Precedence_Fun
-									token_precedence;
-									
-	#ifdef PAPAGENO_PRINT_SELF_ENABLED
-	PPG_Token_Print_Self_Fun
-									print_self;
-	#endif								
+                           
+   PPG_Token_Match_Event_Fun 
+                           match_event;
+                           
+   PPG_Token_Reset_Fun
+                           reset;
+                           
+   PPG_Token_Destroy_Fun   
+                           destroy;
+         
+   PPG_Token_Equals_Fun
+                           equals;
+                           
+   PPG_Token_Precedence_Fun
+                           token_precedence;
+                           
+   #ifdef PAPAGENO_PRINT_SELF_ENABLED
+   PPG_Token_Print_Self_Fun
+                           print_self;
+   #endif                        
 } PPG_Token_Vtable;
 
 #define PPG_CALL_VIRT_METHOD(THIS, METHOD, ...) \
-	((PPG_Token__*)THIS)->vtable->METHOD(THIS, ##__VA_ARGS__);
+   ((PPG_Token__*)THIS)->vtable->METHOD(THIS, ##__VA_ARGS__);
 
 typedef struct PPG_TokenStruct {
 
-	PPG_Token_Vtable *vtable;
-	
-	struct PPG_TokenStruct *parent;
-	
-	struct PPG_TokenStruct **children;
-	
-	PPG_Count n_allocated_children;
-	PPG_Count n_children;
-	
-	PPG_Action action;
-	
-	PPG_Processing_State state;
-	
-	PPG_Layer layer;
-	 
+   PPG_Token_Vtable *vtable;
+   
+   struct PPG_TokenStruct *parent;
+   
+   struct PPG_TokenStruct **children;
+   
+   PPG_Count n_allocated_children;
+   PPG_Count n_children;
+   
+   PPG_Action action;
+   
+   PPG_Processing_State state;
+   
+   PPG_Layer layer;
+    
 } PPG_Token__;
 
 enum PPG_Processing_State {
-	PPG_Token_In_Progress = 0,
-	PPG_Token_Matches,
-	PPG_Token_Invalid,
-	PPG_Pattern_Matches,
-	PPG_Branch_Invalid
+   PPG_Token_In_Progress = 0,
+   PPG_Token_Matches,
+   PPG_Token_Invalid,
+   PPG_Pattern_Matches,
+   PPG_Branch_Invalid
 };
 
 void ppg_token_free_children(PPG_Token__ *a_This);
 
 void ppg_token_store_action(PPG_Token__ *token, 
-											  PPG_Action action);
+                                   PPG_Action action);
 
-void ppg_token_reset(	PPG_Token__ *token);
+void ppg_token_reset(   PPG_Token__ *token);
 
 void ppg_token_reset_children(PPG_Token__ *token);
 
-// PPG_Processing_State ppg_token_match_event(	
-// 												PPG_Token__ **current_token,
-// 												PPG_Event *event);
+// PPG_Processing_State ppg_token_match_event(   
+//                                     PPG_Token__ **current_token,
+//                                     PPG_Event *event);
 
 PPG_Token__ *ppg_token_new(PPG_Token__ *token);
 
@@ -119,8 +119,8 @@ void ppg_token_free(PPG_Token__ *token);
 void ppg_token_add_child(PPG_Token__ *token, PPG_Token__ *child);
 
 PPG_Token__* ppg_token_get_equivalent_child(
-														PPG_Token__ *parent_token,
-														PPG_Token__ *sample);
+                                          PPG_Token__ *parent_token,
+                                          PPG_Token__ *sample);
 
 #ifdef PAPAGENO_PRINT_SELF_ENABLED
 void ppg_token_print_self_start(PPG_Token__ *p, PPG_Count indent);

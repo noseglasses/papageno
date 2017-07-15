@@ -34,8 +34,8 @@ typedef void * PPG_Token;
  * @returns Returns the value of parameter token to allow for setter-chaining
  */
 PPG_Token ppg_token_set_action(
-									PPG_Token token,
-									PPG_Action action);
+                           PPG_Token token,
+                           PPG_Action action);
 
 /** @brief Returns the action that is associated with a token
  * 
@@ -56,8 +56,8 @@ PPG_Action ppg_token_get_action(PPG_Token token);
  * @returns Returns the value of parameter token to allow for setter-chaining
  */
 PPG_Token ppg_token_set_action_flags(
-									PPG_Token token,
-									PPG_Action_Flags_Type action_flags);
+                           PPG_Token token,
+                           PPG_Action_Flags_Type action_flags);
 
 /** @brief Returns the action flags associated with a token
  * 
@@ -72,7 +72,7 @@ PPG_Action_Flags_Type ppg_token_get_action_flags(PPG_Token token);
  * @param ... The array members
  */
 #define PPG_TOKENS(...) \
-	sizeof((PPG_Token[]) { __VA_ARGS__ })/sizeof(PPG_Token), \
-	(PPG_Token[]) { __VA_ARGS__ }
+   sizeof((PPG_Token[]) { __VA_ARGS__ })/sizeof(PPG_Token), \
+   (PPG_Token[]) { __VA_ARGS__ }
 
 #endif

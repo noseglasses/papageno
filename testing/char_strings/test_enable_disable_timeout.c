@@ -15,51 +15,51 @@
  */
 
 #include "papageno_char_strings.h"
-	
+   
 enum {
-	ppg_cs_layer_0 = 0
+   ppg_cs_layer_0 = 0
 };
 
 PPG_CS_START_TEST
 
-	PPG_CS_REGISTER_ACTION(Action)
-	
-	ppg_pattern(
-		ppg_cs_layer_0, /* Layer id */
-		PPG_TOKENS(
-			PPG_CS_N('a'),
-			PPG_CS_N('b'),
-			ppg_token_set_action(
-				PPG_CS_N('c'),
-				PPG_CS_ACTION(Action)
-			)
-		)
-	);
-	
-	ppg_cs_compile();
-	
-	PPG_CS_PROCESS_ON_OFF(	"a b | c |", 
-									PPG_CS_EXPECT_FLUSH("AaBbCc")
-									PPG_CS_EXPECT_EXCEPTIONS(PPG_CS_ET)
-									PPG_CS_EXPECT_NO_ACTIONS
-	);
-	
-	ppg_global_set_timeout_enabled(false);
-	
-	PPG_CS_PROCESS_ON_OFF(	"a b | c", 
-									PPG_CS_EXPECT_EMPTY_FLUSH
-									PPG_CS_EXPECT_NO_EXCEPTIONS
-									PPG_CS_EXPECT_ACTION_SERIES(
-										PPG_CS_A(Action)
-									)
-	);
-	
-	ppg_global_set_timeout_enabled(true);
-	
-	PPG_CS_PROCESS_ON_OFF(	"a b | c |", 
-									PPG_CS_EXPECT_FLUSH("AaBbCc")
-									PPG_CS_EXPECT_EXCEPTIONS(PPG_CS_ET)
-									PPG_CS_EXPECT_NO_ACTIONS
-	);
-	
+   PPG_CS_REGISTER_ACTION(Action)
+   
+   ppg_pattern(
+      ppg_cs_layer_0, /* Layer id */
+      PPG_TOKENS(
+         PPG_CS_N('a'),
+         PPG_CS_N('b'),
+         ppg_token_set_action(
+            PPG_CS_N('c'),
+            PPG_CS_ACTION(Action)
+         )
+      )
+   );
+   
+   ppg_cs_compile();
+   
+   PPG_CS_PROCESS_ON_OFF(  "a b | c |", 
+                           PPG_CS_EXPECT_FLUSH("AaBbCc")
+                           PPG_CS_EXPECT_EXCEPTIONS(PPG_CS_ET)
+                           PPG_CS_EXPECT_NO_ACTIONS
+   );
+   
+   ppg_global_set_timeout_enabled(false);
+   
+   PPG_CS_PROCESS_ON_OFF(  "a b | c", 
+                           PPG_CS_EXPECT_EMPTY_FLUSH
+                           PPG_CS_EXPECT_NO_EXCEPTIONS
+                           PPG_CS_EXPECT_ACTION_SERIES(
+                              PPG_CS_A(Action)
+                           )
+   );
+   
+   ppg_global_set_timeout_enabled(true);
+   
+   PPG_CS_PROCESS_ON_OFF(  "a b | c |", 
+                           PPG_CS_EXPECT_FLUSH("AaBbCc")
+                           PPG_CS_EXPECT_EXCEPTIONS(PPG_CS_ET)
+                           PPG_CS_EXPECT_NO_ACTIONS
+   );
+   
 PPG_CS_END_TEST

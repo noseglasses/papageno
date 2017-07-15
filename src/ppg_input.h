@@ -38,7 +38,7 @@ void ppg_input_list_all_active(void);
  * @param ... The array members
  */
 #define PPG_INPUTS(...) \
-	sizeof((PPG_Input_Id[]){ __VA_ARGS__ })/sizeof(PPG_Input_Id), \
-	(PPG_Input_Id[]){ __VA_ARGS__ }
+   sizeof((PPG_Input_Id[]){ __VA_ARGS__ })/sizeof(PPG_Input_Id), \
+   (PPG_Input_Id[]){ __VA_ARGS__ }
 
 #endif

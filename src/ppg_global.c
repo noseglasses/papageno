@@ -32,160 +32,160 @@
 
 void ppg_global_init(void) {
 
-	if(!ppg_context) {
-		
-		ppg_context = (PPG_Context *)ppg_context_create();
-	}
+   if(!ppg_context) {
+      
+      ppg_context = (PPG_Context *)ppg_context_create();
+   }
 }
 
 void ppg_global_compile(void)
 {
-	ppg_context->tree_depth = ppg_pattern_tree_depth();
-	
-	// Initialize the furcation buffer to ensure correct size (the maximum
-	// search tree depth)
-	//
-	ppg_furcation_buffer_resize();
+   ppg_context->tree_depth = ppg_pattern_tree_depth();
+   
+   // Initialize the furcation buffer to ensure correct size (the maximum
+   // search tree depth)
+   //
+   ppg_furcation_buffer_resize();
 }
 
 void ppg_global_finalize(void) {
-	
-	if(!ppg_context) { return; }
-	
-	ppg_token_free_children(&ppg_context->pattern_root);
-	
-	free(ppg_context);
-	
-	ppg_context = NULL;
+   
+   if(!ppg_context) { return; }
+   
+   ppg_token_free_children(&ppg_context->pattern_root);
+   
+   free(ppg_context);
+   
+   ppg_context = NULL;
 }
 
 void ppg_global_reset(void)
 {
-	ppg_global_finalize();
-	
-	ppg_context = (PPG_Context *)ppg_context_create();
+   ppg_global_finalize();
+   
+   ppg_context = (PPG_Context *)ppg_context_create();
 }
 
 /* Use this function to define a input that always aborts a pattern
  */
 PPG_Input_Id ppg_global_set_abort_trigger(PPG_Input_Id input)
 {
-	PPG_Input_Id old_input = ppg_context->abort_input;
-	
-	ppg_context->abort_input = input;
-	
-	return old_input;
+   PPG_Input_Id old_input = ppg_context->abort_input;
+   
+   ppg_context->abort_input = input;
+   
+   return old_input;
 }
 
 PPG_Input_Id ppg_global_get_abort_trigger(void)
 {
-	return ppg_context->abort_input;
+   return ppg_context->abort_input;
 }
 
 PPG_Time ppg_global_set_timeout(PPG_Time timeout)
 {
-	PPG_Time old_value = ppg_context->event_timeout;
-	
-	ppg_context->event_timeout = timeout;
-	
-	return old_value;
+   PPG_Time old_value = ppg_context->event_timeout;
+   
+   ppg_context->event_timeout = timeout;
+   
+   return old_value;
 }
 
 PPG_Time ppg_global_get_timeout(void)
 {
-	return ppg_context->event_timeout;
+   return ppg_context->event_timeout;
 }
 
 PPG_Event_Processor_Fun ppg_global_set_default_event_processor(PPG_Event_Processor_Fun input_processor)
 {
-	PPG_Event_Processor_Fun old_input_processor = ppg_context->input_processor;
-	
-	ppg_context->input_processor = input_processor;
-	
-	return old_input_processor;
+   PPG_Event_Processor_Fun old_input_processor = ppg_context->input_processor;
+   
+   ppg_context->input_processor = input_processor;
+   
+   return old_input_processor;
 }
 
 bool ppg_global_set_enabled(bool state)
 {
-	bool old_state = ppg_context->papageno_enabled;
-	
-	ppg_context->papageno_enabled = state;
+   bool old_state = ppg_context->papageno_enabled;
+   
+   ppg_context->papageno_enabled = state;
 
-	return old_state;
+   return old_state;
 }
 
 bool ppg_global_set_timeout_enabled(bool state)
 {
-	bool previous_state = ppg_context->timeout_enabled;
-	
-	ppg_context->timeout_enabled = state;
-	
-	return previous_state;
+   bool previous_state = ppg_context->timeout_enabled;
+   
+   ppg_context->timeout_enabled = state;
+   
+   return previous_state;
 }
 
 bool ppg_global_get_timeout_enabled(void)
 {
-	return ppg_context->timeout_enabled;
+   return ppg_context->timeout_enabled;
 }
 
 PPG_Layer ppg_global_set_layer(PPG_Layer layer)
 {
-	PPG_Layer previous_layer = ppg_context->layer;
-	
-	if(previous_layer != layer) {
-		if(ppg_context->current_token) {
-			ppg_global_abort_pattern_matching();
-		}
-	}
-	
-	ppg_context->layer = layer;
-	
-	return previous_layer;
+   PPG_Layer previous_layer = ppg_context->layer;
+   
+   if(previous_layer != layer) {
+      if(ppg_context->current_token) {
+         ppg_global_abort_pattern_matching();
+      }
+   }
+   
+   ppg_context->layer = layer;
+   
+   return previous_layer;
 }
 
 PPG_Layer ppg_global_get_layer(void)
 {
-	return ppg_context->layer;
+   return ppg_context->layer;
 }
 
 PPG_Signal_Callback ppg_global_set_signal_callback(PPG_Signal_Callback callback)
 {
-	PPG_Signal_Callback previous_callback = ppg_context->signal_callback;
-	
-	ppg_context->signal_callback = callback;
-	
-	return previous_callback;
+   PPG_Signal_Callback previous_callback = ppg_context->signal_callback;
+   
+   ppg_context->signal_callback = callback;
+   
+   return previous_callback;
 }
 
 PPG_Signal_Callback ppg_global_get_signal_callback(void)
 {
-	return ppg_context->signal_callback;
+   return ppg_context->signal_callback;
 }
 
 void ppg_global_set_number_of_inputs(PPG_Count n_inputs)
 {
-	ppg_context->active_inputs.n_bits = n_inputs;
+   ppg_context->active_inputs.n_bits = n_inputs;
 }
 
 PPG_Count ppg_global_get_number_of_inputs(void)
 {
-	return ppg_context->active_inputs.n_bits;
+   return ppg_context->active_inputs.n_bits;
 }
 
 void ppg_global_abort_pattern_matching(void)
-{		
-	if(!ppg_context->current_token) { return; }
-	
-// 	PPG_PRINTF("Aborting pattern\n");
-	
-	ppg_recurse_and_cleanup_active_branch();
-	
-	ppg_event_buffer_prepare_on_failure();
-			
-	ppg_signal(PPG_On_Abort);
-	
-	ppg_delete_stored_events();
-	
-	ppg_context->current_token = NULL;
+{     
+   if(!ppg_context->current_token) { return; }
+   
+//    PPG_PRINTF("Aborting pattern\n");
+   
+   ppg_recurse_and_cleanup_active_branch();
+   
+   ppg_event_buffer_prepare_on_failure();
+         
+   ppg_signal(PPG_On_Abort);
+   
+   ppg_delete_stored_events();
+   
+   ppg_context->current_token = NULL;
 }
 

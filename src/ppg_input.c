@@ -22,11 +22,11 @@
 
 void ppg_input_list_all_active(void)
 {
-	PPG_PRINTF("Active inputs:\n");
-	
-	for(PPG_Count i = 0; i < ppg_context->active_inputs.n_bits; ++i) {
-		if(ppg_bitfield_get_bit(&ppg_context->active_inputs, i)) {
-			PPG_PRINTF("   %d\n", i);
-		}
-	}
+   PPG_PRINTF("Active inputs:\n");
+   
+   for(PPG_Count i = 0; i < ppg_context->active_inputs.n_bits; ++i) {
+      if(ppg_bitfield_get_bit(&ppg_context->active_inputs, i)) {
+         PPG_PRINTF("   %d\n", i);
+      }
+   }
 }

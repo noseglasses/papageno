@@ -23,7 +23,7 @@
 
 /** @brief Function type of signal callback functions
  * 
- *	 @param slot_id
+ *    @param slot_id
  *  @param user_data Optional user data.
  */
 typedef void (*PPG_Signal_Callback_Fun)(PPG_Slot_Id slot_id, void *user_data);
@@ -32,8 +32,8 @@ typedef void (*PPG_Signal_Callback_Fun)(PPG_Slot_Id slot_id, void *user_data);
  *  in an object oriented fashion (functor).
  */
 typedef struct {
-	PPG_Signal_Callback_Fun func; ///< The callback function
-	void *	user_data; ///< Optional user data that is passed to the callback when called
+   PPG_Signal_Callback_Fun func; ///< The callback function
+   void *   user_data; ///< Optional user data that is passed to the callback when called
 } PPG_Signal_Callback;
 
 #endif

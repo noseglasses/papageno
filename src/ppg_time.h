@@ -48,14 +48,14 @@ typedef void (*PPG_Time_Difference_Fun)(PPG_Time time1, PPG_Time time2, PPG_Time
  * @param time2 The second time value
  */
 typedef PPG_Time_Comparison_Result_Type (*PPG_Time_Comparison_Fun)(
-									PPG_Time time1, PPG_Time time2);
+                           PPG_Time time1, PPG_Time time2);
 
 /** @brief A collection of functions for time handling
  */
 typedef struct {
-	PPG_Time_Fun time; ///< Retreives time
-	PPG_Time_Difference_Fun time_difference; ///< Computes time differences
-	PPG_Time_Comparison_Fun compare_times; ///< Compares time values
+   PPG_Time_Fun time; ///< Retreives time
+   PPG_Time_Difference_Fun time_difference; ///< Computes time differences
+   PPG_Time_Comparison_Fun compare_times; ///< Compares time values
 } PPG_Time_Manager;
 
 /** @brief Sets a new global time handler

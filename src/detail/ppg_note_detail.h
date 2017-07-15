@@ -21,17 +21,17 @@
 #include "detail/ppg_token_detail.h"
 
 enum {
-	PPG_Note_Type_Active = (PPG_Note_Type_Match_Deactivation << 1)
+   PPG_Note_Type_Active = (PPG_Note_Type_Match_Deactivation << 1)
 };
 
 typedef struct {
-	
-	PPG_Token__ super;
-	 
-	PPG_Input_Id input;
-	
-	PPG_Count flags;
-	 
+   
+   PPG_Token__ super;
+    
+   PPG_Input_Id input;
+   
+   PPG_Count flags;
+    
 } PPG_Note;
 
 PPG_Note *ppg_note_new(PPG_Note *note);

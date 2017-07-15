@@ -194,9 +194,9 @@ typedef PPG_TIME_IDENTIFIER_TYPE PPG_Time;
 inline
 static void ppg_indent(int tabs)
 {
-	for(int i = 0; i < tabs; ++i) {
-		printf("   ");
-	}
+   for(int i = 0; i < tabs; ++i) {
+      printf("   ");
+   }
 }
 
 #define PPG_I ppg_indent(indent);

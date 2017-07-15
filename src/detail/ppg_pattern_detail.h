@@ -20,10 +20,10 @@
 #include "ppg_token.h"
 #include "ppg_layer.h"
 
-PPG_Token ppg_pattern_from_list(	
-												PPG_Layer layer,
-												PPG_Count n_tokens,
-												PPG_Token tokens[]);
+PPG_Token ppg_pattern_from_list(   
+                                    PPG_Layer layer,
+                                    PPG_Count n_tokens,
+                                    PPG_Token tokens[]);
 
 PPG_Count ppg_pattern_tree_depth(void);
 

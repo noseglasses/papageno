@@ -22,19 +22,19 @@ PPG_Context *ppg_context = NULL;
 
 static void ppg_default_time(PPG_Time *time)
 {
-	*time = 0;
+   *time = 0;
 }
 
 static void ppg_default_time_difference(PPG_Time time1, PPG_Time time2, PPG_Time *delta)
 {
-	*delta = 0;
+   *delta = 0;
 }
 
 PPG_Time_Comparison_Result_Type ppg_default_time_comparison(
-								PPG_Time time1,
-								PPG_Time time2)
+                        PPG_Time time1,
+                        PPG_Time time2)
 {
-	return 0;
+   return 0;
 }
 
 /** @brief This function initializes a signal callback
@@ -44,35 +44,35 @@ PPG_Time_Comparison_Result_Type ppg_default_time_comparison(
 inline
 static void ppg_signal_callback_init(PPG_Signal_Callback *cb)
 {
-	cb->func = NULL;
-	cb->user_data = NULL;
+   cb->func = NULL;
+   cb->user_data = NULL;
 }
 
 void ppg_global_initialize_context(PPG_Context *context) {
-	
-// 	PPG_PRINTF("Initializing context\n");
-	
-	ppg_event_buffer_init(&context->event_buffer);
-	ppg_furcation_buffer_init(&context->furcation_buffer);
+   
+//    PPG_PRINTF("Initializing context\n");
+   
+   ppg_event_buffer_init(&context->event_buffer);
+   ppg_furcation_buffer_init(&context->furcation_buffer);
 
-	context->active_inputs.n_bits = 0;
-	
-	ppg_bitfield_clear(&context->active_inputs);
-	
-	context->current_token = NULL;
-	context->timeout_enabled = true;
-	context->papageno_enabled = true;
-	context->tree_depth = 0;
-	context->layer = 0;
-	ppg_global_init_input(&context->abort_input);
-	context->event_timeout = 0;
-	context->time_manager.time = ppg_default_time;
-	context->time_manager.time_difference = ppg_default_time_difference;
-	context->time_manager.compare_times = ppg_default_time_comparison;
-	
-	ppg_signal_callback_init(&context->signal_callback);
+   context->active_inputs.n_bits = 0;
+   
+   ppg_bitfield_clear(&context->active_inputs);
+   
+   context->current_token = NULL;
+   context->timeout_enabled = true;
+   context->papageno_enabled = true;
+   context->tree_depth = 0;
+   context->layer = 0;
+   ppg_global_init_input(&context->abort_input);
+   context->event_timeout = 0;
+   context->time_manager.time = ppg_default_time;
+   context->time_manager.time_difference = ppg_default_time_difference;
+   context->time_manager.compare_times = ppg_default_time_comparison;
+   
+   ppg_signal_callback_init(&context->signal_callback);
 
-	/* Initialize the pattern root
-	*/
-	ppg_token_new(&context->pattern_root);
+   /* Initialize the pattern root
+   */
+   ppg_token_new(&context->pattern_root);
 };

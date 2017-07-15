@@ -24,38 +24,38 @@
 PPG_Token ppg_note_create(PPG_Input_Id input, PPG_Count flags)
 {
     PPG_Note *note = (PPG_Note*)ppg_note_new(ppg_note_alloc());
-	 
-	 note->input = input;
-	 note->flags = flags;
-	 
-	 /* Return the new end of the pattern */
-	 return note;
+    
+    note->input = input;
+    note->flags = flags;
+    
+    /* Return the new end of the pattern */
+    return note;
 }
 
 PPG_Token ppg_note_create_standard(PPG_Input_Id input)
 {
-	return ppg_note_create(input, PPG_Note_Type_Standard);
+   return ppg_note_create(input, PPG_Note_Type_Standard);
 }
 
-PPG_Token ppg_single_note_line(	
-							PPG_Layer layer,
-							PPG_Action action,
-							PPG_Count n_inputs,
-							PPG_Input_Id inputs[])
+PPG_Token ppg_single_note_line(  
+                     PPG_Layer layer,
+                     PPG_Action action,
+                     PPG_Count n_inputs,
+                     PPG_Input_Id inputs[])
 {
-// 	PPG_PRINTF("Adding single note line\n");
+//    PPG_PRINTF("Adding single note line\n");
   
-	PPG_Token tokens[n_inputs];
-		
-	for (PPG_Count i = 0; i < n_inputs; i++) {
+   PPG_Token tokens[n_inputs];
+      
+   for (PPG_Count i = 0; i < n_inputs; i++) {
 
-		tokens[i] = ppg_note_create_standard(inputs[i]);
-	}
-	
-	ppg_token_store_action(tokens[n_inputs - 1], action);
-	
-	PPG_Token__ *leaf_token 
-		= ppg_pattern_from_list(layer, n_inputs, tokens);
+      tokens[i] = ppg_note_create_standard(inputs[i]);
+   }
+   
+   ppg_token_store_action(tokens[n_inputs - 1], action);
+   
+   PPG_Token__ *leaf_token 
+      = ppg_pattern_from_list(layer, n_inputs, tokens);
   
-	return leaf_token;
+   return leaf_token;
 }

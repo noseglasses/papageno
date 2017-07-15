@@ -18,39 +18,39 @@
 
 void ppg_bitfield_clear(PPG_Bitfield *bitfield)
 {
-	PPG_Count max_id = bitfield->n_bits/8 + 1;
-	
-	for(PPG_Count i = 0; i < max_id; ++i) {
-		bitfield->bitarray[i] = 0;
-	}
+   PPG_Count max_id = bitfield->n_bits/8 + 1;
+   
+   for(PPG_Count i = 0; i < max_id; ++i) {
+      bitfield->bitarray[i] = 0;
+   }
 }
 
 bool ppg_bitfield_get_bit(PPG_Bitfield *bitfield, 
-							  PPG_Count pos)
+                       PPG_Count pos)
 {
-	PPG_Count byte = pos/8;
-	PPG_Count bit = pos%8;
-	
-	return bitfield->bitarray[byte] & (1 << bit);
+   PPG_Count byte = pos/8;
+   PPG_Count bit = pos%8;
+   
+   return bitfield->bitarray[byte] & (1 << bit);
 }
 
 void ppg_bitfield_set_bit(PPG_Bitfield *bitfield, 
-							  PPG_Count pos, 
-							  bool state)
+                       PPG_Count pos, 
+                       bool state)
 {
-	PPG_Count byte = pos/8;
-	PPG_Count bit = pos%8;
-	
-	if(state) {
-		
-		// Set the specific bit
-		//
-		bitfield->bitarray[byte] |= (1 << bit);
-	}
-	else {
-		
-		// Clear the specific bit
-		//
-		bitfield->bitarray[byte] &= ~(1 << bit);
-	}
+   PPG_Count byte = pos/8;
+   PPG_Count bit = pos%8;
+   
+   if(state) {
+      
+      // Set the specific bit
+      //
+      bitfield->bitarray[byte] |= (1 << bit);
+   }
+   else {
+      
+      // Clear the specific bit
+      //
+      bitfield->bitarray[byte] &= ~(1 << bit);
+   }
 }

@@ -18,11 +18,11 @@
 #include "detail/ppg_context_detail.h"
 
 void ppg_signal(PPG_Count slot_id)
-{	
-	if(ppg_context->signal_callback.func) {
-		ppg_context->signal_callback.func(
-			slot_id,
-			ppg_context->signal_callback.user_data
-		);
-	}
+{  
+   if(ppg_context->signal_callback.func) {
+      ppg_context->signal_callback.func(
+         slot_id,
+         ppg_context->signal_callback.user_data
+      );
+   }
 }

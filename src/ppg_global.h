@@ -114,7 +114,7 @@ void ppg_global_reset(void);
  * This timeout check function should be called frequently in a loop, e.g. when polling input presses
  * 
  * @returns True if timeout happend, i.e. the time elapsed since the last inputpress event 
- * 			exceeded the user defined timeout threshold.
+ *          exceeded the user defined timeout threshold.
  */
 bool ppg_timeout_check(void);
 

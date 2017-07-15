@@ -24,8 +24,8 @@
 /** @brief Action flags are defined as power of two to be compined using bitwise operations
  */
 enum PPG_Action_Flags {
-	PPG_Action_Default = 0,
-	PPG_Action_Fallback = 1 << 0
+   PPG_Action_Default = 0,
+   PPG_Action_Fallback = 1 << 0
 };
 
 #endif

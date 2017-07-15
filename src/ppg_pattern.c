@@ -20,21 +20,21 @@
 #include "ppg_debug.h"
 #include "ppg_global.h"
 
-PPG_Token ppg_pattern(		
-							PPG_Layer layer, 
-							PPG_Count n_tokens,
-							PPG_Token tokens[])
+PPG_Token ppg_pattern(     
+                     PPG_Layer layer, 
+                     PPG_Count n_tokens,
+                     PPG_Token tokens[])
 { 
-// 	PPG_PRINTF("Adding pattern\n");
-	
-	ppg_global_init();
-		
-	return ppg_pattern_from_list(layer, n_tokens, tokens);
+//    PPG_PRINTF("Adding pattern\n");
+   
+   ppg_global_init();
+      
+   return ppg_pattern_from_list(layer, n_tokens, tokens);
 }
 
 #ifdef PAPAGENO_PRINT_SELF_ENABLED
 void ppg_pattern_print_tree(void)
 {
-	PPG_CALL_VIRT_METHOD(&ppg_context->pattern_root, print_self, 0, true /* recurse */);
+   PPG_CALL_VIRT_METHOD(&ppg_context->pattern_root, print_self, 0, true /* recurse */);
 }
 #endif

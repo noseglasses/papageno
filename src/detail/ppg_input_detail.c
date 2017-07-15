@@ -22,5 +22,5 @@
 
 void ppg_global_init_input(PPG_Input_Id *input)
 {
-	*input = (PPG_Input_Id)((uintptr_t)-1);
+   *input = (PPG_Input_Id)((uintptr_t)-1);
 }

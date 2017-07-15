@@ -28,32 +28,32 @@
 
 typedef struct PPG_Context_Struct
 {
-	PPG_Event_Buffer event_buffer;
-	PPG_Furcation_Buffer furcation_buffer;
-	PPG_Bitfield active_inputs;
-	
-	PPG_Token__ pattern_root;
+   PPG_Event_Buffer event_buffer;
+   PPG_Furcation_Buffer furcation_buffer;
+   PPG_Bitfield active_inputs;
+   
+   PPG_Token__ pattern_root;
 
-	PPG_Token__ *current_token;
+   PPG_Token__ *current_token;
 
-	bool timeout_enabled;
-	bool papageno_enabled;
-	
-	PPG_Count tree_depth;
-	
-	PPG_Layer layer;
+   bool timeout_enabled;
+   bool papageno_enabled;
+   
+   PPG_Count tree_depth;
+   
+   PPG_Layer layer;
 
-	PPG_Input_Id abort_input;
+   PPG_Input_Id abort_input;
 
-	PPG_Time time_last_event;
+   PPG_Time time_last_event;
 
-	PPG_Time event_timeout;
-	
-	PPG_Event_Processor_Fun input_processor;
-	
-	PPG_Time_Manager time_manager;
-	
-	PPG_Signal_Callback signal_callback;
+   PPG_Time event_timeout;
+   
+   PPG_Event_Processor_Fun input_processor;
+   
+   PPG_Time_Manager time_manager;
+   
+   PPG_Signal_Callback signal_callback;
   
 } PPG_Context;
 
@@ -64,7 +64,7 @@ void ppg_global_initialize_context(PPG_Context *context);
 /* The following macros influence the build
 
 PAPAGENO_DISABLE_CONTEXT_SWITCHING 
-		Disables the capability to switch contexts 
+      Disables the capability to switch contexts 
 
 */
 

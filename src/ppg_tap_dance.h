@@ -29,8 +29,8 @@
  * Defines an action for a given number of taps
  */
 typedef struct {
-	PPG_Action action; ///< The action associated with the given number of taps
-	PPG_Count tap_count; ///< The number of taps necessary to trigger the action
+   PPG_Action action; ///< The action associated with the given number of taps
+   PPG_Count tap_count; ///< The number of taps necessary to trigger the action
 } PPG_Tap_Definition;
 
 /** @brief Auxiliary macro to simplify passing tap definitions
@@ -38,8 +38,8 @@ typedef struct {
  * @param ... The array members
  */
 #define PPG_TAP_DEFINITIONS(...) \
-	sizeof((PPG_Tap_Definition[]){ __VA_ARGS__ })/sizeof(PPG_Tap_Definition), \
-	(PPG_Tap_Definition[]){ __VA_ARGS__ }
+   sizeof((PPG_Tap_Definition[]){ __VA_ARGS__ })/sizeof(PPG_Tap_Definition), \
+   (PPG_Tap_Definition[]){ __VA_ARGS__ }
 
 /** @brief This macro simplifies the specification of taps as actions that are associated with specific a number of taps 
  * 
@@ -47,7 +47,7 @@ typedef struct {
  * @param ACTION The action
  */
 #define PPG_TAP(TAP_COUNT, ACTION) \
-	(PPG_Tap_Definition) { .action = ACTION, .tap_count = TAP_COUNT }
+   (PPG_Tap_Definition) { .action = ACTION, .tap_count = TAP_COUNT }
 
 /** @brief Defines a tap dance. 
  * 
@@ -67,11 +67,11 @@ typedef struct {
  * @param tap_definitions A tap definitions array.
  * @returns The constructed token
  */
-PPG_Token ppg_tap_dance(	
-							PPG_Layer layer,
-							PPG_Input_Id input,
-							PPG_Action_Flags_Type default_action_flags,
-							PPG_Count n_tap_definitions,
-							PPG_Tap_Definition tap_definitions[]);
+PPG_Token ppg_tap_dance(   
+                     PPG_Layer layer,
+                     PPG_Input_Id input,
+                     PPG_Action_Flags_Type default_action_flags,
+                     PPG_Count n_tap_definitions,
+                     PPG_Tap_Definition tap_definitions[]);
 
 #endif

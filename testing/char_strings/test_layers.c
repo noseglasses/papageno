@@ -15,147 +15,147 @@
  */
 
 #include "papageno_char_strings.h"
-	
+   
 enum {
-	ppg_cs_layer_0 = 0,
-	ppg_cs_layer_1,
-	ppg_cs_layer_2
+   ppg_cs_layer_0 = 0,
+   ppg_cs_layer_1,
+   ppg_cs_layer_2
 };
 
 PPG_CS_START_TEST
 
-	PPG_CS_REGISTER_ACTION(Action_1)
-	PPG_CS_REGISTER_ACTION(Action_2)
-	PPG_CS_REGISTER_ACTION(Action_3)
-	PPG_CS_REGISTER_ACTION(Action_4)
-	
-	ppg_pattern(
-		ppg_cs_layer_0, /* Layer id */
-		PPG_TOKENS(
-			PPG_CS_N('a'),
-			PPG_CS_N('b'),
-			ppg_token_set_action(
-				PPG_CS_N('c'),
-				PPG_CS_ACTION(Action_1)
-			)
-		)
-	);
-	
-	ppg_pattern(
-		ppg_cs_layer_0, /* Layer id */
-		PPG_TOKENS(
-			PPG_CS_N('a'),
-			PPG_CS_N('a'),
-			ppg_token_set_action(
-				PPG_CS_N('c'),
-				PPG_CS_ACTION(Action_2)
-			)
-		)
-	);
-	
-	ppg_pattern(
-		ppg_cs_layer_0, /* Layer id */
-		PPG_TOKENS(
-			PPG_CS_N('a'),
-			PPG_CS_N('b'),
-			ppg_token_set_action(
-				PPG_CS_N('d'),
-				PPG_CS_ACTION(Action_3)
-			)
-		)
-	);
-	
-	ppg_pattern(
-		ppg_cs_layer_1, /* Layer id */
-		PPG_TOKENS(
-			PPG_CS_N('a'),
-			PPG_CS_N('b'),
-			ppg_token_set_action(
-				PPG_CS_N('c'),
-				PPG_CS_ACTION(Action_4)
-			)
-		)
-	);	
-	
-	// Empty override
-	//
-	ppg_pattern(
-		ppg_cs_layer_2, /* Layer id */
-		PPG_TOKENS(
-			PPG_CS_N('a'),
-			PPG_CS_N('b'),
-			PPG_CS_N('c')
-		)
-	);
-	
-	ppg_cs_compile();
-	
-	PPG_CS_PROCESS_ON_OFF(	"a b c", 
-									PPG_CS_EXPECT_EMPTY_FLUSH
-									PPG_CS_EXPECT_NO_EXCEPTIONS
-									PPG_CS_EXPECT_ACTION_SERIES(
-										PPG_CS_A(Action_1)
-									)
-	);
-	
-	PPG_CS_PROCESS_ON_OFF(	"a a c", 
-									PPG_CS_EXPECT_EMPTY_FLUSH
-									PPG_CS_EXPECT_NO_EXCEPTIONS
-									PPG_CS_EXPECT_ACTION_SERIES(
-										PPG_CS_A(Action_2)
-									)
-	);
-	
-	PPG_CS_PROCESS_ON_OFF(	"a b d", 
-									PPG_CS_EXPECT_EMPTY_FLUSH
-									PPG_CS_EXPECT_NO_EXCEPTIONS
-									PPG_CS_EXPECT_ACTION_SERIES(
-										PPG_CS_A(Action_3)
-									)
-	);
-	
-	ppg_global_set_layer(ppg_cs_layer_1);
-	
-	// Layer switches abort processing. Assert that aborting
-	// works correctly.
-	//
-	PPG_CS_CHECK_NO_PROCESS(
-									PPG_CS_EXPECT_EXCEPTIONS(PPG_CS_EA)
-									PPG_CS_EXPECT_EMPTY_FLUSH
-									PPG_CS_EXPECT_NO_ACTIONS
-	)
-		
-	PPG_CS_PROCESS_ON_OFF(	"a b c", 
-									PPG_CS_EXPECT_EMPTY_FLUSH
-									PPG_CS_EXPECT_NO_EXCEPTIONS
-									PPG_CS_EXPECT_ACTION_SERIES(
-										PPG_CS_A(Action_4)
-									)
-	);
-		
-	ppg_global_set_layer(ppg_cs_layer_2);
-			
-	// Layer switches abort processing. Assert that aborting
-	// works correctly.
-	//
-	PPG_CS_CHECK_NO_PROCESS(
-									PPG_CS_EXPECT_EXCEPTIONS(PPG_CS_EA)
-									PPG_CS_EXPECT_EMPTY_FLUSH
-									PPG_CS_EXPECT_NO_ACTIONS
-	)
-	
-	PPG_CS_PROCESS_ON_OFF(	"a b c", 
-									PPG_CS_EXPECT_EMPTY_FLUSH
-									PPG_CS_EXPECT_NO_EXCEPTIONS
-									PPG_CS_EXPECT_NO_ACTIONS
-	);
-	
-	PPG_CS_PROCESS_ON_OFF(	"a a c", 
-									PPG_CS_EXPECT_EMPTY_FLUSH
-									PPG_CS_EXPECT_NO_EXCEPTIONS
-									PPG_CS_EXPECT_ACTION_SERIES(
-										PPG_CS_A(Action_2)
-									)
-	);
-	
+   PPG_CS_REGISTER_ACTION(Action_1)
+   PPG_CS_REGISTER_ACTION(Action_2)
+   PPG_CS_REGISTER_ACTION(Action_3)
+   PPG_CS_REGISTER_ACTION(Action_4)
+   
+   ppg_pattern(
+      ppg_cs_layer_0, /* Layer id */
+      PPG_TOKENS(
+         PPG_CS_N('a'),
+         PPG_CS_N('b'),
+         ppg_token_set_action(
+            PPG_CS_N('c'),
+            PPG_CS_ACTION(Action_1)
+         )
+      )
+   );
+   
+   ppg_pattern(
+      ppg_cs_layer_0, /* Layer id */
+      PPG_TOKENS(
+         PPG_CS_N('a'),
+         PPG_CS_N('a'),
+         ppg_token_set_action(
+            PPG_CS_N('c'),
+            PPG_CS_ACTION(Action_2)
+         )
+      )
+   );
+   
+   ppg_pattern(
+      ppg_cs_layer_0, /* Layer id */
+      PPG_TOKENS(
+         PPG_CS_N('a'),
+         PPG_CS_N('b'),
+         ppg_token_set_action(
+            PPG_CS_N('d'),
+            PPG_CS_ACTION(Action_3)
+         )
+      )
+   );
+   
+   ppg_pattern(
+      ppg_cs_layer_1, /* Layer id */
+      PPG_TOKENS(
+         PPG_CS_N('a'),
+         PPG_CS_N('b'),
+         ppg_token_set_action(
+            PPG_CS_N('c'),
+            PPG_CS_ACTION(Action_4)
+         )
+      )
+   ); 
+   
+   // Empty override
+   //
+   ppg_pattern(
+      ppg_cs_layer_2, /* Layer id */
+      PPG_TOKENS(
+         PPG_CS_N('a'),
+         PPG_CS_N('b'),
+         PPG_CS_N('c')
+      )
+   );
+   
+   ppg_cs_compile();
+   
+   PPG_CS_PROCESS_ON_OFF(  "a b c", 
+                           PPG_CS_EXPECT_EMPTY_FLUSH
+                           PPG_CS_EXPECT_NO_EXCEPTIONS
+                           PPG_CS_EXPECT_ACTION_SERIES(
+                              PPG_CS_A(Action_1)
+                           )
+   );
+   
+   PPG_CS_PROCESS_ON_OFF(  "a a c", 
+                           PPG_CS_EXPECT_EMPTY_FLUSH
+                           PPG_CS_EXPECT_NO_EXCEPTIONS
+                           PPG_CS_EXPECT_ACTION_SERIES(
+                              PPG_CS_A(Action_2)
+                           )
+   );
+   
+   PPG_CS_PROCESS_ON_OFF(  "a b d", 
+                           PPG_CS_EXPECT_EMPTY_FLUSH
+                           PPG_CS_EXPECT_NO_EXCEPTIONS
+                           PPG_CS_EXPECT_ACTION_SERIES(
+                              PPG_CS_A(Action_3)
+                           )
+   );
+   
+   ppg_global_set_layer(ppg_cs_layer_1);
+   
+   // Layer switches abort processing. Assert that aborting
+   // works correctly.
+   //
+   PPG_CS_CHECK_NO_PROCESS(
+                           PPG_CS_EXPECT_EXCEPTIONS(PPG_CS_EA)
+                           PPG_CS_EXPECT_EMPTY_FLUSH
+                           PPG_CS_EXPECT_NO_ACTIONS
+   )
+      
+   PPG_CS_PROCESS_ON_OFF(  "a b c", 
+                           PPG_CS_EXPECT_EMPTY_FLUSH
+                           PPG_CS_EXPECT_NO_EXCEPTIONS
+                           PPG_CS_EXPECT_ACTION_SERIES(
+                              PPG_CS_A(Action_4)
+                           )
+   );
+      
+   ppg_global_set_layer(ppg_cs_layer_2);
+         
+   // Layer switches abort processing. Assert that aborting
+   // works correctly.
+   //
+   PPG_CS_CHECK_NO_PROCESS(
+                           PPG_CS_EXPECT_EXCEPTIONS(PPG_CS_EA)
+                           PPG_CS_EXPECT_EMPTY_FLUSH
+                           PPG_CS_EXPECT_NO_ACTIONS
+   )
+   
+   PPG_CS_PROCESS_ON_OFF(  "a b c", 
+                           PPG_CS_EXPECT_EMPTY_FLUSH
+                           PPG_CS_EXPECT_NO_EXCEPTIONS
+                           PPG_CS_EXPECT_NO_ACTIONS
+   );
+   
+   PPG_CS_PROCESS_ON_OFF(  "a a c", 
+                           PPG_CS_EXPECT_EMPTY_FLUSH
+                           PPG_CS_EXPECT_NO_EXCEPTIONS
+                           PPG_CS_EXPECT_ACTION_SERIES(
+                              PPG_CS_A(Action_2)
+                           )
+   );
+   
 PPG_CS_END_TEST

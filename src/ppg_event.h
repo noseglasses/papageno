@@ -33,30 +33,30 @@
  */
 enum PPG_Event_Flags
 {
-	PPG_Event_Flags_Empty = 0, ///< Initial value of the flags variable
-	
-	PPG_Event_Active = (1 << 0), ///< Set to mark the activation of an input through an event
-	PPG_Event_Considered = (PPG_Event_Active << 1) ///< This flag bit tells if an event has been considered as part of a pattern or as control event (e.g. as set by ppg_global_set_abort_trigger
+   PPG_Event_Flags_Empty = 0, ///< Initial value of the flags variable
+   
+   PPG_Event_Active = (1 << 0), ///< Set to mark the activation of an input through an event
+   PPG_Event_Considered = (PPG_Event_Active << 1) ///< This flag bit tells if an event has been considered as part of a pattern or as control event (e.g. as set by ppg_global_set_abort_trigger
 };
 
 /** @brief Specification of an input event
  */
 typedef struct {
-	PPG_Input_Id input; ///< The input identifier associated with the input that is pressed or released
-	PPG_Time time; ///< The time at which the input event occured
-	PPG_Count flags; ///< Whether the input is active
+   PPG_Input_Id input; ///< The input identifier associated with the input that is pressed or released
+   PPG_Time time; ///< The time at which the input event occured
+   PPG_Count flags; ///< Whether the input is active
 } PPG_Event;
 
 /** @brief A callback function that is used during processing of stored input events
  * 
  * @param event A pointer to a PPG_Event struct that provides information 
- * 						about the input event
+ *                   about the input event
  * @param slot_id The slot identifier informs about the slot that triggered input event processing
  * @param user_data Optional user data
  * @returns A boolean value that decides about whether input event processing is continued (true) or aborted (false).
  */
 typedef void (*PPG_Event_Processor_Fun)(PPG_Event *event,
-														 void *user_data);
+                                           void *user_data);
 
 /** @brief This is the main entry function for input event processing.
  * 
@@ -74,7 +74,7 @@ void ppg_event_process(PPG_Event *event);
  * @param user_data Optional user data is passed on to the input processor callback
  */
 void ppg_event_buffer_iterate(
-								PPG_Event_Processor_Fun input_processor,
-								void *user_data);
+                        PPG_Event_Processor_Fun input_processor,
+                        void *user_data);
 
 #endif

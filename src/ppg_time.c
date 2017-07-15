@@ -20,14 +20,14 @@
 
 PPG_Time_Manager ppg_global_set_time_manager(PPG_Time_Manager time_manager)
 {
-	PPG_Time_Manager old_time_manager = ppg_context->time_manager;
-	
-	ppg_context->time_manager = time_manager;
-	
-	return old_time_manager;
+   PPG_Time_Manager old_time_manager = ppg_context->time_manager;
+   
+   ppg_context->time_manager = time_manager;
+   
+   return old_time_manager;
 }
 
 PPG_Time_Manager ppg_global_get_time_manager(void)
 {
-	return ppg_context->time_manager;
+   return ppg_context->time_manager;
 }

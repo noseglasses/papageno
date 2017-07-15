@@ -23,46 +23,46 @@
 
 #include <stddef.h>
 
-PPG_Token ppg_tap_dance(	
-							PPG_Layer layer,
-							PPG_Input_Id input,
-							PPG_Action_Flags_Type default_action_flags,
-							PPG_Count n_tap_definitions,
-							PPG_Tap_Definition tap_definitions[])
+PPG_Token ppg_tap_dance(   
+                     PPG_Layer layer,
+                     PPG_Input_Id input,
+                     PPG_Action_Flags_Type default_action_flags,
+                     PPG_Count n_tap_definitions,
+                     PPG_Tap_Definition tap_definitions[])
 {
-// 	PPG_PRINTF("Adding tap dance\n");
-	
-	ppg_global_init();
-	
-	PPG_Count n_taps = 0;
-	for (PPG_Count i = 0; i < n_tap_definitions; i++) { 
-		
-		if(tap_definitions[i].tap_count > n_taps) {
-			n_taps = tap_definitions[i].tap_count;
-		}
-	}
-	
-	if(n_taps == 0) { return NULL; }
-		
-	PPG_Token tokens[n_taps];
-	
-	for (PPG_Count i = 0; i < n_taps; i++) {
-		
-		PPG_Token__ *new_note = (PPG_Token__*)ppg_note_create_standard(input);
-			new_note->action.flags = default_action_flags;
-		
-		tokens[i] = new_note;
-	}
-	
-	for (PPG_Count i = 0; i < n_tap_definitions; i++) {
-		
-		ppg_token_store_action(
-					tokens[tap_definitions[i].tap_count - 1], 
-					tap_definitions[i].action);
-	}
-			
-	PPG_Token__ *leafToken 
-		= ppg_pattern_from_list(layer, n_taps, tokens);
-	
-	return leafToken;
+//    PPG_PRINTF("Adding tap dance\n");
+   
+   ppg_global_init();
+   
+   PPG_Count n_taps = 0;
+   for (PPG_Count i = 0; i < n_tap_definitions; i++) { 
+      
+      if(tap_definitions[i].tap_count > n_taps) {
+         n_taps = tap_definitions[i].tap_count;
+      }
+   }
+   
+   if(n_taps == 0) { return NULL; }
+      
+   PPG_Token tokens[n_taps];
+   
+   for (PPG_Count i = 0; i < n_taps; i++) {
+      
+      PPG_Token__ *new_note = (PPG_Token__*)ppg_note_create_standard(input);
+         new_note->action.flags = default_action_flags;
+      
+      tokens[i] = new_note;
+   }
+   
+   for (PPG_Count i = 0; i < n_tap_definitions; i++) {
+      
+      ppg_token_store_action(
+               tokens[tap_definitions[i].tap_count - 1], 
+               tap_definitions[i].action);
+   }
+         
+   PPG_Token__ *leafToken 
+      = ppg_pattern_from_list(layer, n_taps, tokens);
+   
+   return leafToken;
 }

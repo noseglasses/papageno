@@ -28,12 +28,12 @@
  * Slot identifiers are used during signal processing.
  */
 enum PPG_Slots {
-	PPG_On_Abort = 0,
-	PPG_On_Timeout,
-	PPG_On_Token_Matches,
-	PPG_On_Pattern_Matches,
-	PPG_On_User,
-	PPG_On_Match_Failed
+   PPG_On_Abort = 0,
+   PPG_On_Timeout,
+   PPG_On_Token_Matches,
+   PPG_On_Pattern_Matches,
+   PPG_On_User,
+   PPG_On_Match_Failed
 };
 
 #endif

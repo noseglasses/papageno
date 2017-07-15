@@ -23,21 +23,21 @@
 
 enum 
 {
-	PPG_Event_Control_Tag = (PPG_Event_Considered << 1)
+   PPG_Event_Control_Tag = (PPG_Event_Considered << 1)
 };
 
 // The event buffer is a ring buffer
 //
 typedef struct {
-	
-	PPG_Event events[PPG_MAX_EVENTS];
-	
-	PPG_Event_Buffer_Index_Type start;
-	PPG_Event_Buffer_Index_Type end;
-	PPG_Event_Buffer_Index_Type cur;
-	
-	PPG_Count size;
-	
+   
+   PPG_Event events[PPG_MAX_EVENTS];
+   
+   PPG_Event_Buffer_Index_Type start;
+   PPG_Event_Buffer_Index_Type end;
+   PPG_Event_Buffer_Index_Type cur;
+   
+   PPG_Count size;
+   
 } PPG_Event_Buffer;
 
 PPG_Count ppg_event_buffer_size(void);
@@ -53,11 +53,11 @@ void ppg_event_buffer_advance(void);
 void ppg_event_buffer_truncate_at_front(void);
 
 void ppg_even_buffer_flush_and_remove_first_event(
-							PPG_Slot_Id slot_id);
+                     PPG_Slot_Id slot_id);
 
 void ppg_event_buffer_iterate(
-								PPG_Event_Processor_Fun kp,
-								void *user_data);
+                        PPG_Event_Processor_Fun kp,
+                        void *user_data);
 
 // The two following functions prepare the
 // event buffer for iteration from signal callbacks.

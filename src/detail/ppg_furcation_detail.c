@@ -23,57 +23,57 @@
 
 void ppg_furcation_buffer_init(PPG_Furcation_Buffer *buffer)
 {
-	buffer->furcations = NULL;
-	buffer->n_furcations = 0;
-	buffer->cur_furcation = -1;
+   buffer->furcations = NULL;
+   buffer->n_furcations = 0;
+   buffer->cur_furcation = -1;
 }
 
 void ppg_furcation_push_or_update(PPG_Count n_tokens_in_progress,
-											PPG_Token__ *branch)
+                                 PPG_Token__ *branch)
 {
-	// Check if there is already a furcation open for the current node
-	//
-	if(PPG_FB.cur_furcation == -1) {
-		
-		// If not, we open a new furcation
-	
-		PPG_ASSERT(PPG_FB.cur_furcation < PPG_FB.n_furcations - 1);
-		
-		++PPG_FB.cur_furcation;
-		
-		PPG_FB.furcations[PPG_FB.cur_furcation].n_possible_branches = n_tokens_in_progress;
-		PPG_FB.furcations[PPG_FB.cur_furcation].event_id = PPG_EB.cur;
-		PPG_FB.furcations[PPG_FB.cur_furcation].token = ppg_context->current_token;
-		PPG_FB.furcations[PPG_FB.cur_furcation].branch = branch;
-		PPG_FB.furcations[PPG_FB.cur_furcation].active_inputs 
-														= ppg_context->active_inputs;
-	}
-	else if(PPG_FB.furcations[PPG_FB.cur_furcation].token 
-						!= ppg_context->current_token) {
-		
-		// Update the furcation information
-		//
-		PPG_FB.furcations[PPG_FB.cur_furcation].n_possible_branches = n_tokens_in_progress;
-		PPG_FB.furcations[PPG_FB.cur_furcation].branch = branch;
-	}
+   // Check if there is already a furcation open for the current node
+   //
+   if(PPG_FB.cur_furcation == -1) {
+      
+      // If not, we open a new furcation
+   
+      PPG_ASSERT(PPG_FB.cur_furcation < PPG_FB.n_furcations - 1);
+      
+      ++PPG_FB.cur_furcation;
+      
+      PPG_FB.furcations[PPG_FB.cur_furcation].n_possible_branches = n_tokens_in_progress;
+      PPG_FB.furcations[PPG_FB.cur_furcation].event_id = PPG_EB.cur;
+      PPG_FB.furcations[PPG_FB.cur_furcation].token = ppg_context->current_token;
+      PPG_FB.furcations[PPG_FB.cur_furcation].branch = branch;
+      PPG_FB.furcations[PPG_FB.cur_furcation].active_inputs 
+                                          = ppg_context->active_inputs;
+   }
+   else if(PPG_FB.furcations[PPG_FB.cur_furcation].token 
+                  != ppg_context->current_token) {
+      
+      // Update the furcation information
+      //
+      PPG_FB.furcations[PPG_FB.cur_furcation].n_possible_branches = n_tokens_in_progress;
+      PPG_FB.furcations[PPG_FB.cur_furcation].branch = branch;
+   }
 }
 
 void ppg_furcation_buffer_resize(void)
 {
-	if(PPG_FB.furcations) { return; }
-	
-	PPG_FB.furcations 
-			= (PPG_Furcation*)malloc(ppg_context->tree_depth*sizeof(PPG_Furcation));
-			
-	PPG_FB.n_furcations = ppg_context->tree_depth;
+   if(PPG_FB.furcations) { return; }
+   
+   PPG_FB.furcations 
+         = (PPG_Furcation*)malloc(ppg_context->tree_depth*sizeof(PPG_Furcation));
+         
+   PPG_FB.n_furcations = ppg_context->tree_depth;
 }
 
 void ppg_furcation_buffer_free(PPG_Furcation_Buffer *buffer)
 {
-	if(!buffer->furcations) { return; }
-	
-	free(buffer->furcations);
-	
-	buffer->furcations = NULL;
+   if(!buffer->furcations) { return; }
+   
+   free(buffer->furcations);
+   
+   buffer->furcations = NULL;
 }
-	
+   

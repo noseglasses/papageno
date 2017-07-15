@@ -22,24 +22,24 @@
 #include "ppg_settings.h"
 
 typedef struct {
-	
-	PPG_Token__ super;
-	 
-	PPG_Count n_members;
-	PPG_Input_Id *inputs;
-	bool *member_active;
-	
+   
+   PPG_Token__ super;
+    
+   PPG_Count n_members;
+   PPG_Input_Id *inputs;
+   bool *member_active;
+   
 #ifdef PPG_PEDANTIC_TOKENS
-	bool all_activated;
+   bool all_activated;
 #endif
-	PPG_Count n_inputs_active;
-	 
+   PPG_Count n_inputs_active;
+    
 } PPG_Aggregate;
 
-PPG_Token ppg_global_initialize_aggregate(	
-								PPG_Aggregate *aggregate,
-								PPG_Count n_inputs,
-								PPG_Input_Id inputs[]);
+PPG_Token ppg_global_initialize_aggregate(   
+                        PPG_Aggregate *aggregate,
+                        PPG_Count n_inputs,
+                        PPG_Input_Id inputs[]);
 
 void *ppg_aggregate_new(void *aggregate__);
 
