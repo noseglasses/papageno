@@ -21,11 +21,11 @@
 
 #include <stdlib.h>
 
-void ppg_furcation_buffer_init(PPG_Furcation_Buffer *buffer)
+void ppg_furcation_stack_init(PPG_Furcation_Stack *fs)
 {
-   buffer->furcations = NULL;
-   buffer->n_furcations = 0;
-   buffer->cur_furcation = -1;
+   fs->furcations = NULL;
+   fs->n_furcations = 0;
+   fs->cur_furcation = -1;
 }
 
 void ppg_furcation_push_or_update(PPG_Count n_tokens_in_progress,
@@ -33,7 +33,10 @@ void ppg_furcation_push_or_update(PPG_Count n_tokens_in_progress,
 {
    // Check if there is already a furcation open for the current node
    //
-   if(PPG_FB.cur_furcation == -1) {
+   if(   PPG_FB.cur_furcation == -1
+      || (PPG_FB.furcations[PPG_FB.cur_furcation].token 
+                  != ppg_context->current_token)
+   ) {
       
       // If not, we open a new furcation
    
@@ -41,7 +44,9 @@ void ppg_furcation_push_or_update(PPG_Count n_tokens_in_progress,
       
       ++PPG_FB.cur_furcation;
       
-      PPG_FB.furcations[PPG_FB.cur_furcation].n_possible_branches = n_tokens_in_progress;
+      PPG_FB.furcations[PPG_FB.cur_furcation].n_possible_branches 
+                  = n_tokens_in_progress;
+                  
       PPG_FB.furcations[PPG_FB.cur_furcation].event_id = PPG_EB.cur;
       PPG_FB.furcations[PPG_FB.cur_furcation].token = ppg_context->current_token;
       PPG_FB.furcations[PPG_FB.cur_furcation].branch = branch;
@@ -50,32 +55,41 @@ void ppg_furcation_push_or_update(PPG_Count n_tokens_in_progress,
          &ppg_context->active_inputs,
          &PPG_FB.furcations[PPG_FB.cur_furcation].active_inputs);
    }
-   else if(PPG_FB.furcations[PPG_FB.cur_furcation].token 
-                  != ppg_context->current_token) {
+   else {
       
       // Update the furcation information
       //
-      PPG_FB.furcations[PPG_FB.cur_furcation].n_possible_branches = n_tokens_in_progress;
+      PPG_FB.furcations[PPG_FB.cur_furcation].n_possible_branches 
+                  = n_tokens_in_progress;
+                  
       PPG_FB.furcations[PPG_FB.cur_furcation].branch = branch;
    }
 }
 
-void ppg_furcation_buffer_resize(void)
+void ppg_furcation_stack_resize(void)
 {
    if(PPG_FB.furcations) { return; }
+   
+   PPG_FB.n_furcations = ppg_context->tree_depth;
    
    PPG_FB.furcations 
          = (PPG_Furcation*)malloc(ppg_context->tree_depth*sizeof(PPG_Furcation));
          
-   PPG_FB.n_furcations = ppg_context->tree_depth;
+   for(PPG_Count i = 0; i < PPG_FB.n_furcations; ++i) {
+      ppg_bitfield_init(&PPG_FB.furcations[i].active_inputs);
+   }
 }
 
-void ppg_furcation_buffer_free(PPG_Furcation_Buffer *buffer)
+void ppg_furcation_stack_free(PPG_Furcation_Stack *fs)
 {
-   if(!buffer->furcations) { return; }
+   if(!fs->furcations) { return; }
    
-   free(buffer->furcations);
+   for(PPG_Count i = 0; i < fs->n_furcations; ++i) {
+      ppg_bitfield_destroy(&fs->furcations[i].active_inputs);
+   }
    
-   buffer->furcations = NULL;
+   free(fs->furcations);
+   
+   fs->furcations = NULL;
 }
    

@@ -31,7 +31,7 @@ option(PAPAGENO_VALGRIND "Run tests using valgrind to detect memory related erro
 if(PAPAGENO_VALGRIND)
 
 	find_program( MEMORYCHECK_COMMAND valgrind )
-	set( MEMORYCHECK_COMMAND_OPTIONS "--trace-children=yes --leak-check=full" )
+	set( MEMORYCHECK_COMMAND_OPTIONS "--error-exitcode=1 --trace-children=yes --leak-check=full" )
 endif()
 
 set(source_directory "${CMAKE_SOURCE_DIR}/src")

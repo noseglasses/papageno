@@ -45,16 +45,14 @@ void ppg_global_compile(void)
    // Initialize the furcation buffer to ensure correct size (the maximum
    // search tree depth)
    //
-   ppg_furcation_buffer_resize();
+   ppg_furcation_stack_resize();
 }
 
 void ppg_global_finalize(void) {
    
    if(!ppg_context) { return; }
    
-   ppg_token_free_children(&ppg_context->pattern_root);
-   
-   free(ppg_context);
+   ppg_context_destroy(ppg_context);
    
    ppg_context = NULL;
 }

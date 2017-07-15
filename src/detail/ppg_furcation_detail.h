@@ -38,19 +38,19 @@ typedef struct {
    PPG_Furcation *furcations;
    PPG_Count n_furcations;
    PPG_Id cur_furcation;
-} PPG_Furcation_Buffer;
+} PPG_Furcation_Stack;
 
-#define PPG_FB ppg_context->furcation_buffer
+#define PPG_FB ppg_context->furcation_stack
 
 // Initialize the furcation buffer with respect to the size of the 
 // current pattern tree
 //
-void ppg_furcation_buffer_init(PPG_Furcation_Buffer *buffer);
+void ppg_furcation_stack_init(PPG_Furcation_Stack *buffer);
 
-void ppg_furcation_buffer_resize(void);
+void ppg_furcation_stack_resize(void);
 
 void ppg_furcation_push_or_update(PPG_Count n_tokens_in_progress,
                                  PPG_Token__ *branch);
 
-void ppg_furcation_buffer_free(PPG_Furcation_Buffer *buffer);
+void ppg_furcation_stack_free(PPG_Furcation_Stack *buffer);
 #endif

@@ -38,7 +38,9 @@ void ppg_context_destroy(void *context_void)
 {
    PPG_Context *context = (PPG_Context *)context_void;
    
-   ppg_furcation_buffer_free(&context->furcation_buffer);
+   ppg_furcation_stack_free(&context->furcation_stack);
+   
+   ppg_bitfield_destroy(&context->active_inputs);
    
    ppg_token_free_children(&context->pattern_root);
    

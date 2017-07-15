@@ -36,7 +36,7 @@ void ppg_global_initialize_context(PPG_Context *context) {
 //    PPG_PRINTF("Initializing context\n");
    
    ppg_event_buffer_init(&context->event_buffer);
-   ppg_furcation_buffer_init(&context->furcation_buffer);
+   ppg_furcation_stack_init(&context->furcation_stack);
    
    ppg_bitfield_init(&context->active_inputs);
    
