@@ -37,22 +37,6 @@ if(PAPAGENO_TEST_COVERAGE)
    init_coverage()
 endif()
 
-#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-# Clang Tidy Settings
-#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-
-option(PAPAGENO_CLANG_TIDY "Enables integration of clang tidy to find programming errors" FALSE)
-
-if(PAPAGENO_CLANG_TIDY)
-   set(CMAKE_C_CLANG_TIDY CACHE STRING "/usr/bin/clang-tidy-3.8;-checks=-*,readability-*")
-endif()
-
-#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-# Doxygen Settings
-#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-
-
-
 # Enforce pedantic compiler behavior
 #
 if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
