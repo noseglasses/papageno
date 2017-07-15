@@ -33,7 +33,8 @@ void *ppg_aggregate_new(void *aggregate__) {
     */
    aggregate->n_members = 0;
    aggregate->inputs = NULL;
-   aggregate->member_active = NULL;
+   
+   ppg_bitfield_init(&aggregate->member_active);
 #ifdef PPG_PEDANTIC_TOKENS
    aggregate->all_activated = false;
 #endif
@@ -53,10 +54,11 @@ void ppg_aggregate_reset(PPG_Aggregate *aggregate)
    aggregate->n_inputs_active = 0;
    
    for(PPG_Count i = 0; i < aggregate->n_members; ++i) {
-      aggregate->member_active[i] = false;
+      ppg_bitfield_set_bit(&aggregate->member_active,
+                           i,
+                           false);
    }
 }
-
 
 static void ppg_aggregate_deallocate_member_storage(PPG_Aggregate *aggregate) {  
    
@@ -64,10 +66,8 @@ static void ppg_aggregate_deallocate_member_storage(PPG_Aggregate *aggregate) {
       free(aggregate->inputs);
       aggregate->inputs = NULL;
    }
-   if(aggregate->member_active) {
-      free(aggregate->member_active);
-      aggregate->member_active = NULL;
-   }
+   
+   ppg_bitfield_destroy(&aggregate->member_active);
 }
 
 static void ppg_aggregate_resize(PPG_Aggregate *aggregate, 
@@ -76,15 +76,18 @@ static void ppg_aggregate_resize(PPG_Aggregate *aggregate,
    ppg_aggregate_deallocate_member_storage(aggregate);
    
    aggregate->n_members = n_members;
+   
    aggregate->inputs = (PPG_Input_Id *)malloc(n_members*sizeof(PPG_Input_Id));
-   aggregate->member_active = (bool *)malloc(n_members*sizeof(bool));
+	
+   ppg_bitfield_resize(&aggregate->member_active,
+                       n_members,
+                       false /*drop old bits*/);
 #ifdef PPG_PEDANTIC_TOKENS
    aggregate->all_activated = false;
 #endif
    aggregate->n_inputs_active = 0;
-   
+      
    for(PPG_Count i = 0; i < n_members; ++i) {
-      aggregate->member_active[i] = false;
       ppg_global_init_input(&aggregate->inputs[i]);
    }
 }

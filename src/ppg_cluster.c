@@ -42,8 +42,8 @@ static bool ppg_cluster_match_event(
          input_part_of_cluster = true;
          
          if(event->flags & PPG_Event_Active) {
-            if(!cluster->member_active[i]) {
-               cluster->member_active[i] = true;
+            if(!ppg_bitfield_get_bit(&cluster->member_active, i)) {
+               ppg_bitfield_set_bit(&cluster->member_active, i, true);
                ++cluster->n_inputs_active;
             }
          }
@@ -105,7 +105,8 @@ static void ppg_cluster_print_self(PPG_Cluster *c, PPG_Count indent, bool recurs
    
    for(PPG_Count i = 0; i < c->n_members; ++i) {
       PPG_PRINTF("      input: 0x%" PRIXPTR ", active: %d\n", 
-              (uintptr_t)c->inputs[i], c->member_active[i]);
+              (uintptr_t)c->inputs[i], 
+                 ppg_bitfield_get_bit(&c->member_active, i));
    }
    ppg_token_print_self_end((PPG_Token__*)c, indent, recurse);
 }

@@ -164,7 +164,9 @@ PPG_Signal_Callback ppg_global_get_signal_callback(void)
 
 void ppg_global_set_number_of_inputs(PPG_Count n_inputs)
 {
-   ppg_context->active_inputs.n_bits = n_inputs;
+   ppg_bitfield_resize(&ppg_context->active_inputs, 
+                       n_inputs, 
+                       true /* keep old content */);
 }
 
 PPG_Count ppg_global_get_number_of_inputs(void)

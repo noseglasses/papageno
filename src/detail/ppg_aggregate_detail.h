@@ -20,6 +20,7 @@
 #include "detail/ppg_token_detail.h"
 #include "ppg_input.h"
 #include "ppg_settings.h"
+#include "ppg_bitfield.h"
 
 typedef struct {
    
@@ -27,7 +28,8 @@ typedef struct {
     
    PPG_Count n_members;
    PPG_Input_Id *inputs;
-   bool *member_active;
+   
+   PPG_Bitfield member_active;
    
 #ifdef PPG_PEDANTIC_TOKENS
    bool all_activated;

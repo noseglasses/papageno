@@ -160,8 +160,10 @@ static bool ppg_branch_revert_to_next_possible_furcation(PPG_Token__ *start_toke
       
       // Restore the active inputs set
       //
-      ppg_context->active_inputs
-         = PPG_FB.furcations[PPG_FB.cur_furcation].active_inputs;
+      ppg_bitfield_copy(
+         &PPG_FB.furcations[PPG_FB.cur_furcation].active_inputs,
+         &ppg_context->active_inputs
+      );
    }
    
    return true;

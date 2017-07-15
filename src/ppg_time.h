@@ -58,16 +58,20 @@ typedef struct {
    PPG_Time_Comparison_Fun compare_times; ///< Compares time values
 } PPG_Time_Manager;
 
-/** @brief Sets a new global time handler
+/** @brief Initializes a time manager
+ */
+void ppg_time_manager_init(PPG_Time_Manager *time_manager);
+
+/** @brief Sets a new global time manager
  * 
- * @param time_manager The new time handler
- * @returns The previously used time handler
+ * @param time_manager The new time manager
+ * @returns The previously used time manager
  */
 PPG_Time_Manager ppg_global_set_time_manager(PPG_Time_Manager time_manager);
 
-/** @brief Retreives the currently active global time handler
+/** @brief Retreives the currently active global time manager
  * 
- * @returns The currently active global time handler
+ * @returns The currently active global time manager
  */
 PPG_Time_Manager ppg_global_get_time_manager(void);
 

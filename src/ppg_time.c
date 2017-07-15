@@ -18,6 +18,30 @@
 #include "ppg_global.h"
 #include "detail/ppg_context_detail.h"
 
+static void ppg_default_time(PPG_Time *time)
+{
+   *time = 0;
+}
+
+static void ppg_default_time_difference(PPG_Time time1, PPG_Time time2, PPG_Time *delta)
+{
+   *delta = 0;
+}
+
+PPG_Time_Comparison_Result_Type ppg_default_time_comparison(
+                        PPG_Time time1,
+                        PPG_Time time2)
+{
+   return 0;
+}
+
+void ppg_time_manager_init(PPG_Time_Manager *time_manager)
+{
+   time_manager->time = ppg_default_time;
+   time_manager->time_difference = ppg_default_time_difference;
+   time_manager->compare_times = ppg_default_time_comparison;
+}
+
 PPG_Time_Manager ppg_global_set_time_manager(PPG_Time_Manager time_manager)
 {
    PPG_Time_Manager old_time_manager = ppg_context->time_manager;
