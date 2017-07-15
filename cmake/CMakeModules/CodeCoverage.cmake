@@ -79,11 +79,11 @@ if(NOT GCOV_PATH)
     message(FATAL_ERROR "gcov not found! Aborting...")
 endif() # NOT GCOV_PATH
 
-if("${CMAKE_CXX_COMPILER_ID}" MATCHES "(Apple)?[Cc]lang")
-    if("${CMAKE_CXX_COMPILER_VERSION}" VERSION_LESS 3)
+if("${CMAKE_C_COMPILER_ID}" MATCHES "(Apple)?[Cc]lang")
+    if("${CMAKE_C_COMPILER_VERSION}" VERSION_LESS 3)
         message(FATAL_ERROR "Clang version must be 3.0.0 or greater! Aborting...")
     endif()
-elseif(NOT CMAKE_COMPILER_IS_GNUCXX)
+elseif(NOT CMAKE_COMPILER_IS_GNUCC)
     message(FATAL_ERROR "Compiler is not GNU gcc! Aborting...")
 endif()
 
@@ -116,7 +116,7 @@ if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
     message(WARNING "Code coverage results with an optimised (non-Debug) build may be misleading")
 endif() # NOT CMAKE_BUILD_TYPE STREQUAL "Debug"
 
-if(CMAKE_COMPILER_IS_GNUCXX)
+if(CMAKE_COMPILER_IS_GNUCC)
     link_libraries(gcov)
 else()
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
@@ -300,7 +300,7 @@ function(SETUP_TARGET_FOR_COVERAGE_COBERTURA)
 endfunction() # SETUP_TARGET_FOR_COVERAGE_COBERTURA
 
 function(APPEND_COVERAGE_COMPILER_FLAGS)
-    set(CMAKE_C_FLAGS "${CMAKE_CXX_FLAGS} ${COVERAGE_COMPILER_FLAGS}" PARENT_SCOPE)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COVERAGE_COMPILER_FLAGS}" PARENT_SCOPE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COVERAGE_COMPILER_FLAGS}" PARENT_SCOPE)
     message(STATUS "Appending code coverage compiler flags: ${COVERAGE_COMPILER_FLAGS}")
 endfunction() # APPEND_COVERAGE_COMPILER_FLAGS
