@@ -5,6 +5,8 @@ Papageno
 
 [![Build Status](https://travis-ci.org/noseglasses/papageno.png?branch=master)](https://travis-ci.org/noseglasses/papageno)
 
+[Current Testing Code Coverage](https://noseglasses.github.io/papageno/coverage/index.html)
+
 An Advanced Pattern Matching Library
 ------------------------------------
 
@@ -415,7 +417,7 @@ The Library
 
 ## C Application Programming Interface
 
-A Doxygen documentation of Papageno's API can be found [here](https://noseglasses.github.io/papageno/index.html).
+A Doxygen documentation of Papageno's API can be found [here](https://noseglasses.github.io/papageno/doc/doxygen/html/index.html).
 
 Implementation
 --------------
@@ -483,6 +485,22 @@ Build System
 ------------
 
 Papageno uses CMake as its build system.
+
+## Debugging
+
+In general it is highly recommended to use proper debugging tools when developing Papageno. However, in some situation it might be helpful to fall back to plain old `printf` debugging. This is e.g. necessary on platforms with Atmel-processors where a debugger does not fit into program memory.
+
+The programming API provides a pre-processor macro `PPG_LOG` that works the same as common `printf` but is only active when Papageno is compiled in debug mode.
+
+To compile Papageno in debug mode, add the required CMake directive to the configuration command.
+
+```sh
+cmake -DCMAKE_BUILD_TYPE=Debug ../..
+```
+
+If you look at Papageno's code, you will find frequent use of abbreviations in the stings that are passed to `PPG_LOG`. This is because those strings consume precious memory.
+
+**Important:** Papageno is designed to be used on platforms that provide only a small amount of program memory. Therefore, keep the number of `PPG_LOG` statements low and comment or remove them if possible, when they are no more necessary.
 
 Documentation
 -------------

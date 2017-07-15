@@ -140,8 +140,6 @@ matrix:
             - gcc-avr 
             - binutils-avr 
             - avr-libc
-      env:
-         - MATRIX_EVAL=""
       script: 
          - mkdir -p build/release
          - cd build/release
@@ -149,6 +147,7 @@ matrix:
          - make
          
    # Build the doxygen API documentation and push it to gh-pages branch
+   # Generate coverage information in the same run
    #
     - os: linux
       addons:
@@ -159,18 +158,22 @@ matrix:
             - doxygen-latex
             - doxygen-gui
             - graphviz
+            - lcov
+      env:
+        - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
       script: 
-         - mkdir -p build/release
-         - cd build/release
-         - cmake -DPAPAGENO_DOXYGEN=TRUE ../..
-         - make doxygen
+         - mkdir -p build/debug
+         - cd build/debug
+         - cmake -DCMAKE_BUILD_TYPE=Debug -DPAPAGENO_TEST_COVERAGE=TRUE -DPAPAGENO_DOXYGEN=TRUE ../..
+         - make doxygen coverage
       deploy:
         provider: pages
         skip_cleanup: true
-        local_dir: $TRAVIS_BUILD_DIR/build/release/doc/doxygen/html
+        local_dir: $TRAVIS_BUILD_DIR/build/debug/html
         github_token: $GITHUB_API_KEY
         on:
           branch: master
+
 
 before_install:
     - eval "${MATRIX_EVAL}"

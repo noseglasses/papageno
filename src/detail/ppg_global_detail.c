@@ -24,7 +24,7 @@ bool ppg_recurse_and_process_actions(void)
 {        
    if(!ppg_context->current_token) { return false; }
    
-//    PPG_PRINTF("Triggering action of most recent token\n");
+//    PPG_LOG("Triggering action of most recent token\n");
    
    PPG_Token__ *cur_token = ppg_context->current_token;
    
@@ -40,7 +40,7 @@ bool ppg_recurse_and_process_actions(void)
          action_tokens[n_actions] = cur_token;
          ++n_actions;
          
-         if(cur_token->action.flags &= PPG_Action_Fallback) {
+         if(cur_token->action.flags & PPG_Action_Fallback) {
             cur_token = cur_token->parent;
          }
          else {
@@ -48,7 +48,7 @@ bool ppg_recurse_and_process_actions(void)
          }
       }
       else {
-         if(cur_token->action.flags &= PPG_Action_Fallback) {
+         if(cur_token->action.flags & PPG_Action_Fallback) {
             cur_token = cur_token->parent;
          }
          else {
@@ -62,14 +62,14 @@ bool ppg_recurse_and_process_actions(void)
    //
    for(PPG_Id i = n_actions - 1; i >= 0; --i) {
       
-      PPG_PRINTF("Triggering actions of token 0x%"
+      PPG_LOG("Trg act tk 0x%"
          PRIXPTR "\n", (uintptr_t)action_tokens[i]);
          
       action_tokens[i]->action.callback.func(
          action_tokens[i]->action.callback.user_data);
    }
    
-//    PPG_PRINTF("Done\n");
+//    PPG_LOG("Done\n");
    
    return n_actions > 0;
 }
@@ -78,13 +78,13 @@ void ppg_recurse_and_cleanup_active_branch(void)
 {        
    if(!ppg_context->current_token) { return; }
    
-//    PPG_PRINTF("Triggering action of most recent token\n");
+//    PPG_LOG("Triggering action of most recent token\n");
    
    PPG_Token__ *cur_token = ppg_context->current_token;
    
    while(cur_token) {
       
-      PPG_PRINTF("Cleaning up children of token 0x%"
+      PPG_LOG("Cln chld tk 0x%"
          PRIXPTR "\n", (uintptr_t)cur_token);
       
       // Reset all children (data structures and state)

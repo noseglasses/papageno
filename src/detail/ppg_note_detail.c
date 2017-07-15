@@ -42,7 +42,7 @@ static bool ppg_note_match_event(
                
             if(event->flags & PPG_Event_Active) {
                
-               PPG_PRINTF("Input activated\n");
+               PPG_LOG("I act\n");
                
                note->flags |= PPG_Note_Type_Active;
                
@@ -50,19 +50,19 @@ static bool ppg_note_match_event(
                note->super.state = PPG_Token_In_Progress;
       #else 
                
-               PPG_PRINTF("Note finished\n");
-      //             PPG_PRINTF("N");
+               PPG_LOG("Nt fin\n");
+      //             PPG_LOG("N");
                note->super.state = PPG_Token_Matches;
       #endif
             }
             else {
                
                if(note->flags & PPG_Note_Type_Active) {
-                  PPG_PRINTF("Input deactivated\n");
+                  PPG_LOG("I deact\n");
                
       #ifdef PPG_PEDANTIC_TOKENS
-                  PPG_PRINTF("Note finished\n");
-      //             PPG_PRINTF("N");
+                  PPG_LOG("Nt fin\n");
+      //             PPG_LOG("N");
                   note->super.state = PPG_Token_Matches;
       #endif
                }
@@ -77,7 +77,7 @@ static bool ppg_note_match_event(
             }
          }
          else {
-      //       PPG_PRINTF("note invalid\n");
+      //       PPG_LOG("note invalid\n");
             
       #ifndef PPG_PEDANTIC_TOKENS
             if(event->flags & PPG_Event_Active) {
@@ -95,24 +95,24 @@ static bool ppg_note_match_event(
       }
       else {
          
-         PPG_PRINTF("Only activation\n");
+         PPG_LOG("Only act\n");
          
          // Only activation
          
          if(note->input != event->input) {
             
-            PPG_PRINTF("Wrong input\n");
+            PPG_LOG("I wrg\n");
             note->super.state = PPG_Token_Invalid;
             return false;
          }
          
          if(event->flags & PPG_Event_Active) {
-            PPG_PRINTF("Matches\n");
+            PPG_LOG("I mtch\n");
             note->super.state = PPG_Token_Matches;
             return true;
          }
          else {
-            PPG_PRINTF("Inactive\n");
+            PPG_LOG("I inact\n");
             note->super.state = PPG_Token_Invalid;
             return false;
          }
@@ -146,7 +146,7 @@ static void ppg_note_reset(PPG_Note *note)
    
    // Clear the activation state
    //
-   note->flags &= ~PPG_Note_Type_Active;
+   note->flags &= (PPG_Count)~PPG_Note_Type_Active;
 }
 
 static bool ppg_note_equals(PPG_Note *n1, PPG_Note *n2) 
@@ -162,12 +162,12 @@ static PPG_Count ppg_note_token_precedence(void)
 #ifdef PAPAGENO_PRINT_SELF_ENABLED
 static void ppg_note_print_self(PPG_Note *p, PPG_Count indent, bool recurse)
 {
-   PPG_I PPG_PRINTF("<*** note (0x%" PRIXPTR ") ***>\n", (uintptr_t)p);
+   PPG_I PPG_LOG("<*** nt (0x%" PRIXPTR ") ***>\n", (uintptr_t)p);
    ppg_token_print_self_start((PPG_Token__*)p, indent);
-   PPG_I PPG_PRINTF("   input: 0x%" PRIXPTR "\n", (uintptr_t)p->input);
-   PPG_I PPG_PRINTF("   active: %d\n", (p->flags & PPG_Note_Type_Active));
-   PPG_I PPG_PRINTF("   matches activation: %d\n", (bool)(p->flags & PPG_Note_Type_Match_Activation));
-   PPG_I PPG_PRINTF("   matches deactivation: %d\n", (bool)(p->flags & PPG_Note_Type_Match_Deactivation));
+   PPG_I PPG_LOG("\tI: 0x%" PRIXPTR "\n", (uintptr_t)p->input);
+   PPG_I PPG_LOG("\tA: %d\n", (p->flags & PPG_Note_Type_Active));
+   PPG_I PPG_LOG("\tm a: %d\n", (bool)(p->flags & PPG_Note_Type_Match_Activation));
+   PPG_I PPG_LOG("\tm d: %d\n", (bool)(p->flags & PPG_Note_Type_Match_Deactivation));
    ppg_token_print_self_end((PPG_Token__*)p, indent, recurse);
 }
 #endif

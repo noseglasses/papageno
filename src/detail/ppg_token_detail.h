@@ -90,7 +90,8 @@ typedef struct PPG_TokenStruct {
 } PPG_Token__;
 
 enum PPG_Processing_State {
-   PPG_Token_In_Progress = 0,
+   PPG_Processing_State_None = 0,
+   PPG_Token_In_Progress,
    PPG_Token_Matches,
    PPG_Token_Invalid,
    PPG_Pattern_Matches,

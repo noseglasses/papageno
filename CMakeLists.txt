@@ -14,16 +14,41 @@ endmacro(use_c99)
 
 use_c99()
 
+option(PAPAGENO_TEST_COVERAGE "This flags enables testing code coverage" FALSE)
+	
+if(PAPAGENO_TEST_COVERAGE)
+	
+   set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/CMakeModules)
+   
+   set(coverage_output_path "${CMAKE_BINARY_DIR}/html/coverage")
+   
+   file(MAKE_DIRECTORY "${coverage_output_path}")
+
+   # See: https://raw.githubusercontent.com/bilke/cmake-modules/master/CodeCoverage.cmake
+      
+   include(CodeCoverage)
+
+   append_coverage_compiler_flags()
+      
+   init_coverage()
+endif()
+
+find_package(Doxygen)
+
+
 # Enforce pedantic compiler behavior
 #
 if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
+
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror")
+	
 endif()
 
 if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
 
 	add_definitions(-DDEBUG_PAPAGENO)
 	add_definitions(-DPAPAGENO_PRINT_SELF_ENABLED)
+	add_definitions(-DPAPAGENO_HAVE_ASSERTIONS)
 endif()
 
 option(PAPAGENO_VALGRIND "Run tests using valgrind to detect memory related errors" FALSE)
@@ -73,7 +98,6 @@ include_directories(
 
 add_library(papageno SHARED ${source_files_full_path})
 
-find_package(Doxygen)
 
 option(PAPAGENO_DOXYGEN "Build the doxygen documentation of the Papageno API" FALSE)
 
@@ -83,15 +107,15 @@ if(PAPAGENO_DOXYGEN)
 			message(FATAL_ERROR "Doxygen is needed to build the documentation.")
 	endif()
 	
-	set(doc_dir "${CMAKE_BINARY_DIR}/doc")
+	set(doc_dir "${CMAKE_BINARY_DIR}/html/doc")
 	
 	file(MAKE_DIRECTORY "${doc_dir}")
 	
 	set(doxyfile_in "${CMAKE_SOURCE_DIR}/doc/papageno.doxygen.in")
 	
-	set(doxyfile "${doc_dir}/pasimodo.doxygen")
+	set(doxyfile "${doc_dir}/papageno.doxygen")
 	
-	file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/doc")
+	file(MAKE_DIRECTORY "${doc_dir}")
 	
 	set(PAPAGENO_BASE_DIR "${CMAKE_SOURCE_DIR}")
 	
@@ -102,7 +126,7 @@ if(PAPAGENO_DOXYGEN)
 		ALL
 		COMMAND
 			${DOXYGEN_EXECUTABLE} ${doxyfile}
-		WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/doc"
+		WORKING_DIRECTORY "${doc_dir}"
 		COMMENT "Generating API documentation with Doxygen"
 		VERBATIM
 	)
@@ -114,4 +138,8 @@ if(PAPAGENO_TESTING)
 	include(CTest)
 	enable_testing()
 	add_subdirectory(testing)
+endif()
+
+if(PAPAGENO_TEST_COVERAGE)
+   finalize_coverage()
 endif()

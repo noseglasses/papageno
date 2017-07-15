@@ -33,6 +33,15 @@ macro(ppg_add_test test_name)
 		WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
 	)
 	
+	if(PAPAGENO_TEST_COVERAGE)
+	      
+      SETUP_TARGET_FOR_JOINT_COVERAGE(
+         NAME "${test_name}_coverage"
+         EXECUTABLE "${test_name}"
+         DEPENDENCIES "${test_name}"
+      )
+   endif()
+	
 endmacro()
  
 ppg_add_test(test_note_lines)

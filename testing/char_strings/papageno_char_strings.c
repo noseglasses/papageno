@@ -391,7 +391,7 @@ void ppg_cs_check_action_series(int n_actions, int* expected)
       }
    }
    
-   actions_test_success &= n_actions_ok;
+   actions_test_success = (actions_test_success && n_actions_ok);
    
    if(!n_actions_ok) {
       printf("expected:\n");

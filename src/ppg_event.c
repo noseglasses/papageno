@@ -36,9 +36,14 @@ static bool ppg_branch_check_match(
    /* Accept only paths through the search tree whose
       * nodes' ppg_context->layer tags are lower or equal the current ppg_context->layer
       */
-   if(start_token->layer > ppg_context->layer) { return PPG_Branch_Invalid; }
+   if(start_token->layer > ppg_context->layer) { 
+      
+      PPG_LOG("st l: %u, c l: %u\n", start_token->layer, ppg_context->layer);
+      return PPG_Branch_Invalid; 
+   }
    
    if(start_token->state == PPG_Token_Invalid) {
+      PPG_LOG("T inv\n");
       *processing_state = PPG_Branch_Invalid;
       return false;
    }
@@ -175,7 +180,7 @@ static PPG_Id ppg_token_get_most_appropriate_branch(PPG_Token__ *parent_token)
    PPG_Id match_id = -1;
    PPG_Count precedence = 0;
    
-//    PPG_PRINTF("Getting most appropriate child\n");
+//    PPG_LOG("Getting most appropriate child\n");
    
    /* Find the most suitable token with respect to the current ppg_context->layer.
       */
@@ -190,7 +195,7 @@ static PPG_Id ppg_token_get_most_appropriate_branch(PPG_Token__ *parent_token)
          continue;
       }
    
-//       PPG_PRINTF("Child %d\n", i);
+//       PPG_LOG("Child %d\n", i);
       
 //       PPG_CALL_VIRT_METHOD(parent_token->children[i], print_self, 0, false);
       
@@ -198,8 +203,8 @@ static PPG_Id ppg_token_get_most_appropriate_branch(PPG_Token__ *parent_token)
             = parent_token->children[i]
                   ->vtable->token_precedence();
                   
-//       PPG_PRINTF("Cur precedence %d\n", cur_precedence);
-//       PPG_PRINTF("precedence %d\n", precedence);
+//       PPG_LOG("Cur precedence %d\n", cur_precedence);
+//       PPG_LOG("precedence %d\n", precedence);
             
       if(cur_precedence > precedence) {
          precedence = cur_precedence;
@@ -208,14 +213,14 @@ static PPG_Id ppg_token_get_most_appropriate_branch(PPG_Token__ *parent_token)
       }
       else {
          
-//          PPG_PRINTF("Equal precedence\n");
+//          PPG_LOG("Equal precedence\n");
          
          if(parent_token->children[i]->layer > highest_layer) {
             highest_layer = parent_token->children[i]->layer;
             match_id = i;
          }
       }
-//       PPG_PRINTF("match_id %d\n", match_id);
+//       PPG_LOG("match_id %d\n", match_id);
    }
    
    PPG_ASSERT(match_id >= 0);
@@ -242,7 +247,7 @@ static bool ppg_check_ignore_event(PPG_Event *event)
        */
       if(ppg_context->current_token) {
          
-         PPG_PRINTF("Abort input triggered interruption\n");
+         PPG_LOG("Abrt trggr\n");
          
          ppg_global_abort_pattern_matching();
          
@@ -257,7 +262,7 @@ static bool ppg_check_ignore_event(PPG_Event *event)
    
 static PPG_Count ppg_process_next_event(void)
 {  
-   //PPG_PRINTF("ppg_process_next_event\n");
+   //PPG_LOG("ppg_process_next_event\n");
    
    if(!ppg_context->current_token) {
       ppg_context->current_token = &ppg_context->pattern_root;
@@ -267,10 +272,10 @@ static PPG_Count ppg_process_next_event(void)
       
    bool any_token_matches = false;
    
-   PPG_PRINTF("Checking %d children of token 0x%" PRIXPTR "\n", 
+   PPG_LOG("Chk %d chld tk 0x%" PRIXPTR "\n", 
              ppg_context->current_token->n_children, (uintptr_t)ppg_context->current_token);
    
-   PPG_PRINTF("start: %u, cur: %u, end: %u, size: %u\n", 
+   PPG_LOG("start: %u, cur: %u, end: %u, size: %u\n", 
               PPG_EB.start, PPG_EB.cur, PPG_EB.end, PPG_EB.size);
    
    bool event_considered = false;
@@ -282,7 +287,7 @@ static PPG_Count ppg_process_next_event(void)
    //
    for(PPG_Count i = 0; i < ppg_context->current_token->n_children; ++i) {
       
-      PPG_Processing_State p_state = 0;
+      PPG_Processing_State p_state = PPG_Processing_State_None;
       
       event_considered |= ppg_branch_check_match(
                               ppg_context->current_token->children[i],
@@ -309,15 +314,15 @@ static PPG_Count ppg_process_next_event(void)
    }
    else {
 
-      event->flags &= ~PPG_Event_Considered;
+      event->flags &= (PPG_Count)~PPG_Event_Considered;
    }
    
    PPG_Id branch_id = -1;
    
    PPG_Token__ *branch = NULL;
    
-   PPG_PRINTF("any_token_matches: %d\n", any_token_matches);
-   PPG_PRINTF("n_tokens_in_progress: %d\n", n_tokens_in_progress);
+   PPG_LOG("any tk mtch: %d\n", any_token_matches);
+   PPG_LOG("n tk in progr.: %d\n", n_tokens_in_progress);
    
    if(any_token_matches) {
       
@@ -338,7 +343,7 @@ static PPG_Count ppg_process_next_event(void)
                      branch);
       }
       
-      PPG_PRINTF("Continuing with child token\n");
+      PPG_LOG("Cnt with chld tk\n");
       
       ppg_context->current_token 
             = ppg_context->current_token->children[branch_id];
@@ -348,7 +353,7 @@ static PPG_Count ppg_process_next_event(void)
       //
       if(0 == ppg_context->current_token->n_children) {
          
-         PPG_PRINTF("Pattern tree leaf detected\n");
+         PPG_LOG("Pttr tree leaf\n");
          
          return PPG_Pattern_Matches;
       }
@@ -366,7 +371,7 @@ static PPG_Count ppg_process_next_event(void)
 
 static void ppg_event_process_all_possible(void)
 {
-   //PPG_PRINTF("ppg_event_process_all_possible\n");
+   //PPG_LOG("ppg_event_process_all_possible\n");
    
    while(ppg_event_buffer_events_left()) {
       
@@ -418,7 +423,7 @@ static void ppg_event_process_all_possible(void)
                //
                ppg_signal(PPG_On_Match_Failed);       
                
-               PPG_PRINTF("Match failed\n");
+               PPG_LOG("Mtch fld\n");
                ppg_even_buffer_flush_and_remove_first_event(PPG_On_Match_Failed);
                
                ppg_context->current_token = NULL;
@@ -454,7 +459,7 @@ void ppg_event_process(PPG_Event *event)
       return;
    }
    
-   PPG_PRINTF("Input %d: %d\n", event->input, 
+   PPG_LOG("I %d: %d\n", event->input, 
               event->flags & PPG_Event_Active);
    
    bool timeout_hit = ppg_timeout_check();
@@ -463,7 +468,7 @@ void ppg_event_process(PPG_Event *event)
    //
    ppg_context->time_manager.time(&ppg_context->time_last_event);
    
-//    PPG_PRINTF("time: %ld\n", ppg_context->time_last_event);
+//    PPG_LOG("time: %ld\n", ppg_context->time_last_event);
    
    if(timeout_hit) {
          

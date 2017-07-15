@@ -33,7 +33,7 @@ static bool ppg_cluster_match_event(
    
    PPG_ASSERT(cluster->super.state == PPG_Token_In_Progress);
    
-   /* Check it the input is part of the current chord 
+   /* Check it the input is part of the current cluster 
     */
    for(PPG_Count i = 0; i < cluster->n_members; ++i) {
       
@@ -54,6 +54,13 @@ static bool ppg_cluster_match_event(
       }
    }
    
+#ifdef DEBUG_PAPAGENO
+   for(PPG_Count i = 0; i < cluster->n_members; ++i) {
+      PPG_LOG("%d = %d\n", i, 
+                 ppg_bitfield_get_bit(&cluster->member_active, i));
+   }
+#endif
+   
    if(!input_part_of_cluster) {
       if(event->flags & PPG_Event_Active) {
          cluster->super.state = PPG_Token_Invalid;
@@ -65,24 +72,24 @@ static bool ppg_cluster_match_event(
    if(cluster->n_inputs_active == cluster->n_members) {
       
 #ifdef PPG_PEDANTIC_TOKENS
-      chord->all_activated = true;
+      cluster->all_activated = true;
 #else
       
       /* Cluster matches
        */
       cluster->super.state = PPG_Token_Matches;
-//       PPG_PRINTF("O");
+//       PPG_LOG("O");
 #endif
    }
 #ifdef PPG_PEDANTIC_TOKENS
    else if(cluster->n_inputs_active == 0) {
       
-      if(chord->all_activated) {
+      if(cluster->all_activated) {
          
          /* Cluster matches
          */
          cluster->super.state = PPG_Token_Matches;
-//          PPG_PRINTF("O");
+//          PPG_LOG("O");
       }
    }
 #endif
@@ -98,13 +105,13 @@ static PPG_Count ppg_cluster_token_precedence(void)
 #ifdef PAPAGENO_PRINT_SELF_ENABLED
 static void ppg_cluster_print_self(PPG_Cluster *c, PPG_Count indent, bool recurse)
 {
-   PPG_I PPG_PRINTF("<*** cluster (0x%" PRIXPTR ") ***>\n", (uintptr_t)c);
+   PPG_I PPG_LOG("<*** clstr (0x%" PRIXPTR ") ***>\n", (uintptr_t)c);
    ppg_token_print_self_start((PPG_Token__*)c, indent);
-   PPG_I PPG_PRINTF("   n_members: %d\n", c->n_members);
-   PPG_I PPG_PRINTF("   n_inputs_active: %d\n", c->n_inputs_active);
+   PPG_I PPG_LOG("\tn mbr: %d\n", c->n_members);
+   PPG_I PPG_LOG("\tn I actv: %d\n", c->n_inputs_active);
    
    for(PPG_Count i = 0; i < c->n_members; ++i) {
-      PPG_PRINTF("      input: 0x%" PRIXPTR ", active: %d\n", 
+      PPG_LOG("\t\tI: 0x%" PRIXPTR ", actv: %d\n", 
               (uintptr_t)c->inputs[i], 
                  ppg_bitfield_get_bit(&c->member_active, i));
    }
@@ -148,7 +155,7 @@ PPG_Token ppg_cluster(
                      PPG_Count n_inputs,
                      PPG_Input_Id inputs[])
 {     
-//    PPG_PRINTF("Adding cluster\n");
+//    PPG_LOG("Adding cluster\n");
    
    PPG_Token__ *token = 
       (PPG_Token__ *)ppg_cluster_create(n_inputs, inputs);

@@ -195,7 +195,7 @@ inline
 static void ppg_indent(int tabs)
 {
    for(int i = 0; i < tabs; ++i) {
-      printf("   ");
+      printf("\t");
    }
 }
 

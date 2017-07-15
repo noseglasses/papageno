@@ -59,13 +59,13 @@ void ppg_bitfield_set_bit(PPG_Bitfield *bitfield,
       
       // Set the specific bit
       //
-      bitfield->bitarray[cell] |= (1 << bit);
+      bitfield->bitarray[cell] |= (PPG_Bitfield_Storage_Type)(1 << bit);
    }
    else {
       
       // Clear the specific bit
       //
-      bitfield->bitarray[cell] &= ~(1 << bit);
+      bitfield->bitarray[cell] &= (PPG_Bitfield_Storage_Type)~(1 << bit);
    }
 }
 

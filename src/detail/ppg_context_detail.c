@@ -33,7 +33,7 @@ static void ppg_signal_callback_init(PPG_Signal_Callback *cb)
 
 void ppg_global_initialize_context(PPG_Context *context) {
    
-//    PPG_PRINTF("Initializing context\n");
+//    PPG_LOG("Initializing context\n");
    
    ppg_event_buffer_init(&context->event_buffer);
    ppg_furcation_stack_init(&context->furcation_stack);

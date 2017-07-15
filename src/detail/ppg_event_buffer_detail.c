@@ -33,7 +33,7 @@ PPG_Count ppg_event_buffer_size(void)
 //
 PPG_Event * ppg_event_buffer_store_event(PPG_Event *event)
 {
-   #ifdef DEBUG_PAPAGENO
+   #ifdef PAPAGENO_HAVE_ASSERTIONS
    if(PPG_EB.start > PPG_EB.end) {
       PPG_Count n_events = PPG_MAX_EVENTS + PPG_EB.end - PPG_EB.start;
       PPG_ASSERT(n_events < PPG_MAX_EVENTS - 1); // At least one left!
@@ -53,7 +53,7 @@ PPG_Event * ppg_event_buffer_store_event(PPG_Event *event)
       ++PPG_EB.end;
    }
    
-   //PPG_PRINTF("Storing event at %u\n", PPG_EB.end);
+   //PPG_LOG("Storing event at %u\n", PPG_EB.end);
    
    PPG_EB.events[new_pos] = *event;
    
@@ -182,22 +182,17 @@ static void ppg_event_buffer_check_and_tag_considered(PPG_Event *event,
    if(ppg_bitfield_get_bit(&ppg_context->active_inputs,
                            event->input)) {
       
-      if(event->flags & PPG_Event_Active) {
-         
-         // Something goes wrong here, as
-         // an event must not be activated twice in a row
-         //
-         PPG_ERROR("Input %d was activated twice in a row without deactivating\n", event->input);
-         PPG_ASSERT(0);
-      }
-      else {
-         event->flags |= PPG_Event_Considered;
-         
-         ppg_bitfield_set_bit(&ppg_context->active_inputs,
-                           event->input,
-                           false /* inactivate */
-                        );
-      }
+      // It this assert fires, something goes wrong here, as
+      // an event must not be activated twice in a row
+      //
+      PPG_ASSERT(!(event->flags & PPG_Event_Active));
+
+      event->flags |= PPG_Event_Considered;
+      
+      ppg_bitfield_set_bit(&ppg_context->active_inputs,
+                        event->input,
+                        false /* inactivate */
+                     );
    }
    else {
       
@@ -212,19 +207,11 @@ static void ppg_event_buffer_check_and_tag_considered(PPG_Event *event,
                            );
          }
       }
-//       else {
-//                   
-//          // Something goes wrong here, as
-//          // an event must not be deactivated twice in a row
-//          //
-//          PPG_ERROR("Input %d was deactivated twice in a row without deactivating\n", event->input);
-//          assert(0);
-//       }
    }
    
    if(event->flags & PPG_Event_Control_Tag) {
       
-      PPG_PRINTF("Marking control event %d: %d as considered\n",
+      PPG_LOG("Mark. ctrl evt %d: %d\n",
          event->input, (event->flags & PPG_Event_Active)
       );
       event->flags |= PPG_Event_Considered;
@@ -233,7 +220,7 @@ static void ppg_event_buffer_check_and_tag_considered(PPG_Event *event,
    
 void ppg_event_buffer_prepare_on_success(void)
 {
-   PPG_PRINTF("Preparing event buffer on success\n");
+   PPG_LOG("Prp. evt bffr on suc.\n");
    
    ppg_event_buffer_iterate(
          (PPG_Event_Processor_Fun)ppg_event_buffer_check_and_tag_considered,
@@ -244,12 +231,12 @@ void ppg_event_buffer_prepare_on_success(void)
 static void ppg_clear_considered_flag_aux(PPG_Event *event, 
                                             void *user_data)
 {
-   event->flags &= ~PPG_Event_Considered;
+   event->flags &= (PPG_Count)~PPG_Event_Considered;
 }
 
 void ppg_event_buffer_prepare_on_failure(void)
 {
-   PPG_PRINTF("Preparing event buffer on failure\n");
+   PPG_LOG("Prp. evt bffr on fail.\n");
    
    ppg_event_buffer_iterate(
          (PPG_Event_Processor_Fun)ppg_clear_considered_flag_aux,

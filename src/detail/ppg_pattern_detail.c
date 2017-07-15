@@ -27,7 +27,7 @@ PPG_Token ppg_pattern_from_list(
 {  
    PPG_Token__ *parent_token = &ppg_context->pattern_root;
    
-   PPG_PRINTF("   %d members\n", n_tokens);
+   PPG_LOG("\t%d memb\n", n_tokens);
    
    for (PPG_Count i = 0; i < n_tokens; i++) { 
       
@@ -36,7 +36,7 @@ PPG_Token ppg_pattern_from_list(
       PPG_Token__ *equivalent_child 
          = ppg_token_get_equivalent_child(parent_token, cur_token);
          
-      PPG_PRINTF("   member %d: ", i);
+      PPG_LOG("\tmemb %d: ", i);
       
       if(   equivalent_child
          
@@ -59,7 +59,7 @@ PPG_Token ppg_pattern_from_list(
                   == equivalent_child->action.callback.user_data)
       ) {
          
-         PPG_PRINTF("already present: 0x%" PRIXPTR "\n", (uintptr_t)equivalent_child);
+         PPG_LOG("alrd prsntt: 0x%" PRIXPTR "\n", (uintptr_t)equivalent_child);
          
          parent_token = equivalent_child;
          
@@ -74,7 +74,7 @@ PPG_Token ppg_pattern_from_list(
       }
       else {
          
-         PPG_PRINTF("newly defined: 0x%" PRIXPTR "\n", (uintptr_t)cur_token);
+         PPG_LOG("new def: 0x%" PRIXPTR "\n", (uintptr_t)cur_token);
          
          #if DEBUG_PAPAGENO
          
@@ -92,17 +92,19 @@ PPG_Token ppg_pattern_from_list(
                 */
                && (equivalent_child->layer == layer)
             ) {
-               PPG_ERROR("Conflicting melodies detected.\n")
+               // Conflicting melodies detected
+               //
+               PPG_ERROR("Conf mel det.\n")
                
                #ifdef PAPAGENO_PRINT_SELF_ENABLED
                PPG_ERROR(
-                  "The tokens of the conflicting melodies are listed below.\n");
+                  "Tk of conf. patt:\n");
                
-               PPG_ERROR("Previously defined:\n");
+               PPG_ERROR("Prev def:\n");
                
                PPG_CALL_VIRT_METHOD(equivalent_child, print_self, 0, false /* do not recurse */);
                
-               PPG_ERROR("Conflicting:\n");
+               PPG_ERROR("Confl:\n");
                for (PPG_Count i = 0; i < n_tokens; i++) {
                   PPG_CALL_VIRT_METHOD(tokens[i], print_self, 0, false /* do not recurse */);
                }

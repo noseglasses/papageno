@@ -43,7 +43,7 @@ PPG_Token ppg_single_note_line(
                      PPG_Count n_inputs,
                      PPG_Input_Id inputs[])
 {
-//    PPG_PRINTF("Adding single note line\n");
+//    PPG_LOG("Adding single note line\n");
   
    PPG_Token tokens[n_inputs];
       

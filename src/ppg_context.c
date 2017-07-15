@@ -23,7 +23,7 @@
 
 void* ppg_context_create(void)
 {
-//    PPG_PRINTF("Creating new context\n");
+//    PPG_LOG("Cr. new cntxt\n");
    
    PPG_Context *context = (PPG_Context *)malloc(sizeof(PPG_Context));
    
@@ -31,8 +31,6 @@ void* ppg_context_create(void)
    
    return context;
 }
-
-#ifndef PAPAGENO_DISABLE_CONTEXT_SWITCHING
 
 void ppg_context_destroy(void *context_void)
 {
@@ -46,6 +44,9 @@ void ppg_context_destroy(void *context_void)
    
    free(context);
 }
+
+#ifndef PAPAGENO_DISABLE_CONTEXT_SWITCHING
+
 
 void* ppg_global_set_current_context(void *context_void)
 {

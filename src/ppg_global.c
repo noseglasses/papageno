@@ -176,7 +176,7 @@ void ppg_global_abort_pattern_matching(void)
 {     
    if(!ppg_context->current_token) { return; }
    
-//    PPG_PRINTF("Aborting pattern\n");
+//    PPG_LOG("Abrt pttrn\n");
    
    ppg_recurse_and_cleanup_active_branch();
    

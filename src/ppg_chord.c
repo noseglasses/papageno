@@ -27,7 +27,7 @@ static bool ppg_chord_match_event(
                                  PPG_Chord *chord,
                                  PPG_Event *event) 
 {
-   PPG_PRINTF("Checking chord\n");
+   PPG_LOG("Ch. chord\n");
    
    bool input_part_of_chord = false;
    
@@ -70,7 +70,7 @@ static bool ppg_chord_match_event(
    
 #ifdef DEBUG_PAPAGENO
    for(PPG_Count i = 0; i < chord->n_members; ++i) {
-      PPG_PRINTF("%d = %d\n", i, 
+      PPG_LOG("%d = %d\n", i, 
                  ppg_bitfield_get_bit(&chord->member_active, i));
    }
 #endif
@@ -92,7 +92,7 @@ static bool ppg_chord_match_event(
       /* Chord matches
        */
       chord->super.state = PPG_Token_Matches;
-//       PPG_PRINTF("C");
+//       PPG_LOG("C");
 #endif
    }
 #ifdef PPG_PEDANTIC_TOKENS
@@ -103,7 +103,7 @@ static bool ppg_chord_match_event(
          /* Chord matches
          */
          chord->super.state = PPG_Token_Matches;
-//          PPG_PRINTF("C");
+//          PPG_LOG("C");
       }
    }
 #endif
@@ -119,13 +119,13 @@ static PPG_Count ppg_chord_token_precedence(void)
 #ifdef PAPAGENO_PRINT_SELF_ENABLED
 static void ppg_chord_print_self(PPG_Chord *c, PPG_Count indent, bool recurse)
 {
-   PPG_I PPG_PRINTF("<*** chord (0x%" PRIXPTR ") ***>\n", (uintptr_t)c);
+   PPG_I PPG_LOG("<*** chrd (0x%" PRIXPTR ") ***>\n", (uintptr_t)c);
    ppg_token_print_self_start((PPG_Token__*)c, indent);
-   PPG_I PPG_PRINTF("   n_members: %d\n", c->n_members);
-   PPG_I PPG_PRINTF("   n_inputs_active: %d\n", c->n_inputs_active);
+   PPG_I PPG_LOG("\tn mem: %d\n", c->n_members);
+   PPG_I PPG_LOG("\tn I actv: %d\n", c->n_inputs_active);
    
    for(PPG_Count i = 0; i < c->n_members; ++i) {
-      PPG_I PPG_PRINTF("      input: 0x%" PRIXPTR ", active: %d\n", 
+      PPG_I PPG_LOG("\t\tI: 0x%" PRIXPTR ", actv: %d\n", 
               (uintptr_t)c->inputs[i],
                ppg_bitfield_get_bit(&c->member_active, i));
    }
@@ -160,6 +160,8 @@ PPG_Token ppg_chord_create(
    
    chord->super.vtable = &ppg_chord_vtable;
    
+//    PPG_LOG("in def: 0x%" PRIXPTR "\n", (uintptr_t)ppg_chord_match_event);
+   
    return ppg_global_initialize_aggregate(chord, n_inputs, inputs);
 }
 
@@ -169,7 +171,7 @@ PPG_Token ppg_chord(
                      PPG_Count n_inputs,
                      PPG_Input_Id inputs[])
 {     
-//    PPG_PRINTF("Adding chord\n");
+//    PPG_LOG("Adding chord\n");
    
    PPG_Token__ *token = 
       (PPG_Token__ *)ppg_chord_create(n_inputs, inputs);

@@ -34,6 +34,8 @@ void* ppg_context_create(void);
  */
 void ppg_context_destroy(void *context);
 
+#ifndef PAPAGENO_DISABLE_CONTEXT_SWITCHING
+
 /** @brief Sets a new current context
  * 
  * @param context The context to be activated
@@ -46,5 +48,7 @@ void* ppg_global_set_current_context(void *context);
  * @returns The current context
  */
 void* ppg_global_get_current_context(void);
+
+#endif
 
 #endif

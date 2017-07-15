@@ -30,7 +30,7 @@ void ppg_token_store_action(PPG_Token__ *token,
 {
    token->action = action; 
    
-   PPG_PRINTF("Action of token 0x%" PRIXPTR ": 0x%" PRIXPTR "\n",
+   PPG_LOG("A tk 0x%" PRIXPTR ": 0x%" PRIXPTR "\n",
               (uintptr_t)token, (uintptr_t)token->action.callback.user_data);
 }
 
@@ -150,23 +150,23 @@ PPG_Token__* ppg_token_get_equivalent_child(
 
 void ppg_token_print_self_start(PPG_Token__ *p, PPG_Count indent)
 {
-   PPG_I PPG_PRINTF("   parent: 0x%" PRIXPTR "\n", (uintptr_t)p->parent);
-   PPG_I PPG_PRINTF("   action.flags: %d\n", p->action.flags);
-   PPG_I PPG_PRINTF("   action_user_func: 0x%" PRIXPTR "\n", (uintptr_t)p->action.callback.func);
-   PPG_I PPG_PRINTF("   action_user_data: 0x%" PRIXPTR "\n", (uintptr_t)p->action.callback.user_data);
-   PPG_I PPG_PRINTF("   state: %d\n", p->state);
-   PPG_I PPG_PRINTF("   layer: %d\n", p->layer);
+   PPG_I PPG_LOG("\tprnt: 0x%" PRIXPTR "\n", (uintptr_t)p->parent);
+   PPG_I PPG_LOG("\ta.flgs: %d\n", p->action.flags);
+   PPG_I PPG_LOG("\ta.u_f: 0x%" PRIXPTR "\n", (uintptr_t)p->action.callback.func);
+   PPG_I PPG_LOG("\ta.u_d: 0x%" PRIXPTR "\n", (uintptr_t)p->action.callback.user_data);
+   PPG_I PPG_LOG("\tst: %d\n", p->state);
+   PPG_I PPG_LOG("\tlyr: %d\n", p->layer);
 }
 
 void ppg_token_print_self_end(PPG_Token__ *p, PPG_Count indent, bool recurse)
 {
-//    PPG_I PPG_PRINTF("   children: 0x%" PRIXPTR "\n", (uintptr_t)&p->children);
-   PPG_I PPG_PRINTF("   n_allocated_children: %d\n", p->n_allocated_children);
-   PPG_I PPG_PRINTF("   n_children: %d\n", p->n_children);
+//    PPG_I PPG_LOG("\tchldr: 0x%" PRIXPTR "\n", (uintptr_t)&p->children);
+   PPG_I PPG_LOG("\tn alloc chld: %d\n", p->n_allocated_children);
+   PPG_I PPG_LOG("\tn chld: %d\n", p->n_children);
    
    if(recurse) {
       for(PPG_Count i = 0; i < p->n_children; ++i) {
-         PPG_I PPG_PRINTF("   child: %d\n", i);
+         PPG_I PPG_LOG("\tchld: %d\n", i);
          PPG_CALL_VIRT_METHOD(p->children[i], print_self, indent + 1, recurse);
       }
    }
@@ -174,7 +174,7 @@ void ppg_token_print_self_end(PPG_Token__ *p, PPG_Count indent, bool recurse)
 
 static void ppg_token_print_self(PPG_Token__ *p, PPG_Count indent, bool recurse)
 {
-   PPG_I PPG_PRINTF("<*** token (0x%" PRIXPTR ") ***>\n", (uintptr_t)p);
+   PPG_I PPG_LOG("<*** tk (0x%" PRIXPTR ") ***>\n", (uintptr_t)p);
    ppg_token_print_self_start(p, indent);
    ppg_token_print_self_end(p, indent, recurse);
 }

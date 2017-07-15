@@ -65,32 +65,24 @@ static void ppg_on_timeout(void)
 
 bool ppg_timeout_check(void)
 {  
-//    PPG_PRINTF("Checking timeout\n");
+//    PPG_LOG("Checking timeout\n");
    
    if(!ppg_context->timeout_enabled) { 
       
-//       PPG_PRINTF("Timeout disabled\n");
+//       PPG_LOG("Timeout disabled\n");
       return false;
    }
    
    if(!ppg_context->current_token) {
-//       PPG_PRINTF("No current token\n");
+//       PPG_LOG("No current token\n");
       return false; 
    }
    
-//    PPG_PRINTF("Checking timeout\n");
+//    PPG_LOG("Chk t.out\n");
    
-   #ifdef DEBUG_PAPAGENO
-   if(!ppg_context->time_manager.time) {
-      PPG_ERROR("Time function undefined\n");
-   }
-   if(!ppg_context->time_manager.time_difference) {
-      PPG_ERROR("Time difference function undefined\n");
-   }
-   if(!ppg_context->time_manager.compare_times) {
-      PPG_ERROR("Time comparison function undefined\n");
-   }
-   #endif
+   PPG_ASSERT(ppg_context->time_manager.time);
+   PPG_ASSERT(ppg_context->time_manager.time_difference);
+   PPG_ASSERT(ppg_context->time_manager.compare_times);
    
    PPG_Time cur_time;
    
@@ -104,7 +96,7 @@ bool ppg_timeout_check(void)
    
    bool timeout_hit = false;
    
-//    PPG_PRINTF("   delta: %ld\n", delta);
+//    PPG_LOG("\tdelta: %ld\n", delta);
    
    if(ppg_context->current_token
       && (ppg_context->time_manager.compare_times(
@@ -113,7 +105,7 @@ bool ppg_timeout_check(void)
          ) > 0)
      ) {
       
-      PPG_PRINTF("Pattern detection timeout hit\n");
+      PPG_LOG("T.out hit\n");
    
       /* Too late...
          */
