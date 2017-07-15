@@ -84,7 +84,7 @@ enum { PPG_CS_CC_Long_Delay = '|' };
 enum { PPG_CS_CC_Noop = ' ' };
 
 void ppg_cs_process_event_callback(   
-                        PPG_Event *key_event,
+                        PPG_Event *event,
                         void *user_data);
 
 void ppg_cs_flush_key_events(void);
@@ -95,7 +95,7 @@ void ppg_cs_process_event(char the_char);
 
 void ppg_cs_process_string(char *string);
 
-void ppg_cs_check_flushed(char *string);
+void ppg_cs_check_flushed(char *expected);
 
 void ppg_cs_check_action_series(int n_actions, int* expected);
 

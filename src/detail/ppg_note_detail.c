@@ -111,11 +111,11 @@ static bool ppg_note_match_event(
             note->super.state = PPG_Token_Matches;
             return true;
          }
-         else {
-            PPG_LOG("I inact\n");
-            note->super.state = PPG_Token_Invalid;
-            return false;
-         }
+         
+         PPG_LOG("I inact\n");
+         note->super.state = PPG_Token_Invalid;
+         
+         return false;
       }
    }
    else if(note->flags & PPG_Note_Type_Match_Deactivation) {
@@ -131,10 +131,10 @@ static bool ppg_note_match_event(
          note->super.state = PPG_Token_Matches;
          return true;
       }
-      else {
-         note->super.state = PPG_Token_Invalid;
-         return false;
-      }
+      
+      note->super.state = PPG_Token_Invalid;
+         
+      return false;
    }
    
    return true;

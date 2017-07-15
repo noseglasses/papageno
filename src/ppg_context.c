@@ -32,27 +32,27 @@ void* ppg_context_create(void)
    return context;
 }
 
-void ppg_context_destroy(void *context_void)
+void ppg_context_destroy(void *context)
 {
-   PPG_Context *context = (PPG_Context *)context_void;
+   PPG_Context *context__ = (PPG_Context *)context;
    
-   ppg_furcation_stack_free(&context->furcation_stack);
+   ppg_furcation_stack_free(&context__->furcation_stack);
    
-   ppg_bitfield_destroy(&context->active_inputs);
+   ppg_bitfield_destroy(&context__->active_inputs);
    
-   ppg_token_free_children(&context->pattern_root);
+   ppg_token_free_children(&context__->pattern_root);
    
-   free(context);
+   free(context__);
 }
 
 #ifndef PAPAGENO_DISABLE_CONTEXT_SWITCHING
 
 
-void* ppg_global_set_current_context(void *context_void)
+void* ppg_global_set_current_context(void *context)
 {
    void *old_context = ppg_context;
    
-   ppg_context = (PPG_Context *)context_void;
+   ppg_context = (PPG_Context *)context;
    
    return old_context;
 }

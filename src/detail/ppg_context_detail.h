@@ -49,7 +49,7 @@ typedef struct PPG_Context_Struct
 
    PPG_Time event_timeout;
    
-   PPG_Event_Processor_Fun input_processor;
+   PPG_Event_Processor_Fun event_processor;
    
    PPG_Time_Manager time_manager;
    

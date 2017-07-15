@@ -56,7 +56,7 @@ void ppg_even_buffer_flush_and_remove_first_event(
                      PPG_Slot_Id slot_id);
 
 void ppg_event_buffer_iterate(
-                        PPG_Event_Processor_Fun kp,
+                        PPG_Event_Processor_Fun event_processor,
                         void *user_data);
 
 // The two following functions prepare the

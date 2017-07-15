@@ -69,12 +69,12 @@ void ppg_event_process(PPG_Event *event);
  * 
  * This function is called internally when melodies complete, on abort and on timeout.
  * 
- * @param input_processor A custom input processor callback. If NULL the default processor registered by
+ * @param event_processor A custom input processor callback. If NULL the default processor registered by
  *                ppg_global_set_default_event_processor is used.
  * @param user_data Optional user data is passed on to the input processor callback
  */
 void ppg_event_buffer_iterate(
-                        PPG_Event_Processor_Fun input_processor,
+                        PPG_Event_Processor_Fun event_processor,
                         void *user_data);
 
 #endif

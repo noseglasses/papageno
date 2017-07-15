@@ -94,13 +94,13 @@ PPG_Time ppg_global_get_timeout(void)
    return ppg_context->event_timeout;
 }
 
-PPG_Event_Processor_Fun ppg_global_set_default_event_processor(PPG_Event_Processor_Fun input_processor)
+PPG_Event_Processor_Fun ppg_global_set_default_event_processor(PPG_Event_Processor_Fun event_processor)
 {
-   PPG_Event_Processor_Fun old_input_processor = ppg_context->input_processor;
+   PPG_Event_Processor_Fun old_event_processor = ppg_context->event_processor;
    
-   ppg_context->input_processor = input_processor;
+   ppg_context->event_processor = event_processor;
    
-   return old_input_processor;
+   return old_event_processor;
 }
 
 bool ppg_global_set_enabled(bool state)

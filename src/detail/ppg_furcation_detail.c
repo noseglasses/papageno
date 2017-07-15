@@ -21,11 +21,11 @@
 
 #include <stdlib.h>
 
-void ppg_furcation_stack_init(PPG_Furcation_Stack *fs)
+void ppg_furcation_stack_init(PPG_Furcation_Stack *stack)
 {
-   fs->furcations = NULL;
-   fs->n_furcations = 0;
-   fs->cur_furcation = -1;
+   stack->furcations = NULL;
+   stack->n_furcations = 0;
+   stack->cur_furcation = -1;
 }
 
 void ppg_furcation_push_or_update(PPG_Count n_tokens_in_progress,
@@ -80,16 +80,16 @@ void ppg_furcation_stack_resize(void)
    }
 }
 
-void ppg_furcation_stack_free(PPG_Furcation_Stack *fs)
+void ppg_furcation_stack_free(PPG_Furcation_Stack *stack)
 {
-   if(!fs->furcations) { return; }
+   if(!stack->furcations) { return; }
    
-   for(PPG_Count i = 0; i < fs->n_furcations; ++i) {
-      ppg_bitfield_destroy(&fs->furcations[i].active_inputs);
+   for(PPG_Count i = 0; i < stack->n_furcations; ++i) {
+      ppg_bitfield_destroy(&stack->furcations[i].active_inputs);
    }
    
-   free(fs->furcations);
+   free(stack->furcations);
    
-   fs->furcations = NULL;
+   stack->furcations = NULL;
 }
    

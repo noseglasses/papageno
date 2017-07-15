@@ -216,37 +216,37 @@ PPG_Token__ *ppg_token_new(PPG_Token__ *token) {
 }
 
 PPG_Token ppg_token_set_action(  
-                     PPG_Token token__,
+                     PPG_Token token,
                      PPG_Action action)
 {
-   PPG_Token__ *token = (PPG_Token__ *)token__;
+   PPG_Token__ *token__ = (PPG_Token__ *)token;
    
-   ppg_token_store_action(token, action);
-   
-   return token__;
-}
-
-PPG_Action ppg_token_get_action(PPG_Token token__)
-{
-   PPG_Token__ *token = (PPG_Token__ *)token__;
-   
-   return token->action;
-}
-
-PPG_Token ppg_token_set_action_flags(
-                           PPG_Token token__,
-                           PPG_Action_Flags_Type action_flags)
-{
-   PPG_Token__ *token = (PPG_Token__ *)token__;
-   
-   token->action.flags = action_flags;
+   ppg_token_store_action(token__, action);
    
    return token;
 }
 
-PPG_Action_Flags_Type ppg_token_get_action_flags(PPG_Token token__)
+PPG_Action ppg_token_get_action(PPG_Token token)
 {
-   PPG_Token__ *token = (PPG_Token__ *)token__;
+   PPG_Token__ *token__ = (PPG_Token__ *)token;
    
-   return token->action.flags;
+   return token__->action;
+}
+
+PPG_Token ppg_token_set_action_flags(
+                           PPG_Token token,
+                           PPG_Action_Flags_Type action_flags)
+{
+   PPG_Token__ *token__ = (PPG_Token__ *)token;
+   
+   token__->action.flags = action_flags;
+   
+   return token;
+}
+
+PPG_Action_Flags_Type ppg_token_get_action_flags(PPG_Token token)
+{
+   PPG_Token__ *token__ = (PPG_Token__ *)token;
+   
+   return token__->action.flags;
 }

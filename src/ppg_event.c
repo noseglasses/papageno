@@ -161,15 +161,13 @@ static bool ppg_branch_revert_to_next_possible_furcation(PPG_Token__ *start_toke
    if(PPG_FB.cur_furcation == -1) {
       return false;
    }
-   else {
       
-      // Restore the active inputs set
-      //
-      ppg_bitfield_copy(
-         &PPG_FB.furcations[PPG_FB.cur_furcation].active_inputs,
-         &ppg_context->active_inputs
-      );
-   }
+   // Restore the active inputs set
+   //
+   ppg_bitfield_copy(
+      &PPG_FB.furcations[PPG_FB.cur_furcation].active_inputs,
+      &ppg_context->active_inputs
+   );
    
    return true;
 }
@@ -357,12 +355,11 @@ static PPG_Count ppg_process_next_event(void)
          
          return PPG_Pattern_Matches;
       }
-      else {
 
-         return PPG_Token_Matches;
-      }
+      return PPG_Token_Matches;
    }
-   else if(n_tokens_in_progress == 0) {
+   
+   if(n_tokens_in_progress == 0) {
       return PPG_Token_Invalid;
    }
          
@@ -483,7 +480,7 @@ void ppg_event_process(PPG_Event *event)
 }
 
 void ppg_event_buffer_iterate(
-                        PPG_Event_Processor_Fun kp,
+                        PPG_Event_Processor_Fun event_processor,
                         void *user_data)
 {
    if(ppg_event_buffer_size() == 0) { return; }
@@ -494,17 +491,17 @@ void ppg_event_buffer_iterate(
       
       for(PPG_Count i = PPG_EB.start; i < PPG_MAX_EVENTS; ++i) {
       
-         kp(&PPG_EB.events[i], user_data);
+         event_processor(&PPG_EB.events[i], user_data);
       }
       for(PPG_Count i = 0; i < PPG_EB.end; ++i) {
          
-         kp(&PPG_EB.events[i], user_data);
+         event_processor(&PPG_EB.events[i], user_data);
       }
    }
    else {
       for(PPG_Count i = PPG_EB.start; i < PPG_EB.end; ++i) {
       
-         kp(&PPG_EB.events[i], user_data);
+         event_processor(&PPG_EB.events[i], user_data);
       }
    }
 }

@@ -116,7 +116,7 @@ static void ppg_flush_non_considered_events(PPG_Event *event,
       // not control tags such as those used for 
       // abort input events are flushed
       //
-      ppg_context->input_processor(event, NULL);
+      ppg_context->event_processor(event, NULL);
    }
 }
 
@@ -154,7 +154,7 @@ void ppg_event_buffer_truncate_at_front(void)
 void ppg_even_buffer_flush_and_remove_first_event(
                      PPG_Slot_Id slot_id)
 {
-   ppg_context->input_processor(&PPG_EB.events[PPG_EB.start], NULL);
+   ppg_context->event_processor(&PPG_EB.events[PPG_EB.start], NULL);
    
    if(PPG_EB.size > 1) {
       if(PPG_EB.start < PPG_MAX_EVENTS - 1) {

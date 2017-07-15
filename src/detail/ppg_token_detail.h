@@ -98,7 +98,7 @@ enum PPG_Processing_State {
    PPG_Branch_Invalid
 };
 
-void ppg_token_free_children(PPG_Token__ *a_This);
+void ppg_token_free_children(PPG_Token__ *token);
 
 void ppg_token_store_action(PPG_Token__ *token, 
                                    PPG_Action action);

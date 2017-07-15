@@ -152,7 +152,10 @@ matrix:
     - os: linux
       addons:
         apt:
+          sources:
+            - ubuntu-toolchain-r-test
           packages:
+            - g++-5
             - doxygen
             - doxygen-doc
             - doxygen-latex
@@ -173,6 +176,16 @@ matrix:
         github_token: $GITHUB_API_KEY
         on:
           branch: master
+          
+   # Check for broken links on the Papageno github page
+   #
+   - os: linux
+      addons:
+        apt:
+          packages:
+            - linkchecker
+      script:
+         - linkchecker https://github.com/noseglasses/papageno
 
 
 before_install:

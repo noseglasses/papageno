@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(Papageno)
+project(Papageno C)
 
 macro(use_c99)
   if (CMAKE_VERSION VERSION_LESS "3.1")
@@ -13,6 +13,10 @@ macro(use_c99)
 endmacro(use_c99)
 
 use_c99()
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+# Test Coverage Settings
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 option(PAPAGENO_TEST_COVERAGE "This flags enables testing code coverage" FALSE)
 	
@@ -33,7 +37,20 @@ if(PAPAGENO_TEST_COVERAGE)
    init_coverage()
 endif()
 
-find_package(Doxygen)
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+# Clang Tidy Settings
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+option(PAPAGENO_CLANG_TIDY "Enables integration of clang tidy to find programming errors" FALSE)
+
+if(PAPAGENO_CLANG_TIDY)
+   set(CMAKE_C_CLANG_TIDY CACHE STRING "/usr/bin/clang-tidy-3.8;-checks=-*,readability-*")
+endif()
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+# Doxygen Settings
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
 
 
 # Enforce pedantic compiler behavior
@@ -98,6 +115,11 @@ include_directories(
 
 add_library(papageno SHARED ${source_files_full_path})
 
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+# Doxygen Settings
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+find_package(Doxygen)
 
 option(PAPAGENO_DOXYGEN "Build the doxygen documentation of the Papageno API" FALSE)
 

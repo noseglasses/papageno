@@ -76,7 +76,7 @@ PPG_Time ppg_global_get_timeout(void);
  * @param fun The default input processor callback
  * @returns The callback that was active before resetting
  */
-PPG_Event_Processor_Fun ppg_global_set_default_event_processor(PPG_Event_Processor_Fun fun);
+PPG_Event_Processor_Fun ppg_global_set_default_event_processor(PPG_Event_Processor_Fun event_processor);
 
 /** @brief Use this function to temporarily disable/enable pattern processing. 
  * 
