@@ -160,7 +160,7 @@ matrix:
             - graphviz
             - lcov
       env:
-        - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
+        - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
       script: 
          - mkdir -p build/debug
          - cd build/debug
