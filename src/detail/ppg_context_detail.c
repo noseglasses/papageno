@@ -50,7 +50,7 @@ static void ppg_signal_callback_init(PPG_Signal_Callback *cb)
 
 void ppg_global_initialize_context(PPG_Context *context) {
 	
-	PPG_PRINTF("Initializing context\n");
+// 	PPG_PRINTF("Initializing context\n");
 	
 	ppg_event_buffer_init(&context->event_buffer);
 	ppg_furcation_buffer_init(&context->furcation_buffer);
@@ -66,9 +66,9 @@ void ppg_global_initialize_context(PPG_Context *context) {
 	context->layer = 0;
 	ppg_global_init_input(&context->abort_input);
 	context->event_timeout = 0;
-	context->time = ppg_default_time;
-	context->time_difference = ppg_default_time_difference;
-	context->time_comparison = ppg_default_time_comparison;
+	context->time_manager.time = ppg_default_time;
+	context->time_manager.time_difference = ppg_default_time_difference;
+	context->time_manager.compare_times = ppg_default_time_comparison;
 	
 	ppg_signal_callback_init(&context->signal_callback);
 

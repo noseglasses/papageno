@@ -71,7 +71,7 @@ static bool ppg_cluster_match_event(
 		/* Cluster matches
 		 */
 		cluster->super.state = PPG_Token_Matches;
- 		PPG_PRINTF("O");
+//  		PPG_PRINTF("O");
 #endif
 	}
 #ifdef PPG_PEDANTIC_TOKENS
@@ -82,7 +82,7 @@ static bool ppg_cluster_match_event(
 			/* Cluster matches
 			*/
 			cluster->super.state = PPG_Token_Matches;
-			PPG_PRINTF("O");
+// 			PPG_PRINTF("O");
 		}
 	}
 #endif
@@ -147,7 +147,7 @@ PPG_Token ppg_cluster(
 							PPG_Count n_inputs,
 							PPG_Input_Id inputs[])
 {   	
-	PPG_PRINTF("Adding cluster\n");
+// 	PPG_PRINTF("Adding cluster\n");
 	
 	PPG_Token__ *token = 
 		(PPG_Token__ *)ppg_cluster_create(n_inputs, inputs);

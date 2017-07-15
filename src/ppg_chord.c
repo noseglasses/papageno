@@ -27,6 +27,8 @@ static bool ppg_chord_match_event(
 											PPG_Chord *chord,
 											PPG_Event *event) 
 {
+	PPG_PRINTF("Checking chord\n");
+	
 	bool input_part_of_chord = false;
 	
 	PPG_ASSERT(chord->n_members != 0);
@@ -66,6 +68,12 @@ static bool ppg_chord_match_event(
 		}
 	}
 	
+#ifdef DEBUG_PAPAGENO
+	for(PPG_Count i = 0; i < chord->n_members; ++i) {
+		PPG_PRINTF("%d = %d\n", i, chord->member_active[i]);
+	}
+#endif
+	
 	if(!input_part_of_chord) {
  		if(event->flags & PPG_Event_Active) {
 			chord->super.state = PPG_Token_Invalid;
@@ -83,7 +91,7 @@ static bool ppg_chord_match_event(
 		/* Chord matches
 		 */
 		chord->super.state = PPG_Token_Matches;
- 		PPG_PRINTF("C");
+//  		PPG_PRINTF("C");
 #endif
 	}
 #ifdef PPG_PEDANTIC_TOKENS
@@ -94,7 +102,7 @@ static bool ppg_chord_match_event(
 			/* Chord matches
 			*/
 			chord->super.state = PPG_Token_Matches;
-			PPG_PRINTF("C");
+// 			PPG_PRINTF("C");
 		}
 	}
 #endif
@@ -159,7 +167,7 @@ PPG_Token ppg_chord(
 							PPG_Count n_inputs,
 							PPG_Input_Id inputs[])
 {   	
-	PPG_PRINTF("Adding chord\n");
+// 	PPG_PRINTF("Adding chord\n");
 	
 	PPG_Token__ *token = 
 		(PPG_Token__ *)ppg_chord_create(n_inputs, inputs);

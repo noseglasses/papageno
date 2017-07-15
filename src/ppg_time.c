@@ -18,29 +18,16 @@
 #include "ppg_global.h"
 #include "detail/ppg_context_detail.h"
 
-PPG_Time_Fun ppg_global_set_time_function(PPG_Time_Fun fun)
+PPG_Time_Manager ppg_global_set_time_manager(PPG_Time_Manager time_manager)
 {
-	PPG_Time_Fun old_fun = fun;
+	PPG_Time_Manager old_time_manager = ppg_context->time_manager;
 	
-	ppg_context->time = fun;
+	ppg_context->time_manager = time_manager;
 	
-	return old_fun;
+	return old_time_manager;
 }
 
-PPG_Time_Difference_Fun ppg_global_set_time_difference_function(PPG_Time_Difference_Fun fun)
+PPG_Time_Manager ppg_global_get_time_manager(void)
 {
-	PPG_Time_Difference_Fun old_fun = ppg_context->time_difference;
-	
-	ppg_context->time_difference = fun;
-	
-	return old_fun;
-}
-
-PPG_Time_Comparison_Fun ppg_global_set_time_comparison_function(PPG_Time_Comparison_Fun fun)
-{
-	PPG_Time_Comparison_Fun old_fun = ppg_context->time_comparison;
-	
-	ppg_context->time_comparison = fun;
-	
-	return old_fun;
+	return ppg_context->time_manager;
 }

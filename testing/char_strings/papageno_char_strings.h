@@ -178,9 +178,13 @@ void ppg_cs_separator(void);
 	\
 	ppg_global_set_default_event_processor((PPG_Event_Processor_Fun)ppg_cs_process_event_callback); \
 	\
-	ppg_global_set_time_function((PPG_Time_Fun)ppg_cs_time); \
-	ppg_global_set_time_difference_function((PPG_Time_Difference_Fun)ppg_cs_time_difference); \
-	ppg_global_set_time_comparison_function((PPG_Time_Comparison_Fun)ppg_cs_time_comparison); \
+	ppg_global_set_time_manager( \
+		(PPG_Time_Manager) { \
+			.time = (PPG_Time_Fun)ppg_cs_time, \
+			.time_difference = (PPG_Time_Difference_Fun)ppg_cs_time_difference, \
+			.compare_times = (PPG_Time_Comparison_Fun)ppg_cs_time_comparison \
+		} \
+	); \
 	\
 	ppg_global_set_signal_callback( \
 		(PPG_Signal_Callback) { \

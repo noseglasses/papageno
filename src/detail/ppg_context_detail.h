@@ -51,9 +51,7 @@ typedef struct PPG_Context_Struct
 	
 	PPG_Event_Processor_Fun input_processor;
 	
-	PPG_Time_Fun time;
-	PPG_Time_Difference_Fun time_difference;
-	PPG_Time_Comparison_Fun time_comparison;
+	PPG_Time_Manager time_manager;
 	
 	PPG_Signal_Callback signal_callback;
   

@@ -459,7 +459,7 @@ void ppg_event_process(PPG_Event *event)
 	
 	// Register the time of arrival to check for timeout
 	//
-	ppg_context->time(&ppg_context->time_last_event);
+	ppg_context->time_manager.time(&ppg_context->time_last_event);
 	
 // 	PPG_PRINTF("time: %ld\n", ppg_context->time_last_event);
 	

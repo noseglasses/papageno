@@ -25,7 +25,7 @@ PPG_Token ppg_pattern(
 							PPG_Count n_tokens,
 							PPG_Token tokens[])
 { 
-	PPG_PRINTF("Adding pattern\n");
+// 	PPG_PRINTF("Adding pattern\n");
 	
 	ppg_global_init();
 		

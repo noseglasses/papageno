@@ -29,13 +29,6 @@
  */
 typedef void (*PPG_Time_Fun)(PPG_Time *time);
 
-/** @brief Defines a custom time retreival function
- * 
- * @param fun The function callback to be registered
- * @returns The callback previously active
- */
-PPG_Time_Fun ppg_global_set_time_function(PPG_Time_Fun fun);
-
 /** @brief Function type of a callback that computes differences between time values.
  * 
  * The result is expected as time2 - time1.
@@ -45,13 +38,6 @@ PPG_Time_Fun ppg_global_set_time_function(PPG_Time_Fun fun);
  * @param delta Pointer to the result of the difference computation
  */
 typedef void (*PPG_Time_Difference_Fun)(PPG_Time time1, PPG_Time time2, PPG_Time *delta);
-
-/** @brief Defines a custom function to compute time differences
- * 
- * @param fun The function callback to be registered
- * @returns The callback previously active
- */
-PPG_Time_Difference_Fun ppg_global_set_time_difference_function(PPG_Time_Difference_Fun fun);
 
 /** @brief Function type for time comparisons.
  * 
@@ -64,11 +50,25 @@ PPG_Time_Difference_Fun ppg_global_set_time_difference_function(PPG_Time_Differe
 typedef PPG_Time_Comparison_Result_Type (*PPG_Time_Comparison_Fun)(
 									PPG_Time time1, PPG_Time time2);
 
-/** @brief Defines a custom function to compare time values
- * 
- * @param fun The function callback to be registered
- * @returns The callback previously active
+/** @brief A collection of functions for time handling
  */
-PPG_Time_Comparison_Fun ppg_global_set_time_comparison_function(PPG_Time_Comparison_Fun fun);
+typedef struct {
+	PPG_Time_Fun time; ///< Retreives time
+	PPG_Time_Difference_Fun time_difference; ///< Computes time differences
+	PPG_Time_Comparison_Fun compare_times; ///< Compares time values
+} PPG_Time_Manager;
+
+/** @brief Sets a new global time handler
+ * 
+ * @param time_manager The new time handler
+ * @returns The previously used time handler
+ */
+PPG_Time_Manager ppg_global_set_time_manager(PPG_Time_Manager time_manager);
+
+/** @brief Retreives the currently active global time handler
+ * 
+ * @returns The currently active global time handler
+ */
+PPG_Time_Manager ppg_global_get_time_manager(void);
 
 #endif

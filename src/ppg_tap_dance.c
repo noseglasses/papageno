@@ -30,7 +30,7 @@ PPG_Token ppg_tap_dance(
 							PPG_Count n_tap_definitions,
 							PPG_Tap_Definition tap_definitions[])
 {
-	PPG_PRINTF("Adding tap dance\n");
+// 	PPG_PRINTF("Adding tap dance\n");
 	
 	ppg_global_init();
 	

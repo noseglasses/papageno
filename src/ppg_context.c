@@ -23,7 +23,7 @@
 
 void* ppg_context_create(void)
 {
-	PPG_PRINTF("Creating new context\n");
+// 	PPG_PRINTF("Creating new context\n");
 	
 	PPG_Context *context = (PPG_Context *)malloc(sizeof(PPG_Context));
 	
