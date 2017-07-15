@@ -246,12 +246,12 @@ matrix:
         - cmake -DCMAKE_BUILD_TYPE=Debug -DPAPAGENO_TEST_COVERAGE=TRUE -DPAPAGENO_DOXYGEN=TRUE ../..
         - make doxygen coverage
       deploy:
-      provider: pages
-      skip_cleanup: true
-      local_dir: $TRAVIS_BUILD_DIR/build/debug/html
-      github_token: $GITHUB_API_KEY
-      on:
-        branch: master
+        provider: pages
+        skip_cleanup: true
+        local_dir: $TRAVIS_BUILD_DIR/build/debug/html
+        github_token: $GITHUB_API_KEY
+        on:
+          branch: master
          
     # Check for broken links on the Papageno github page
     #
