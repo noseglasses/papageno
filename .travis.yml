@@ -255,13 +255,13 @@ matrix:
          
     # Check for broken links on the Papageno github page
     #
-    - os: linux
-      addons:
-        apt:
-          packages:
-            - linkchecker
-      script:
-        - linkchecker https://github.com/noseglasses/papageno
+    #- os: linux
+      #addons:
+        #apt:
+          #packages:
+            #- linkchecker
+      #script:
+        #- linkchecker https://github.com/noseglasses/papageno
 
 before_install:
     - eval "${MATRIX_EVAL}"
