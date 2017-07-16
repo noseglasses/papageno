@@ -30,7 +30,7 @@
  * @param layer The layer the pattern is associated with
  * @param n_tokens The number of tokens combined to form the pattern
  * @param tokens The tokens that make up the pattern
- * @returns The constructed token
+ * @returns The final token
  */
 PPG_Token ppg_pattern(      
                      PPG_Layer layer,

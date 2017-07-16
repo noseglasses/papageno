@@ -113,7 +113,7 @@ static bool ppg_chord_match_event(
 
 static PPG_Count ppg_chord_token_precedence(void)
 {
-   return 80;
+   return 100;
 }
 
 #ifdef PAPAGENO_PRINT_SELF_ENABLED

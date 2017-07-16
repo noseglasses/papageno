@@ -15,6 +15,16 @@ endmacro(use_c99)
 use_c99()
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+# General settings
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+option(PAPAGENO_PEDANTIC_TOKENS "Enabling this option compiles Papageno in pedantic-tokens-mode"
+   FALSE)
+   
+if(PAPAGENO_PEDANTIC_TOKENS)
+	add_definitions(-DPPG_PEDANTIC_TOKENS)
+endif()
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # Test Coverage Settings
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 

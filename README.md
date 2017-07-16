@@ -134,6 +134,11 @@ Every one of the reasons stated above prevents using regular expression to solve
 
 That's why Papageno is here.
 
+Aknowledgements
+---------------
+
+Papageno uses Boost Preprocessor to simplify pattern specification.
+
 Working with Patterns
 =====================
 
@@ -458,16 +463,16 @@ It is possible that after applying these sorting rules there are still several p
 -	If two tokens have the same type precedence, the one with the higher assigned layer wins.
 -	If several tokens are equal with respect to the rules above, the first candidate is selected.
 
-The precedence order from highest to lowest is note, chord, cluster. This means that a single note line
-
-```
-(A) -> (B) -> (C)
-```
-
-wins against a chord,
+The precedence order from highest to lowest is chord, note, cluster. This means that a chord
 
 ```
 [A, B, C]
+```
+
+wins against a single note line,
+
+```
+(A) -> (B) -> (C)
 ```
 
 that would in turn beat a cluster

@@ -61,8 +61,6 @@ typedef struct {
  * 
  * @param layer The layer the pattern is associated with
  * @param input The input the tap dance is associated with
- * @param default_action_flags The default action that is supposed to be 
- *               associated with the notes of the tap dance.
  * @param n_tap_definitions The number of tap definitions
  * @param tap_definitions A tap definitions array.
  * @returns The constructed token
@@ -70,7 +68,6 @@ typedef struct {
 PPG_Token ppg_tap_dance(   
                      PPG_Layer layer,
                      PPG_Input_Id input,
-                     PPG_Action_Flags_Type default_action_flags,
                      PPG_Count n_tap_definitions,
                      PPG_Tap_Definition tap_definitions[]);
 

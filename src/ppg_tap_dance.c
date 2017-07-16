@@ -26,7 +26,6 @@
 PPG_Token ppg_tap_dance(   
                      PPG_Layer layer,
                      PPG_Input_Id input,
-                     PPG_Action_Flags_Type default_action_flags,
                      PPG_Count n_tap_definitions,
                      PPG_Tap_Definition tap_definitions[])
 {
@@ -49,7 +48,7 @@ PPG_Token ppg_tap_dance(
    for (PPG_Count i = 0; i < n_taps; i++) {
       
       PPG_Token__ *new_note = (PPG_Token__*)ppg_note_create_standard(input);
-         new_note->action.flags = default_action_flags;
+         new_note->action.flags = PPG_Action_Fallback;
       
       tokens[i] = new_note;
    }

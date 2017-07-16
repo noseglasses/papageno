@@ -31,6 +31,12 @@ PPG_Token ppg_pattern_from_list(
    
    for (PPG_Count i = 0; i < n_tokens; i++) { 
       
+      if(tokens[i] == NULL) { 
+         // Ignore empty members. This is helpful
+         // when an additional NULL ptr needs to be added 
+         // in generation macros.
+      }
+      
       PPG_Token__ *cur_token = (PPG_Token__*)tokens[i];
       
       PPG_Token__ *equivalent_child 

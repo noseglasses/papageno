@@ -156,7 +156,7 @@ static bool ppg_note_equals(PPG_Note *n1, PPG_Note *n2)
 
 static PPG_Count ppg_note_token_precedence(void)
 {
-   return 100;
+   return 80;
 }
 
 #ifdef PAPAGENO_PRINT_SELF_ENABLED
