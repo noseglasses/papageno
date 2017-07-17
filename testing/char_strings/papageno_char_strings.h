@@ -99,6 +99,8 @@ void ppg_cs_check_flushed(char *expected);
 
 void ppg_cs_check_action_series(int n_actions, int* expected);
 
+void ppg_cs_list_event_queue(void);
+
 #define PPG_CS_EXPECT_EMPTY_FLUSH \
    ppg_cs_check_flushed("");
 
@@ -112,6 +114,7 @@ void ppg_cs_check_action_series(int n_actions, int* expected);
    ppg_timeout_check(); \
    ppg_cs_separator(); \
    __VA_ARGS__ \
+   ppg_cs_list_event_queue(); \
    ppg_cs_separator(); \
    ppg_cs_check_test_success(__FILE__, __LINE__); \
    ppg_cs_separator(); \

@@ -26,7 +26,10 @@ static bool ppg_note_match_event(
                                  PPG_Note *note,
                                  PPG_Event *event) 
 {  
-   PPG_ASSERT(note->super.state == PPG_Token_In_Progress);
+   PPG_ASSERT(
+         (note->super.state == PPG_Token_In_Progress)
+      || (note->super.state == PPG_Token_Initialized)
+   );
    
    // Assert that the note requires either activation or deactivation
    //

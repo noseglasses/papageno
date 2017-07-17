@@ -36,7 +36,7 @@ void ppg_token_store_action(PPG_Token__ *token,
 
 void ppg_token_reset(   PPG_Token__ *token)
 {
-   token->state = PPG_Token_In_Progress;
+   token->state = PPG_Token_Initialized;
 }
 
 /* Tokens have states. This method resets the states
@@ -209,7 +209,7 @@ PPG_Token__ *ppg_token_new(PPG_Token__ *token) {
     token->action.flags = PPG_Action_Default;
     token->action.callback.func = NULL;
     token->action.callback.user_data = NULL;
-    token->state = PPG_Token_In_Progress;
+    token->state = PPG_Token_Initialized;
     token->layer = 0;
     
     return token;

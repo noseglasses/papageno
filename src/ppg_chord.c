@@ -33,7 +33,10 @@ static bool ppg_chord_match_event(
    
    PPG_ASSERT(chord->n_members != 0);
    
-   PPG_ASSERT(chord->super.state == PPG_Token_In_Progress);
+   PPG_ASSERT(
+         (chord->super.state == PPG_Token_In_Progress)
+      || (chord->super.state == PPG_Token_Initialized)
+   );
    
    /* Check if the input is part of the current chord 
     */
@@ -82,6 +85,8 @@ static bool ppg_chord_match_event(
       
       return false;
    }
+   
+   chord->super.state = PPG_Token_In_Progress;
    
    if(chord->n_inputs_active == chord->n_members) {
       

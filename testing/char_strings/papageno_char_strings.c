@@ -419,3 +419,53 @@ void ppg_cs_check_action_series(int n_actions, int* expected)
    }
 }
 
+void ppg_cs_event_char_callback( 
+                              PPG_Event *event,
+                              void *user_data)
+{ 
+   char the_char = (char)(uintptr_t)event->input;
+   
+   if((uintptr_t)event->flags & PPG_Event_Active) {
+      the_char = toupper(the_char);
+   }
+   else {
+      the_char = tolower(the_char);
+   }
+   
+   printf("%c", the_char);
+}
+
+void ppg_cs_event_considered_callback( 
+                              PPG_Event *event,
+                              void *user_data)
+{ 
+   char c_char = 0;
+   
+   if(event->flags & PPG_Event_Considered) {
+      c_char = '+';
+   }
+   else {
+      c_char = '-';
+   }
+   
+   printf("%c", c_char);
+}
+
+
+void ppg_cs_list_event_queue(void)
+{
+   printf("\nEvent queue:\n");
+   
+   printf("   \'");
+   
+   ppg_event_buffer_iterate((PPG_Event_Processor_Fun)ppg_cs_event_char_callback, 
+                            NULL);
+   
+   printf("\'\n");
+   
+   printf("    ");
+   
+   ppg_event_buffer_iterate((PPG_Event_Processor_Fun)ppg_cs_event_considered_callback, 
+                            NULL);
+   printf("\n");
+}

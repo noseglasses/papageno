@@ -73,6 +73,8 @@ void ppg_event_buffer_init(PPG_Event_Buffer *eb)
 
 bool ppg_event_buffer_events_left(void)
 {
+//    PPG_LOG("ppg_event_buffer_events_left: %u, cur: %u, end: %u, size: %u\n", 
+//               PPG_EB.start, PPG_EB.cur, PPG_EB.end, PPG_EB.size);
    return   (PPG_EB.cur != PPG_EB.end);
 }
 

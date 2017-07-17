@@ -359,6 +359,13 @@ static PPG_Count ppg_process_next_event(void)
       return PPG_Token_Matches;
    }
    
+   if(!(event->flags & PPG_Event_Active)) {
+      
+      // This is a deactivation event, we drop it
+      //
+      return PPG_Token_Drop_Deactivation;
+   }
+   
    if(n_tokens_in_progress == 0) {
       return PPG_Token_Invalid;
    }
@@ -436,6 +443,11 @@ static void ppg_event_process_all_possible(void)
                PPG_EB.cur = PPG_CUR_FUR.event_id;
             }
          }
+         case PPG_Token_Drop_Deactivation:
+            
+            ppg_event_buffer_advance();
+            break;
+            
          break;
       }
    }

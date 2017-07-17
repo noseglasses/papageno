@@ -31,7 +31,10 @@ static bool ppg_cluster_match_event(
    
    PPG_ASSERT(cluster->n_members != 0);
    
-   PPG_ASSERT(cluster->super.state == PPG_Token_In_Progress);
+   PPG_ASSERT(
+         (cluster->super.state == PPG_Token_In_Progress)
+      || (cluster->super.state == PPG_Token_Initialized)
+   );
    
    /* Check it the input is part of the current cluster 
     */
@@ -68,6 +71,8 @@ static bool ppg_cluster_match_event(
       
       return false;
    }
+   
+   cluster->super.state = PPG_Token_In_Progress;
    
    if(cluster->n_inputs_active == cluster->n_members) {
       
