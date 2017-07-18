@@ -14,26 +14,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PPG_SLOTS_H
-#define PPG_SLOTS_H
+#ifndef PPG_TOKEN_PRECEDENCE_DETAIL_H
+#define PPG_TOKEN_PRECEDENCE_DETAIL_H
 
-/** @file */
-
-#include "ppg_settings.h"
-
-#include <inttypes.h>
-
-/** @brief Input processing slot identifiers
- * 
- * Slot identifiers are used during signal processing.
- */
-enum PPG_Slots {
-   PPG_On_Abort = 0,
-   PPG_On_Timeout,
-   PPG_On_Token_Matches,
-   PPG_On_Pattern_Matches,
-   PPG_On_User,
-   PPG_On_Match_Failed
+enum PPG_Token_Precedence {
+   
+   PPG_Token_Precedence_None = 0,
+   
+   PPG_Token_Precedence_Cluster,
+   PPG_Token_Precedence_Note,
+   PPG_Token_Precedence_Explicit_Note,
+      // A note that expects either an activation or deactivation
+   PPG_Token_Precedence_Chord
 };
 
 #endif

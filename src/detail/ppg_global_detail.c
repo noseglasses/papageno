@@ -31,6 +31,14 @@ bool ppg_recurse_and_process_actions(void)
    PPG_Token__ *action_tokens[ppg_context->tree_depth];
    PPG_Count n_actions = 0;
    
+   // It may be possible that a token was just started but not
+   // finished. Then we go back to the parent token, that
+   // was the last registered match.
+   //
+   if(cur_token->state != PPG_Token_Matches) {
+      cur_token = cur_token->parent;
+   }
+   
    while(cur_token) {
 
       if(cur_token->action.callback.func) {
@@ -98,4 +106,11 @@ void ppg_recurse_and_cleanup_active_branch(void)
 void ppg_delete_stored_events(void)
 {
    ppg_event_buffer_init(&ppg_context->event_buffer); 
+}
+
+void ppg_reset_pattern_matching_engine(void)
+{
+   ppg_context->current_token = &ppg_context->pattern_root;
+            
+   PPG_FB.cur_furcation = -1;
 }

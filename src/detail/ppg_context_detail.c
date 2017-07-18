@@ -40,7 +40,6 @@ void ppg_global_initialize_context(PPG_Context *context) {
    
    ppg_bitfield_init(&context->active_inputs);
    
-   context->current_token = NULL;
    context->timeout_enabled = true;
    context->papageno_enabled = true;
    context->tree_depth = 0;
@@ -55,4 +54,8 @@ void ppg_global_initialize_context(PPG_Context *context) {
    /* Initialize the pattern root
    */
    ppg_token_new(&context->pattern_root);
+   
+   context->pattern_root.state = PPG_Token_Root;
+   
+   context->current_token = &context->pattern_root;
 };

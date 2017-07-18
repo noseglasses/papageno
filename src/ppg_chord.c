@@ -20,10 +20,11 @@
 #include "detail/ppg_aggregate_detail.h"
 #include "detail/ppg_pattern_detail.h"
 #include "detail/ppg_token_detail.h"
+#include "detail/ppg_token_precedence_detail.h"
 
 typedef PPG_Aggregate PPG_Chord;
 
-static bool ppg_chord_match_event(  
+static void ppg_chord_match_event(  
                                  PPG_Chord *chord,
                                  PPG_Event *event) 
 {
@@ -64,7 +65,7 @@ static bool ppg_chord_match_event(
                // Thus, we conclude that the event must be related
                // to a previous match. Ignore the event.
                //
-               return false;
+               return;
             }
          }
          break;
@@ -83,7 +84,9 @@ static bool ppg_chord_match_event(
          chord->super.state = PPG_Token_Invalid;
       }
       
-      return false;
+      // Chords ignore unmatching deactivation events
+      
+      return;
    }
    
    chord->super.state = PPG_Token_In_Progress;
@@ -113,12 +116,12 @@ static bool ppg_chord_match_event(
    }
 #endif
    
-   return true;
+   return;
 }
 
-static PPG_Count ppg_chord_token_precedence(void)
+static PPG_Count ppg_chord_token_precedence(PPG_Token__ *token)
 {
-   return 100;
+   return PPG_Token_Precedence_Chord;
 }
 
 #ifdef PAPAGENO_PRINT_SELF_ENABLED

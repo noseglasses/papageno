@@ -22,161 +22,26 @@
 #include "detail/ppg_signal_detail.h"
 #include "ppg_debug.h"
 #include "ppg_bitfield.h"
-   
-/** @brief Check if a branch matches the current event chain
- * 
- * @returns Whether the event was considered
- */
-static bool ppg_branch_check_match(
-                              PPG_Token__ *start_token,
-                              PPG_Event *event,
-                              PPG_Processing_State *processing_state
-                                       )
-{
-   /* Accept only paths through the search tree whose
-      * nodes' ppg_context->layer tags are lower or equal the current ppg_context->layer
-      */
-   if(start_token->layer > ppg_context->layer) { 
-      
-      PPG_LOG("st l: %u, c l: %u\n", start_token->layer, ppg_context->layer);
-      return PPG_Branch_Invalid; 
-   }
-   
-   if(start_token->state == PPG_Token_Invalid) {
-      PPG_LOG("T inv\n");
-      *processing_state = PPG_Branch_Invalid;
-      return false;
-   }
-   
-   bool event_considered
-      = start_token
-            ->vtable->match_event(  
-                     start_token, 
-                     event
-               );
-            
-   *processing_state = start_token->state;
-            
-   return event_considered;
-}
 
-/** @brief Cleanup a branch going backward the token chain
- *         
- * Every token on the way is cleaned up for reuse in 
- * future pattern matching.
- * The final token, end_token is excluded.
- * 
- * @returns The last token before end_token in backward direction
- */
-static PPG_Token__ *ppg_branch_cleanup(
-                        PPG_Token__ *start_token,
-                        PPG_Token__ *end_token)
-{
-   PPG_Token__ *cur_token = start_token;
-   PPG_Token__ *return_token;
-   
-   // Unwind and cleanup back to the current furcation or to the
-   // root node
-   // 
-   while(cur_token != end_token) {
-      
-//       PPG_CALL_VIRT_METHOD(cur_token, reset);
-//       
-//       ppg_token_reset(cur_token);
-      
-      // Reset all children (data structures and state)
-      //
-      ppg_token_reset_children(cur_token);
-      
-      return_token = cur_token;
-      
-      cur_token = cur_token->parent;
-   }
-   
-   return return_token;
-}
+enum {
+   PPG_Pattern_State_Undefined = 0,
+   PPG_Pattern_Matches,
+   PPG_Pattern_Invalid,
+   PPG_Pattern_Orphaned_Deactivation,
+   PPG_Pattern_In_Progress,
+   PPG_Pattern_Branch_Reversion
+};
 
-/** @brief Reverts to the next possible furcation
- *  
- * Cleans up on its way. Every token is initialized if it is
- * left. If a possible furcation is detected, 
- * any node that was already traversed is marked as invalid,
- * possible branches are represented by branches that are not
- * invalid.
- * 
- * @returns True if a possible furcation was found
- */
-static bool ppg_branch_revert_to_next_possible_furcation(PPG_Token__ *start_token)
-{
-   #define PPG_CUR_FUR PPG_FB.furcations[PPG_FB.cur_furcation]
-   
-   // If there is no current furcation, we at least clean up to 
-   // the root node. Otherwise we cleanup to the current furcation.
-   //
-   PPG_Token__ *termination_token 
-      = (PPG_FB.cur_furcation == -1) ? NULL : PPG_CUR_FUR.branch;
-   
-   ppg_branch_cleanup(start_token, termination_token);
-   
-   // If there is no current furcation, we can't do anything else
-   //
-   if(PPG_FB.cur_furcation == -1) { return false; }
-   
-   // Mark the branch we decended from as invalid
-   //
-   PPG_CUR_FUR.branch->state = PPG_Token_Invalid;
-   
-   if(PPG_CUR_FUR.n_possible_branches == 0) {
-      
-      // There are no possibilities left, so we cleanup the children
-      // of the furcation node
-      //
-      ppg_token_reset_children(PPG_CUR_FUR.token);
-      
-      // Mark the furcation node as invalid
-      //
-      PPG_CUR_FUR.token->state = PPG_Token_Invalid;
-      
-      // Store the token that is associated with the current
-      // furcation to preserve it when decrementing the furcation below
-      //
-      PPG_Token__ *fur_token = PPG_CUR_FUR.token;
-      
-      // Replace the current furcation with the previous one 
-      //
-      --PPG_FB.cur_furcation;
-      
-      // Recursively try to go up to the next furcation and cleanup
-      // on the way. 
-      //
-      // Note: This is necessary for proper cleanup even though 
-      //       PPG_FB.cur_furcation is -1 at this point
-      //
-      return ppg_branch_revert_to_next_possible_furcation(fur_token);
-   }
-   
-   // After reverting it may be possible that no suitable furcation
-   // could be found
-   //
-   if(PPG_FB.cur_furcation == -1) {
-      return false;
-   }
-      
-   // Restore the active inputs set
-   //
-   ppg_bitfield_copy(
-      &PPG_FB.furcations[PPG_FB.cur_furcation].active_inputs,
-      &ppg_context->active_inputs
-   );
-   
-   return true;
-}
-
-static PPG_Id ppg_token_get_most_appropriate_branch(PPG_Token__ *parent_token)
+static PPG_Token__ * ppg_token_get_most_appropriate_branch_token(
+                        PPG_Token__ *parent_token,
+                        PPG_Count *n_candidates)
+                        
 {
    PPG_Layer highest_layer = -1;
-   PPG_Id match_id = -1;
+   PPG_Token__ *child_token = NULL;
    PPG_Count precedence = 0;
+   
+   PPG_Count n_candidates__ = 0;
    
 //    PPG_LOG("Getting most appropriate child\n");
    
@@ -189,9 +54,11 @@ static PPG_Id ppg_token_get_most_appropriate_branch(PPG_Token__ *parent_token)
       */
       if(parent_token->children[i]->layer > ppg_context->layer) { continue; }
       
-      if(parent_token->children[i]->state != PPG_Token_Matches) {
+      if(parent_token->children[i]->state == PPG_Token_Invalid) {
          continue;
       }
+      
+      ++n_candidates__;
    
 //       PPG_LOG("Child %d\n", i);
       
@@ -199,15 +66,16 @@ static PPG_Id ppg_token_get_most_appropriate_branch(PPG_Token__ *parent_token)
       
       PPG_Count cur_precedence 
             = parent_token->children[i]
-                  ->vtable->token_precedence();
+                  ->vtable->token_precedence(parent_token->children[i]);
                   
 //       PPG_LOG("Cur precedence %d\n", cur_precedence);
 //       PPG_LOG("precedence %d\n", precedence);
             
       if(cur_precedence > precedence) {
          precedence = cur_precedence;
-         match_id = i;
          highest_layer = parent_token->children[i]->layer;
+         
+         child_token = parent_token->children[i];
       }
       else {
          
@@ -215,15 +83,15 @@ static PPG_Id ppg_token_get_most_appropriate_branch(PPG_Token__ *parent_token)
          
          if(parent_token->children[i]->layer > highest_layer) {
             highest_layer = parent_token->children[i]->layer;
-            match_id = i;
+            child_token = parent_token->children[i];
          }
       }
 //       PPG_LOG("match_id %d\n", match_id);
    }
    
-   PPG_ASSERT(match_id >= 0);
+   *n_candidates = n_candidates__;
    
-   return match_id;
+   return child_token;
 }
 
 /** @brief Checks if an arriving event can possibly be ignored
@@ -239,7 +107,7 @@ static bool ppg_check_ignore_event(PPG_Event *event)
       // to ensure that corresponding deactivation of the
       // respective input is swallowed (i.e. not flushed)
       //
-      event->flags |= PPG_Event_Control_Tag;
+      event->flags |= PPG_Event_Considered;
    
       /* If a pattern is in progress, we abort it and consume the abort input.
        */
@@ -261,116 +129,145 @@ static bool ppg_check_ignore_event(PPG_Event *event)
 static PPG_Count ppg_process_next_event(void)
 {  
    //PPG_LOG("ppg_process_next_event\n");
-   
-   if(!ppg_context->current_token) {
-      ppg_context->current_token = &ppg_context->pattern_root;
-   }
 
-   PPG_Count n_tokens_in_progress = 0;
-      
-   bool any_token_matches = false;
+   PPG_Event *event = &PPG_EB.events[PPG_EB.cur];
+
+   PPG_LOG("Parent tk 0x%" PRIXPTR "\n", 
+             (uintptr_t)ppg_context->current_token);
    
-   PPG_LOG("Chk %d chld tk 0x%" PRIXPTR "\n", 
-             ppg_context->current_token->n_children, (uintptr_t)ppg_context->current_token);
+   // Check if the current node was a match after the last
+   // step. If so, set the next possible branch
+   // as current token.
+   //
+   if(   (ppg_context->current_token->state == PPG_Token_Matches)
+      || (ppg_context->current_token->state == PPG_Token_Root)
+   ) {
+      // Here, we can rely on the fact that after a match
+      // during processing the previous event, we already checked
+      // for the pattern being finished. So the current token
+      // must have children if we ended here.
+ 
+      PPG_Count n_branch_candidates = 0;
+      
+      PPG_Token__ *branch_token = NULL;
+      
+      while(!branch_token) {
+      
+         // Find the most appropriate branch to continue with
+         //
+         branch_token 
+               = ppg_token_get_most_appropriate_branch_token(
+                                       ppg_context->current_token,
+                                       &n_branch_candidates);
+         
+         // There are no possible branches left, e.g.
+         // if we already tried all options on this level ...
+         //
+         if(!branch_token) {
+            
+            // ... revert to the next previous furcation
+            //
+            bool furcation_found 
+               = ppg_furcation_revert(ppg_context->current_token);
+               
+            if(!furcation_found) {
+               
+               // If no furcation can be found this means that
+               // we already traversed all candidate branches of
+               // the search tree. That no matching branch can 
+               // be found means that no match for the overall pattern
+               // is possible.
+               //
+               return PPG_Pattern_Invalid;
+            }
+            
+            // We are lucky. There are further branches left.
+            
+            // Revert the current token to the next possible furcation
+            //
+            ppg_context->current_token = PPG_CUR_FUR.token;
+         }
+      }
+
+      // Only branch if there are more than one child node.
+      //
+      if(ppg_context->current_token->n_children > 1) {
+         
+         // We create a new furcation data set, the first
+         // time we traverse the node. 
+         // The next time we only update the existing furcation.
+         //
+         ppg_furcation_create_or_update(
+                           n_branch_candidates,
+                           branch_token);
+      }
+         
+      ppg_context->current_token = branch_token;
+   }
+   
+   PPG_LOG("Chk tk 0x%" PRIXPTR "\n", 
+             (uintptr_t)ppg_context->current_token);
    
    PPG_LOG("start: %u, cur: %u, end: %u, size: %u\n", 
               PPG_EB.start, PPG_EB.cur, PPG_EB.end, PPG_EB.size);
    
-   bool event_considered = false;
-   
-   PPG_Event *event = &PPG_EB.events[PPG_EB.cur];
-      
-   // Check the subtokens of the current branch
-   //  to find a match based on the current event
+   // As the token to process the event.
    //
-   for(PPG_Count i = 0; i < ppg_context->current_token->n_children; ++i) {
+   ppg_context->current_token
+            ->vtable->match_event(  
+                     ppg_context->current_token, 
+                     event
+               );
+
+   switch(ppg_context->current_token->state) {
       
-      PPG_Processing_State p_state = PPG_Processing_State_None;
-      
-      event_considered |= ppg_branch_check_match(
-                              ppg_context->current_token->children[i],
-                              event,
-                              &p_state);
-      
-      switch(p_state) {
-         
-         case PPG_Token_In_Progress:
-            ++n_tokens_in_progress;
-            break;
+      case PPG_Token_Matches:
+   
+         if(ppg_context->current_token->n_children == 0) {
             
-         case PPG_Token_Matches:
-            any_token_matches = true;
-            ++n_tokens_in_progress;
-
-            break;
-      }
-   }
-
-   if(event_considered) {
-   
-      event->flags |= PPG_Event_Considered;
-   }
-   else {
-
-      event->flags &= (PPG_Count)~PPG_Event_Considered;
-   }
-   
-   PPG_Id branch_id = -1;
-   
-   PPG_Token__ *branch = NULL;
-   
-   PPG_LOG("any tk mtch: %d\n", any_token_matches);
-   PPG_LOG("n tk in progr.: %d\n", n_tokens_in_progress);
-   
-   if(any_token_matches) {
-      
-      // Find the most appropriate branch to continue with
-      //
-      branch_id = ppg_token_get_most_appropriate_branch(
-                                    ppg_context->current_token);
-      
-      PPG_ASSERT(branch_id >= 0);
-      PPG_ASSERT(branch_id < ppg_context->current_token->n_children);
-      
-      branch = ppg_context->current_token->children[branch_id];
-   
-      if(n_tokens_in_progress > 1) {
+            PPG_LOG("p match\n");
          
-         ppg_furcation_push_or_update(
-                     n_tokens_in_progress,
-                     branch);
-      }
-      
-      PPG_LOG("Cnt with chld tk\n");
-      
-      ppg_context->current_token 
-            = ppg_context->current_token->children[branch_id];
-      
-      // The current node has no children, this means we found a matching
-      // pattern
-      //
-      if(0 == ppg_context->current_token->n_children) {
+            // We found a matching pattern
+            //
+            return PPG_Pattern_Matches;
+         }
+         break;
          
-         PPG_LOG("Pttr tree leaf\n");
-         
-         return PPG_Pattern_Matches;
-      }
-
-      return PPG_Token_Matches;
+      case PPG_Token_Invalid:
+         {
+            PPG_LOG("t invalid\n");
+            
+            // Revert to the next previous furcation
+            //
+            bool furcation_found 
+               = ppg_furcation_revert(
+                                 ppg_context->current_token);
+            
+            if(!furcation_found) {
+               PPG_LOG("p invalid\n");
+               return PPG_Pattern_Invalid;
+            }
+            
+            return PPG_Pattern_Branch_Reversion;
+         }
+         break;
    }
    
-   if(!(event->flags & PPG_Event_Active)) {
+   // If the event is a deactivation event that was obviously
+   // not matched and it is the first in the queue, 
+   // we flush.
+   //
+   if(   !(event->flags & PPG_Event_Active)
+      && (ppg_event_buffer_size() == 1)) {
       
-      // This is a deactivation event, we drop it
-      //
-      return PPG_Token_Drop_Deactivation;
-   }
+      PPG_LOG("orpth deact\n");
    
-   if(n_tokens_in_progress == 0) {
-      return PPG_Token_Invalid;
+      return PPG_Pattern_Orphaned_Deactivation;
    }
-         
-   return PPG_Token_In_Progress;
+      
+   PPG_LOG("p in prog\n");
+   
+   return PPG_Pattern_In_Progress;
 }
 
 static void ppg_event_process_all_possible(void)
@@ -389,67 +286,64 @@ static void ppg_event_process_all_possible(void)
             
             ppg_event_buffer_on_match_success();
             
-            ppg_context->current_token = NULL;
-            
             break;
             
-         case PPG_Token_Matches:
+         case PPG_Pattern_Invalid:
             
-            // No break statement to fall through to PPG_Token_In_Progress
-            
-         case PPG_Token_In_Progress:
-            
-            // The current_token has already been advanced
-            
-            ppg_event_buffer_advance();
-            
-            break;
-            
-         case PPG_Token_Invalid:
-         {
-            // Token invalid means that we found a dead branch
+            // Prepare the event buffer for 
+            // user processing
             //
-            bool furcation_found 
-               = ppg_branch_revert_to_next_possible_furcation(
-                           ppg_context->current_token);
-               
-            if(!furcation_found) {
-               
-               // Prepare the event buffer for 
-               // user processing
-               //
-               ppg_event_buffer_prepare_on_failure();
-               
-               // If no furcation was found, there is no chance
-               // for a match. Thus we remove the first stored event
-               // and rerun the overall pattern matching based on a
-               // new first event.
-               //
-               ppg_signal(PPG_On_Match_Failed);       
-               
-               PPG_LOG("Mtch fld\n");
-               ppg_even_buffer_flush_and_remove_first_event(PPG_On_Match_Failed);
-               
-               ppg_context->current_token = NULL;
-            }
-            else {
-               
-               // Reset the current token for further processing
-               //
-               ppg_context->current_token = PPG_CUR_FUR.token;
-               
-               // Reset the current event that is used for further processing
-               //
-               PPG_EB.cur = PPG_CUR_FUR.event_id;
-            }
-         }
-         case PPG_Token_Drop_Deactivation:
+            ppg_event_buffer_prepare_on_failure();
             
-            ppg_event_buffer_advance();
+            // If no furcation was found, there is no chance
+            // for a match. Thus we remove the first stored event
+            // and rerun the overall pattern matching based on a
+            // new first event.
+            //
+            ppg_signal(PPG_On_Match_Failed);       
+            
+            PPG_LOG("Mtch fld\n");
+            ppg_even_buffer_flush_and_remove_first_event(false /* no success */);
+            
             break;
             
-         break;
+         case PPG_Pattern_Orphaned_Deactivation:
+            
+            PPG_LOG("Orph deact\n");
+            
+            // Prepare the event buffer for 
+            // user processing
+            //
+            ppg_event_buffer_on_match_success();
+            
+            // If no furcation was found, there is no chance
+            // for a match. Thus we remove the first stored event
+            // and rerun the overall pattern matching based on a
+            // new first event.
+            //
+            ppg_signal(PPG_On_Orphaned_Deactivation);       
+
+            ppg_delete_stored_events();
+            
+            break;
+            
+         case PPG_Pattern_In_Progress:
+            
+            ppg_event_buffer_advance();
+            
+            continue;
+            
+         case PPG_Pattern_Branch_Reversion:
+            
+            // Repeat with same event
+            //
+            continue;
+            
       }
+      
+      // Prepare for restart of pattern matching
+      
+      ppg_reset_pattern_matching_engine();
    }
 }
 
@@ -459,19 +353,10 @@ void ppg_event_process(PPG_Event *event)
       return;
    }
    
-   event = ppg_event_buffer_store_event(event);
-   
-   // The return value signals the calling instance to 
-   // process the event (true) or to ignore it (false)
-   //
-   if(ppg_check_ignore_event(event)) {
-      return;
-   }
-   
    PPG_LOG("I %d: %d\n", event->input, 
               event->flags & PPG_Event_Active);
    
-   bool timeout_hit = ppg_timeout_check();
+   ppg_timeout_check();
    
    // Register the time of arrival to check for timeout
    //
@@ -479,13 +364,12 @@ void ppg_event_process(PPG_Event *event)
    
 //    PPG_LOG("time: %ld\n", ppg_context->time_last_event);
    
-   if(timeout_hit) {
-         
-      // Timeout hit. Cleanup already done.
-      //
+   event = ppg_event_buffer_store_event(event);
+
+   if(ppg_check_ignore_event(event)) {
       return;
    }
-   
+
    ppg_event_process_all_possible();
    
    return;

@@ -27,7 +27,7 @@ struct PPG_TokenStruct;
 
 /** @returns Whether the event was considered
  */
-typedef bool (*PPG_Token_Match_Event_Fun)(
+typedef void (*PPG_Token_Match_Event_Fun)(
                                           struct PPG_TokenStruct *token, 
                                           PPG_Event *event
                                         );
@@ -38,7 +38,7 @@ typedef struct PPG_TokenStruct * (*PPG_Token_Destroy_Fun)(struct PPG_TokenStruct
 
 typedef bool (*PPG_Token_Equals_Fun)(struct PPG_TokenStruct *p1, struct PPG_TokenStruct *p2);
 
-typedef PPG_Count (*PPG_Token_Precedence_Fun)(void);
+typedef PPG_Count (*PPG_Token_Precedence_Fun)(struct PPG_TokenStruct *token);
 
 #ifdef PAPAGENO_PRINT_SELF_ENABLED
 typedef void (*PPG_Token_Print_Self_Fun)(struct PPG_TokenStruct *p, PPG_Count indent, bool recurse);
@@ -90,14 +90,11 @@ typedef struct PPG_TokenStruct {
 } PPG_Token__;
 
 enum PPG_Processing_State {
-   PPG_Processing_State_None = 0,
-   PPG_Token_Initialized,
+   PPG_Token_Initialized = 0,
+   PPG_Token_Root,
    PPG_Token_In_Progress,
    PPG_Token_Matches,
-   PPG_Token_Invalid,
-   PPG_Token_Drop_Deactivation,
-   PPG_Pattern_Matches,
-   PPG_Branch_Invalid
+   PPG_Token_Invalid
 };
 
 void ppg_token_free_children(PPG_Token__ *token);

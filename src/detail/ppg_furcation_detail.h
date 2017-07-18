@@ -22,7 +22,7 @@
 #include "ppg_bitfield.h"
 
 typedef struct {
-   PPG_Count n_possible_branches; ///< The number of remaining
+   PPG_Count n_branch_candidates; ///< The number of remaining
                      // branches that have not been checked yet
                      
    PPG_Count event_id; ///< The index of the first event 
@@ -30,8 +30,6 @@ typedef struct {
                      // one of the tokens in the branch
    PPG_Token__ *token;
    PPG_Token__ *branch;
-   
-   PPG_Bitfield   active_inputs;
 } PPG_Furcation;
 
 typedef struct {
@@ -49,8 +47,13 @@ void ppg_furcation_stack_init(PPG_Furcation_Stack *stack);
 
 void ppg_furcation_stack_resize(void);
 
-void ppg_furcation_push_or_update(PPG_Count n_tokens_in_progress,
+void ppg_furcation_create_or_update(PPG_Count n_tokens_in_progress,
                                  PPG_Token__ *branch);
 
+bool ppg_furcation_revert(PPG_Token__ *start_token);
+
 void ppg_furcation_stack_free(PPG_Furcation_Stack *stack);
+
+#define PPG_CUR_FUR PPG_FB.furcations[PPG_FB.cur_furcation]
+
 #endif

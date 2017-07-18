@@ -21,11 +21,6 @@
 #include "ppg_settings.h"
 #include "ppg_bitfield.h"
 
-enum 
-{
-   PPG_Event_Control_Tag = (PPG_Event_Considered << 1)
-};
-
 // The event buffer is a ring buffer
 //
 typedef struct {
@@ -52,8 +47,7 @@ void ppg_event_buffer_advance(void);
 
 void ppg_event_buffer_truncate_at_front(void);
 
-void ppg_even_buffer_flush_and_remove_first_event(
-                     PPG_Slot_Id slot_id);
+void ppg_even_buffer_flush_and_remove_first_event(bool on_success);
 
 void ppg_event_buffer_iterate(
                         PPG_Event_Processor_Fun event_processor,
@@ -62,7 +56,7 @@ void ppg_event_buffer_iterate(
 // The two following functions prepare the
 // event buffer for iteration from signal callbacks.
 //
-void ppg_event_buffer_prepare_on_success(void);
+// void ppg_event_buffer_prepare_on_success(void);
 void ppg_event_buffer_prepare_on_failure(void);
 
 void ppg_event_buffer_on_match_success(void);

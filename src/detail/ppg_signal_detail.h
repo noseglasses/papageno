@@ -19,6 +19,6 @@
 
 #include "ppg_settings.h"
 
-void ppg_signal(PPG_Count slot_id);
+void ppg_signal(PPG_Count signal_id);
 
 #endif

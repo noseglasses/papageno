@@ -13,30 +13,28 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef PAPAGENO_H
-#define PAPAGENO_H
+
+#ifndef PPG_SIGNALS_H
+#define PPG_SIGNALS_H
 
 /** @file */
 
-#include "ppg_action_flags.h"
-#include "ppg_action.h"
-#include "ppg_chord.h"
-#include "ppg_cluster.h"
-#include "ppg_context.h"
-#include "ppg_debug.h"
-#include "ppg_event.h"
-#include "ppg_global.h"
-#include "ppg_input.h"
-#include "ppg_layer.h"
-#include "ppg_note.h"
-#include "ppg_pattern.h"
-#include "ppg_signals.h"
-#include "ppg_tap_dance.h"
-#include "ppg_time.h"
-#include "ppg_timeout.h"
-#include "ppg_token.h"
 #include "ppg_settings.h"
-#include "ppg_signal_callback.h"
+
+#include <inttypes.h>
+
+/** @brief Input processing signal identifiers
+ * 
+ * Signal identifiers are used during signal processing.
+ */
+enum PPG_Signals {
+   PPG_On_Abort = 0,
+   PPG_On_Timeout,
+   PPG_On_Token_Matches,
+   PPG_On_Pattern_Matches,
+   PPG_On_User,
+   PPG_On_Match_Failed,
+   PPG_On_Orphaned_Deactivation
+};
 
 #endif
-

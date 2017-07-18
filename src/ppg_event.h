@@ -20,7 +20,7 @@
 /** @file */
 
 #include "ppg_input.h"
-#include "ppg_slots.h"
+#include "ppg_signals.h"
 #include "ppg_time.h"
 #include "ppg_layer.h"
 
@@ -51,7 +51,7 @@ typedef struct {
  * 
  * @param event A pointer to a PPG_Event struct that provides information 
  *                   about the input event
- * @param slot_id The slot identifier informs about the slot that triggered input event processing
+ * @param signal_id The signal identifier informs about the signal that triggered input event processing
  * @param user_data Optional user data
  * @returns A boolean value that decides about whether input event processing is continued (true) or aborted (false).
  */

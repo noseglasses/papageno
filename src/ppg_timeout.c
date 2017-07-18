@@ -19,10 +19,11 @@
 #include "detail/ppg_context_detail.h"
 #include "detail/ppg_global_detail.h"
 #include "detail/ppg_signal_detail.h"
+#include "detail/ppg_event_buffer_detail.h"
 
 static void ppg_on_timeout(void)
 {
-   if(!ppg_context->current_token) { return; }
+   if(ppg_event_buffer_size() == 0) { return; }
    
    /* The frase could not be parsed. Reset any previous tokens.
    */
@@ -60,7 +61,7 @@ static void ppg_on_timeout(void)
       ppg_delete_stored_events();
    }
    
-   ppg_context->current_token = NULL;
+   ppg_reset_pattern_matching_engine();
 }
 
 bool ppg_timeout_check(void)
@@ -73,7 +74,7 @@ bool ppg_timeout_check(void)
       return false;
    }
    
-   if(!ppg_context->current_token) {
+   if(ppg_event_buffer_size() == 0) {
 //       PPG_LOG("No current token\n");
       return false; 
    }
@@ -98,7 +99,7 @@ bool ppg_timeout_check(void)
    
 //    PPG_LOG("\tdelta: %ld\n", delta);
    
-   if(ppg_context->current_token
+   if(   (ppg_event_buffer_size() != 0)
       && (ppg_context->time_manager.compare_times(
                delta,
                ppg_context->event_timeout

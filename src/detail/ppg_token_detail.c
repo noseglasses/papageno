@@ -20,7 +20,7 @@
 #include "ppg_action.h"
 #include "ppg_action.h"
 #include "ppg_action_flags.h"
-#include "ppg_slots.h"
+#include "ppg_signals.h"
 #include "detail/ppg_context_detail.h"
 
 #include <stdlib.h>

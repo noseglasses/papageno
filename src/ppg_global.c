@@ -181,11 +181,14 @@ void ppg_global_abort_pattern_matching(void)
    ppg_recurse_and_cleanup_active_branch();
    
    ppg_event_buffer_prepare_on_failure();
+   
+   // Note: It is on the user to read back any 
+   //       events that were stored from the PPG_On_Abort signal callback
          
    ppg_signal(PPG_On_Abort);
    
    ppg_delete_stored_events();
    
-   ppg_context->current_token = NULL;
+   ppg_reset_pattern_matching_engine();
 }
 

@@ -20,10 +20,11 @@
 #include "detail/ppg_aggregate_detail.h"
 #include "detail/ppg_pattern_detail.h"
 #include "detail/ppg_token_detail.h"
+#include "detail/ppg_token_precedence_detail.h"
 
 typedef PPG_Aggregate PPG_Cluster;
 
-static bool ppg_cluster_match_event(   
+static void ppg_cluster_match_event(   
                                  PPG_Cluster *cluster,
                                  PPG_Event *event) 
 {
@@ -69,7 +70,9 @@ static bool ppg_cluster_match_event(
          cluster->super.state = PPG_Token_Invalid;
       }
       
-      return false;
+      // Clusters ignore unmatching deactivation events
+      
+      return;
    }
    
    cluster->super.state = PPG_Token_In_Progress;
@@ -99,12 +102,12 @@ static bool ppg_cluster_match_event(
    }
 #endif
    
-   return true;
+   return;
 }
 
-static PPG_Count ppg_cluster_token_precedence(void)
+static PPG_Count ppg_cluster_token_precedence(PPG_Token__ *token)
 {
-   return 70;
+   return PPG_Token_Precedence_Cluster;
 }
 
 #ifdef PAPAGENO_PRINT_SELF_ENABLED

@@ -19,7 +19,7 @@
 
 /** @file */
 
-#include "ppg_slots.h"
+#include "ppg_signals.h"
 
 #include <stddef.h>
 

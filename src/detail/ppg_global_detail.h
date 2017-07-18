@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ppg_slots.h"
+#include "ppg_signals.h"
 #include "ppg_global.h"
 
 #include <stdbool.h>
@@ -24,3 +24,5 @@ bool ppg_recurse_and_process_actions(void);
 void ppg_recurse_and_cleanup_active_branch(void);
 
 void ppg_delete_stored_events(void);
+
+void ppg_reset_pattern_matching_engine(void);

@@ -19,10 +19,11 @@
 #include "detail/ppg_context_detail.h"
 #include "detail/ppg_input_detail.h"
 #include "detail/ppg_token_detail.h"
+#include "detail/ppg_token_precedence_detail.h"
 
 #include <stdlib.h>
 
-static bool ppg_note_match_event(   
+static void ppg_note_match_event(   
                                  PPG_Note *note,
                                  PPG_Event *event) 
 {  
@@ -53,7 +54,8 @@ static bool ppg_note_match_event(
                note->super.state = PPG_Token_In_Progress;
       #else 
                
-               PPG_LOG("Nt fin\n");
+               PPG_LOG("Nt 0x%" PRIXPTR " fin\n", 
+             (uintptr_t)note);
       //             PPG_LOG("N");
                note->super.state = PPG_Token_Matches;
       #endif
@@ -75,7 +77,7 @@ static bool ppg_note_match_event(
                   // event. Thus, we ignore it as it belongs 
                   // to the activation of another token.
                   //
-                  return false;
+                  return;
                }
             }
          }
@@ -93,7 +95,7 @@ static bool ppg_note_match_event(
       #ifndef PPG_PEDANTIC_TOKENS
             }
       #endif
-            return false;
+            return;
          }
       }
       else {
@@ -106,19 +108,19 @@ static bool ppg_note_match_event(
             
             PPG_LOG("I wrg\n");
             note->super.state = PPG_Token_Invalid;
-            return false;
+            return;
          }
          
          if(event->flags & PPG_Event_Active) {
             PPG_LOG("I mtch\n");
             note->super.state = PPG_Token_Matches;
-            return true;
+            return;
          }
          
          PPG_LOG("I inact\n");
          note->super.state = PPG_Token_Invalid;
          
-         return false;
+         return;
       }
    }
    else if(note->flags & PPG_Note_Type_Match_Deactivation) {
@@ -127,20 +129,20 @@ static bool ppg_note_match_event(
       
       if(note->input != event->input) {
          note->super.state = PPG_Token_Invalid;
-         return false;
+         return;
       }
       
       if((event->flags & PPG_Event_Active) == 0) {
          note->super.state = PPG_Token_Matches;
-         return true;
+         return;
       }
       
       note->super.state = PPG_Token_Invalid;
          
-      return false;
+      return;
    }
    
-   return true;
+   return;
 }
 
 static void ppg_note_reset(PPG_Note *note) 
@@ -157,9 +159,16 @@ static bool ppg_note_equals(PPG_Note *n1, PPG_Note *n2)
    return n1->input == n2->input;
 }
 
-static PPG_Count ppg_note_token_precedence(void)
+static PPG_Count ppg_note_token_precedence(PPG_Token__ *token)
 {
-   return 80;
+   PPG_Note *note = (PPG_Note *)token;
+   
+   if(   (note->flags & PPG_Note_Type_Match_Activation)
+      && (note->flags & PPG_Note_Type_Match_Deactivation)) {
+      return PPG_Token_Precedence_Note;
+   }
+   
+   return PPG_Token_Precedence_Explicit_Note;
 }
 
 #ifdef PAPAGENO_PRINT_SELF_ENABLED

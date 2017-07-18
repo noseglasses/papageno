@@ -120,15 +120,15 @@ typedef PPG_LAYER_TYPE PPG_Layer;
 
 #ifndef PPG_SLOT_ID_TYPE 
 
-/** @brief This macro enables to define the slot id type from outside the
+/** @brief This macro enables to define the signal id type from outside the
  * compile process, e.g. from a build system
  */
 #define PPG_SLOT_ID_TYPE PPG_SMALL_UNSIGNED_INT_TYPE
 #endif
 
-/** @brief The data type used to identify slots
+/** @brief The data type used to identify signals
  */
-typedef PPG_SLOT_ID_TYPE PPG_Slot_Id;
+typedef PPG_SLOT_ID_TYPE PPG_Signal_Id;
 
 #ifndef PPG_TIME_COMPARISON_RESULT_TYPE
 

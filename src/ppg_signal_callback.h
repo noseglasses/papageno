@@ -19,14 +19,14 @@
 
 /** @file */
 
-#include "ppg_slots.h"
+#include "ppg_signals.h"
 
 /** @brief Function type of signal callback functions
  * 
- *    @param slot_id
+ *    @param signal_id
  *  @param user_data Optional user data.
  */
-typedef void (*PPG_Signal_Callback_Fun)(PPG_Slot_Id slot_id, void *user_data);
+typedef void (*PPG_Signal_Callback_Fun)(PPG_Signal_Id signal_id, void *user_data);
 
 /** @brief The PPG_Signal_Callback_Fun struct groups use callback information
  *  in an object oriented fashion (functor).
