@@ -23,14 +23,9 @@
 
 // The maximum number of events that can be stored
 //
-#ifndef PPG_MAX_EVENTS
-
 /** @brief The maximum lenght of a sequence of events that can represent a pattern.
  */
-#define PPG_MAX_EVENTS 100
-#endif
-
-#ifndef PPG_MAX_INPUTS
+#define PPG_MAX_EVENTS @__PPG_MAX_EVENTS@
 
 /** @brief The maximum number of inputs that can be used continuously.
  * 
@@ -38,156 +33,134 @@
  * is allocated for the number of inputs. Also larger interger 
  * data types must be used in some places when this value exceeds 256.
  */
-#define PPG_MAX_INPUTS 256
-#endif
-
-#ifndef PPG_SMALL_UNSIGNED_INT_TYPE
+#define PPG_MAX_INPUTS @__PPG_MAX_INPUTS@
 
 /** @brief An unsigned integer type that is used to store 
  * small numbers
  */
-#define PPG_SMALL_UNSIGNED_INT_TYPE uint8_t
-#endif
-
-#ifndef PPG_SMALL_SIGNED_INT_TYPE
+#define PPG_SMALL_UNSIGNED_INT_TYPE @__PPG_SMALL_UNSIGNED_INT_TYPE@
 
 /** @brief A signed integer type that is used to store 
  * small numbers
  */
-#define PPG_SMALL_SIGNED_INT_TYPE int8_t
-#endif
-
-#ifndef PPG_MEDIUM_SIGNED_INT_TYPE
+#define PPG_SMALL_SIGNED_INT_TYPE @__PPG_SMALL_SIGNED_INT_TYPE@
 
 /** @brief A signed integer type that is used to store 
  * larger numbers
  */
-#define PPG_MEDIUM_SIGNED_INT_TYPE int16_t
-#endif
+#define PPG_MEDIUM_SIGNED_INT_TYPE @__PPG_MEDIUM_SIGNED_INT_TYPE@
 
 // Define PPG_PEDANTIC_TOKENS
 // to ensure that any match requires a
 // matching deactivation of an input for 
 // every activation event
 
-#ifndef PPG_COUNT_TYPE
+#if @__PPG_PEDANTIC_TOKENS@
+#define PPG_PEDANTIC_TOKENS
+#endif
 
 /** @brief This macro enables to define the count type from outside the
  * compile process, e.g. from a build system
  */
-#define PPG_COUNT_TYPE PPG_SMALL_UNSIGNED_INT_TYPE
-#endif
+#define PPG_COUNT_TYPE @__PPG_COUNT_TYPE@
 
 /** @brief An integer type that is generally used to count entities and as loop counter
  */
 typedef PPG_COUNT_TYPE PPG_Count;
 
-#ifndef PPG_ID_TYPE
-
 /** @brief This macro enables to define the id type from outside the
  * compile process, e.g. from a build system
  */
-#define PPG_ID_TYPE PPG_MEDIUM_SIGNED_INT_TYPE
-#endif
+#define PPG_ID_TYPE @__PPG_ID_TYPE@
 
 /** @brief An integer type that is used whenever a signed id is used to code non zero initial state as error
  */
 typedef PPG_ID_TYPE PPG_Id;
 
-#ifndef PPG_ACTION_FLAGS_TYPE
-
 /** @brief This macro enables to define the action flags type from outside the
  * compile process, e.g. from a build system
  */
-#define PPG_ACTION_FLAGS_TYPE PPG_SMALL_UNSIGNED_INT_TYPE
-#endif
+#define PPG_ACTION_FLAGS_TYPE @__PPG_ACTION_FLAGS_TYPE@
 
 /** @brief The data type used to store action flags
  */
 typedef PPG_ACTION_FLAGS_TYPE PPG_Action_Flags_Type;
 
-#ifndef PPG_LAYER_TYPE 
-
 /** @brief This macro enables to define the layer type from outside the
  * compile process, e.g. from a build system
  */
-#define PPG_LAYER_TYPE PPG_SMALL_SIGNED_INT_TYPE
-#endif
+#define PPG_LAYER_TYPE @__PPG_LAYER_TYPE@
 
 /** The data type that is used to reference layers
  */
 typedef PPG_LAYER_TYPE PPG_Layer;
 
-#ifndef PPG_SLOT_ID_TYPE 
-
 /** @brief This macro enables to define the signal id type from outside the
  * compile process, e.g. from a build system
  */
-#define PPG_SLOT_ID_TYPE PPG_SMALL_UNSIGNED_INT_TYPE
-#endif
+#define PPG_SLOT_ID_TYPE @__PPG_SLOT_ID_TYPE@
 
 /** @brief The data type used to identify signals
  */
 typedef PPG_SLOT_ID_TYPE PPG_Signal_Id;
 
-#ifndef PPG_TIME_COMPARISON_RESULT_TYPE
-
 /** @brief This macro enables to define the time comparison result type from outside the
  * compile process, e.g. from a build system
  */
-#define PPG_TIME_COMPARISON_RESULT_TYPE PPG_SMALL_SIGNED_INT_TYPE
-#endif
+#define PPG_TIME_COMPARISON_RESULT_TYPE @__PPG_TIME_COMPARISON_RESULT_TYPE@
 
 /** @brief The signed integer type used to code the result of the time comparison function
  */
 typedef PPG_TIME_COMPARISON_RESULT_TYPE PPG_Time_Comparison_Result_Type;
 
-#ifndef PPG_EVENT_BUFFER_INDEX_TYPE
-
 /** @brief This macro enables to define the event buffer index type from outside the
  * compile process, e.g. from a build system
  */
-#define PPG_EVENT_BUFFER_INDEX_TYPE PPG_SMALL_SIGNED_INT_TYPE
-#endif
+#define PPG_EVENT_BUFFER_INDEX_TYPE @__PPG_EVENT_BUFFER_INDEX_TYPE@
 
 /** @brief The signed data type that is used to index events
  */
 typedef PPG_SMALL_SIGNED_INT_TYPE PPG_Event_Buffer_Index_Type;
 
-#ifndef PPG_PROCESSING_STATE_TYPE
-
 /** @brief This macro enables to define the processing state flag type from outside the
  * compile process, e.g. from a build system
  */
-#define PPG_PROCESSING_STATE_TYPE PPG_SMALL_UNSIGNED_INT_TYPE
-#endif
+#define PPG_PROCESSING_STATE_TYPE @__PPG_PROCESSING_STATE_TYPE@
 
 /** @brief The data type used for processing states
  */
 typedef PPG_PROCESSING_STATE_TYPE PPG_Processing_State;
 
-#ifndef PPG_TIME_IDENTIFIER_TYPE
-
-#ifdef __AVR_ATmega32U4__ 
-
 /** @brief This macro enables to define the time identifier type from outside the
  * compile process, e.g. from a build system
  */
-#define PPG_TIME_IDENTIFIER_TYPE uintptr_t
-#else
-
-/** @brief This macro enables to define the time identifier type from outside the
- * compile process, e.g. from a build system
- */
-#define PPG_TIME_IDENTIFIER_TYPE long unsigned
-#endif
-#endif
+#define PPG_TIME_IDENTIFIER_TYPE @__PPG_TIME_IDENTIFIER_TYPE@
 
 /** @brief Time identifier type.
  */
 typedef PPG_TIME_IDENTIFIER_TYPE PPG_Time;
 
-#ifdef PAPAGENO_PRINT_SELF_ENABLED
+#if @__PPG_PRINT_SELF_ENABLED@
+#define PPG_PRINT_SELF_ENABLED
+#endif
+
+#if @__PPG_HAVE_ASSERTIONS@
+#define PPG_HAVE_ASSERTIONS
+#endif
+
+#if @__PPG_DISABLE_CONTEXT_SWITCHING@
+#define PPG_DISABLE_CONTEXT_SWITCHING
+#endif
+
+#if @__PPG_HAVE_STATISTICS@
+#define PPG_HAVE_STATISTICS
+#endif
+
+#if @__PPG_HAVE_DEBUG@
+#define PPG_HAVE_DEBUG
+#endif
+
+#ifdef PPG_PRINT_SELF_ENABLED
 
 #include <stdio.h>
 

@@ -37,7 +37,7 @@ PPG_Token ppg_pattern(
                      PPG_Count n_tokens,
                      PPG_Token tokens[]);
 
-#ifdef PAPAGENO_PRINT_SELF_ENABLED
+#ifdef PPG_PRINT_SELF_ENABLED
 
 /** @brief Recursively prints the current pattern search tree
  */ 

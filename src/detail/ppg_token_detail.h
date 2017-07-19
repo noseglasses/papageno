@@ -40,7 +40,7 @@ typedef bool (*PPG_Token_Equals_Fun)(struct PPG_TokenStruct *p1, struct PPG_Toke
 
 typedef PPG_Count (*PPG_Token_Precedence_Fun)(struct PPG_TokenStruct *token);
 
-#ifdef PAPAGENO_PRINT_SELF_ENABLED
+#ifdef PPG_PRINT_SELF_ENABLED
 typedef void (*PPG_Token_Print_Self_Fun)(struct PPG_TokenStruct *p, PPG_Count indent, bool recurse);
 #endif
 
@@ -61,7 +61,7 @@ typedef struct {
    PPG_Token_Precedence_Fun
                            token_precedence;
                            
-   #ifdef PAPAGENO_PRINT_SELF_ENABLED
+   #ifdef PPG_PRINT_SELF_ENABLED
    PPG_Token_Print_Self_Fun
                            print_self;
    #endif                        
@@ -104,12 +104,6 @@ void ppg_token_store_action(PPG_Token__ *token,
 
 void ppg_token_reset(   PPG_Token__ *token);
 
-void ppg_token_reset_children(PPG_Token__ *token);
-
-// PPG_Processing_State ppg_token_match_event(   
-//                                     PPG_Token__ **current_token,
-//                                     PPG_Event *event);
-
 PPG_Token__ *ppg_token_new(PPG_Token__ *token);
 
 PPG_Token__* ppg_token_destroy(PPG_Token__ *token);
@@ -122,7 +116,7 @@ PPG_Token__* ppg_token_get_equivalent_child(
                                           PPG_Token__ *parent_token,
                                           PPG_Token__ *sample);
 
-#ifdef PAPAGENO_PRINT_SELF_ENABLED
+#ifdef PPG_PRINT_SELF_ENABLED
 void ppg_token_print_self_start(PPG_Token__ *p, PPG_Count indent);
 void ppg_token_print_self_end(PPG_Token__ *p, PPG_Count indent, bool recurse);
 #endif

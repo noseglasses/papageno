@@ -24,10 +24,6 @@
 static void ppg_on_timeout(void)
 {
    if(ppg_event_buffer_size() == 0) { return; }
-   
-   /* The frase could not be parsed. Reset any previous tokens.
-   */
-   ppg_token_reset_children(ppg_context->current_token);
          
    /* It timeout was hit, we either trigger the most recent action
     * (e.g. necessary for tap dances).

@@ -19,9 +19,11 @@
 
 /** @file */
 
-#ifdef DEBUG_PAPAGENO
+#include "ppg_settings.h"
 
-// Define the preprocessor macro PAPAGENO_PRINT_SELF_ENABLED
+#ifdef PPG_HAVE_DEBUG
+
+// Define the preprocessor macro PPG_PRINT_SELF_ENABLED
 // to enable verbose class output of token classes
 
 #ifdef __AVR_ATmega32U4__ 
@@ -29,13 +31,13 @@
 #   define PPG_LOG(...) \
       uprintf(__VA_ARGS__);
       
-#ifdef PAPAGENO_HAVE_ASSERTIONS
+#ifdef PPG_HAVE_ASSERTIONS
    
 #define PPG_ASSERT(...) \
    if(!(__VA_ARGS__)) { \
       PPG_ERROR("Assertion failed: " #__VA_ARGS__ "\n"); \
    }
-#endif // PAPAGENO_HAVE_ASSERTIONS
+#endif // PPG_HAVE_ASSERTIONS
 
 #else
 
@@ -44,15 +46,15 @@
 #   define PPG_LOG(...) \
       printf(__VA_ARGS__);
       
-#ifdef PAPAGENO_HAVE_ASSERTIONS
+#ifdef PPG_HAVE_ASSERTIONS
 #   include <assert.h>
 #   define PPG_ASSERT(...) assert(__VA_ARGS__)
-#endif // PAPAGENO_HAVE_ASSERTIONS
+#endif // PPG_HAVE_ASSERTIONS
 #endif
 
 #   define PPG_ERROR(...) PPG_LOG("*** Error: " __VA_ARGS__)
 
-#endif //DEBUG_PAPAGENO
+#endif //PPG_HAVE_DEBUG
 
 #ifndef PPG_LOG
 /** @brief A macro for printf style output

@@ -22,6 +22,30 @@
 #include <stdlib.h>
 #include <ctype.h>
 
+// Note: Preprocessor macro functions can be 
+//       hard to debug.
+//
+//       One approach is to take a look at
+//       the preprocessed code to find out 
+//       what goes wrong. 
+//
+//       Unfortunatelly macro replacement cannot deal with newlines.
+//       Because of this, code that emerges from excessive macro
+//       replacement looks very unreadable due to the absence of 
+//       any line breaks.
+//
+//       To deal with this restriction, comment the
+//       definition of the __NL__ macro below, during
+//       preprocessor debugging. In that case, the
+//       occurrences of __NL__ will not be replaced by
+//       and empty string as in the compiled version but
+//       will still be present in the preprocessed code.
+//       Replace all occurrences of __NL__ in the preprocessed
+//       with newlines using a text editor to gain a
+//       readable version of the generated code.
+
+#define __NL__
+
 enum { PPG_CS_Timeout_MS = 20 };
 
 enum { 
@@ -121,12 +145,14 @@ void ppg_cs_list_event_queue(void);
    ppg_cs_reset_testing_environment();
    
 #define PPG_CS_PROCESS_STRING(STRING, ...) \
+   ppg_cs_output_test_info(__FILE__, __LINE__); \
    ppg_cs_process_string(STRING); \
    PPG_CS_CHECK_NO_PROCESS(__VA_ARGS__)
 
 void ppg_cs_process_on_off(char *string);
 
 #define PPG_CS_PROCESS_ON_OFF(STRING, ...) \
+   ppg_cs_output_test_info(__FILE__, __LINE__); \
    ppg_cs_process_on_off(STRING); \
    PPG_CS_CHECK_NO_PROCESS(__VA_ARGS__)   
    
@@ -160,6 +186,7 @@ void ppg_cs_on_abort(
 uint16_t ppg_cs_input_id_from_keypos(uint8_t row, uint8_t col);
 
 void ppg_cs_check_test_success(char *file, int line);
+void ppg_cs_output_test_info(char *file, int line);
 
 void ppg_cs_separator(void);
    

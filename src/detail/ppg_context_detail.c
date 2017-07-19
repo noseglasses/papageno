@@ -58,4 +58,6 @@ void ppg_global_initialize_context(PPG_Context *context) {
    context->pattern_root.state = PPG_Token_Root;
    
    context->current_token = &context->pattern_root;
+   
+   ppg_statistics_clear(&context->statistics);
 };

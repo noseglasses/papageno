@@ -87,7 +87,7 @@ PPG_CS_START_TEST
    //
    PPG_CS_PROCESS_STRING(  "A B b C c a |", 
                            PPG_CS_EXPECT_EMPTY_FLUSH
-                           PPG_CS_EXPECT_EXCEPTIONS(PPG_CS_ET)
+                           PPG_CS_EXPECT_NO_EXCEPTIONS
                            PPG_CS_EXPECT_ACTION_SERIES(
                               PPG_CS_A(Cluster_1)
                            )
@@ -135,11 +135,12 @@ PPG_CS_START_TEST
                            )
    );
    
-   // Do not allow keys being released
+   // Assert that it is possible to release cluster chords
+   // and still gain a match
    //
    PPG_CS_PROCESS_STRING(  "A B b d D d a |", 
-                           PPG_CS_EXPECT_EMPTY_FLUSH
-                           PPG_CS_EXPECT_EXCEPTIONS(PPG_CS_ET)
+                           PPG_CS_EXPECT_FLUSH("d")
+                           PPG_CS_EXPECT_NO_EXCEPTIONS
                            PPG_CS_EXPECT_ACTION_SERIES(
                               PPG_CS_A(Cluster_2)
                            )

@@ -33,7 +33,7 @@ PPG_Count ppg_event_buffer_size(void)
 //
 PPG_Event * ppg_event_buffer_store_event(PPG_Event *event)
 {
-   #ifdef PAPAGENO_HAVE_ASSERTIONS
+   #ifdef PPG_HAVE_ASSERTIONS
    if(PPG_EB.start > PPG_EB.end) {
       PPG_Count n_events = PPG_MAX_EVENTS + PPG_EB.end - PPG_EB.start;
       PPG_ASSERT(n_events < PPG_MAX_EVENTS - 1); // At least one left!
@@ -88,7 +88,29 @@ void ppg_event_buffer_advance(void)
    else {
       ++PPG_EB.cur;
    }
+   
+   #ifdef PPG_HAVE_ASSERTIONS
+   ppg_check_event_buffer_validity();
+   #endif
 } 
+
+#ifdef PPG_HAVE_ASSERTIONS
+void ppg_check_event_buffer_validity(void)
+{
+   if(PPG_EB.end > PPG_EB.start) {
+      PPG_ASSERT(PPG_EB.cur >= PPG_EB.start);
+      PPG_ASSERT(PPG_EB.cur <= PPG_EB.end);
+   }
+   else if(PPG_EB.end == PPG_EB.start) {
+      PPG_ASSERT(PPG_EB.size == 0);
+      PPG_ASSERT(PPG_EB.end == PPG_EB.cur);
+   }
+   else {
+      PPG_ASSERT( !(    (PPG_EB.cur > PPG_EB.end)
+                     && (PPG_EB.cur < PPG_EB.start)));
+   }
+}
+#endif
 
 static void ppg_even_buffer_recompute_size(void)
 {
@@ -146,6 +168,7 @@ void ppg_event_buffer_truncate_at_front(void)
       PPG_EB.start = PPG_EB.cur; // Truncate the front of the queue
       
       ppg_even_buffer_recompute_size();
+      
    }
 }
    
@@ -156,11 +179,9 @@ static void ppg_event_buffer_check_and_tag_considered(PPG_Event *event,
    
    PPG_LOG("I %u, a %d\n", event->input, event->flags & PPG_Event_Active);
    
-   #if PAPAGENO_HAVE_ASSERTIONS
    bool already_activated 
          = ppg_bitfield_get_bit(&ppg_context->active_inputs,
                               event->input);
-   #endif
          
    bool event_activates = event->flags & PPG_Event_Active;
    
@@ -172,17 +193,27 @@ static void ppg_event_buffer_check_and_tag_considered(PPG_Event *event,
       
       if(!already_activated) {
          
-         // Inore non matching deactivations, i.e. deactivations
+         // Ignore non matching deactivations, i.e. deactivations
          // of inputs that were not activated by a match before.
          //
          return;
       }
    }
+   
+   if(   on_success
+      
+      // Some events, e.g. abort triggers are marked as considered
+      // during pattern matching. These are event considered 
+      // if we did not reach a match, i.e. if (on_success == false).
+      //
+      || (event->flags & PPG_Event_Considered)
+   ) {
          
-   ppg_bitfield_set_bit(&ppg_context->active_inputs,
-                        event->input,
-                        event_activates
-                     );
+      ppg_bitfield_set_bit(&ppg_context->active_inputs,
+                           event->input,
+                           event_activates
+                        );
+   }
 
    if(on_success || already_activated) {
       event->flags |= PPG_Event_Considered;
@@ -191,6 +222,8 @@ static void ppg_event_buffer_check_and_tag_considered(PPG_Event *event,
 
 void ppg_even_buffer_flush_and_remove_first_event(bool on_success)
 {
+   PPG_LOG("Flushing and removing first event\n");
+   
    ppg_event_buffer_check_and_tag_considered(
                            &PPG_EB.events[PPG_EB.start],
                            (void*)on_success);
@@ -222,14 +255,14 @@ void ppg_event_buffer_prepare_on_success(void)
 
 void ppg_event_buffer_prepare_on_failure(void)
 {
-//    PPG_LOG("Prp. evt bffr on fail.\n");
+   PPG_LOG("Prp. evt bffr on fail.\n");
 //    
 //    ppg_input_list_all_active();
 //       
-//    ppg_event_buffer_iterate(
-//          (PPG_Event_Processor_Fun)ppg_event_buffer_check_and_tag_considered,
-//          (void*)false
-//    );
+   ppg_event_buffer_iterate(
+         (PPG_Event_Processor_Fun)ppg_event_buffer_check_and_tag_considered,
+         (void*)false
+   );
 }
 
 void ppg_event_buffer_on_match_success(void)

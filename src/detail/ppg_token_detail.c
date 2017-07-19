@@ -34,23 +34,9 @@ void ppg_token_store_action(PPG_Token__ *token,
               (uintptr_t)token, (uintptr_t)token->action.callback.user_data);
 }
 
-void ppg_token_reset(   PPG_Token__ *token)
+void ppg_token_reset(PPG_Token__ *token)
 {
    token->state = PPG_Token_Initialized;
-}
-
-/* Tokens have states. This method resets the states
- * after processing a pattern. On our way through the
- * pattern tree we only need to reset thoses tokens
- * that were candidates.
- */
-void ppg_token_reset_children(PPG_Token__ *token)
-{
-   /* Reset all child tokens if there are any
-    */
-   for(PPG_Count i = 0; i < token->n_children; ++i) {
-      PPG_CALL_VIRT_METHOD(token->children[i], reset);
-   }
 }
 
 static void ppg_token_allocate_children(PPG_Token__ *a_This, PPG_Count n_children) {
@@ -146,7 +132,7 @@ PPG_Token__* ppg_token_get_equivalent_child(
    return NULL;
 }
 
-#ifdef PAPAGENO_PRINT_SELF_ENABLED
+#ifdef PPG_PRINT_SELF_ENABLED
 
 void ppg_token_print_self_start(PPG_Token__ *p, PPG_Count indent)
 {
@@ -191,7 +177,7 @@ static PPG_Token_Vtable ppg_token_vtable =
    .equals
       = NULL
    
-   #ifdef PAPAGENO_PRINT_SELF_ENABLED
+   #ifdef PPG_PRINT_SELF_ENABLED
    ,
    .print_self
       = (PPG_Token_Print_Self_Fun) ppg_token_print_self,

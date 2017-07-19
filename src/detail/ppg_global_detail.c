@@ -16,6 +16,7 @@
 
 #include "detail/ppg_global_detail.h"
 #include "detail/ppg_context_detail.h"
+#include "detail/ppg_pattern_matching_detail.h"
 #include "ppg_debug.h"
 
 /* Returns if an action has been triggered.
@@ -71,7 +72,13 @@ bool ppg_recurse_and_process_actions(void)
    for(PPG_Id i = n_actions - 1; i >= 0; --i) {
       
       PPG_LOG("Trg act tk 0x%"
-         PRIXPTR "\n", (uintptr_t)action_tokens[i]);
+         PRIXPTR ", func: 0x%"
+         PRIXPTR ", data: 0x%"
+         PRIXPTR "\n",
+         (uintptr_t)action_tokens[i],
+         (uintptr_t)action_tokens[i]->action.callback.func,
+         (uintptr_t)action_tokens[i]->action.callback.user_data
+      );
          
       action_tokens[i]->action.callback.func(
          action_tokens[i]->action.callback.user_data);
@@ -86,21 +93,33 @@ void ppg_recurse_and_cleanup_active_branch(void)
 {        
    if(!ppg_context->current_token) { return; }
    
-//    PPG_LOG("Triggering action of most recent token\n");
-   
    PPG_Token__ *cur_token = ppg_context->current_token;
    
-   while(cur_token) {
+   PPG_Token__ *furcation_token = NULL;
+   
+   do {
       
-      PPG_LOG("Cln chld tk 0x%"
-         PRIXPTR "\n", (uintptr_t)cur_token);
+      furcation_token
+         = (PPG_FB.cur_furcation == -1) ? NULL : PPG_CUR_FUR.token;
+   
+      // Recursively reset all tokens of the branch we are on
+      // back to the first branch node or back to the first
+      // node after the root node of the search tree.
+      // 
+      ppg_branch_cleanup(cur_token, furcation_token);
       
-      // Reset all children (data structures and state)
-      //
-      ppg_token_reset_children(cur_token);
+      if(furcation_token) {
+         
+         for(PPG_Count i = 0; i < furcation_token->n_children; ++i) {
+            ppg_token_reset(furcation_token->children[i]);
+         }
+                  
+         cur_token = PPG_CUR_FUR.token;
 
-      cur_token = cur_token->parent;
-   }
+         --PPG_FB.cur_furcation;
+      }
+      
+   } while(furcation_token);
 }
 
 void ppg_delete_stored_events(void)
@@ -113,4 +132,13 @@ void ppg_reset_pattern_matching_engine(void)
    ppg_context->current_token = &ppg_context->pattern_root;
             
    PPG_FB.cur_furcation = -1;
+   
+   // The token root's state has been reset to PPG_Token_Initialized 
+   // during cleanup.
+   //
+   ppg_context->pattern_root.state = PPG_Token_Root;
+   
+   // Start with the first token in the queue
+   //
+   PPG_EB.cur = PPG_EB.start;
 }

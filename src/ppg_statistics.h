@@ -13,31 +13,34 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef PAPAGENO_H
-#define PAPAGENO_H
 
-/** @file */
+#ifndef PPG_STATISTICS_H
+#define PPG_STATISTICS_H
 
-#include "ppg_action.h"
-#include "ppg_action_flags.h"
-#include "ppg_chord.h"
-#include "ppg_cluster.h"
-#include "ppg_context.h"
-#include "ppg_debug.h"
-#include "ppg_event.h"
-#include "ppg_event_buffer.h"
-#include "ppg_global.h"
-#include "ppg_input.h"
-#include "ppg_layer.h"
-#include "ppg_note.h"
-#include "ppg_pattern.h"
-#include "ppg_settings.h"
-#include "ppg_signal_callback.h"
-#include "ppg_signals.h"
-#include "ppg_tap_dance.h"
-#include "ppg_time.h"
-#include "ppg_timeout.h"
-#include "ppg_token.h"
+#ifdef PPG_HAVE_STATISTICS
+
+typedef struct {
+   
+   uint32_t n_nodes_visited;
+   uint32_t n_token_checks;
+   uint32_t n_furcations;
+   uint32_t n_reversions;
+   
+} PPG_Statistics;
+
+/** @brief Retreives global statistics
+ * 
+ * @param stat A pointer to an existing statistics data set where to store
+ *             a copy of the current global statistics.
+ */
+void ppg_statistics_get(PPG_Statistics *stat);
+
+/** @brief Clears a statistics data set
+ * 
+ * @param stat The statistics to clear. Pass NULL to clear global statistics.
+ */
+void ppg_statistics_clear(PPG_Statistics *stat);
 
 #endif
 
+#endif

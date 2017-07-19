@@ -47,11 +47,6 @@ void ppg_furcation_stack_init(PPG_Furcation_Stack *stack);
 
 void ppg_furcation_stack_resize(void);
 
-void ppg_furcation_create_or_update(PPG_Count n_tokens_in_progress,
-                                 PPG_Token__ *branch);
-
-bool ppg_furcation_revert(PPG_Token__ *start_token);
-
 void ppg_furcation_stack_free(PPG_Furcation_Stack *stack);
 
 #define PPG_CUR_FUR PPG_FB.furcations[PPG_FB.cur_furcation]

@@ -14,27 +14,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "detail/ppg_token_detail.h"
-#include "detail/ppg_pattern_detail.h"
+#include "ppg_event_buffer.h"
+#include "detail/ppg_event_buffer_detail.h"
 #include "detail/ppg_context_detail.h"
-#include "ppg_debug.h"
-#include "ppg_global.h"
 
-PPG_Token ppg_pattern(     
-                     PPG_Layer layer, 
-                     PPG_Count n_tokens,
-                     PPG_Token tokens[])
-{ 
-//    PPG_LOG("Adding pattern\n");
-   
-   ppg_global_init();
-      
-   return ppg_pattern_from_list(layer, n_tokens, tokens);
-}
-
-#ifdef PPG_PRINT_SELF_ENABLED
-void ppg_pattern_print_tree(void)
+void ppg_event_buffer_iterate(
+                        PPG_Event_Processor_Fun event_processor,
+                        void *user_data)
 {
-   PPG_CALL_VIRT_METHOD(&ppg_context->pattern_root, print_self, 0, true /* recurse */);
+   if(ppg_event_buffer_size() == 0) { return; }
+   
+   if(PPG_EB.size == 0) { return; }
+   
+   if(PPG_EB.start > PPG_EB.end) {
+      
+      for(PPG_Count i = PPG_EB.start; i < PPG_MAX_EVENTS; ++i) {
+      
+         event_processor(&PPG_EB.events[i], user_data);
+      }
+      for(PPG_Count i = 0; i < PPG_EB.end; ++i) {
+         
+         event_processor(&PPG_EB.events[i], user_data);
+      }
+   }
+   else {
+      for(PPG_Count i = PPG_EB.start; i < PPG_EB.end; ++i) {
+      
+         event_processor(&PPG_EB.events[i], user_data);
+      }
+   }
 }
-#endif

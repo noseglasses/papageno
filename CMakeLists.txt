@@ -17,12 +17,6 @@ use_c99()
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # General settings
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-option(PAPAGENO_PEDANTIC_TOKENS "Enabling this option compiles Papageno in pedantic-tokens-mode"
-   FALSE)
-   
-if(PAPAGENO_PEDANTIC_TOKENS)
-	add_definitions(-DPPG_PEDANTIC_TOKENS)
-endif()
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # Test Coverage Settings
@@ -55,13 +49,6 @@ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
 	
 endif()
 
-if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
-
-	add_definitions(-DDEBUG_PAPAGENO)
-	add_definitions(-DPAPAGENO_PRINT_SELF_ENABLED)
-	add_definitions(-DPAPAGENO_HAVE_ASSERTIONS)
-endif()
-
 option(PAPAGENO_VALGRIND "Run tests using valgrind to detect memory related errors" FALSE)
 
 if(PAPAGENO_VALGRIND)
@@ -70,44 +57,11 @@ if(PAPAGENO_VALGRIND)
 	set( MEMORYCHECK_COMMAND_OPTIONS "--error-exitcode=1 --trace-children=yes --leak-check=full" )
 endif()
 
-set(source_directory "${CMAKE_SOURCE_DIR}/src")
-
-set(source_files
-	./ppg_global.c   
-	./ppg_note.c      
-	./ppg_event.c                                                                                                                         
-	./ppg_context.c                                                                                                                        
-	./ppg_tap_dance.c                                                                                                                     
-	./ppg_cluster.c                                                                                                                       
-	./ppg_pattern.c                                                                                                                       
-	./detail/ppg_aggregate_detail.c                                                                                                       
-	./detail/ppg_context_detail.c                                                                                                         
-	./detail/ppg_pattern_detail.c                                                                                                         
-	./detail/ppg_token_detail.c                                                                                                           
-	./detail/ppg_input_detail.c                                                                                                           
-	./detail/ppg_note_detail.c                                                                                                            
-	./detail/ppg_global_detail.c     
-	./detail/ppg_event_buffer_detail.c
-	./detail/ppg_furcation_detail.c
-	./detail/ppg_signal_detail.c
-	./ppg_input.c                                                                                                                         
-	./ppg_chord.c                                                                                                                         
-	./ppg_time.c                                                                                                                       
-	./ppg_timeout.c                                                                                                              
-	./ppg_bitfield.c
-)
-
-set(source_files_full_path "")
-
-foreach(file ${source_files})
-	list(APPEND source_files_full_path "${source_directory}/${file}")
-endforeach()
-
-include_directories(
-	"${source_directory}"
-)
-
-add_library(papageno SHARED ${source_files_full_path})
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+# Enable using Boost Preprocessor library
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+#
+include_directories("${CMAKE_SOURCE_DIR}/3rd_party")
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # Doxygen Settings
@@ -147,6 +101,8 @@ if(PAPAGENO_DOXYGEN)
 		VERBATIM
 	)
 endif()
+
+add_subdirectory(src)
 
 option(PAPAGENO_TESTING "Build and run testing environment" TRUE)
 

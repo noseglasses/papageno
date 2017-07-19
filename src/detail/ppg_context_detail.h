@@ -20,7 +20,6 @@
 #include "ppg_event.h"
 #include "detail/ppg_token_detail.h"
 #include "detail/ppg_event_buffer_detail.h"
-#include "detail/ppg_event_buffer_detail.h"
 #include "detail/ppg_furcation_detail.h"
 #include "ppg_signal_callback.h"
 
@@ -54,6 +53,10 @@ typedef struct PPG_Context_Struct
    PPG_Time_Manager time_manager;
    
    PPG_Signal_Callback signal_callback;
+   
+   #ifdef PPG_HAVE_STATISTICS
+   PPG_Statistics statistics;
+   #endif
   
 } PPG_Context;
 
@@ -63,9 +66,11 @@ void ppg_global_initialize_context(PPG_Context *context);
 
 /* The following macros influence the build
 
-PAPAGENO_DISABLE_CONTEXT_SWITCHING 
+PPG_DISABLE_CONTEXT_SWITCHING 
       Disables the capability to switch contexts 
 
 */
+
+#define PPG_EB ppg_context->event_buffer
 
 #endif

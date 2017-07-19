@@ -13,31 +13,28 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef PAPAGENO_H
-#define PAPAGENO_H
 
-/** @file */
+#include "ppg_statistics.h"
 
-#include "ppg_action.h"
-#include "ppg_action_flags.h"
-#include "ppg_chord.h"
-#include "ppg_cluster.h"
-#include "ppg_context.h"
-#include "ppg_debug.h"
-#include "ppg_event.h"
-#include "ppg_event_buffer.h"
-#include "ppg_global.h"
-#include "ppg_input.h"
-#include "ppg_layer.h"
-#include "ppg_note.h"
-#include "ppg_pattern.h"
-#include "ppg_settings.h"
-#include "ppg_signal_callback.h"
-#include "ppg_signals.h"
-#include "ppg_tap_dance.h"
-#include "ppg_time.h"
-#include "ppg_timeout.h"
-#include "ppg_token.h"
+#ifdef PPG_HAVE_STATISTICS
 
-#endif
+void ppg_statistics_get(PPG_Statistics *stat)
+{
+   *stat = ppg_context->statistics;
+}
 
+void ppg_statistics_clear(PPG_Statistics *stat)
+{
+   #define PPG_STAT(S) stat->statistics.S
+   
+   if(!stat) {
+      stat = &ppg_context->statistics;
+   }
+   
+   PPG_STAT(n_nodes_visited) = 0;
+   PPG_STAT(n_token_checks) = 0;
+   PPG_STAT(n_furcations) = 0;
+   PPG_STAT(n_reversions) = 0;
+}
+
+#ifdef PPG_HAVE_STATISTICS

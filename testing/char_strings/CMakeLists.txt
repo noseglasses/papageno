@@ -57,4 +57,11 @@ ppg_add_test(test_token_precedence)
 ppg_add_test(test_strict_notes)
 ppg_add_test(test_large_systems)
 
+target_compile_options(
+   test_large_systems 
+   PUBLIC
+   -DPAPAGENO_TEST__TREE_DEPTH=4
+	-DPAPAGENO_TEST__N_CHARS=5
+)
+
 # set_property(TARGET test_char_strings PROPERTY C_STANDARD 99)

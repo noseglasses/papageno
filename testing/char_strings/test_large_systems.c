@@ -15,6 +15,11 @@
  */
 
 #include "papageno_char_strings.h"
+
+#include <boost/preprocessor/arithmetic/inc.hpp>
+#include <boost/preprocessor/comparison/not_equal.hpp>
+#include <boost/preprocessor/repetition/for.hpp>
+#include <boost/preprocessor/tuple/elem.hpp>
    
 enum {
    ppg_cs_layer_0 = 0
@@ -22,21 +27,48 @@ enum {
 
 PPG_CS_START_TEST
 
-	const int tree_depth = 4;
-	const int n_chars = 3;
+   // This test might take too long
+   // especially using valgrind. Thus we
+   // disable timeout to be on the safe side.
+   //
+   ppg_global_set_timeout_enabled(false);
+
+	const int tree_depth = PAPAGENO_TEST__TREE_DEPTH;
+	const int n_chars = PAPAGENO_TEST__N_CHARS;
 
    PPG_CS_REGISTER_ACTION(Pattern)
-	
+   
 	PPG_Token tokens[tree_depth];
-	
-	for(int l1 = 0; l1 < n_chars; ++l1) {
-	for(int l2 = 0; l2 < n_chars; ++l2) {
-	for(int l3 = 0; l3 < n_chars; ++l3) {
-	for(int l4 = 0; l4 < n_chars; ++l4) {
-		tokens[0] = PPG_CS_N(('a' + l1));
-		tokens[1] = PPG_CS_N(('a' + l2));
-		tokens[2] = PPG_CS_N(('a' + l3));
-		tokens[3] = PPG_CS_N(('a' + l4));
+   
+   #define GLUE_AUX(S1, S2) S1##S2
+   #define GLUE(S1, S2) GLUE_AUX(S1, S2)
+   
+   #define PRED(r, state) \
+   BOOST_PP_NOT_EQUAL( \
+      BOOST_PP_TUPLE_ELEM(2, 0, state), \
+      BOOST_PP_INC(BOOST_PP_TUPLE_ELEM(2, 1, state)) \
+   ) \
+   /**/
+
+   #define OP(r, state) \
+      ( \
+         BOOST_PP_INC(BOOST_PP_TUPLE_ELEM(2, 0, state)), \
+         BOOST_PP_TUPLE_ELEM(2, 1, state) \
+      ) \
+      /**/
+      
+   #define COUNTER_VAR(state) GLUE(l_,BOOST_PP_TUPLE_ELEM(2, 0, state))
+
+   #define LOOP_START(r, state) \
+__NL__   for(int COUNTER_VAR(state) = 0; \
+__NL__               COUNTER_VAR(state) < n_chars; ++COUNTER_VAR(state)) { \
+__NL__      \
+__NL__      tokens[BOOST_PP_TUPLE_ELEM(2, 0, state) - 1] \
+__NL__           = PPG_CS_N(('a' + COUNTER_VAR(state)));
+     
+   #define LOOP_END(r, state) }
+   
+   BOOST_PP_FOR((1, PAPAGENO_TEST__TREE_DEPTH), PRED, OP, LOOP_START)
    
       ppg_token_set_action(
          ppg_pattern(
@@ -46,22 +78,45 @@ PPG_CS_START_TEST
          ),
          PPG_CS_ACTION(Pattern)
       );
-   }
-   }
-   }
-   }
+
+   BOOST_PP_FOR((1, PAPAGENO_TEST__TREE_DEPTH), PRED, OP, LOOP_END)
    
    ppg_cs_compile();
    
    const int n_attempts = 1000;
    
+   char test_string[PAPAGENO_TEST__TREE_DEPTH + 1];
+   char expect_flush[2*PAPAGENO_TEST__TREE_DEPTH + 1];
+   
+   for(int i = 0; i < PAPAGENO_TEST__TREE_DEPTH - 1; ++i) {
+      
+      char the_char = 'a' + i;
+      
+      test_string[i] = the_char;
+      
+      expect_flush[2*i] = toupper(the_char);
+      expect_flush[2*i + 1] = tolower(the_char);
+   }
+   
+   const int last = PAPAGENO_TEST__TREE_DEPTH - 1;
+   
+   test_string[last] = 'z';
+      
+   expect_flush[2*last] = toupper('z');
+   expect_flush[2*last + 1] = tolower('z');
+   
+   test_string[PAPAGENO_TEST__TREE_DEPTH] = '\0';
+   expect_flush[2*PAPAGENO_TEST__TREE_DEPTH] = '\0';
+   
    for(int i = 0; i < n_attempts; ++i) {
 
-      PPG_CS_PROCESS_ON_OFF(  "a b c z", 
-                              PPG_CS_EXPECT_FLUSH("AaBbCcZz")
+      PPG_CS_PROCESS_ON_OFF(  test_string, 
+                              PPG_CS_EXPECT_FLUSH(expect_flush)
                               PPG_CS_EXPECT_EXCEPTIONS(PPG_CS_EMF)
                               PPG_CS_EXPECT_NO_ACTIONS
       );
    }
+   
+   #ifdef PPG_HAVE_STATISTICS
    
 PPG_CS_END_TEST

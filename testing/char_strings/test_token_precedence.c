@@ -135,15 +135,14 @@ PPG_CS_START_TEST
    ppg_cs_compile();
    
    //***********************************************
-   // Check precedence of single note lines against
-   // chords
+   // Check precedence of chords against single note lines 
    //***********************************************
    
    PPG_CS_PROCESS_STRING(  "A B C c b a", 
                            PPG_CS_EXPECT_EMPTY_FLUSH
                            PPG_CS_EXPECT_NO_EXCEPTIONS
                            PPG_CS_EXPECT_ACTION_SERIES(
-                              PPG_CS_A(Single_Note_Line_1)
+                              PPG_CS_A(Chord_1)
                            )
    );
    

@@ -98,6 +98,8 @@ PPG_CS_START_TEST
                            )
    );
    
+   PPG_PATTERN_PRINT_TREE
+   
    PPG_CS_PROCESS_ON_OFF(  "a a c", 
                            PPG_CS_EXPECT_EMPTY_FLUSH
                            PPG_CS_EXPECT_NO_EXCEPTIONS
@@ -113,8 +115,6 @@ PPG_CS_START_TEST
                               PPG_CS_A(Pattern_3)
                            )
    );
-   
-   PPG_PATTERN_PRINT_TREE
    
    PPG_CS_PROCESS_ON_OFF(  "r n m", 
                            PPG_CS_EXPECT_EMPTY_FLUSH

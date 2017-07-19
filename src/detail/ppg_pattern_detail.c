@@ -44,25 +44,31 @@ PPG_Token ppg_pattern_from_list(
          
       PPG_LOG("\tmemb %d: ", i);
       
-      if(   equivalent_child
+      if(equivalent_child == cur_token) {
          
-         /* Only share interior nodes and ...
-          */
-         && equivalent_child->children
+         PPG_LOG("identical t: 0x%" PRIXPTR "\n", (uintptr_t)equivalent_child);
          
-         /* ... only if the 
-          * newly registered node on the respective level is 
-          * not a leaf node.
-          */ 
-         && (i < (n_tokens - 1))
-         
-         // And only if the actions associated with both nodes are equal
-         //
-         && (cur_token->action.callback.func 
-                  == equivalent_child->action.callback.func)
-         
-         && (cur_token->action.callback.user_data 
-                  == equivalent_child->action.callback.user_data)
+         parent_token = equivalent_child;
+      }
+      else if(  equivalent_child
+               
+               /* Only share interior nodes and ...
+               */
+               && equivalent_child->children
+               
+               /* ... only if the 
+               * newly registered node on the respective level is 
+               * not a leaf node.
+               */ 
+               && (i < (n_tokens - 1))
+               
+               // And only if the actions associated with both nodes are equal
+               //
+               && (cur_token->action.callback.func 
+                        == equivalent_child->action.callback.func)
+               
+               && (cur_token->action.callback.user_data 
+                        == equivalent_child->action.callback.user_data)
       ) {
          
          PPG_LOG("alrd prsntt: 0x%" PRIXPTR "\n", (uintptr_t)equivalent_child);
@@ -82,7 +88,7 @@ PPG_Token ppg_pattern_from_list(
          
          PPG_LOG("new def: 0x%" PRIXPTR "\n", (uintptr_t)cur_token);
          
-         #if DEBUG_PAPAGENO
+         #if PPG_HAVE_DEBUG
          
          /* Detect pattern ambiguities
           */
@@ -102,7 +108,7 @@ PPG_Token ppg_pattern_from_list(
                //
                PPG_ERROR("Conf mel det.\n")
                
-               #ifdef PAPAGENO_PRINT_SELF_ENABLED
+               #ifdef PPG_PRINT_SELF_ENABLED
                PPG_ERROR(
                   "Tk of conf. patt:\n");
                
@@ -117,7 +123,7 @@ PPG_Token ppg_pattern_from_list(
                #endif
             }
          }
-         #endif /* if DEBUG_PAPAGENO */
+         #endif /* if PPG_HAVE_DEBUG */
                
          cur_token->layer = layer;
          

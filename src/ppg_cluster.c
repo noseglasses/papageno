@@ -58,7 +58,7 @@ static void ppg_cluster_match_event(
       }
    }
    
-#ifdef DEBUG_PAPAGENO
+#ifdef PPG_HAVE_DEBUG
    for(PPG_Count i = 0; i < cluster->n_members; ++i) {
       PPG_LOG("%d = %d\n", i, 
                  ppg_bitfield_get_bit(&cluster->member_active, i));
@@ -110,7 +110,7 @@ static PPG_Count ppg_cluster_token_precedence(PPG_Token__ *token)
    return PPG_Token_Precedence_Cluster;
 }
 
-#ifdef PAPAGENO_PRINT_SELF_ENABLED
+#ifdef PPG_PRINT_SELF_ENABLED
 static void ppg_cluster_print_self(PPG_Cluster *c, PPG_Count indent, bool recurse)
 {
    PPG_I PPG_LOG("<*** clstr (0x%" PRIXPTR ") ***>\n", (uintptr_t)c);
@@ -139,7 +139,7 @@ static PPG_Token_Vtable ppg_cluster_vtable =
       = (PPG_Token_Equals_Fun) ppg_aggregates_equal,
    .token_precedence
       = (PPG_Token_Precedence_Fun)ppg_cluster_token_precedence
-   #ifdef PAPAGENO_PRINT_SELF_ENABLED
+   #ifdef PPG_PRINT_SELF_ENABLED
    ,
    .print_self
       = (PPG_Token_Print_Self_Fun) ppg_cluster_print_self
