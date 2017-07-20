@@ -45,8 +45,7 @@ void ppg_context_destroy(void *context)
    free(context__);
 }
 
-#ifndef PPG_DISABLE_CONTEXT_SWITCHING
-
+#if !PPG_DISABLE_CONTEXT_SWITCHING
 
 void* ppg_global_set_current_context(void *context)
 {

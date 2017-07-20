@@ -17,7 +17,9 @@
 #ifndef PPG_STATISTICS_H
 #define PPG_STATISTICS_H
 
-#ifdef PPG_HAVE_STATISTICS
+#include "ppg_settings.h"
+
+#if PPG_HAVE_STATISTICS
 
 typedef struct {
    

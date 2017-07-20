@@ -16,10 +16,14 @@
 
 #include "papageno_char_strings.h"
 
+#include <math.h>
+
 #include <boost/preprocessor/arithmetic/inc.hpp>
 #include <boost/preprocessor/comparison/not_equal.hpp>
 #include <boost/preprocessor/repetition/for.hpp>
-#include <boost/preprocessor/tuple/elem.hpp>
+#include <boost/preprocessor/tuple/elem.hpp> 
+
+#include <stdio.h>
    
 enum {
    ppg_cs_layer_0 = 0
@@ -83,14 +87,14 @@ __NL__           = PPG_CS_N(('a' + COUNTER_VAR(state)));
    
    ppg_cs_compile();
    
-   const int n_attempts = 1000;
+   const int n_attempts = 10;
    
    char test_string[PAPAGENO_TEST__TREE_DEPTH + 1];
    char expect_flush[2*PAPAGENO_TEST__TREE_DEPTH + 1];
    
    for(int i = 0; i < PAPAGENO_TEST__TREE_DEPTH - 1; ++i) {
       
-      char the_char = 'a' + i;
+      char the_char = 'a' + PAPAGENO_TEST__N_CHARS - 1;
       
       test_string[i] = the_char;
       
@@ -100,23 +104,64 @@ __NL__           = PPG_CS_N(('a' + COUNTER_VAR(state)));
    
    const int last = PAPAGENO_TEST__TREE_DEPTH - 1;
    
+   #if PAPAGENO_TEST__FAIL
    test_string[last] = 'z';
-      
    expect_flush[2*last] = toupper('z');
    expect_flush[2*last + 1] = tolower('z');
+   expect_flush[2*PAPAGENO_TEST__TREE_DEPTH] = '\0';
+   #else
+   test_string[last] = 'a' + PAPAGENO_TEST__N_CHARS - 1;
+   expect_flush[0] = '\0';
+   #endif
    
    test_string[PAPAGENO_TEST__TREE_DEPTH] = '\0';
-   expect_flush[2*PAPAGENO_TEST__TREE_DEPTH] = '\0';
    
    for(int i = 0; i < n_attempts; ++i) {
 
+      #if PAPAGENO_TEST__FAIL
       PPG_CS_PROCESS_ON_OFF(  test_string, 
                               PPG_CS_EXPECT_FLUSH(expect_flush)
                               PPG_CS_EXPECT_EXCEPTIONS(PPG_CS_EMF)
                               PPG_CS_EXPECT_NO_ACTIONS
       );
+      #else
+      PPG_CS_PROCESS_ON_OFF(  test_string, 
+                              PPG_CS_EXPECT_FLUSH(expect_flush)
+                              PPG_CS_EXPECT_NO_EXCEPTIONS
+                              PPG_CS_EXPECT_ACTION_SERIES(PPG_CS_A(Pattern))
+      );
+      #endif
    }
    
-   #ifdef PPG_HAVE_STATISTICS
+   #if PPG_HAVE_STATISTICS
+   PPG_Statistics stat;
+   ppg_statistics_get(&stat);
+   
+   long unsigned n_nodes = (long unsigned)(
+      (pow(n_chars, tree_depth + 1) - n_chars)/(n_chars - 1)
+                                 );
+   
+   printf("Searched for \'%s\'\n", test_string);
+   
+   printf("# nodes in tree: %lu\n", n_nodes);
+   
+   printf("# attempts: %u\n", n_attempts);
+   
+   printf("# nodes visited: %u, avg. %f\n",
+                        stat.n_nodes_visited,
+                        (double)stat.n_nodes_visited/n_attempts);
+   
+   printf("# tokens checked: %u, avg. %f\n", 
+                        stat.n_token_checks,
+                        (double)stat.n_token_checks/n_attempts);
+   
+   printf("# furcations met: %u, avg. %f\n",
+                        stat.n_furcations,
+                        (double)stat.n_furcations/n_attempts);
+   
+   printf("# branch reversions: %u, avg. %f\n",
+                        stat.n_reversions,
+                        (double)stat.n_reversions/n_attempts);
+   #endif
    
 PPG_CS_END_TEST

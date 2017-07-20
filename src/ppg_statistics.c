@@ -15,8 +15,9 @@
  */
 
 #include "ppg_statistics.h"
+#include "detail/ppg_context_detail.h"
 
-#ifdef PPG_HAVE_STATISTICS
+#if PPG_HAVE_STATISTICS
 
 void ppg_statistics_get(PPG_Statistics *stat)
 {
@@ -25,7 +26,7 @@ void ppg_statistics_get(PPG_Statistics *stat)
 
 void ppg_statistics_clear(PPG_Statistics *stat)
 {
-   #define PPG_STAT(S) stat->statistics.S
+   #define PPG_STAT(S) stat->S
    
    if(!stat) {
       stat = &ppg_context->statistics;
@@ -37,4 +38,4 @@ void ppg_statistics_clear(PPG_Statistics *stat)
    PPG_STAT(n_reversions) = 0;
 }
 
-#ifdef PPG_HAVE_STATISTICS
+#endif // PPG_HAVE_STATISTICS

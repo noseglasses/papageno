@@ -92,6 +92,8 @@ char *ppg_cs_get_action_name(int action_id);
    
 #define PPG_CS_EXPECT_NO_ACTIONS \
    PPG_CS_EXPECT_ACTION_SERIES()
+   
+void ppg_cs_init(void);
 
 void ppg_cs_reset_testing_environment(void);
 
@@ -229,6 +231,12 @@ void ppg_cs_separator(void);
 
 #define PPG_CS_INIT \
    \
+   ppg_cs_init(); \
+   \
+   PPG_CS_REGISTER_ACTION_ANNONYMOUS(Initialized)   \
+   PPG_CS_REGISTER_ACTION_ANNONYMOUS(Exception_Timeout)   \
+   PPG_CS_REGISTER_ACTION_ANNONYMOUS(Exception_Aborted) \
+   \
    ppg_global_init(); \
    \
    PPG_CS_PREPARE_CONTEXT
@@ -237,10 +245,6 @@ void ppg_cs_separator(void);
 \
 int main(int argc, char **argv) \
 { \
-   \
-   PPG_CS_REGISTER_ACTION_ANNONYMOUS(Initialized)   \
-   PPG_CS_REGISTER_ACTION_ANNONYMOUS(Exception_Timeout)   \
-   PPG_CS_REGISTER_ACTION_ANNONYMOUS(Exception_Aborted) \
    \
    PPG_CS_INIT \
    

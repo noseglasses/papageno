@@ -33,7 +33,7 @@ PPG_Count ppg_event_buffer_size(void)
 //
 PPG_Event * ppg_event_buffer_store_event(PPG_Event *event)
 {
-   #ifdef PPG_HAVE_ASSERTIONS
+   #if PPG_HAVE_ASSERTIONS
    if(PPG_EB.start > PPG_EB.end) {
       PPG_Count n_events = PPG_MAX_EVENTS + PPG_EB.end - PPG_EB.start;
       PPG_ASSERT(n_events < PPG_MAX_EVENTS - 1); // At least one left!
@@ -89,12 +89,12 @@ void ppg_event_buffer_advance(void)
       ++PPG_EB.cur;
    }
    
-   #ifdef PPG_HAVE_ASSERTIONS
+   #if PPG_HAVE_ASSERTIONS
    ppg_check_event_buffer_validity();
    #endif
 } 
 
-#ifdef PPG_HAVE_ASSERTIONS
+#if PPG_HAVE_ASSERTIONS
 void ppg_check_event_buffer_validity(void)
 {
    if(PPG_EB.end > PPG_EB.start) {

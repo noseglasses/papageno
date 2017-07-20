@@ -40,6 +40,24 @@ static int ppg_cs_n_actions = 0;
 static char *ppg_cs_action_names[MMG_MAX_ACTION_NAMES];
 static int ppg_cs_next_action_id = 0;
 
+void ppg_cs_init(void)
+{
+   ppg_cs_exceptions = PPG_CS_Action_Exception_None;
+
+   ppg_cs_timeout_ms = 0;
+
+   ppg_cs_start_time_s = 0;
+   ppg_cs_start_time_ms = 0;
+
+   ppg_cs_test_success = true;
+
+   ppg_cs_cur_flush_pos = 0;
+
+   ppg_cs_n_actions = 0;
+
+   ppg_cs_next_action_id = 0;
+}
+
 int ppg_cs_register_action(char *action_name)
 {
    ppg_cs_action_names[ppg_cs_next_action_id] = action_name;
@@ -447,7 +465,7 @@ void ppg_cs_event_considered_callback(
                               PPG_Event *event,
                               void *user_data)
 { 
-   #ifdef PPG_HAVE_DEBUG
+   #if PPG_HAVE_LOGGING
    char c_char = 0;
    
    if(event->flags & PPG_Event_Considered) {

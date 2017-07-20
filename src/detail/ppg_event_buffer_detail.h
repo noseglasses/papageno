@@ -61,7 +61,7 @@ void ppg_event_buffer_prepare_on_failure(void);
 
 void ppg_event_buffer_on_match_success(void);
 
-#ifdef PPG_HAVE_ASSERTIONS
+#if PPG_HAVE_ASSERTIONS
 void ppg_check_event_buffer_validity(void);
 #endif
 

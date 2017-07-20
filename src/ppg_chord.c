@@ -72,7 +72,7 @@ static void ppg_chord_match_event(
       }
    }
    
-#ifdef PPG_HAVE_DEBUG
+#if PPG_HAVE_LOGGING
    for(PPG_Count i = 0; i < chord->n_members; ++i) {
       PPG_LOG("%d = %d\n", i, 
                  ppg_bitfield_get_bit(&chord->member_active, i));
@@ -93,7 +93,7 @@ static void ppg_chord_match_event(
    
    if(chord->n_inputs_active == chord->n_members) {
       
-#ifdef PPG_PEDANTIC_TOKENS
+#if PPG_PEDANTIC_TOKENS
       chord->all_activated = true;
 #else
       
@@ -103,7 +103,7 @@ static void ppg_chord_match_event(
 //       PPG_LOG("C");
 #endif
    }
-#ifdef PPG_PEDANTIC_TOKENS
+#if PPG_PEDANTIC_TOKENS
    else if(chord->n_inputs_active == 0) {
       
       if(chord->all_activated) {
@@ -124,7 +124,7 @@ static PPG_Count ppg_chord_token_precedence(PPG_Token__ *token)
    return PPG_Token_Precedence_Chord;
 }
 
-#ifdef PPG_PRINT_SELF_ENABLED
+#if PPG_PRINT_SELF_ENABLED
 static void ppg_chord_print_self(PPG_Chord *c, PPG_Count indent, bool recurse)
 {
    PPG_I PPG_LOG("<*** chrd (0x%" PRIXPTR ") ***>\n", (uintptr_t)c);
@@ -153,7 +153,7 @@ static PPG_Token_Vtable ppg_chord_vtable =
       = (PPG_Token_Equals_Fun) ppg_aggregates_equal,
    .token_precedence
       = (PPG_Token_Precedence_Fun)ppg_chord_token_precedence
-   #ifdef PPG_PRINT_SELF_ENABLED
+   #if PPG_PRINT_SELF_ENABLED
    ,
    .print_self
       = (PPG_Token_Print_Self_Fun) ppg_chord_print_self

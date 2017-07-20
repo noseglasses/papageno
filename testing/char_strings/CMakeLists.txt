@@ -56,12 +56,23 @@ ppg_add_test(test_layers)
 ppg_add_test(test_token_precedence)
 ppg_add_test(test_strict_notes)
 ppg_add_test(test_large_systems)
+# ppg_add_test(test_large_systems_2)
 
 target_compile_options(
    test_large_systems 
    PUBLIC
    -DPAPAGENO_TEST__TREE_DEPTH=4
-	-DPAPAGENO_TEST__N_CHARS=5
+	-DPAPAGENO_TEST__N_CHARS=4
+   -DPAPAGENO_TEST__FAIL=1
 )
+
+# target_compile_options(
+#    test_large_systems_2
+#    PUBLIC
+#    -DPAPAGENO_TEST__FAIL=0
+# )
+
+
+target_link_libraries(test_large_systems m)
 
 # set_property(TARGET test_char_strings PROPERTY C_STANDARD 99)

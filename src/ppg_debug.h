@@ -21,7 +21,7 @@
 
 #include "ppg_settings.h"
 
-#ifdef PPG_HAVE_DEBUG
+#if PPG_HAVE_LOGGING
 
 // Define the preprocessor macro PPG_PRINT_SELF_ENABLED
 // to enable verbose class output of token classes
@@ -31,7 +31,7 @@
 #   define PPG_LOG(...) \
       uprintf(__VA_ARGS__);
       
-#ifdef PPG_HAVE_ASSERTIONS
+#if PPG_HAVE_ASSERTIONS
    
 #define PPG_ASSERT(...) \
    if(!(__VA_ARGS__)) { \
@@ -46,7 +46,7 @@
 #   define PPG_LOG(...) \
       printf(__VA_ARGS__);
       
-#ifdef PPG_HAVE_ASSERTIONS
+#if PPG_HAVE_ASSERTIONS
 #   include <assert.h>
 #   define PPG_ASSERT(...) assert(__VA_ARGS__)
 #endif // PPG_HAVE_ASSERTIONS
@@ -54,7 +54,7 @@
 
 #   define PPG_ERROR(...) PPG_LOG("*** Error: " __VA_ARGS__)
 
-#endif //PPG_HAVE_DEBUG
+#endif //PPG_HAVE_LOGGING
 
 #ifndef PPG_LOG
 /** @brief A macro for printf style output

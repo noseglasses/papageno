@@ -15,6 +15,8 @@
  */
 
 #include "papageno_char_strings.h"
+
+#if !PPG_DISABLE_CONTEXT_SWITCHING
    
 enum {
    ppg_cs_layer_0 = 0
@@ -119,3 +121,5 @@ PPG_CS_START_TEST
    //       at the end of the test
    
 PPG_CS_END_TEST
+
+#endif

@@ -60,6 +60,10 @@ static PPG_Token__ *ppg_furcation_revert(PPG_Token__ *start_token)
    PPG_Token__ *furcation_token = NULL;
       
    while(1) {
+                
+      #if PPG_HAVE_STATISTICS
+      ++ppg_context->statistics.n_reversions;
+      #endif
       
       furcation_token
          = (PPG_FB.cur_furcation == -1) ? NULL : PPG_CUR_FUR.token;
@@ -100,10 +104,6 @@ static PPG_Token__ *ppg_furcation_revert(PPG_Token__ *start_token)
          //
          start_token = PPG_CUR_FUR.token;
          
-         #ifdef PPG_HAVE_STATISTICS
-         ++ppg_context->statistics.n_reversions;
-         #endif
-         
          // Replace the current furcation with the previous one (if possible)
          //
          --PPG_FB.cur_furcation;
@@ -122,7 +122,7 @@ static PPG_Token__ *ppg_furcation_revert(PPG_Token__ *start_token)
    //
    PPG_EB.cur = PPG_CUR_FUR.event_id;
       
-   #ifdef PPG_HAVE_ASSERTIONS
+   #if PPG_HAVE_ASSERTIONS
    ppg_check_event_buffer_validity();
    #endif
    
@@ -253,7 +253,7 @@ static PPG_Token__ *ppg_token_get_next_possible_branch(
    }
    else {
       
-      #ifdef PPG_HAVE_STATISTICS
+      #if PPG_HAVE_STATISTICS
       ++ppg_context->statistics.n_furcations;
       #endif
       
@@ -337,7 +337,7 @@ static PPG_Count ppg_process_next_event(void)
          return PPG_Pattern_Invalid;
       }
       
-      #ifdef PPG_HAVE_STATISTICS
+      #if PPG_HAVE_STATISTICS
       ++ppg_context->statistics.n_nodes_visited;
       #endif
       
@@ -364,7 +364,7 @@ static PPG_Count ppg_process_next_event(void)
                      event
                );
             
-   #ifdef PPG_HAVE_STATISTICS
+   #if PPG_HAVE_STATISTICS
    ++ppg_context->statistics.n_token_checks;
    #endif
             

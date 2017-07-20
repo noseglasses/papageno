@@ -29,17 +29,18 @@ Do you remember the game [Simon](https://en.wikipedia.org/wiki/Simon_%28game%29)
 
 Why not intermix some chords to spice it a little? Papageno could easily do it.
 
-## Build requirements
+Build requirements
+------------------
 
 The following tools are mandatory to build Papageno.
 
-- a [C99](https://en.wikipedia.org/wiki/C99)-compatible C compiler
-- [CMake](https://cmake.org) as build system
+-	a [C99](https://en.wikipedia.org/wiki/C99)-compatible C compiler
+-	[CMake](https://cmake.org) as build system
 
 Some tools are optional and only required for special purposes.
 
-- [Doxygen](http://www.stack.nl/~dimitri/doxygen/) to create a documentation of the programming API (optional)
-- [Valgrind](http://valgrind.org/) to run the testbench using a memory debugger
+-	[Doxygen](http://www.stack.nl/~dimitri/doxygen/) to create a documentation of the programming API (optional)
+-	[Valgrind](http://valgrind.org/) to run the testbench using a memory debugger
 
 How to Build
 ------------
@@ -73,7 +74,8 @@ The following steps are optional.
 ctest
 ```
 
-## Contributing
+Contributing
+------------
 
 If you want to contribute to Papageno, please start with reading our [general informations for contributers](CONTRIBUTING.md).
 
@@ -96,8 +98,7 @@ Basic Concepts
 --------------
 
 A musical melody is  
-> a linear succession of musical tones that the listener perceives as a single entity
-> -- <cite>[Wikipedia](https://en.wikipedia.org/wiki/Melody)</cite>
+> a linear succession of musical tones that the listener perceives as a single entity > -- <cite>[Wikipedia](https://en.wikipedia.org/wiki/Melody)</cite>
 
 Melodies or phrases are well defined recipes to create sound and may consist of single notes, chords and possibly note clusters.
 
@@ -144,18 +145,23 @@ Working with Patterns
 
 Patterns are defined through Papageno's programming interface. Before you confront yourself with programming patterns it is important that you understand how Papageno patterns work.
 
-## Example Syntax
+Example Syntax
+--------------
 
 In the following examples we will use different types of brackets to distinguish between types of tokens. We will use alphabetic characters to denote the inputs that are affected by tokens.
 
 The definition of a pattern looks as follows. It will soon be explained in detail.
+
 ```
 (A) -> [B, C]
 ```
+
 And this is how a event series is written.
+
 ```
 A B a C c
 ```
+
 Please note the absence of brackets and the use of upper- and lower-case letters in the event series.
 
 Inputs
@@ -420,9 +426,14 @@ Please note that due to this implementation detail, Papageno cannot be guarantee
 The Library
 ===========
 
-## C Application Programming Interface
+C Application Programming Interface
+-----------------------------------
 
 A Doxygen documentation of Papageno's API can be found [here](https://noseglasses.github.io/papageno/doc/doxygen/html/index.html).
+
+### Performance
+
+The best case performance of pattern matching with Papageno scales linearly with both the length of patterns defined and the number of different inputs. However, under certain circumstances, the complexity can degrade to quadratic with respect to pattern length. See[more information about performance](performance/performance.md).
 
 Implementation
 --------------
@@ -491,7 +502,8 @@ Build System
 
 Papageno uses CMake as its build system.
 
-## Debugging
+Debugging
+---------
 
 In general it is highly recommended to use proper debugging tools when developing Papageno. However, in some situation it might be helpful to fall back to plain old `printf` debugging. This is e.g. necessary on platforms with Atmel-processors where a debugger does not fit into program memory.
 

@@ -34,6 +34,7 @@
 #include "ppg_settings.h"
 #include "ppg_signal_callback.h"
 #include "ppg_signals.h"
+#include "ppg_statistics.h"
 #include "ppg_tap_dance.h"
 #include "ppg_time.h"
 #include "ppg_timeout.h"

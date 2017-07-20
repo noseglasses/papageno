@@ -16,6 +16,7 @@
 
 #include "detail/ppg_context_detail.h"
 #include "detail/ppg_input_detail.h"
+#include "ppg_statistics.h"
 #include "ppg_debug.h"
 
 PPG_Context *ppg_context = NULL;
@@ -59,5 +60,7 @@ void ppg_global_initialize_context(PPG_Context *context) {
    
    context->current_token = &context->pattern_root;
    
+   #if PPG_HAVE_STATISTICS
    ppg_statistics_clear(&context->statistics);
+   #endif
 };

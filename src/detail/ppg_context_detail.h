@@ -22,6 +22,7 @@
 #include "detail/ppg_event_buffer_detail.h"
 #include "detail/ppg_furcation_detail.h"
 #include "ppg_signal_callback.h"
+#include "ppg_statistics.h"
 
 #include <stddef.h>
 
@@ -54,7 +55,7 @@ typedef struct PPG_Context_Struct
    
    PPG_Signal_Callback signal_callback;
    
-   #ifdef PPG_HAVE_STATISTICS
+   #if PPG_HAVE_STATISTICS
    PPG_Statistics statistics;
    #endif
   

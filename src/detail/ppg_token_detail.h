@@ -40,7 +40,7 @@ typedef bool (*PPG_Token_Equals_Fun)(struct PPG_TokenStruct *p1, struct PPG_Toke
 
 typedef PPG_Count (*PPG_Token_Precedence_Fun)(struct PPG_TokenStruct *token);
 
-#ifdef PPG_PRINT_SELF_ENABLED
+#if PPG_PRINT_SELF_ENABLED
 typedef void (*PPG_Token_Print_Self_Fun)(struct PPG_TokenStruct *p, PPG_Count indent, bool recurse);
 #endif
 
@@ -61,7 +61,7 @@ typedef struct {
    PPG_Token_Precedence_Fun
                            token_precedence;
                            
-   #ifdef PPG_PRINT_SELF_ENABLED
+   #if PPG_PRINT_SELF_ENABLED
    PPG_Token_Print_Self_Fun
                            print_self;
    #endif                        
@@ -116,7 +116,7 @@ PPG_Token__* ppg_token_get_equivalent_child(
                                           PPG_Token__ *parent_token,
                                           PPG_Token__ *sample);
 
-#ifdef PPG_PRINT_SELF_ENABLED
+#if PPG_PRINT_SELF_ENABLED
 void ppg_token_print_self_start(PPG_Token__ *p, PPG_Count indent);
 void ppg_token_print_self_end(PPG_Token__ *p, PPG_Count indent, bool recurse);
 #endif

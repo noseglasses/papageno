@@ -50,7 +50,7 @@ static void ppg_note_match_event(
                
                note->flags |= PPG_Note_Type_Active;
                
-      #ifdef PPG_PEDANTIC_TOKENS
+      #if PPG_PEDANTIC_TOKENS
                note->super.state = PPG_Token_In_Progress;
       #else 
                
@@ -65,7 +65,7 @@ static void ppg_note_match_event(
                if(note->flags & PPG_Note_Type_Active) {
                   PPG_LOG("I deact\n");
                
-      #ifdef PPG_PEDANTIC_TOKENS
+      #if PPG_PEDANTIC_TOKENS
                   PPG_LOG("Nt fin\n");
       //             PPG_LOG("N");
                   note->super.state = PPG_Token_Matches;
@@ -171,7 +171,7 @@ static PPG_Count ppg_note_token_precedence(PPG_Token__ *token)
    return PPG_Token_Precedence_Explicit_Note;
 }
 
-#ifdef PPG_PRINT_SELF_ENABLED
+#if PPG_PRINT_SELF_ENABLED
 static void ppg_note_print_self(PPG_Note *p, PPG_Count indent, bool recurse)
 {
    PPG_I PPG_LOG("<*** nt (0x%" PRIXPTR ") ***>\n", (uintptr_t)p);
@@ -197,7 +197,7 @@ static PPG_Token_Vtable ppg_note_vtable =
    .token_precedence
       = (PPG_Token_Precedence_Fun)ppg_note_token_precedence
       
-   #ifdef PPG_PRINT_SELF_ENABLED
+   #if PPG_PRINT_SELF_ENABLED
    ,
    .print_self
       = (PPG_Token_Print_Self_Fun) ppg_note_print_self

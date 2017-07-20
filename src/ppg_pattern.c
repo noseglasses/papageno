@@ -32,7 +32,7 @@ PPG_Token ppg_pattern(
    return ppg_pattern_from_list(layer, n_tokens, tokens);
 }
 
-#ifdef PPG_PRINT_SELF_ENABLED
+#if PPG_PRINT_SELF_ENABLED
 void ppg_pattern_print_tree(void)
 {
    PPG_CALL_VIRT_METHOD(&ppg_context->pattern_root, print_self, 0, true /* recurse */);
