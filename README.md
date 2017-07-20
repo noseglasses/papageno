@@ -431,9 +431,10 @@ C Application Programming Interface
 
 A Doxygen documentation of Papageno's API can be found [here](https://noseglasses.github.io/papageno/doc/doxygen/html/index.html).
 
-### Performance
+Performance
+-----------
 
-The best case performance of pattern matching with Papageno scales linearly with both the length of patterns defined and the number of different inputs. However, under certain circumstances, the complexity can degrade to quadratic with respect to pattern length. See[more information about performance](performance/performance.md).
+The best case performance of pattern matching with Papageno scales linearly with both the length of patterns defined and the number of different inputs. However, under certain circumstances, the complexity can degrade to quadratic with respect to pattern length. See [more information about performance](performance/performance.md).
 
 Implementation
 --------------
