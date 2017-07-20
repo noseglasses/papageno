@@ -1,12 +1,12 @@
 
-option(PAPAGENO_PEDANTIC_TOKENS "Enabling this option compiles Papageno in pedantic-tokens-mode"
+option(PAPAGENO_PEDANTIC_TOKENS_ENABLED "Enabling this option compiles Papageno in pedantic-tokens-mode"
    FALSE)
-mark_as_advanced(PAPAGENO_PEDANTIC_TOKENS)
+mark_as_advanced(PAPAGENO_PEDANTIC_TOKENS_ENABLED)
 
-if(PAPAGENO_PEDANTIC_TOKENS)
-   set(__PPG_PEDANTIC_TOKENS 1)
+if(PAPAGENO_PEDANTIC_TOKENS_ENABLED)
+   set(__PPG_PEDANTIC_TOKENS_ENABLED 1)
 else()
-   set(__PPG_PEDANTIC_TOKENS 0)
+   set(__PPG_PEDANTIC_TOKENS_ENABLED 0)
 endif()
 
 set(debugging_features_enabled FALSE)
@@ -14,13 +14,13 @@ if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
    set(debugging_features_enabled TRUE)
 endif()
    
-option(PAPAGENO_HAVE_LOGGING "Toggles logging output" ${debugging_features_enabled})
-mark_as_advanced(PAPAGENO_HAVE_LOGGING)
+option(PAPAGENO_LOGGING_ENABLED "Toggles logging output" ${debugging_features_enabled})
+mark_as_advanced(PAPAGENO_LOGGING_ENABLED)
 
-if(PAPAGENO_HAVE_LOGGING)
-   set(__PPG_HAVE_LOGGING 1)
+if(PAPAGENO_LOGGING_ENABLED)
+   set(__PPG_LOGGING_ENABLED 1)
 else()
-   set(__PPG_HAVE_LOGGING 0)
+   set(__PPG_LOGGING_ENABLED 0)
 endif()
 
 option(PAPAGENO_PRINT_SELF_ENABLED "Toggles vebose output of class objects" ${debugging_features_enabled})
@@ -32,13 +32,13 @@ else()
    set(__PPG_PRINT_SELF_ENABLED 0)
 endif()
 
-option(PAPAGENO_HAVE_ASSERTIONS "Toggles compile time assertions" ${debugging_features_enabled})
-mark_as_advanced(PAPAGENO_HAVE_ASSERTIONS)
+option(PAPAGENO_ASSERTIONS_ENABLED "Toggles compile time assertions" ${debugging_features_enabled})
+mark_as_advanced(PAPAGENO_ASSERTIONS_ENABLED)
 
-if(PAPAGENO_HAVE_ASSERTIONS)
-   set(__PPG_HAVE_ASSERTIONS 1)
+if(PAPAGENO_ASSERTIONS_ENABLED)
+   set(__PPG_ASSERTIONS_ENABLED 1)
 else()
-   set(__PPG_HAVE_ASSERTIONS 0)
+   set(__PPG_ASSERTIONS_ENABLED 0)
 endif()
 
 option(PAPAGENO_DISABLE_CONTEXT_SWITCHING "Disable the switching of context" FALSE)
@@ -50,13 +50,13 @@ else()
    set(__PPG_DISABLE_CONTEXT_SWITCHING 0)
 endif()
 
-option(PAPAGENO_HAVE_STATISTICS "Enable the generation of statistics. Enable this feature for debugging." FALSE)
-mark_as_advanced(PAPAGENO_HAVE_STATISTICS)
+option(PAPAGENO_STATISTICS_ENABLED "Enable the generation of statistics. Enable this feature for debugging." FALSE)
+mark_as_advanced(PAPAGENO_STATISTICS_ENABLED)
 
-if(PAPAGENO_HAVE_STATISTICS)
-   set(__PPG_HAVE_STATISTICS 1)
+if(PAPAGENO_STATISTICS_ENABLED)
+   set(__PPG_STATISTICS_ENABLED 1)
 else()
-   set(__PPG_HAVE_STATISTICS 0)
+   set(__PPG_STATISTICS_ENABLED 0)
 endif()
 
 set(PAPAGENO_PLATFORM "" CACHE STRING "Set the platform to build for. Currently supported: generic, avr-gcc")
@@ -94,6 +94,13 @@ configure_file(
    @ONLY
 )
 
+if("${platform}" STREQUAL "avr-gcc")
+   if(PAPAGENO_TESTING_ENABLED)
+      message("Build of testing system disabled as not available in cross builds")
+      set(PAPAGENO_TESTING_ENABLED FALSE CACHE BOOL "" FORCE) 
+   endif()
+endif()
+
 set(source_files                                                                                                         
 	./detail/ppg_aggregate_detail.c                                                                                                       
 	./detail/ppg_context_detail.c                                                                                                         
@@ -128,4 +135,8 @@ foreach(file ${source_files})
 	list(APPEND source_files_full_path "${CMAKE_CURRENT_SOURCE_DIR}/${file}")
 endforeach()
 
-add_library(papageno SHARED ${source_files_full_path})
+if(TARGET_SUPPORTS_SHARED_LIBS)
+   add_library(papageno SHARED ${source_files_full_path})
+else()
+   add_library(papageno STATIC ${source_files_full_path})
+endif()

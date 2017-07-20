@@ -74,6 +74,8 @@ The following steps are optional.
 ctest
 ```
 
+For more information about how to build Papageno including cross-builds, see [here](doc/building.md).
+
 Contributing
 ------------
 
@@ -434,7 +436,7 @@ A Doxygen documentation of Papageno's API can be found [here](https://noseglasse
 Performance
 -----------
 
-The best case performance of pattern matching with Papageno scales linearly with both the length of patterns defined and the number of different inputs. However, under certain circumstances, the complexity can degrade to quadratic with respect to pattern length. See [more information about performance](performance/performance.md).
+The best case performance of pattern matching with Papageno scales linearly with both the length of patterns defined and the number of different inputs. However, under certain circumstances, the complexity can degrade to quadratic with respect to pattern length. See [more information about performance](doc/performance.md).
 
 Implementation
 --------------
@@ -532,7 +534,7 @@ cmake -DPAPAGENO_DOXYGEN=TRUE ../..
 Testing
 -------
 
-Papageno comes with a test bench that is based on CTest. The test bench is by default enabled but it can also be switched off which results in the test executables being excluded from the set of build targets. This is controlled by the CMake option `PAPAGENO_TESTING`.
+Papageno comes with a test bench that is based on CTest. The test bench is by default enabled but it can also be switched off which results in the test executables being excluded from the set of build targets. This is controlled by the CMake option `PAPAGENO_TESTING_ENABLED`.
 
 To run the test bench, execute CTest after the build step.
 

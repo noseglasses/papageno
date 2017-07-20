@@ -31,3 +31,7 @@ set(__PPG_EVENT_BUFFER_INDEX_TYPE ${__PPG_SMALL_SIGNED_INT_TYPE})
 set(__PPG_PROCESSING_STATE_TYPE ${__PPG_SMALL_UNSIGNED_INT_TYPE})
 
 set(__PPG_TIME_IDENTIFIER_TYPE uintptr_t)
+
+# Add some platform specific compiler flags
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mmcu=atmega32u4 -funsigned-char -funsigned-bitfields -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -fno-inline-small-functions -fno-strict-aliasing -gdwarf-2  -Os -Wall -Wstrict-prototypes -Werror")

@@ -107,9 +107,10 @@ endif()
 
 add_subdirectory(src)
 
-option(PAPAGENO_TESTING "Build and run testing environment" TRUE)
+option(PAPAGENO_TESTING_ENABLED "Build and run testing environment" TRUE)
+mark_as_advanced(PAPAGENO_TESTING_ENABLED)
 
-if(PAPAGENO_TESTING)
+if(PAPAGENO_TESTING_ENABLED)
 	include(CTest)
 	enable_testing()
 	add_subdirectory(testing)
