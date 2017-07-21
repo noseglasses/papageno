@@ -14,6 +14,18 @@ endmacro(use_c99)
 
 use_c99()
 
+option(PAPAGENO_DOXYGEN "Build the doxygen documentation of the Papageno API" FALSE)
+mark_as_advanced(PAPAGENO_DOXYGEN)
+
+option(PAPAGENO_TESTING_ENABLED "Build and run testing environment" TRUE)
+mark_as_advanced(PAPAGENO_TESTING_ENABLED)
+
+option(PAPAGENO_TEST_COVERAGE "This flags enables testing code coverage" FALSE)
+mark_as_advanced(PAPAGENO_TEST_COVERAGE)
+
+option(PAPAGENO_VALGRIND "Run tests using valgrind to detect memory related errors" FALSE)
+mark_as_advanced(PAPAGENO_VALGRIND)
+
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # General settings
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -25,8 +37,6 @@ include_directories("${CMAKE_BINARY_DIR}/src")
 # Test Coverage Settings
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
-option(PAPAGENO_TEST_COVERAGE "This flags enables testing code coverage" FALSE)
-	
 if(PAPAGENO_TEST_COVERAGE)
 	
    set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/CMakeModules)
@@ -52,8 +62,6 @@ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
 	
 endif()
 
-option(PAPAGENO_VALGRIND "Run tests using valgrind to detect memory related errors" FALSE)
-
 if(PAPAGENO_VALGRIND)
 
 	find_program( MEMORYCHECK_COMMAND valgrind )
@@ -71,8 +79,6 @@ include_directories("${CMAKE_SOURCE_DIR}/3rd_party")
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 find_package(Doxygen)
-
-option(PAPAGENO_DOXYGEN "Build the doxygen documentation of the Papageno API" FALSE)
 
 if(PAPAGENO_DOXYGEN)
 
@@ -106,9 +112,6 @@ if(PAPAGENO_DOXYGEN)
 endif()
 
 add_subdirectory(src)
-
-option(PAPAGENO_TESTING_ENABLED "Build and run testing environment" TRUE)
-mark_as_advanced(PAPAGENO_TESTING_ENABLED)
 
 if(PAPAGENO_TESTING_ENABLED)
 	include(CTest)
