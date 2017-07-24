@@ -26,7 +26,8 @@ PPG_Token ppg_note_create(PPG_Input_Id input, PPG_Count flags)
     PPG_Note *note = (PPG_Note*)ppg_note_new(ppg_note_alloc());
     
     note->input = input;
-    note->flags = flags;
+    
+    ppg_token_set_flags(note, flags, PPG_Flags_Mask);
     
     /* Return the new end of the pattern */
     return note;

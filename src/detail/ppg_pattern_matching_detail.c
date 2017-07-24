@@ -112,7 +112,7 @@ static PPG_Token__ *ppg_furcation_revert(PPG_Token__ *start_token)
       
          // Mark the current branch (i.e. the branch's root node) as invalid
          //
-         PPG_CUR_FUR.branch->state = PPG_Token_Invalid;
+         ppg_token_set_state(PPG_CUR_FUR.branch, PPG_Token_Invalid;
          
          break;
       }
@@ -147,7 +147,7 @@ static PPG_Token__ *ppg_token_get_most_appropriate_branch(
    */
    for(PPG_Count i = 0; i < parent_token->n_children; ++i) {
          
-      if(parent_token->children[i]->state == PPG_Token_Invalid) {
+      if(ppg_token_get_state(parent_token->children[i], PPG_Token_Invalid)) {
          continue;
       }
       
@@ -155,7 +155,7 @@ static PPG_Token__ *ppg_token_get_most_appropriate_branch(
       * nodes' ppg_context->layer tags are lower or equal the current ppg_context->layer
       */
       if(parent_token->children[i]->layer > ppg_context->layer) { 
-         parent_token->children[i]->state = PPG_Token_Invalid;
+         ppg_token_set_state(parent_token->children[i], PPG_Token_Invalid);
          continue; 
       }
 
@@ -206,12 +206,12 @@ static PPG_Token__ *ppg_token_get_next_possible_branch(
             
    bool revert_to_previous_furcation = false;
    
-   if(parent_token->state == PPG_Token_Invalid) {
+   if(ppg_token_get_state(parent_token) == PPG_Token_Invalid) {
       revert_to_previous_furcation = true;
    }
    else if(parent_token->n_children == 1) {
       
-      if(parent_token->children[0]->state == PPG_Token_Invalid) {
+      if(ppg_token_get_state(parent_token->children[0]) == PPG_Token_Invalid) {
          revert_to_previous_furcation = true;
       }
       else {
@@ -286,15 +286,17 @@ static PPG_Count ppg_process_next_event(void)
 
    PPG_LOG("Current token 0x%" PRIXPTR ", state %u\n", 
              (uintptr_t)ppg_context->current_token,
-             ppg_context->current_token->state
+             ppg_token_get_state(ppg_context->current_token)
           );
  
-   if(!  ((ppg_context->current_token->state == PPG_Token_In_Progress)
-      || (ppg_context->current_token->state == PPG_Token_Initialized))) {
+   PS_Count state = ppg_token_get_state(ppg_context->current_token);
+   
+   if(!  ((state == PPG_Token_In_Progress)
+      || (state == PPG_Token_Initialized))) {
       
       PPG_Token__ *branch_token = NULL;
    
-      switch (ppg_context->current_token->state) {
+      switch (ppg_token_get_state(ppg_context->current_token)) {
          
          case PPG_Token_Root:
          case PPG_Token_Matches:
@@ -368,9 +370,9 @@ static PPG_Count ppg_process_next_event(void)
    ++ppg_context->statistics.n_token_checks;
    #endif
             
-   PPG_LOG("Token state after match_event: %u\n", ppg_context->current_token->state);
+   PPG_LOG("Token state after match_event: %u\n", ppg_token_get_state(ppg_context->current_token));
 
-   switch(ppg_context->current_token->state) {
+   switch(ppg_token_get_state(ppg_context->current_token)) {
       
       case PPG_Token_Matches:
          if(ppg_context->current_token->n_children == 0){

@@ -46,9 +46,9 @@ PPG_Token ppg_single_note_line(
   */
 enum PPG_Note_Type {
    PPG_Note_Type_Undefined = 0, ///< Initial value
-   PPG_Note_Type_Match_Activation = (1 << 0), ///< Match activation of corresponding input
-   PPG_Note_Type_Match_Deactivation = (PPG_Note_Type_Match_Activation << 1), ///< Match deactivation of corresponding input
-   PPG_Note_Type_Standard = PPG_Note_Type_Match_Activation | PPG_Note_Type_Match_Deactivation ///< Match activation and deactivation of corresponding input (only if compiled in pedantic mode)
+   PPG_Token_Match_Activation = (1 << 0), ///< Match activation of corresponding input
+   PPG_Token_Match_Deactivation = (PPG_Token_Match_Activation << 1), ///< Match deactivation of corresponding input
+   PPG_Note_Type_Standard = PPG_Token_Match_Activation | PPG_Token_Match_Deactivation ///< Match activation and deactivation of corresponding input (only if compiled in pedantic mode)
 }; 
 
 /** @brief Generates a note token.

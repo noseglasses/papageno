@@ -259,9 +259,9 @@ int main(int argc, char **argv) \
    ppg_note_create_standard(PPG_CS_CHAR(CHAR))
    
 #define PPG_CS_N_A(CHAR) \
-   ppg_note_create(PPG_CS_CHAR(CHAR), PPG_Note_Type_Match_Activation)
+   ppg_note_create(PPG_CS_CHAR(CHAR), PPG_Token_Match_Activation)
    
 #define PPG_CS_N_D(CHAR) \
-   ppg_note_create(PPG_CS_CHAR(CHAR), PPG_Note_Type_Match_Deactivation)
+   ppg_note_create(PPG_CS_CHAR(CHAR), PPG_Token_Match_Deactivation)
 
 #endif

@@ -35,8 +35,8 @@ static void ppg_chord_match_event(
    PPG_ASSERT(chord->n_members != 0);
    
    PPG_ASSERT(
-         (chord->super.state == PPG_Token_In_Progress)
-      || (chord->super.state == PPG_Token_Initialized)
+         (ppg_token_get_state(chord) == PPG_Token_In_Progress)
+      || (ppg_token_get_state(chord) == PPG_Token_Initialized)
    );
    
    /* Check if the input is part of the current chord 
@@ -81,7 +81,7 @@ static void ppg_chord_match_event(
    
    if(!input_part_of_chord) {
       if(event->flags & PPG_Event_Active) {
-         chord->super.state = PPG_Token_Invalid;
+         ppg_token_set_state(chord, PPG_Token_Invalid);
       }
       
       // Chords ignore unmatching deactivation events
@@ -89,7 +89,7 @@ static void ppg_chord_match_event(
       return;
    }
    
-   chord->super.state = PPG_Token_In_Progress;
+   ppg_token_get_state(chord, PPG_Token_In_Progress);
    
    if(chord->n_inputs_active == chord->n_members) {
       
@@ -99,7 +99,7 @@ static void ppg_chord_match_event(
       
       /* Chord matches
        */
-      chord->super.state = PPG_Token_Matches;
+      ppg_token_set_state(chord, PPG_Token_Matches);
 //       PPG_LOG("C");
 #endif
    }
@@ -110,7 +110,7 @@ static void ppg_chord_match_event(
       
          /* Chord matches
          */
-         chord->super.state = PPG_Token_Matches;
+         ppg_token_set_state(chord, PPG_Token_Matches);
 //          PPG_LOG("C");
       }
    }

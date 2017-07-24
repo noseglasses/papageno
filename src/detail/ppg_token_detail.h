@@ -69,7 +69,7 @@ typedef struct {
 
 #define PPG_CALL_VIRT_METHOD(THIS, METHOD, ...) \
    ((PPG_Token__*)THIS)->vtable->METHOD(THIS, ##__VA_ARGS__);
-
+   
 typedef struct PPG_TokenStruct {
 
    PPG_Token_Vtable *vtable;
@@ -83,7 +83,7 @@ typedef struct PPG_TokenStruct {
    
    PPG_Action action;
    
-   PPG_Processing_State state;
+   PPG_Count misc;
    
    PPG_Layer layer;
     
@@ -96,6 +96,40 @@ enum PPG_Processing_State {
    PPG_Token_Matches,
    PPG_Token_Invalid
 };
+
+enum {   PPG_N_State_Bits = 3 };
+
+enum {   PPG_State_Mask = (1 << PPG_N_State_Bits) - 1 };
+enum {   PPG_Flags_Mask = ~PPG_State_Mask };
+
+enum {   PPG_Token_Match_Activation = 1 << PPG_N_State_Bits,
+         PPG_Token_Match_Deactivation = PPG_Token_Match_Activation << 1,
+         PPG_Token_Allow_Deactivation = PPG_Token_Match_Deactivation << 1
+};
+
+inline PPG_Count ppg_token_get_state(PPG_Token__ *token) 
+{
+   return token->misc & PPG_State_Mask;
+}
+inline void ppg_token_set_state(PPG_Token__ *token, PPG_Count state)
+{
+   token->misc &= PPG_Flags_Mask;
+   token->misc |= state;
+}
+
+inline PPG_Count ppg_token_get_flags(PPG_Token__ *token, PPG_Count mask)
+{
+   return token->misc & mask;
+}
+
+inline PPG_Count ppg_token_set_flags(PPG_Token__ *token, PPG_Count values, PPG_Count mask)
+{
+   // Clear bits in mask range
+   //
+   token->misc &= ~mask; 
+   
+   token->misc |= values & mask;
+}
 
 void ppg_token_free_children(PPG_Token__ *token);
 
