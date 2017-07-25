@@ -47,9 +47,9 @@ PPG_Action ppg_token_get_action(PPG_Token token);
 /** @brief Assigns action flags to a token. 
  * 
  * To modify the current state of 
- * the action flags of a token, use the function ppg_get_action_flags, 
+ * the action flags of a token, use the function ppg_token_get_action_flags, 
  * modify its return value by means of applying bit wise operations and pass it 
- * to ppg_set_action_flags.
+ * to ppg_token_set_action_flags.
  * 
  * @param token The token to be modified
  * @param action_flags The new value of action flags
@@ -65,6 +65,32 @@ PPG_Token ppg_token_set_action_flags(
  * @returns The current value of the action flags associated with the token.
  */
 PPG_Action_Flags_Type ppg_token_get_action_flags(PPG_Token token);
+
+/** @brief Assigns flags to a token. 
+ * 
+ * To modify the current state of 
+ * the flags of a token, use the function ppg_token_get_flags, 
+ * modify its return value by means of applying bit wise operations and pass it 
+ * to ppg_token_set_flags.
+ * 
+ * @note Be careful when modifying flags manually as different token types
+ *       support different types flags. Read the documentation of the
+ *       respective token type carefully before manipulating its flags.
+ * 
+ * @param token The token to be modified
+ * @param flags The new value of flags
+ * @returns Returns the value of parameter token to allow for setter-chaining
+ */
+PPG_Token ppg_token_set_flags(
+                           PPG_Token token,
+                           PPG_Count flags);
+
+/** @brief Returns the flags associated with a token
+ * 
+ * @param token The token whose flags are supposed to be retreived
+ * @returns The current value of the flags associated with the token.
+ */
+PPG_Count ppg_token_get_flags(PPG_Token token);
 
 /** @brief Auxiliary macro to simplify passing tokens to functions such as
  * ppg_pattern

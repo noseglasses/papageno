@@ -23,6 +23,19 @@
 
 /** @file */
 
+/** @brief Flags that configure cluster behavior
+  *
+  * Use the functions ppg_token_set_flags and
+  * ppg_token_get_flags to manipulated cluster flags.
+ */
+enum PPG_Cluster_Flags {
+   PPG_Cluster_Flags_Empty = 0,///< Initial value
+   PPG_Cluster_Flags_Disallow_Input_Deactivation = 1 ///< Set this flag to gain 
+            // a cluster that does not tolerate deactivation of inputs before all
+            // inputs are activated. If this condition is violated, the
+            // cluster is considered as invalid
+};
+
 /** @brief Defines a stand alone note cluster. 
  * 
  * All members must be activated/pressed at 

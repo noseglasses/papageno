@@ -36,7 +36,7 @@ void ppg_token_store_action(PPG_Token__ *token,
 
 void ppg_token_reset(PPG_Token__ *token)
 {
-   ppg_token_set_state(token, PPG_Token_Initialized);
+   token->misc.state = PPG_Token_Initialized;
 }
 
 static void ppg_token_allocate_children(PPG_Token__ *a_This, PPG_Count n_children) {
@@ -137,10 +137,10 @@ PPG_Token__* ppg_token_get_equivalent_child(
 void ppg_token_print_self_start(PPG_Token__ *p, PPG_Count indent)
 {
    PPG_I PPG_LOG("\tprnt: 0x%" PRIXPTR "\n", (uintptr_t)p->parent);
-   PPG_I PPG_LOG("\ta.flgs: %d\n", p->action.flags);
+   PPG_I PPG_LOG("\ta.flgs: %d\n", (PPG_Count)p->misc.action_flags);
    PPG_I PPG_LOG("\ta.u_f: 0x%" PRIXPTR "\n", (uintptr_t)p->action.callback.func);
    PPG_I PPG_LOG("\ta.u_d: 0x%" PRIXPTR "\n", (uintptr_t)p->action.callback.user_data);
-   PPG_I PPG_LOG("\tst: %d\n", ppg_token_get_state(p));
+   PPG_I PPG_LOG("\tst: %d\n", (PPG_Count)p->misc.state);
    PPG_I PPG_LOG("\tlyr: %d\n", p->layer);
 }
 
@@ -188,14 +188,15 @@ PPG_Token__ *ppg_token_new(PPG_Token__ *token) {
    
     token->vtable = &ppg_token_vtable;
     
+    *((PPG_Count*)&token->misc) = 0;
     token->parent = NULL;
     token->children = NULL;
     token->n_allocated_children = 0;
     token->n_children = 0;
-    token->action.flags = PPG_Action_Default;
+    token->misc.action_flags = PPG_Action_Default;
     token->action.callback.func = NULL;
     token->action.callback.user_data = NULL;
-    ppg_token_set_state(token, PPG_Token_Initialized);
+    token->misc.state = PPG_Token_Initialized;
     token->layer = 0;
     
     return token;
@@ -225,7 +226,7 @@ PPG_Token ppg_token_set_action_flags(
 {
    PPG_Token__ *token__ = (PPG_Token__ *)token;
    
-   token__->action.flags = action_flags;
+   token__->misc.action_flags = action_flags;
    
    return token;
 }
@@ -234,5 +235,5 @@ PPG_Action_Flags_Type ppg_token_get_action_flags(PPG_Token token)
 {
    PPG_Token__ *token__ = (PPG_Token__ *)token;
    
-   return token__->action.flags;
+   return token__->misc.action_flags;
 }

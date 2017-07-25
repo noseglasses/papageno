@@ -197,7 +197,6 @@ void ppg_cs_separator(void);
 
 #define PPG_CS_ACTION(ACTION_NAME) \
    (PPG_Action) {   \
-      .flags = PPG_Action_Default, \
       .callback = (PPG_Action_Callback) { \
          .func = (PPG_Action_Callback_Fun)ppg_cs_process_action,  \
          .user_data = (void*)(uintptr_t)PPG_CS_ACTION_VAR(ACTION_NAME) \
@@ -259,9 +258,9 @@ int main(int argc, char **argv) \
    ppg_note_create_standard(PPG_CS_CHAR(CHAR))
    
 #define PPG_CS_N_A(CHAR) \
-   ppg_note_create(PPG_CS_CHAR(CHAR), PPG_Token_Match_Activation)
+   ppg_note_create(PPG_CS_CHAR(CHAR), PPG_Note_Flag_Match_Activation)
    
 #define PPG_CS_N_D(CHAR) \
-   ppg_note_create(PPG_CS_CHAR(CHAR), PPG_Token_Match_Deactivation)
+   ppg_note_create(PPG_CS_CHAR(CHAR), PPG_Note_Flag_Match_Deactivation)
 
 #endif

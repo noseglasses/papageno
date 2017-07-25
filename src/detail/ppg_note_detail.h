@@ -21,7 +21,7 @@
 #include "detail/ppg_token_detail.h"
 
 enum {
-   PPG_Note_Type_Active = (PPG_Token_Match_Deactivation << 1)
+   PPG_Note_Type_Active = (PPG_Note_Flag_Match_Deactivation << 1)
 };
 
 typedef struct {

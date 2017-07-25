@@ -33,8 +33,8 @@ static void ppg_cluster_match_event(
    PPG_ASSERT(cluster->n_members != 0);
    
    PPG_ASSERT(
-         (ppg_token_get_state(cluster) == PPG_Token_In_Progress)
-      || (ppg_token_get_state(cluster) == PPG_Token_Initialized)
+         (cluster->super.misc.state == PPG_Token_In_Progress)
+      || (cluster->super.misc.state == PPG_Token_Initialized)
    );
    
    /* Check it the input is part of the current cluster 
@@ -51,10 +51,20 @@ static void ppg_cluster_match_event(
                ++cluster->n_inputs_active;
             }
          }
-         /* Note: We do not care for released inputs here. Every cluster member must be pressed only once
-          */
+         else {
+            
+            if(cluster->super.misc.flags & PPG_Cluster_Flags_Disallow_Input_Deactivation) {
+               cluster->super.misc.state = PPG_Token_Invalid;
+               return;
+            }
+            
+            /* Note: If input deactivation is allowed, we do not care for 
+             * released inputs here. Every cluster member must be 
+             * pressed only once
+            */
 
-         break;
+            break;
+         }
       }
    }
    
@@ -67,7 +77,7 @@ static void ppg_cluster_match_event(
    
    if(!input_part_of_cluster) {
       if(event->flags & PPG_Event_Active) {
-         ppg_token_set_state(cluster, PPG_Token_Invalid);
+         cluster->super.misc.state = PPG_Token_Invalid;
       }
       
       // Clusters ignore unmatching deactivation events
@@ -75,7 +85,7 @@ static void ppg_cluster_match_event(
       return;
    }
    
-   ppg_token_get_state(cluster, PPG_Token_In_Progress);
+   cluster->super.misc.state = PPG_Token_In_Progress;
    
    if(cluster->n_inputs_active == cluster->n_members) {
       
@@ -85,7 +95,7 @@ static void ppg_cluster_match_event(
       
       /* Cluster matches
        */
-      ppg_token_get_state(cluster, PPG_Token_Matches);
+      cluster->super.misc.state = PPG_Token_Matches;
 //       PPG_LOG("O");
 #endif
    }
@@ -96,7 +106,7 @@ static void ppg_cluster_match_event(
          
          /* Cluster matches
          */
-         ppg_token_get_state(cluster, PPG_Token_Matches);
+         cluster->super.misc.state = PPG_Token_Matches;
 //          PPG_LOG("O");
       }
    }

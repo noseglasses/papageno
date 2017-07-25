@@ -35,8 +35,8 @@ static void ppg_chord_match_event(
    PPG_ASSERT(chord->n_members != 0);
    
    PPG_ASSERT(
-         (ppg_token_get_state(chord) == PPG_Token_In_Progress)
-      || (ppg_token_get_state(chord) == PPG_Token_Initialized)
+         (chord->super.misc.state == PPG_Token_In_Progress)
+      || (chord->super.misc.state == PPG_Token_Initialized)
    );
    
    /* Check if the input is part of the current chord 
@@ -54,6 +54,12 @@ static void ppg_chord_match_event(
             }
          }
          else {
+            
+            if(chord->super.misc.flags & PPG_Chord_Flags_Disallow_Input_Deactivation) {
+               chord->super.misc.state = PPG_Token_Invalid;
+               return;
+            }
+            
             if(ppg_bitfield_get_bit(&chord->member_active, i)) {
                ppg_bitfield_set_bit(&chord->member_active, i, false);
                --chord->n_inputs_active;
@@ -81,7 +87,7 @@ static void ppg_chord_match_event(
    
    if(!input_part_of_chord) {
       if(event->flags & PPG_Event_Active) {
-         ppg_token_set_state(chord, PPG_Token_Invalid);
+         chord->super.misc.state = PPG_Token_Invalid;
       }
       
       // Chords ignore unmatching deactivation events
@@ -89,7 +95,7 @@ static void ppg_chord_match_event(
       return;
    }
    
-   ppg_token_get_state(chord, PPG_Token_In_Progress);
+   chord->super.misc.state = PPG_Token_In_Progress;
    
    if(chord->n_inputs_active == chord->n_members) {
       
@@ -99,7 +105,7 @@ static void ppg_chord_match_event(
       
       /* Chord matches
        */
-      ppg_token_set_state(chord, PPG_Token_Matches);
+      chord->super.misc.state = PPG_Token_Matches;
 //       PPG_LOG("C");
 #endif
    }
@@ -110,7 +116,7 @@ static void ppg_chord_match_event(
       
          /* Chord matches
          */
-         ppg_token_set_state(chord, PPG_Token_Matches);
+         chord->super.misc.state = PPG_Token_Matches;
 //          PPG_LOG("C");
       }
    }

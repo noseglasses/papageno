@@ -48,7 +48,7 @@ PPG_Token ppg_tap_dance(
    for (PPG_Count i = 0; i < n_taps; i++) {
       
       PPG_Token__ *new_note = (PPG_Token__*)ppg_note_create_standard(input);
-         new_note->action.flags = PPG_Action_Fallback;
+         new_note->misc.action_flags = PPG_Action_Fallback;
       
       tokens[i] = new_note;
    }
@@ -58,6 +58,18 @@ PPG_Token ppg_tap_dance(
       ppg_token_store_action(
                tokens[tap_definitions[i].tap_count - 1], 
                tap_definitions[i].action);
+      
+      PPG_Token__ *token 
+         = (PPG_Token__ *)tokens[tap_definitions[i].tap_count - 1];
+      
+      // Make sure that the notes that are associated
+      // with the exact number of taps do not
+      // allow fallback. Else all actions of all
+      // notes back until the search tree root
+      // would be triggered.
+      //
+      token->misc.action_flags &= ~PPG_Action_Fallback;
+      
    }
          
    PPG_Token__ *leafToken 

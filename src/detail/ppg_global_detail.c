@@ -36,7 +36,7 @@ bool ppg_recurse_and_process_actions(void)
    // finished. Then we go back to the parent token, that
    // was the last registered match.
    //
-   if(ppg_token_get_state(cur_token) != PPG_Token_Matches) {
+   if(cur_token->misc.state != PPG_Token_Matches) {
       cur_token = cur_token->parent;
    }
    
@@ -49,7 +49,7 @@ bool ppg_recurse_and_process_actions(void)
          action_tokens[n_actions] = cur_token;
          ++n_actions;
          
-         if(cur_token->action.flags & PPG_Action_Fallback) {
+         if(cur_token->misc.action_flags & PPG_Action_Fallback) {
             cur_token = cur_token->parent;
          }
          else {
@@ -57,7 +57,7 @@ bool ppg_recurse_and_process_actions(void)
          }
       }
       else {
-         if(cur_token->action.flags & PPG_Action_Fallback) {
+         if(cur_token->misc.action_flags & PPG_Action_Fallback) {
             cur_token = cur_token->parent;
          }
          else {
@@ -136,7 +136,8 @@ void ppg_reset_pattern_matching_engine(void)
    // The token root's state has been reset to PPG_Token_Initialized 
    // during cleanup.
    //
-   ppg_token_set_state(&ppg_context->pattern_root, PPG_Token_Root);
+   ppg_context->pattern_root.misc.state
+         = PPG_Token_Root;
    
    // Start with the first token in the queue
    //

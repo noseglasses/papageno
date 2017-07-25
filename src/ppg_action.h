@@ -52,7 +52,6 @@ void ppg_action_callback_init(PPG_Action_Callback *cb)
  */
 typedef struct {
    PPG_Action_Callback callback; ///< The user callback that represents that action
-   uint8_t flags; ///< A bitfield that codes specific attributes associated with the action
 } PPG_Action;
 
 /** @brief Use this macro to simplify specification of action callbacks
@@ -61,7 +60,6 @@ typedef struct {
  */
 #define PPG_ACTION_USER_CALLBACK(FUNC, USER_DATA) \
    (PPG_Action) { \
-      .flags = PPG_Action_Default, \
       .callback = (PPG_Action_Callback) { \
          .func = (PPG_Action_Callback_Fun)FUNC, \
          .user_data = USER_DATA \
@@ -72,7 +70,6 @@ typedef struct {
  */
 #define PPG_ACTION_NOOP \
    (PPG_Action) { \
-      .flags = PPG_Action_None, \
       .callback = (PPG_Action_Callback) { \
          .func = NULL, \
          .user_data = NULL \

@@ -70,6 +70,18 @@ typedef struct {
 #define PPG_CALL_VIRT_METHOD(THIS, METHOD, ...) \
    ((PPG_Token__*)THIS)->vtable->METHOD(THIS, ##__VA_ARGS__);
    
+enum {   PPG_Token_N_State_Bits = 3 };
+enum {   PPG_Token_N_Action_Flags_Bits = 3 };
+enum {   PPG_Token_N_Flag_Bits = 8  - PPG_Token_N_State_Bits 
+                                    - PPG_Token_N_Action_Flags_Bits };
+
+typedef struct {
+   
+   PPG_Count state         : PPG_Token_N_State_Bits;
+   PPG_Count action_flags  : PPG_Token_N_Action_Flags_Bits;
+   PPG_Count flags         : PPG_Token_N_Flag_Bits;
+} PPG_Misc_Bits;
+
 typedef struct PPG_TokenStruct {
 
    PPG_Token_Vtable *vtable;
@@ -83,7 +95,7 @@ typedef struct PPG_TokenStruct {
    
    PPG_Action action;
    
-   PPG_Count misc;
+   PPG_Misc_Bits misc;
    
    PPG_Layer layer;
     
@@ -97,39 +109,47 @@ enum PPG_Processing_State {
    PPG_Token_Invalid
 };
 
-enum {   PPG_N_State_Bits = 3 };
 
-enum {   PPG_State_Mask = (1 << PPG_N_State_Bits) - 1 };
-enum {   PPG_Flags_Mask = ~PPG_State_Mask };
 
-enum {   PPG_Token_Match_Activation = 1 << PPG_N_State_Bits,
-         PPG_Token_Match_Deactivation = PPG_Token_Match_Activation << 1,
-         PPG_Token_Allow_Deactivation = PPG_Token_Match_Deactivation << 1
-};
-
-inline PPG_Count ppg_token_get_state(PPG_Token__ *token) 
-{
-   return token->misc & PPG_State_Mask;
-}
-inline void ppg_token_set_state(PPG_Token__ *token, PPG_Count state)
-{
-   token->misc &= PPG_Flags_Mask;
-   token->misc |= state;
-}
-
-inline PPG_Count ppg_token_get_flags(PPG_Token__ *token, PPG_Count mask)
-{
-   return token->misc & mask;
-}
-
-inline PPG_Count ppg_token_set_flags(PPG_Token__ *token, PPG_Count values, PPG_Count mask)
-{
-   // Clear bits in mask range
-   //
-   token->misc &= ~mask; 
-   
-   token->misc |= values & mask;
-}
+// enum {   PPG_Action_Flags_Start_Bit_Id = 3 };
+// enum {   PPG_Flags_Start_Bit_Id = PPG_Action_Flags_Start_Bit_Id + 1 };
+// 
+// enum {   PPG_N_Action_Flag_Bits = PPG_Flags_Start_Bit_Id - PPG_Action_Flags_Start_Bit_Id };
+// 
+// enum {   PPG_State_Mask = ((1 << PPG_N_Action_Flag_Bits) - 1) << PPG_Action_Flags_Start_Bit_Id };
+// 
+// enum {   PPG_Action_Flags_Mask = ~((1 << (PPG_Flags_Start_Bit_Id) - 1) };
+// 
+// enum {   PPG_Flags_Mask = ~((1 << PPG_Flags_Start_Bit_Id) - 1) };
+// 
+// enum {   PPG_Note_Flag_Match_Activation = 1 << PPG_Flags_Start_Bit_Id,
+//          PPG_Note_Flag_Match_Deactivation = PPG_Note_Flag_Match_Activation << 1,
+//          PPG_Token_Allow_Deactivation = PPG_Note_Flag_Match_Deactivation << 1
+// };
+// 
+// inline PPG_Count ppg_token_get_state(PPG_Token__ *token) 
+// {
+//    return token->misc & PPG_State_Mask;
+// }
+// inline void ppg_token_set_state(PPG_Token__ *token, PPG_Count state)
+// {
+//    token->misc &= PPG_Flags_Mask;
+//    token->misc |= state;
+// }
+// 
+// inline PPG_Count ppg_token_get_flags(PPG_Token__ *token)
+// {
+//    return (token->misc & PPG_Flags_Mask) >> PPG_Flags_Start_Bit_Id;
+// }
+// 
+// inline PPG_Count ppg_token_set_flags(PPG_Token__ *token, PPG_Count values, PPG_Count mask)
+// {
+//    // Clear bits in mask range
+//    //
+//    token->misc &= ~(mask << PPG_Flags_Start_Bit_Id); 
+//    
+//    token->misc |= ((values & mask) << PPG_Flags_Start_Bit_Id);
+// }
 
 void ppg_token_free_children(PPG_Token__ *token);
 
