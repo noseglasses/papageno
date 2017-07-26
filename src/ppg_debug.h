@@ -37,7 +37,7 @@
 
 #endif //PPG_HAVE_LOGGING
 
-#ifdef __AVR_ATmega32U4__ 
+#ifdef PPG_BUILDING_FOR_QMK 
 #   include "debug.h"
    /** @brief A macro for printf style error output
  */

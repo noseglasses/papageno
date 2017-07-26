@@ -412,6 +412,10 @@ void ppg_pattern_matching_run(void)
    //PPG_LOG("ppg_pattern_matching_run\n");
    
    while(ppg_event_buffer_events_left()) {
+         
+      if(!ppg_context->current_token) {
+         ppg_context->current_token = &ppg_context->pattern_root;
+      }
       
       PPG_Count process_event_result = ppg_process_next_event();
       

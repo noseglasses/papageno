@@ -129,7 +129,7 @@ void ppg_delete_stored_events(void)
 
 void ppg_reset_pattern_matching_engine(void)
 {
-   ppg_context->current_token = &ppg_context->pattern_root;
+   ppg_context->current_token = NULL;
             
    PPG_FB.cur_furcation = -1;
    

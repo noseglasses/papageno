@@ -179,15 +179,6 @@ PPG_CS_START_TEST
    
    ppg_global_set_layer(ppg_cs_layer_1);
    
-   // Layer switches abort processing. Assert that aborting
-   // works correctly.
-   //
-   PPG_CS_CHECK_NO_PROCESS(
-                           PPG_CS_EXPECT_EXCEPTIONS(PPG_CS_EA)
-                           PPG_CS_EXPECT_EMPTY_FLUSH
-                           PPG_CS_EXPECT_NO_ACTIONS
-   )
-   
    // Allow to release keys and then repress them 
    //
    PPG_CS_PROCESS_STRING(  "M N O m n o", 

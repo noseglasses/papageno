@@ -77,8 +77,8 @@ char *ppg_cs_get_action_name(int action_id);
 #define PPG_CS_A(ACTION_NAME) PPG_CS_ACTION_VAR(ACTION_NAME)
 
 #define PPG_CS_REGISTER_ACTION(ACTION_NAME) \
-   int PPG_CS_ACTION_VAR(ACTION_NAME) \
-      = ppg_cs_register_action(#ACTION_NAME);
+__NL__   int PPG_CS_ACTION_VAR(ACTION_NAME) \
+__NL__      = ppg_cs_register_action(#ACTION_NAME);
       
 #define PPG_CS_REGISTER_ACTION_ANNONYMOUS(ACTION_NAME) \
    ppg_cs_register_action(#ACTION_NAME);
@@ -87,8 +87,8 @@ char *ppg_cs_get_action_name(int action_id);
    PPG_CS_EXPECT_EXCEPTIONS(PPG_CS_Action_Exception_None)
    
 #define PPG_CS_EXPECT_ACTION_SERIES(...) \
-   ppg_cs_check_action_series(sizeof((int[]){__VA_ARGS__})/sizeof(int), \
-                              (int[]){__VA_ARGS__});
+__NL__   ppg_cs_check_action_series(sizeof((int[]){__VA_ARGS__})/sizeof(int), \
+__NL__                              (int[]){__VA_ARGS__});
    
 #define PPG_CS_EXPECT_NO_ACTIONS \
    PPG_CS_EXPECT_ACTION_SERIES()
@@ -137,26 +137,32 @@ void ppg_cs_list_event_queue(void);
    ppg_cs_check_test_results(EXPECTED);
 
 #define PPG_CS_CHECK_NO_PROCESS(...) \
-   ppg_timeout_check(); \
-   ppg_cs_separator(); \
-   __VA_ARGS__ \
-   ppg_cs_list_event_queue(); \
-   ppg_cs_separator(); \
-   ppg_cs_check_test_success(__FILE__, __LINE__); \
-   ppg_cs_separator(); \
-   ppg_cs_reset_testing_environment();
+__NL__   ppg_timeout_check(); \
+__NL__   ppg_cs_separator(); \
+__NL__   __VA_ARGS__ \
+__NL__   ppg_cs_list_event_queue(); \
+__NL__   ppg_cs_separator(); \
+__NL__   ppg_cs_check_test_success(__FILE__, __LINE__); \
+__NL__   ppg_cs_separator(); \
+__NL__   \
+__NL__   if(automatically_reset_testing_system) { \
+__NL__      ppg_cs_reset_testing_environment(); \
+__NL__   } \
+__NL__   else { \
+__NL__      automatically_reset_testing_system = true; \
+__NL__   }
    
 #define PPG_CS_PROCESS_STRING(STRING, ...) \
-   ppg_cs_output_test_info(__FILE__, __LINE__); \
-   ppg_cs_process_string(STRING); \
-   PPG_CS_CHECK_NO_PROCESS(__VA_ARGS__)
+__NL__   ppg_cs_output_test_info(__FILE__, __LINE__); \
+__NL__   ppg_cs_process_string(STRING); \
+__NL__   PPG_CS_CHECK_NO_PROCESS(__VA_ARGS__)
 
 void ppg_cs_process_on_off(char *string);
 
 #define PPG_CS_PROCESS_ON_OFF(STRING, ...) \
-   ppg_cs_output_test_info(__FILE__, __LINE__); \
-   ppg_cs_process_on_off(STRING); \
-   PPG_CS_CHECK_NO_PROCESS(__VA_ARGS__)   
+__NL__   ppg_cs_output_test_info(__FILE__, __LINE__); \
+__NL__   ppg_cs_process_on_off(STRING); \
+__NL__   PPG_CS_CHECK_NO_PROCESS(__VA_ARGS__)   
    
 void ppg_cs_time(         PPG_Time *time);
 
@@ -196,63 +202,65 @@ void ppg_cs_separator(void);
    (PPG_Input_Id)(uintptr_t)tolower(CHAR)
 
 #define PPG_CS_ACTION(ACTION_NAME) \
-   (PPG_Action) {   \
-      .callback = (PPG_Action_Callback) { \
-         .func = (PPG_Action_Callback_Fun)ppg_cs_process_action,  \
-         .user_data = (void*)(uintptr_t)PPG_CS_ACTION_VAR(ACTION_NAME) \
-      } \
-   }
+__NL__   (PPG_Action) {   \
+__NL__      .callback = (PPG_Action_Callback) { \
+__NL__         .func = (PPG_Action_Callback_Fun)ppg_cs_process_action,  \
+__NL__         .user_data = (void*)(uintptr_t)PPG_CS_ACTION_VAR(ACTION_NAME) \
+__NL__      } \
+__NL__   }
    
 #define PPG_CS_PREPARE_CONTEXT \
    \
-   ppg_global_set_number_of_inputs(255); \
-   \
-   ppg_global_set_default_event_processor((PPG_Event_Processor_Fun)ppg_cs_process_event_callback); \
-   \
-   ppg_global_set_time_manager( \
-      (PPG_Time_Manager) { \
-         .time = (PPG_Time_Fun)ppg_cs_time, \
-         .time_difference = (PPG_Time_Difference_Fun)ppg_cs_time_difference, \
-         .compare_times = (PPG_Time_Comparison_Fun)ppg_cs_time_comparison \
-      } \
-   ); \
-   \
-   ppg_global_set_signal_callback( \
-      (PPG_Signal_Callback) { \
-         .func = (PPG_Signal_Callback_Fun)ppg_cs_on_signal,  \
-         .user_data = NULL \
-      } \
-   ); \
-    \
-   /*ppg_global_set_abort_trigger(PPG_CS_CHAR('z')); */\
-    \
-   ppg_cs_set_timeout_ms(PPG_CS_Timeout_MS); \
+__NL__   ppg_global_set_number_of_inputs(255); \
+__NL__   \
+__NL__   ppg_global_set_default_event_processor((PPG_Event_Processor_Fun)ppg_cs_process_event_callback); \
+__NL__   \
+__NL__   ppg_global_set_time_manager( \
+__NL__      (PPG_Time_Manager) { \
+__NL__         .time = (PPG_Time_Fun)ppg_cs_time, \
+__NL__         .time_difference = (PPG_Time_Difference_Fun)ppg_cs_time_difference, \
+__NL__         .compare_times = (PPG_Time_Comparison_Fun)ppg_cs_time_comparison \
+__NL__      } \
+__NL__   ); \
+__NL__   \
+__NL__   ppg_global_set_signal_callback( \
+__NL__      (PPG_Signal_Callback) { \
+__NL__         .func = (PPG_Signal_Callback_Fun)ppg_cs_on_signal,  \
+__NL__         .user_data = NULL \
+__NL__      } \
+__NL__   ); \
+__NL__    \
+__NL__   /*ppg_global_set_abort_trigger(PPG_CS_CHAR('z')); */\
+__NL__    \
+__NL__   ppg_cs_set_timeout_ms(PPG_CS_Timeout_MS); \
 
 #define PPG_CS_INIT \
    \
-   ppg_cs_init(); \
-   \
-   PPG_CS_REGISTER_ACTION_ANNONYMOUS(Initialized)   \
-   PPG_CS_REGISTER_ACTION_ANNONYMOUS(Exception_Timeout)   \
-   PPG_CS_REGISTER_ACTION_ANNONYMOUS(Exception_Aborted) \
-   \
-   ppg_global_init(); \
-   \
-   PPG_CS_PREPARE_CONTEXT
+__NL__   ppg_cs_init(); \
+__NL__   \
+__NL__   PPG_CS_REGISTER_ACTION_ANNONYMOUS(Initialized)   \
+__NL__   PPG_CS_REGISTER_ACTION_ANNONYMOUS(Exception_Timeout)   \
+__NL__   PPG_CS_REGISTER_ACTION_ANNONYMOUS(Exception_Aborted) \
+__NL__   \
+__NL__   ppg_global_init(); \
+__NL__   \
+__NL__   PPG_CS_PREPARE_CONTEXT \
+__NL__   \
+__NL__   bool automatically_reset_testing_system = true;
    
 #define PPG_CS_START_TEST \
 \
-int main(int argc, char **argv) \
-{ \
-   \
-   PPG_CS_INIT \
+__NL__   int main(int argc, char **argv) \
+__NL__   { \
+__NL__      \
+__NL__      PPG_CS_INIT \
    
 #define PPG_CS_END_TEST \
    \
-   ppg_global_finalize();   \
-   \
-   return 0; \
-}
+__NL__   ppg_global_finalize();   \
+__NL__   \
+__NL__   return 0; \
+__NL__}
 
 #define PPG_CS_N(CHAR) \
    ppg_note_create_standard(PPG_CS_CHAR(CHAR))
