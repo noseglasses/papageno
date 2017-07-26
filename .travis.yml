@@ -19,8 +19,8 @@ script:
   - cd build/release
   - cmake -DCMAKE_BUILD_TYPE=Debug ../..
   - make
-  - ctest -D ExperimentalTest
-  - ctest -D ExperimentalMemCheck
+  - ctest -D ExperimentalTest --output-on-failure
+  - ctest -D ExperimentalMemCheck --output-on-failure
 
 notifications:
   email:
@@ -166,7 +166,7 @@ matrix:
          - cd build/release
          - cmake -DCMAKE_BUILD_TYPE=Debug ../..
          - make
-         - ctest -D ExperimentalTest
+         - ctest -D ExperimentalTest --output-on-failure
          
     # Clang with memory sanitizer
     #
@@ -186,7 +186,7 @@ matrix:
          - cd build/release
          - cmake -DCMAKE_BUILD_TYPE=Debug ../..
          - make
-         - ctest -D ExperimentalTest
+         - ctest -D ExperimentalTest --output-on-failure
          
     # Clang with undefined behavior sanitizer
     #
@@ -206,7 +206,7 @@ matrix:
          - cd build/release
          - cmake -DCMAKE_BUILD_TYPE=Debug ../..
          - make
-         - ctest -D ExperimentalTest
+         - ctest -D ExperimentalTest --output-on-failure
         
     # works on Trusty
     - os: linux
