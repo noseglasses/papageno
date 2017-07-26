@@ -201,8 +201,8 @@ static PPG_Token__ *ppg_token_get_next_possible_branch(
    // parent node.
    //
    bool furcation_already_present = 
-            (PPG_CUR_FUR.token 
-                  == parent_token);
+            (PPG_FB.cur_furcation > -1)
+         && (PPG_CUR_FUR.token == parent_token);
             
    bool revert_to_previous_furcation = false;
    
