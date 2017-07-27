@@ -487,3 +487,22 @@ void ppg_pattern_matching_run(void)
       ppg_reset_pattern_matching_engine();
    }
 }
+
+void ppg_pattern_matching_process_remaining_branch_options(void)
+{
+   // Continue processing until all possible branches for the
+   // given event queue have been processed.
+   //
+   while(ppg_context->current_token) {
+      
+      ppg_context->current_token->misc.state = PPG_Token_Invalid;
+      
+      ppg_context->current_token 
+                     = ppg_token_get_next_possible_branch(
+                                             ppg_context->current_token);
+      
+      if(ppg_context->current_token) {
+         ppg_pattern_matching_run();
+      }
+   }
+}

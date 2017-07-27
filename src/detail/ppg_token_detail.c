@@ -237,3 +237,21 @@ PPG_Action_Flags_Type ppg_token_get_action_flags(PPG_Token token)
    
    return token__->misc.action_flags;
 }
+
+PPG_Token ppg_token_set_flags(
+                           PPG_Token token,
+                           PPG_Count flags)
+{
+   PPG_Token__ *token__ = (PPG_Token__ *)token;
+   
+   token__->misc.flags = flags;
+   
+   return token;
+}
+
+PPG_Count ppg_token_get_flags(PPG_Token token)
+{
+   PPG_Token__ *token__ = (PPG_Token__ *)token;
+   
+   return token__->misc.flags;
+}

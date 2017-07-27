@@ -20,11 +20,35 @@
 #include "detail/ppg_global_detail.h"
 #include "detail/ppg_signal_detail.h"
 #include "detail/ppg_event_buffer_detail.h"
+#include "detail/ppg_pattern_matching_detail.h"
 
 static void ppg_on_timeout(void)
 {
    if(ppg_event_buffer_size() == 0) { return; }
+   
+   // In the moment of timeout, there may be an unfinished token
+   // that is waiting for more events to come to either lead to 
+   // a match or a match failure.
+   //
+   // Moreover, it may be possible that there are other tokens on the 
+   // same level with lower token precedence, that would allow for a
+   // match with respect to the current content of the event queue.
+   //
+   // In such a case it is necessary that we check all remaining 
+   // branches of the search tree for a pattern match.
+   //
+   ppg_pattern_matching_process_remaining_branch_options();
          
+   // After processing remaining matches, the event queue
+   // is supposed to be empty.
+   //
+   PPG_ASSERT(ppg_event_buffer_size() == 0)
+   
+   ppg_signal(PPG_On_Timeout);
+#if 0
+   
+   if(ppg_event_buffer_size() == 0) { return; }
+   
    /* It timeout was hit, we either trigger the most recent action
     * (e.g. necessary for tap dances).
     */
@@ -58,6 +82,7 @@ static void ppg_on_timeout(void)
    }
    
    ppg_reset_pattern_matching_engine();
+#endif
 }
 
 bool ppg_timeout_check(void)

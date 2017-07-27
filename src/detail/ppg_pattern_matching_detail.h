@@ -19,6 +19,8 @@
 
 void ppg_pattern_matching_run(void);
 
+void ppg_pattern_matching_process_remaining_branch_options(void);
+
 void ppg_branch_cleanup(
                         PPG_Token__ *cur_token,
                         PPG_Token__ *end_token);

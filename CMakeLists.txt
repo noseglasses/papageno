@@ -26,6 +26,13 @@ mark_as_advanced(PAPAGENO_TEST_COVERAGE)
 option(PAPAGENO_VALGRIND "Run tests using valgrind to detect memory related errors" FALSE)
 mark_as_advanced(PAPAGENO_VALGRIND)
 
+set(PAPAGENO_ADDITIONAL_INCLUDE_PATHS "" CACHE STRING "Add additional include paths that are necessary to build")
+mark_as_advanced(PAPAGENO_ADDITIONAL_INCLUDE_PATHS)
+
+if(NOT "${PAPAGENO_ADDITIONAL_INCLUDE_PATHS}" STREQUAL "")
+   include_directories(${PAPAGENO_ADDITIONAL_INCLUDE_PATHS})
+endif()
+
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # General settings
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=

@@ -21,13 +21,19 @@
 
 #include "ppg_settings.h"
 
+#ifdef __AVR_ATmega32U4__ 
+#   ifndef USER_PRINT
+#      define USER_PRINT
+#   endif
+#   include "debug.h"
+#endif
+
 #if PPG_HAVE_LOGGING
 
 // Define the preprocessor macro PPG_PRINT_SELF_ENABLED
 // to enable verbose class output of token classes
 
 #ifdef __AVR_ATmega32U4__ 
-#   include "debug.h"
 #   define PPG_LOG(...) uprintf(__VA_ARGS__);
 
 #else
