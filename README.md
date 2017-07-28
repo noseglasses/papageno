@@ -370,7 +370,7 @@ Actions are defined as callback functions supplied with optional user data that 
 Timeout
 -------
 
-If a user defined time interval elapses after the last event was registered, a timeout exception occurs. If pattern matching is in progress at this point, it is aborted. The default timeout behavior is to trigger the action that is associated with the last token that matched, or no action if there was no action associated with the respective token.
+If a user defined time interval elapses after the last event was registered, a timeout exception occurs. If pattern matching is in progress at this point, it is aborted. The default timeout behavior is to try to find a matching token with respect to the events in the queue. This means that any tokens that would require further events are ignored. If no match can be found, the action is triggered that is associated with the last token that matched, or no action if there was no action associated with the respective token.
 
 Action Fallback
 ---------------
