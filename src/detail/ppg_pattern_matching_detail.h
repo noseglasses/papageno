@@ -17,9 +17,13 @@
 #ifndef PPG_PATTERN_MATCHING_DETAIL_H
 #define PPG_PATTERN_MATCHING_DETAIL_H
 
-void ppg_pattern_matching_run(void);
+// Returns true if a match occurred
+//
+bool ppg_pattern_matching_run(void);
 
-void ppg_pattern_matching_process_remaining_branch_options(void);
+// Returns true if a match occurred
+//
+bool ppg_pattern_matching_process_remaining_branch_options(void);
 
 void ppg_branch_cleanup(
                         PPG_Token__ *cur_token,

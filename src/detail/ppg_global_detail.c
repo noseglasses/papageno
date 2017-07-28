@@ -21,13 +21,11 @@
 
 /* Returns if an action has been triggered.
  */
-bool ppg_recurse_and_process_actions(void)
+bool ppg_recurse_and_process_actions(PPG_Token__ *cur_token)
 {        
-   if(!ppg_context->current_token) { return false; }
+   if(!cur_token) { return false; }
    
 //    PPG_LOG("Triggering action of most recent token\n");
-   
-   PPG_Token__ *cur_token = ppg_context->current_token;
    
    PPG_Token__ *action_tokens[ppg_context->tree_depth];
    PPG_Count n_actions = 0;

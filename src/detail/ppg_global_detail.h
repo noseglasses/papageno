@@ -16,10 +16,11 @@
 
 #include "ppg_signals.h"
 #include "ppg_global.h"
+#include "detail/ppg_token_detail.h"
 
 #include <stdbool.h>
 
-bool ppg_recurse_and_process_actions(void);
+bool ppg_recurse_and_process_actions(PPG_Token__ *cur_token);
 
 void ppg_recurse_and_cleanup_active_branch(void);
 

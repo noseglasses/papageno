@@ -220,6 +220,23 @@ static void ppg_event_buffer_check_and_tag_considered(PPG_Event *event,
    }
 }
 
+// This method does not erase events but just changes
+// the input position
+//
+void ppg_event_buffer_remove_first_event(void)
+{
+   if(PPG_EB.size == 0) { return; }
+   
+   if(PPG_EB.start < PPG_MAX_EVENTS - 1) {
+      ++PPG_EB.start;
+   }
+   else {
+      PPG_EB.start = 0;
+   }
+   
+   --PPG_EB.size;
+}
+
 void ppg_even_buffer_flush_and_remove_first_event(bool on_success)
 {
    PPG_LOG("Flushing and removing first event\n");
@@ -231,14 +248,7 @@ void ppg_even_buffer_flush_and_remove_first_event(bool on_success)
    ppg_context->event_processor(&PPG_EB.events[PPG_EB.start], NULL);
    
    if(PPG_EB.size > 1) {
-      if(PPG_EB.start < PPG_MAX_EVENTS - 1) {
-         ++PPG_EB.start;
-      }
-      else {
-         PPG_EB.start = 0;
-      }
-      
-      --PPG_EB.size;
+      ppg_event_buffer_remove_first_event();
    }
    else {
       ppg_event_buffer_init(&PPG_EB);

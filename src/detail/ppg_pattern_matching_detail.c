@@ -407,9 +407,11 @@ static PPG_Count ppg_process_next_event(void)
    return PPG_Pattern_In_Progress;
 }
 
-void ppg_pattern_matching_run(void)
+bool ppg_pattern_matching_run(void)
 {
    //PPG_LOG("ppg_pattern_matching_run\n");
+   
+   bool pattern_matched = false;
    
    while(ppg_event_buffer_events_left()) {
          
@@ -423,9 +425,11 @@ void ppg_pattern_matching_run(void)
          
          case PPG_Pattern_Matches:
             
-            ppg_recurse_and_process_actions();
+            ppg_recurse_and_process_actions(ppg_context->current_token);
             
             ppg_event_buffer_on_match_success();
+            
+            pattern_matched = true;
             
             break;
             
@@ -486,10 +490,14 @@ void ppg_pattern_matching_run(void)
       
       ppg_reset_pattern_matching_engine();
    }
+   
+   return pattern_matched;
 }
 
-void ppg_pattern_matching_process_remaining_branch_options(void)
+bool ppg_pattern_matching_process_remaining_branch_options(void)
 {
+   bool pattern_matched = false;
+   
    // Continue processing until all possible branches for the
    // given event queue have been processed.
    //
@@ -502,7 +510,9 @@ void ppg_pattern_matching_process_remaining_branch_options(void)
                                              ppg_context->current_token);
       
       if(ppg_context->current_token) {
-         ppg_pattern_matching_run();
+         pattern_matched |= ppg_pattern_matching_run();
       }
    }
+   
+   return pattern_matched;
 }

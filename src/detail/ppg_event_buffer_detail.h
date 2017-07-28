@@ -47,6 +47,8 @@ void ppg_event_buffer_advance(void);
 
 void ppg_event_buffer_truncate_at_front(void);
 
+void ppg_event_buffer_remove_first_event(void);
+
 void ppg_even_buffer_flush_and_remove_first_event(bool on_success);
 
 void ppg_event_buffer_iterate(

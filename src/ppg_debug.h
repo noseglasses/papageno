@@ -21,6 +21,8 @@
 
 #include "ppg_settings.h"
 
+#include <stdlib.h>
+
 #ifdef __AVR_ATmega32U4__ 
 #   ifndef USER_PRINT
 #      define USER_PRINT
@@ -64,6 +66,7 @@
 #define PPG_ASSERT(...) \
    if(!(__VA_ARGS__)) { \
       PPG_ERROR("%s: %d: Assertion failed: %s\n", __FILE__, __LINE__, #__VA_ARGS__) \
+      abort(); \
    }
 #else
 /** @brief A macro for assertions of boolean expressions

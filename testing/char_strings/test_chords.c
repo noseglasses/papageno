@@ -87,7 +87,7 @@ PPG_CS_START_TEST
    //
    PPG_CS_PROCESS_STRING(  "A B b C c a |", 
                            PPG_CS_EXPECT_FLUSH("ABbCca") 
-                           PPG_CS_EXPECT_EXCEPTIONS(PPG_CS_ET)
+                           PPG_CS_EXPECT_EXCEPTIONS(PPG_CS_ET | PPG_CS_EMF)
                            PPG_CS_EXPECT_NO_ACTIONS
    );
    
