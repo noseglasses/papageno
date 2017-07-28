@@ -23,7 +23,7 @@
 
 #include <stdlib.h>
 
-#ifdef __AVR_ATmega32U4__ 
+#ifdef PPG_BUILDING_FOR_QMK 
 #   ifndef USER_PRINT
 #      define USER_PRINT
 #   endif
@@ -35,7 +35,7 @@
 // Define the preprocessor macro PPG_PRINT_SELF_ENABLED
 // to enable verbose class output of token classes
 
-#ifdef __AVR_ATmega32U4__ 
+#ifdef PPG_BUILDING_FOR_QMK 
 #   define PPG_LOG(...) uprintf(__VA_ARGS__);
 
 #else
@@ -46,7 +46,6 @@
 #endif //PPG_HAVE_LOGGING
 
 #ifdef PPG_BUILDING_FOR_QMK 
-#   include "debug.h"
    /** @brief A macro for printf style error output
  */
 #   define PPG_ERROR(...) uprintf("*** Error: " __VA_ARGS__);
