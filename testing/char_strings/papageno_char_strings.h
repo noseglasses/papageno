@@ -46,7 +46,7 @@
 
 #define __NL__
 
-enum { PPG_CS_Timeout_MS = 20 };
+enum { PPG_CS_Timeout_MS = 200 };
 
 enum { 
    PPG_CS_Action_Exception_None = 0,
