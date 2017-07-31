@@ -30,7 +30,7 @@ typedef struct PPG_Context_Struct
 {
    PPG_Event_Buffer event_buffer;
    PPG_Furcation_Stack furcation_stack;
-   PPG_Bitfield active_inputs;
+//    PPG_Bitfield active_inputs;
    
    PPG_Token__ pattern_root;
 

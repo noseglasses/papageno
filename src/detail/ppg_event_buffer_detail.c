@@ -294,3 +294,30 @@ void ppg_event_buffer_on_match_success(void)
    //
    ppg_event_buffer_truncate_at_front();
 }
+
+void ppg_event_buffer_iterate2(
+                        PPG_Event_Processor_Visitor visitor,
+                        void *user_data)
+{
+   if(ppg_event_buffer_size() == 0) { return; }
+   
+   if(PPG_EB.size == 0) { return; }
+   
+   if(PPG_EB.start > PPG_EB.end) {
+      
+      for(PPG_Count i = PPG_EB.start; i < PPG_MAX_EVENTS; ++i) {
+      
+         visitor(&PPG_EB.events[i], user_data);
+      }
+      for(PPG_Count i = 0; i < PPG_EB.end; ++i) {
+         
+         visitor(&PPG_EB.events[i], user_data);
+      }
+   }
+   else {
+      for(PPG_Count i = PPG_EB.start; i < PPG_EB.end; ++i) {
+      
+         visitor(&PPG_EB.events[i], user_data);
+      }
+   }
+}

@@ -27,7 +27,7 @@ struct PPG_TokenStruct;
 
 /** @returns Whether the event was considered
  */
-typedef void (*PPG_Token_Match_Event_Fun)(
+typedef bool (*PPG_Token_Match_Event_Fun)(
                                           struct PPG_TokenStruct *token, 
                                           PPG_Event *event
                                         );
@@ -70,16 +70,23 @@ typedef struct {
 #define PPG_CALL_VIRT_METHOD(THIS, METHOD, ...) \
    ((PPG_Token__*)THIS)->vtable->METHOD(THIS, ##__VA_ARGS__);
    
-enum {   PPG_Token_N_State_Bits = 3 };
-enum {   PPG_Token_N_Action_Flags_Bits = 3 };
-enum {   PPG_Token_N_Flag_Bits = 8  - PPG_Token_N_State_Bits 
-                                    - PPG_Token_N_Action_Flags_Bits };
+enum PPG_Action_State {
+   PPG_Action_Disabled     = 0,
+   PPG_Action_Enabled
+};
 
+enum {   PPG_Token_N_State_Bits = 3 };
+enum {   PPG_Token_N_Action_Flags_Bits = 4 };
+enum {   PPG_Token_N_Action_State_Bits = 1 };
+enum {   PPG_Token_N_Flag_Bits = 16  - PPG_Token_N_State_Bits 
+                                    - PPG_Token_N_Action_Flags_Bit
+                                    - PPG_Token_N_Action_State_Bits};
+                                    
 typedef struct {
-   
    PPG_Count state         : PPG_Token_N_State_Bits;
-   PPG_Count action_flags  : PPG_Token_N_Action_Flags_Bits;
    PPG_Count flags         : PPG_Token_N_Flag_Bits;
+   PPG_Count action_state  : PPG_Token_N_Action_State_Bits;
+   PPG_Count action_flags  : PPG_Token_N_Action_Flags_Bits;
 } PPG_Misc_Bits;
 
 typedef struct PPG_TokenStruct {
@@ -103,13 +110,11 @@ typedef struct PPG_TokenStruct {
 
 enum PPG_Processing_State {
    PPG_Token_Initialized = 0,
-   PPG_Token_Root,
-   PPG_Token_In_Progress,
+   PPG_Token_Activation_In_Progress,
    PPG_Token_Matches,
+   PPG_Token_Deactivation_In_Progress,
    PPG_Token_Invalid
 };
-
-
 
 // enum {   PPG_Action_Flags_Start_Bit_Id = 3 };
 // enum {   PPG_Flags_Start_Bit_Id = PPG_Action_Flags_Start_Bit_Id + 1 };

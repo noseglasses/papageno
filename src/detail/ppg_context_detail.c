@@ -56,7 +56,7 @@ void ppg_global_initialize_context(PPG_Context *context) {
    */
    ppg_token_new(&context->pattern_root);
    
-   context->pattern_root.misc.state = PPG_Token_Root;
+   context->pattern_root.misc.state = PPG_Token_Initialized;
    
    context->current_token = NULL;
    

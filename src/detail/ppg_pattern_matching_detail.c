@@ -291,14 +291,19 @@ static PPG_Count ppg_process_next_event(void)
  
    PPG_Count state = ppg_context->current_token->misc.state;
    
-   if(!  ((state == PPG_Token_In_Progress)
+   // Pretend a match for the root token
+   //
+   if(!ppg_context->current_token->parent) {
+      state = PPG_Token_Matches;
+   }
+   
+   if(!  ((state == PPG_Token_Activation_In_Progress)
       || (state == PPG_Token_Initialized))) {
       
       PPG_Token__ *branch_token = NULL;
    
       switch (state) {
          
-         case PPG_Token_Root:
          case PPG_Token_Matches:
          case PPG_Token_Invalid:
             {

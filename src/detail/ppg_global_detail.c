@@ -135,7 +135,7 @@ void ppg_reset_pattern_matching_engine(void)
    // during cleanup.
    //
    ppg_context->pattern_root.misc.state
-         = PPG_Token_Root;
+         = PPG_Token_Initialized;
    
    // Start with the first token in the queue
    //

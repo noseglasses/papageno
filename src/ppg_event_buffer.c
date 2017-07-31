@@ -18,29 +18,38 @@
 #include "detail/ppg_event_buffer_detail.h"
 #include "detail/ppg_context_detail.h"
 
+typedef struct {
+   PPG_Event_Processor_Fun fun;
+   void *user_data;
+} PPG_Event_Buffer_Visitor_Adaptor_Data;
+
+static void ppg_event_buffer_visit_adaptor(PPG_Event_Queue_Entry *eqe,
+                        void *user_data)
+{
+   PPG_Event_Buffer_Visitor_Adaptor_Data *adaptor_data
+      = (PPG_Event_Buffer_Visitor_Adaptor_Data)user_data;
+      
+   PPG_ASSERT(adaptor_data);
+   PPG_ASSERT(adaptor_data->fun);
+   
+   adaptor_data->fun(adaptor_data->user_data);is
+}
+
+void ppg_event_buffer_iterate2(
+                        PPG_Event_Processor_Visitor visitor,
+                        void *user_data)
 void ppg_event_buffer_iterate(
                         PPG_Event_Processor_Fun event_processor,
                         void *user_data)
 {
-   if(ppg_event_buffer_size() == 0) { return; }
-   
-   if(PPG_EB.size == 0) { return; }
-   
-   if(PPG_EB.start > PPG_EB.end) {
+   PPG_Event_Buffer_Visitor_Adaptor_Data adaptor_data =
+      { 
+         .fun = event_processor,
+         .user_data = user_data
+      };
       
-      for(PPG_Count i = PPG_EB.start; i < PPG_MAX_EVENTS; ++i) {
-      
-         event_processor(&PPG_EB.events[i], user_data);
-      }
-      for(PPG_Count i = 0; i < PPG_EB.end; ++i) {
-         
-         event_processor(&PPG_EB.events[i], user_data);
-      }
-   }
-   else {
-      for(PPG_Count i = PPG_EB.start; i < PPG_EB.end; ++i) {
-      
-         event_processor(&PPG_EB.events[i], user_data);
-      }
-   }
+   ppg_event_buffer_iterate2(
+      (PPG_Event_Processor_Visitor)ppg_event_buffer_visit_adaptor,
+      &adaptor_data
+   );
 }

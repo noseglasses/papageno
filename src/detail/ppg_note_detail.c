@@ -23,12 +23,12 @@
 
 #include <stdlib.h>
 
-static void ppg_note_match_event(   
+static bool ppg_note_match_event(   
                                  PPG_Note *note,
                                  PPG_Event *event) 
 {  
    PPG_ASSERT(
-         (note->super.misc.state == PPG_Token_In_Progress)
+         (note->super.misc.state == PPG_Token_Activation_In_Progress)
       || (note->super.misc.state == PPG_Token_Initialized)
    );
 
@@ -54,7 +54,7 @@ static void ppg_note_match_event(
                note->super.misc.flags |= PPG_Note_Type_Active;
                
       #if PPG_PEDANTIC_TOKENS
-               note->super.misc.state = PPG_Token_In_Progress;
+               note->super.misc.state = PPG_Token_Activation_In_Progress;
       #else 
                
                PPG_LOG("Nt 0x%" PRIXPTR " fin\n", 
@@ -80,7 +80,7 @@ static void ppg_note_match_event(
                   // event. Thus, we ignore it as it belongs 
                   // to the activation of another token.
                   //
-                  return;
+                  return false;
                }
             }
          }
@@ -98,7 +98,7 @@ static void ppg_note_match_event(
       #ifndef PPG_PEDANTIC_TOKENS
             }
       #endif
-            return;
+            return false;
          }
       }
       else {
@@ -111,19 +111,19 @@ static void ppg_note_match_event(
             
             PPG_LOG("I wrg\n");
             note->super.misc.state = PPG_Token_Invalid;
-            return;
+            return false;
          }
          
          if(event->flags & PPG_Event_Active) {
             PPG_LOG("I mtch\n");
             note->super.misc.state = PPG_Token_Matches;
-            return;
+            return true;
          }
          
          PPG_LOG("I inact\n");
          note->super.misc.state = PPG_Token_Invalid;
          
-         return;
+         return false;
       }
    }
    else if(note_flags & PPG_Note_Flag_Match_Deactivation) {
@@ -132,17 +132,17 @@ static void ppg_note_match_event(
       
       if(note->input != event->input) {
          note->super.misc.state = PPG_Token_Invalid;
-         return;
+         return false;
       }
       
       if((event->flags & PPG_Event_Active) == 0) {
          note->super.misc.state = PPG_Token_Matches;
-         return;
+         return true;
       }
       
       note->super.misc.state = PPG_Token_Invalid;
          
-      return;
+      return false;
    }
    
    return;

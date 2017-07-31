@@ -25,7 +25,8 @@
  */
 enum PPG_Action_Flags {
    PPG_Action_Default = 0,
-   PPG_Action_Fallback = 1 << 0
+   PPG_Action_Fallback = 1 << 0,
+   PPG_Action_Deactivate_On_Token_Unmatch = PPG_Action_Fallback << 1
 };
 
 #endif

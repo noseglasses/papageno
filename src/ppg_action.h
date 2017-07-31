@@ -25,9 +25,10 @@
 
 /** @brief Function type of user callback functions
  * 
+ *  @param activation If true, the callback signals the activation (match) of a token, and deactivation otherwise
  *  @param user_data Optional user data.
  */
-typedef void (*PPG_Action_Callback_Fun)(void *user_data);
+typedef void (*PPG_Action_Callback_Fun)(bool activation, void *user_data);
 
 /** @brief The PPG_Action_Callback struct groups use callback information
  *  in an object oriented fashion (functor).

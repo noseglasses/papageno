@@ -24,7 +24,7 @@
 
 typedef PPG_Aggregate PPG_Chord;
 
-static void ppg_chord_match_event(  
+static bool ppg_chord_match_event(  
                                  PPG_Chord *chord,
                                  PPG_Event *event) 
 {
@@ -35,7 +35,7 @@ static void ppg_chord_match_event(
    PPG_ASSERT(chord->n_members != 0);
    
    PPG_ASSERT(
-         (chord->super.misc.state == PPG_Token_In_Progress)
+         (chord->super.misc.state == PPG_Token_Activation_In_Progress)
       || (chord->super.misc.state == PPG_Token_Initialized)
    );
    
@@ -57,12 +57,13 @@ static void ppg_chord_match_event(
             
             if(chord->super.misc.flags & PPG_Chord_Flags_Disallow_Input_Deactivation) {
                chord->super.misc.state = PPG_Token_Invalid;
-               return;
+               return false;
             }
             
             if(ppg_bitfield_get_bit(&chord->member_active, i)) {
                ppg_bitfield_set_bit(&chord->member_active, i, false);
                --chord->n_inputs_active;
+               return true;
             }
             else {
                
@@ -71,7 +72,7 @@ static void ppg_chord_match_event(
                // Thus, we conclude that the event must be related
                // to a previous match. Ignore the event.
                //
-               return;
+               return false;
             }
          }
          break;
@@ -92,10 +93,10 @@ static void ppg_chord_match_event(
       
       // Chords ignore unmatching deactivation events
       
-      return;
+      return false;
    }
    
-   chord->super.misc.state = PPG_Token_In_Progress;
+   chord->super.misc.state = PPG_Token_Activation_In_Progress;
    
    if(chord->n_inputs_active == chord->n_members) {
       
@@ -122,7 +123,7 @@ static void ppg_chord_match_event(
    }
 #endif
    
-   return;
+   return true;
 }
 
 static PPG_Count ppg_chord_token_precedence(PPG_Token__ *token)

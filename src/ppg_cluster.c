@@ -24,7 +24,7 @@
 
 typedef PPG_Aggregate PPG_Cluster;
 
-static void ppg_cluster_match_event(   
+static bool ppg_cluster_match_event(   
                                  PPG_Cluster *cluster,
                                  PPG_Event *event) 
 {
@@ -33,7 +33,7 @@ static void ppg_cluster_match_event(
    PPG_ASSERT(cluster->n_members != 0);
    
    PPG_ASSERT(
-         (cluster->super.misc.state == PPG_Token_In_Progress)
+         (cluster->super.misc.state == PPG_Token_Activation_In_Progress)
       || (cluster->super.misc.state == PPG_Token_Initialized)
    );
    
@@ -55,7 +55,7 @@ static void ppg_cluster_match_event(
             
             if(cluster->super.misc.flags & PPG_Cluster_Flags_Disallow_Input_Deactivation) {
                cluster->super.misc.state = PPG_Token_Invalid;
-               return;
+               return false;
             }
             
             /* Note: If input deactivation is allowed, we do not care for 
@@ -82,10 +82,10 @@ static void ppg_cluster_match_event(
       
       // Clusters ignore unmatching deactivation events
       
-      return;
+      return false;
    }
    
-   cluster->super.misc.state = PPG_Token_In_Progress;
+   cluster->super.misc.state = PPG_Token_Activation_In_Progress;
    
    if(cluster->n_inputs_active == cluster->n_members) {
       
@@ -112,7 +112,7 @@ static void ppg_cluster_match_event(
    }
 #endif
    
-   return;
+   return true;
 }
 
 static PPG_Count ppg_cluster_token_precedence(PPG_Token__ *token)

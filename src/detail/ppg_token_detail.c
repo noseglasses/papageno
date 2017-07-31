@@ -37,6 +37,7 @@ void ppg_token_store_action(PPG_Token__ *token,
 void ppg_token_reset(PPG_Token__ *token)
 {
    token->misc.state = PPG_Token_Initialized;
+   token->misc.action_state = PPG_Action_Disabled;
 }
 
 static void ppg_token_allocate_children(PPG_Token__ *a_This, PPG_Count n_children) {

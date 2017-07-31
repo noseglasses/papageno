@@ -38,8 +38,6 @@ void ppg_context_destroy(void *context)
    
    ppg_furcation_stack_free(&context__->furcation_stack);
    
-   ppg_bitfield_destroy(&context__->active_inputs);
-   
    ppg_token_free_children(&context__->pattern_root);
    
    free(context__);

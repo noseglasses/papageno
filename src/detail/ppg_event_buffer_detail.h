@@ -20,12 +20,24 @@
 #include "ppg_event.h"
 #include "ppg_settings.h"
 #include "ppg_bitfield.h"
+#include "detail/ppg_token_detail.h"
+
+typedef struct {
+   PPG_Count state         : PPG_Token_N_State_Bits;
+   bool changed            : 1;
+} PPG_Token_State;
+
+typedef struct {
+   PPG_Event      event;
+   PPG_Token__    *consumer;
+   PPG_Token_State_Info      token_state;
+} PPG_Event_Queue_Entry;
 
 // The event buffer is a ring buffer
 //
 typedef struct {
    
-   PPG_Event events[PPG_MAX_EVENTS];
+   PPG_Event_Queue_Entry events[PPG_MAX_EVENTS];
    
    PPG_Event_Buffer_Index_Type start;
    PPG_Event_Buffer_Index_Type end;
@@ -51,8 +63,11 @@ void ppg_event_buffer_remove_first_event(void);
 
 void ppg_even_buffer_flush_and_remove_first_event(bool on_success);
 
-void ppg_event_buffer_iterate(
-                        PPG_Event_Processor_Fun event_processor,
+typedef void (*PPG_Event_Processor_Visitor)(PPG_Event_Queue_Entry *eqe,
+                        void *user_data);
+
+void ppg_event_buffer_iterate2(
+                        PPG_Event_Processor_Visitor event_processor,
                         void *user_data);
 
 // The two following functions prepare the
