@@ -33,7 +33,7 @@ static bool ppg_cs_test_success = true;
 static char ppg_cs_flush_buffer[256];
 static int ppg_cs_cur_flush_pos = 0;
 
-static int ppg_cs_action_queue[256];
+static PPG_CS_Action_Expectation ppg_cs_action_expectation_queue[256];
 static int ppg_cs_n_actions = 0;
 
 #define MMG_MAX_ACTION_NAMES 100
@@ -139,13 +139,18 @@ void ppg_cs_flush_events(void)
    );
 }
 
-void ppg_cs_process_action(void *user_data) {
+void ppg_cs_process_action(bool activation, void *user_data) {
    
    PPG_Count action_id = (int)(uintptr_t)user_data;
    
    PPG_LOG("***** Action: %s\n", ppg_cs_action_names[action_id]);
    
-   ppg_cs_action_queue[ppg_cs_n_actions] = action_id;
+   ppg_cs_action_expectation_queue[ppg_cs_n_actions] 
+      = (PPG_CS_Action_Expectation) {
+            .action_id = action_id,
+            .activated = activation
+      };
+      
    ++ppg_cs_n_actions;
 }
 
@@ -391,7 +396,8 @@ void ppg_cs_check_test_success(char *file, int line)
    }
 }
 
-void ppg_cs_check_action_series(int n_actions, int* expected)
+void ppg_cs_check_action_series(int n_actions, 
+                                PPG_CS_Action_Expectation* expected)
 {
    ppg_cs_break();
    
@@ -408,10 +414,21 @@ void ppg_cs_check_action_series(int n_actions, int* expected)
    }
    else {
       for(int i = 0; i < ppg_cs_n_actions; ++i) {
-         if(ppg_cs_action_queue[i] != expected[i]) {
+         if(   (ppg_cs_action_expectation_queue[i].action_id 
+                  != expected[i].action_id)
+            || (ppg_cs_action_expectation_queue[i].activated 
+                  != expected[i].activated)) 
+         {
             PPG_LOG("! Action mismatch of action %d\n", i);
-            PPG_LOG("   expected: %s\n", ppg_cs_get_action_name(expected[i]));
-            PPG_LOG("   actual:   %s\n", ppg_cs_get_action_name(ppg_cs_action_queue[i]));
+            PPG_LOG("   expected: %s, activated: %d\n",        
+               ppg_cs_get_action_name(expected[i].action_id),
+               expected[i].activated
+            );
+            PPG_LOG("   actual:   %s, activated: %d\n",
+               ppg_cs_get_action_name(
+                  ppg_cs_action_expectation_queue[i].action_id),
+               ppg_cs_action_expectation_queue[i].activated
+            );
             
             actions_test_success = false;
          }
@@ -424,20 +441,27 @@ void ppg_cs_check_action_series(int n_actions, int* expected)
       PPG_LOG("expected:\n");
       
       for(int i = 0; i < n_actions; ++i) {
-         PPG_LOG("   %s\n", ppg_cs_get_action_name(expected[i]));
+         PPG_LOG("   %s, activated: %d\n",
+            ppg_cs_get_action_name(expected[i].action_id),
+            expected[i].activated
+         );
       }
       
       PPG_LOG("occurred:\n");
       
       for(int i = 0; i < ppg_cs_n_actions; ++i) {
-         PPG_LOG("   %s\n", ppg_cs_get_action_name(ppg_cs_action_queue[i]));
+         PPG_LOG("   %s, activated: %d\n",
+            ppg_cs_get_action_name(
+               ppg_cs_action_expectation_queue[i].action_id),
+               ppg_cs_action_expectation_queue[i].activated
+         );
       }
    }
    
    if(actions_test_success) {
       PPG_LOG("Actions test successfully passed\n");
       for(int i = 0; i < n_actions; ++i) {
-         PPG_LOG("   %s\n", ppg_cs_get_action_name(expected[i]));
+         PPG_LOG("   %s\n", ppg_cs_get_action_name(expected[i].action_id));
       }
    }
    else {

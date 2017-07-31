@@ -363,13 +363,29 @@ static PPG_Count ppg_process_next_event(void)
    PPG_LOG("Event queue: start: %u, cur: %u, end: %u, size: %u\n", 
               PPG_EB.start, PPG_EB.cur, PPG_EB.end, PPG_EB.size);
    
+   PPG_Count state_before = ppg_context->current_token->misc.state;
+   
    // As the token to process the event.
    //
-   ppg_context->current_token
+   bool event_consumed =
+         ppg_context->current_token
             ->vtable->match_event(  
                      ppg_context->current_token, 
                      event
                );
+            
+   PPG_EB.events[PPG_EB.cur].token_state.changed =
+      state_before != ppg_context->current_token->misc.state;
+   PPG_EB.events[PPG_EB.cur].token_state.state = 
+      ppg_context->current_token->misc.state;
+      
+   if(event_consumed) {
+      PPG_EB.events[PPG_EB.cur].consumer =
+            ppg_context->current_token;
+   }
+   else {
+      PPG_EB.events[PPG_EB.cur].consumer = NULL;
+   }
             
    #if PPG_HAVE_STATISTICS
    ++ppg_context->statistics.n_token_checks;
@@ -431,8 +447,6 @@ bool ppg_pattern_matching_run(void)
          case PPG_Pattern_Matches:
             
             ppg_recurse_and_process_actions(ppg_context->current_token);
-            
-            ppg_active_tokens_update();
             
             ppg_event_buffer_on_match_success();
             

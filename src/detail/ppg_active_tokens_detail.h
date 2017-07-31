@@ -25,6 +25,7 @@
 
 typedef struct {
    PPG_Token__ *tokens[PPG_ACTIVE_TOKENS_SPACE];
+   PPG_Count   pos[PPG_ACTIVE_TOKENS_SPACE];
    PPG_Count   free_ids[PPG_ACTIVE_TOKENS_SPACE];
    PPG_Count   n_tokens;
 } PPG_Active_Tokens;

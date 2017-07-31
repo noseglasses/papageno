@@ -284,9 +284,11 @@ void ppg_even_buffer_flush_and_remove_first_event(bool on_success)
 
 void ppg_event_buffer_on_match_success(void)
 {
-   ppg_recurse_and_prepare_active_branch(false /* don't reset */);
-            
    PPG_LOG("Prp. evt bffr on suc.\n");
+   
+   ppg_recurse_and_prepare_active_branch(false /* don't reset tokens*/);
+            
+   ppg_active_tokens_update();
    
 //    ppg_event_buffer_prepare_on_success();
    

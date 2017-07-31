@@ -61,6 +61,11 @@ enum {
    PPG_CS_EMF = PPG_CS_Action_Exception_Match_Failed
 };
 
+typedef struct {
+   PPG_Count action_id;
+   bool activated;
+} PPG_CS_Action_Expectation;
+
 extern int ppg_cs_result;
 
 // Returns the action id
@@ -73,8 +78,16 @@ char *ppg_cs_get_action_name(int action_id);
 
 #define PPG_CS_ACTION_VAR(ACTION_NAME) \
       PPG_CS_PASTE(PPG_CS_Action_, ACTION_NAME)
-   
-#define PPG_CS_A(ACTION_NAME) PPG_CS_ACTION_VAR(ACTION_NAME)
+      
+#define PPG_CS_ACTION_EXPECTATION(ACTION_NAME, ACTIVATED) \
+      (PPG_CS_Action_Expectation) { \
+         .action_id = PPG_CS_ACTION_VAR(ACTION_NAME), \
+         .activated = ACTIVATED \
+      }
+      
+#define PPG_CS_A(ACTION_NAME) \
+      PPG_CS_ACTION_EXPECTATION(ACTION_NAME, true), \
+      PPG_CS_ACTION_EXPECTATION(ACTION_NAME, false)
 
 #define PPG_CS_REGISTER_ACTION(ACTION_NAME) \
 __NL__   int PPG_CS_ACTION_VAR(ACTION_NAME) \
@@ -87,8 +100,8 @@ __NL__      = ppg_cs_register_action(#ACTION_NAME);
    PPG_CS_EXPECT_EXCEPTIONS(PPG_CS_Action_Exception_None)
    
 #define PPG_CS_EXPECT_ACTION_SERIES(...) \
-__NL__   ppg_cs_check_action_series(sizeof((int[]){__VA_ARGS__})/sizeof(int), \
-__NL__                              (int[]){__VA_ARGS__});
+__NL__   ppg_cs_check_action_series(sizeof((PPG_CS_Action_Expectation[]){__VA_ARGS__})/sizeof(PPG_CS_Action_Expectation), \
+__NL__                              (PPG_CS_Action_Expectation[]){__VA_ARGS__});
    
 #define PPG_CS_EXPECT_NO_ACTIONS \
    PPG_CS_EXPECT_ACTION_SERIES()
@@ -115,7 +128,7 @@ void ppg_cs_process_event_callback(
 
 void ppg_cs_flush_key_events(void);
 
-void ppg_cs_process_action(void *user_data);
+void ppg_cs_process_action(bool activation, void *user_data);
 
 void ppg_cs_process_event(char the_char);
 
@@ -123,7 +136,7 @@ void ppg_cs_process_string(char *string);
 
 void ppg_cs_check_flushed(char *expected);
 
-void ppg_cs_check_action_series(int n_actions, int* expected);
+void ppg_cs_check_action_series(int n_actions, PPG_CS_Action_Expectation* expected);
 
 void ppg_cs_list_event_queue(void);
 
