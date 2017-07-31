@@ -17,6 +17,7 @@
 #include "ppg_event_buffer.h"
 #include "detail/ppg_event_buffer_detail.h"
 #include "detail/ppg_context_detail.h"
+#include "ppg_debug.h"
 
 typedef struct {
    PPG_Event_Processor_Fun fun;
@@ -27,17 +28,14 @@ static void ppg_event_buffer_visit_adaptor(PPG_Event_Queue_Entry *eqe,
                         void *user_data)
 {
    PPG_Event_Buffer_Visitor_Adaptor_Data *adaptor_data
-      = (PPG_Event_Buffer_Visitor_Adaptor_Data)user_data;
+      = (PPG_Event_Buffer_Visitor_Adaptor_Data*)user_data;
       
    PPG_ASSERT(adaptor_data);
    PPG_ASSERT(adaptor_data->fun);
    
-   adaptor_data->fun(adaptor_data->user_data);is
+   adaptor_data->fun(&eqe->event, adaptor_data->user_data);
 }
 
-void ppg_event_buffer_iterate2(
-                        PPG_Event_Processor_Visitor visitor,
-                        void *user_data)
 void ppg_event_buffer_iterate(
                         PPG_Event_Processor_Fun event_processor,
                         void *user_data)

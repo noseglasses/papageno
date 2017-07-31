@@ -22,7 +22,7 @@
 
 bool ppg_recurse_and_process_actions(PPG_Token__ *cur_token);
 
-void ppg_recurse_and_cleanup_active_branch(void);
+void ppg_recurse_and_prepare_active_branch(bool reset);
 
 void ppg_delete_stored_events(void);
 

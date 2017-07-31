@@ -30,7 +30,7 @@ typedef struct {
 typedef struct {
    PPG_Event      event;
    PPG_Token__    *consumer;
-   PPG_Token_State_Info      token_state;
+   PPG_Token_State      token_state;
 } PPG_Event_Queue_Entry;
 
 // The event buffer is a ring buffer

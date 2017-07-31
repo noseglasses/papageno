@@ -18,9 +18,10 @@
 #define PPG_CONTEXT_DETAIL_H
 
 #include "ppg_event.h"
+#include "detail/ppg_furcation_detail.h"
 #include "detail/ppg_token_detail.h"
 #include "detail/ppg_event_buffer_detail.h"
-#include "detail/ppg_furcation_detail.h"
+#include "detail/ppg_active_tokens_detail.h"
 #include "ppg_signal_callback.h"
 #include "ppg_statistics.h"
 
@@ -30,7 +31,7 @@ typedef struct PPG_Context_Struct
 {
    PPG_Event_Buffer event_buffer;
    PPG_Furcation_Stack furcation_stack;
-//    PPG_Bitfield active_inputs;
+   PPG_Active_Tokens active_tokens;
    
    PPG_Token__ pattern_root;
 

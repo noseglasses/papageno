@@ -22,6 +22,7 @@
 #include "ppg_signals.h"
 
 #include <stddef.h>
+#include <stdbool.h>
 
 /** @brief Function type of user callback functions
  * 

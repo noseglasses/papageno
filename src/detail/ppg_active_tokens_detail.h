@@ -13,3 +13,24 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef PPG_ACTIVE_TOKENS_DETAIL_HPP
+#define PPG_ACTIVE_TOKENS_DETAIL_HPP
+
+#include "detail/ppg_token_detail.h"
+#include "ppg_settings.h"
+
+#define PPG_ACTIVE_TOKENS_SPACE 16
+
+#define PPG_GAT ppg_context->active_tokens
+
+typedef struct {
+   PPG_Token__ *tokens[PPG_ACTIVE_TOKENS_SPACE];
+   PPG_Count   free_ids[PPG_ACTIVE_TOKENS_SPACE];
+   PPG_Count   n_tokens;
+} PPG_Active_Tokens;
+
+void ppg_active_tokens_init(PPG_Active_Tokens *active_tokens);
+
+void ppg_active_tokens_update(void);
+
+#endif

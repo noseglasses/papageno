@@ -145,12 +145,12 @@ static bool ppg_note_match_event(
       return false;
    }
    
-   return;
+   return true;
 }
 
 static void ppg_note_reset(PPG_Note *note) 
 {
-   ppg_token_reset((PPG_Token__*)note);
+   ppg_token_reset_control_state((PPG_Token__*)note);
    
    // Clear the activation state
    //

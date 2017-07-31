@@ -92,6 +92,10 @@ PPG_Token ppg_token_set_flags(
  */
 PPG_Count ppg_token_get_flags(PPG_Token token);
 
+/** @brief Lists all active tokens for debugging purposes
+ */
+void ppg_token_list_all_active(void);
+
 /** @brief Auxiliary macro to simplify passing tokens to functions such as
  * ppg_pattern
  * 

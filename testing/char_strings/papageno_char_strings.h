@@ -211,7 +211,7 @@ __NL__   }
    
 #define PPG_CS_PREPARE_CONTEXT \
    \
-__NL__   ppg_global_set_number_of_inputs(255); \
+__NL__   /*ppg_global_set_number_of_inputs(255); */\
 __NL__   \
 __NL__   ppg_global_set_default_event_processor((PPG_Event_Processor_Fun)ppg_cs_process_event_callback); \
 __NL__   \

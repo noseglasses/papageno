@@ -77,9 +77,8 @@ bool ppg_recurse_and_process_actions(PPG_Token__ *cur_token)
          (uintptr_t)action_tokens[i]->action.callback.func,
          (uintptr_t)action_tokens[i]->action.callback.user_data
       );
-         
-      action_tokens[i]->action.callback.func(
-         action_tokens[i]->action.callback.user_data);
+      
+      action_tokens[i]->misc.action_state = PPG_Action_Enabled;
    }
    
 //    PPG_LOG("Done\n");
@@ -87,7 +86,7 @@ bool ppg_recurse_and_process_actions(PPG_Token__ *cur_token)
    return n_actions > 0;
 }
 
-void ppg_recurse_and_cleanup_active_branch(void)
+void ppg_recurse_and_prepare_active_branch(bool reset)
 {        
    if(!ppg_context->current_token) { return; }
    
@@ -104,12 +103,14 @@ void ppg_recurse_and_cleanup_active_branch(void)
       // back to the first branch node or back to the first
       // node after the root node of the search tree.
       // 
-      ppg_branch_cleanup(cur_token, furcation_token);
+      if(reset) {
+         ppg_branch_cleanup(cur_token, furcation_token);
+      }
       
       if(furcation_token) {
          
          for(PPG_Count i = 0; i < furcation_token->n_children; ++i) {
-            ppg_token_reset(furcation_token->children[i]);
+            ppg_token_reset_control_state(furcation_token->children[i]);
          }
                   
          cur_token = PPG_CUR_FUR.token;

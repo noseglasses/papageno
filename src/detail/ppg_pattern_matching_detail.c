@@ -42,7 +42,7 @@ void ppg_branch_cleanup(
 
       // Restore state flag to initialization state
       //
-      ppg_token_reset(cur_token);
+      ppg_token_reset_control_state(cur_token);
       
       // Reset members
       //
@@ -96,7 +96,7 @@ static PPG_Token__ *ppg_furcation_revert(PPG_Token__ *start_token)
          // has already taken place during ppg_branch_cleanup above.
          //
          for(PPG_Count i = 0; i < furcation_token->n_children; ++i) {
-            ppg_token_reset(furcation_token->children[i]);
+            ppg_token_reset_control_state(furcation_token->children[i]);
          }
          
          // Set the current branch token as new start token for
@@ -355,7 +355,7 @@ static PPG_Count ppg_process_next_event(void)
       ppg_context->current_token = branch_token;
    }
 
-   PPG_Event *event = &PPG_EB.events[PPG_EB.cur];
+   PPG_Event *event = &PPG_EB.events[PPG_EB.cur].event;
    
    PPG_LOG("Branch token  0x%" PRIXPTR "\n", 
              (uintptr_t)ppg_context->current_token);
@@ -432,6 +432,8 @@ bool ppg_pattern_matching_run(void)
             
             ppg_recurse_and_process_actions(ppg_context->current_token);
             
+            ppg_active_tokens_update();
+            
             ppg_event_buffer_on_match_success();
             
             pattern_matched = true;
@@ -443,7 +445,7 @@ bool ppg_pattern_matching_run(void)
             // Prepare the event buffer for 
             // user processing
             //
-            ppg_event_buffer_prepare_on_failure();
+//             ppg_event_buffer_prepare_on_failure();
             
             // If no furcation was found, there is no chance
             // for a match. Thus we remove the first stored event

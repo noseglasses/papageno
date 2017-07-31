@@ -34,6 +34,8 @@ static void ppg_on_timeout(void)
    if(action_processed) { 
       
       // Fallback was possible
+      
+      ppg_active_tokens_update();
    
       // If an action was processed, we consider the processing as a match
       //
@@ -68,7 +70,7 @@ static void ppg_on_timeout(void)
    
    ppg_delete_stored_events();
 
-   ppg_recurse_and_cleanup_active_branch();
+   //ppg_recurse_and_prepare_active_branch();
    
    ppg_reset_pattern_matching_engine();
 }

@@ -18,10 +18,11 @@
 #include "ppg_global.h"
 #include "ppg_debug.h"
 #include "ppg_action.h"
-#include "ppg_action.h"
 #include "ppg_action_flags.h"
 #include "ppg_signals.h"
 #include "detail/ppg_context_detail.h"
+#include "ppg_input.h"
+#include "detail/ppg_event_buffer_detail.h"
 
 #include <stdlib.h>
 
@@ -34,7 +35,7 @@ void ppg_token_store_action(PPG_Token__ *token,
               (uintptr_t)token, (uintptr_t)token->action.callback.user_data);
 }
 
-void ppg_token_reset(PPG_Token__ *token)
+void ppg_token_reset_control_state(PPG_Token__ *token)
 {
    token->misc.state = PPG_Token_Initialized;
    token->misc.action_state = PPG_Action_Disabled;
@@ -172,7 +173,7 @@ static PPG_Token_Vtable ppg_token_vtable =
    .match_event 
       = NULL,
    .reset 
-      = (PPG_Token_Reset_Fun) ppg_token_reset,
+      = (PPG_Token_Reset_Fun) ppg_token_reset_control_state,
    .destroy 
       = (PPG_Token_Destroy_Fun) ppg_token_destroy,
    .equals
@@ -255,4 +256,13 @@ PPG_Count ppg_token_get_flags(PPG_Token token)
    PPG_Token__ *token__ = (PPG_Token__ *)token;
    
    return token__->misc.flags;
+}
+
+void ppg_token_list_all_active(void)
+{
+   PPG_LOG("T actv:\n");
+
+   for(PPG_Count i = 0; i < PPG_GAT.n_tokens; ++i) {
+      PPG_LOG("\t0x%" PRIXPTR "\n", (uintptr_t)PPG_GAT.tokens[i]);
+   }
 }

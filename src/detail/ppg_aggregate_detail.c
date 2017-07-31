@@ -45,7 +45,7 @@ void *ppg_aggregate_new(void *aggregate__) {
 
 void ppg_aggregate_reset(PPG_Aggregate *aggregate) 
 {
-   ppg_token_reset((PPG_Token__*)aggregate);
+   ppg_token_reset_control_state((PPG_Token__*)aggregate);
    
 #if PPG_PEDANTIC_TOKENS
    aggregate->all_activated = false;

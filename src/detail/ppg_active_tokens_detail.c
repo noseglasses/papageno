@@ -13,46 +13,38 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef PPG_ACTIVE_TOKENS_HPP
-#define PPG_ACTIVE_TOKENS_HPP
 
-#define PPG_ACTIVE_TOKENS_SPACE 16
-
-#define PPG_GAT ppg_context->active_tokens
-
-typedef struct {
-   PPG_Token__ *tokens[PPG_ACTIVE_TOKENS_SPACE];
-   PPG_Count   free_ids[PPG_ACTIVE_TOKENS_SPACE];
-   PPG_Count   n_tokens;
-} PPG_Active_Tokens;
+#include "detail/ppg_active_tokens_detail.h"
+#include "detail/ppg_context_detail.h"
+#include "ppg_debug.h"
 
 void ppg_active_tokens_init(PPG_Active_Tokens *active_tokens)
 {
    for(PPG_Count i = 0; i < PPG_ACTIVE_TOKENS_SPACE; ++i) {
-      tokens[i] = NULL;
-      free_ids[i] = i;
+      active_tokens->tokens[i] = NULL;
+      active_tokens->free_ids[i] = i;
    }
-   n_tokens = 0;
+   active_tokens->n_tokens = 0;
 }
 
-void ppg_active_tokens_add(PPG_Token__ *token)
+static void ppg_active_tokens_add(PPG_Token__ *token)
 {
-   PPG_Count next_free_id = PPG_GAT->free_ids[PPG_GAT->n_tokens];
-   ++PPG_GAT->n_tokens;
-   PPG_GAT->tokens[next_free_id] = token;
+   PPG_Count next_free_id = PPG_GAT.free_ids[PPG_GAT.n_tokens];
+   ++PPG_GAT.n_tokens;
+   PPG_GAT.tokens[next_free_id] = token;
 }
 
-void ppg_active_tokens_remove(PPG_Count id)
+static void ppg_active_tokens_remove(PPG_Count id)
 {
-   --PPG_GAT->n_tokens;
-   PPG_GAT->free_ids[PPG_GAT->n_tokens] = id;
-   PPG_GAT->tokens[id] = NULL;
+   --PPG_GAT.n_tokens;
+   PPG_GAT.free_ids[PPG_GAT.n_tokens] = id;
+   PPG_GAT.tokens[id] = NULL;
 }
 
-void ppg_active_tokens_search_remove(PPG_Token__ *token)
+static void ppg_active_tokens_search_remove(PPG_Token__ *token)
 {
-   for(PPG_Count i = 0; i < PPG_GAT->n_tokens; ++i) {
-      if(token == PPG_GAT->tokens[i]) {
+   for(PPG_Count i = 0; i < PPG_GAT.n_tokens; ++i) {
+      if(token == PPG_GAT.tokens[i]) {
          ppg_active_tokens_remove(i);
          break;
       }
@@ -63,11 +55,11 @@ static void ppg_active_tokens_update_aux(
                                     PPG_Event_Queue_Entry *eqe,
                                     void *user_data)
 {
-   if(eqe->event->flags & PPG_Event_Active) {
+   if(eqe->event.flags & PPG_Event_Active) {
       
       // The event activates an input
       
-      if(   (eqe->comsumption_result == PPG_Token_Matches)
+      if(   (eqe->token_state.state == PPG_Token_Matches)
          && eqe->token_state.changed
       ) {
          // The last event led to a match
@@ -99,7 +91,7 @@ static void ppg_active_tokens_update_aux(
             
             // Token state just changed...
             
-            if(eqe->comsumption_result 
+            if(eqe->token_state.state 
                         == PPG_Token_Deactivation_In_Progress) {
                
                // It turned from state "matching" to state
@@ -113,7 +105,7 @@ static void ppg_active_tokens_update_aux(
                   }
                }
             }
-            else if(eqe->comsumption_result 
+            else if(eqe->token_state.state 
                               == PPG_Token_Initialized) {
                
                // The token just became initialized, i.e. all related inputs were deactivated
@@ -132,7 +124,7 @@ static void ppg_active_tokens_update_aux(
                
                // Restore state flag to initialization state
                //
-               ppg_token_reset(eqe->consumer);
+               ppg_token_reset_control_state(eqe->consumer);
                
                // Reset members
                //
@@ -154,12 +146,12 @@ static void ppg_active_tokens_update_aux(
          
          // Thus, we first have to find it in the active token set.
          //
-         for(PPG_Count i = 0; i < PPG_GAT->n_tokens; ++i) {
+         for(PPG_Count i = 0; i < PPG_GAT.n_tokens; ++i) {
             
-            bool event_consumed = PPG_GAT->token[i]
+            bool event_consumed = PPG_GAT.tokens[i]
                                     ->vtable->match_event(  
-                                             PPG_GAT->token[i], 
-                                             eqe->event
+                                             PPG_GAT.tokens[i], 
+                                             &eqe->event
                                        );
             if(!event_consumed) {
                continue;
@@ -175,18 +167,15 @@ static void ppg_active_tokens_update_aux(
             // If the token just became initialized, we
             // can reset it and remove it from the active token set.
             //
-            if(PPG_GAT->token[i]->misc.state == PPG_Token_Initialized) { 
+            if(PPG_GAT.tokens[i]->misc.state == PPG_Token_Initialized) { 
                
                // Restore state flag to initialization state
                //
-               ppg_token_reset(PPG_GAT->token[i]);
+               ppg_token_reset_control_state(PPG_GAT.tokens[i]);
                
                // Reset members
                //
-               PPG_CALL_VIRT_METHOD(PPG_GAT->token[i], reset);
-               
-               TODO: Ensure that reset is not carried out in insuitable other places
-              watchout for ppg_recurse_and_cleanup_active_branch
+               PPG_CALL_VIRT_METHOD(PPG_GAT.tokens[i], reset);
               
                ppg_active_tokens_remove(i);
             }
@@ -194,14 +183,12 @@ static void ppg_active_tokens_update_aux(
             break;
          }
       }
+   }
 }
 
 void ppg_active_tokens_update(void)
 {
-   
-   void ppg_event_buffer_iterate2(
-                        PPG_Event_Processor_Visitor event_processor,
-                        void *user_data);
+   ppg_event_buffer_iterate2(
+      (PPG_Event_Processor_Visitor)ppg_active_tokens_update_aux, 
+      NULL);
 }
-
-#endif

@@ -28,10 +28,6 @@
  */
 typedef uint8_t PPG_Input_Id;
 
-/** @brief Lists all active inputs for debugging purposes
- */
-void ppg_input_list_all_active(void);
-
 /** @brief Auxiliary macro to simplify passing input arrays to functions such as
  * ppg_cluster or ppg_chord
  * 

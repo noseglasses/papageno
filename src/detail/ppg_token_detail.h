@@ -79,7 +79,7 @@ enum {   PPG_Token_N_State_Bits = 3 };
 enum {   PPG_Token_N_Action_Flags_Bits = 4 };
 enum {   PPG_Token_N_Action_State_Bits = 1 };
 enum {   PPG_Token_N_Flag_Bits = 16  - PPG_Token_N_State_Bits 
-                                    - PPG_Token_N_Action_Flags_Bit
+                                    - PPG_Token_N_Action_Flags_Bits
                                     - PPG_Token_N_Action_State_Bits};
                                     
 typedef struct {
@@ -161,7 +161,7 @@ void ppg_token_free_children(PPG_Token__ *token);
 void ppg_token_store_action(PPG_Token__ *token, 
                                    PPG_Action action);
 
-void ppg_token_reset(   PPG_Token__ *token);
+void ppg_token_reset_control_state(   PPG_Token__ *token);
 
 PPG_Token__ *ppg_token_new(PPG_Token__ *token);
 

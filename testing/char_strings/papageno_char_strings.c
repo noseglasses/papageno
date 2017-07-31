@@ -354,7 +354,7 @@ void ppg_cs_check_test_results(uint8_t expected)
       (ppg_cs_exceptions & PPG_CS_Action_Exception_Match_Failed)
    );
    
-   ppg_input_list_all_active();
+   ppg_token_list_all_active();
 }
 
 void ppg_cs_check_flushed(char *expected)

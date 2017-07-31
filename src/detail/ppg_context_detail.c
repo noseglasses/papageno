@@ -38,8 +38,9 @@ void ppg_global_initialize_context(PPG_Context *context) {
    
    ppg_event_buffer_init(&context->event_buffer);
    ppg_furcation_stack_init(&context->furcation_stack);
+   ppg_active_tokens_init(&context->active_tokens);
    
-   ppg_bitfield_init(&context->active_inputs);
+//    ppg_bitfield_init(&context->active_inputs);
    
    context->timeout_enabled = true;
    context->papageno_enabled = true;
