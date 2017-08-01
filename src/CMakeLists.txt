@@ -12,6 +12,10 @@ endif()
 set(debugging_features_enabled FALSE)
 if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
    set(debugging_features_enabled TRUE)
+
+   set(__PPG_DEBUGGING_ENABLED 1)
+else()
+   set(__PPG_DEBUGGING_ENABLED 0)
 endif()
    
 option(PAPAGENO_LOGGING_ENABLED "Toggles logging output" ${debugging_features_enabled})

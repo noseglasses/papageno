@@ -164,8 +164,20 @@ __NL__   } \
 __NL__   else { \
 __NL__      automatically_reset_testing_system = true; \
 __NL__   }
+
+#if PPG_HAVE_DEBUGGING
+#define PPG_CS_CHECK_CONSISTENCY \
+__NL__      if(ppg_global_check_consistency()) { \
+__NL__         PPG_LOG("Consistency check failed\n"); \
+__NL__         ppg_pattern_print_tree(); \
+__NL__         abort(); \
+__NL__      }
+#else
+#define PPG_CS_CHECK_CONSISTENCY
+#endif
    
 #define PPG_CS_PROCESS_STRING(STRING, ...) \
+__NL__   PPG_CS_CHECK_CONSISTENCY \
 __NL__   ppg_cs_output_test_info(__FILE__, __LINE__); \
 __NL__   ppg_cs_process_string(STRING); \
 __NL__   PPG_CS_CHECK_NO_PROCESS(__VA_ARGS__)
@@ -173,6 +185,7 @@ __NL__   PPG_CS_CHECK_NO_PROCESS(__VA_ARGS__)
 void ppg_cs_process_on_off(char *string);
 
 #define PPG_CS_PROCESS_ON_OFF(STRING, ...) \
+__NL__   PPG_CS_CHECK_CONSISTENCY \
 __NL__   ppg_cs_output_test_info(__FILE__, __LINE__); \
 __NL__   ppg_cs_process_on_off(STRING); \
 __NL__   PPG_CS_CHECK_NO_PROCESS(__VA_ARGS__)   

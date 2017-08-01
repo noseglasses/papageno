@@ -31,25 +31,53 @@ enum {
    PPG_Pattern_Branch_Reversion
 };
 
-void ppg_branch_cleanup(
+PPG_Token__ * ppg_branch_cleanup(
                         PPG_Token__ *cur_token,
                         PPG_Token__ *end_token)
 {
+   PPG_LOG("Branch cleanup\n");
+   
+   PPG_Token__ *branch_root = cur_token;
+   
    // Unwind and cleanup back to the current furcation or to the
    // root node
    // 
    while(cur_token != end_token) {
-
-      // Restore state flag to initialization state
-      //
-      ppg_token_reset_control_state(cur_token);
       
       // Reset members
       //
       PPG_CALL_VIRT_METHOD(cur_token, reset);
       
+      #if PPG_HAVE_DEBUGGING
+      ppg_token_check_initialized(cur_token);
+      #endif
+      
+      branch_root = cur_token;
+      
       cur_token = cur_token->parent;
    }
+   PPG_LOG("Branch cleanup done\n");
+   
+   return branch_root;
+}
+
+PPG_Token__ * ppg_branch_find_root(
+                        PPG_Token__ *cur_token,
+                        PPG_Token__ *end_token)
+{   
+   PPG_Token__ *branch_root = cur_token;
+   
+   // Unwind and cleanup back to the current furcation or to the
+   // root node
+   // 
+   while(cur_token != end_token) {
+      
+      branch_root = cur_token;
+      
+      cur_token = cur_token->parent;
+   }
+   
+   return branch_root;
 }
 
 static PPG_Token__ *ppg_furcation_revert(PPG_Token__ *start_token)
@@ -67,6 +95,9 @@ static PPG_Token__ *ppg_furcation_revert(PPG_Token__ *start_token)
       
       furcation_token
          = (PPG_FB.cur_furcation == -1) ? NULL : PPG_CUR_FUR.token;
+         
+      PPG_LOG("Reverting to furcation token 0x%" PRIXPTR "\n", 
+            (uintptr_t)furcation_token);
    
       // Recursively reset all tokens of the branch we are on
       // back to the first branch node or back to the first
@@ -83,8 +114,6 @@ static PPG_Token__ *ppg_furcation_revert(PPG_Token__ *start_token)
          //
          return NULL;
       }
-      
-      --PPG_CUR_FUR.n_branch_candidates;
       
       // If we already tried all possible branches of the current furcation
       //
@@ -113,6 +142,8 @@ static PPG_Token__ *ppg_furcation_revert(PPG_Token__ *start_token)
          // Mark the current branch (i.e. the branch's root node) as invalid
          //
          PPG_CUR_FUR.branch->misc.state = PPG_Token_Invalid;
+      
+         --PPG_CUR_FUR.n_branch_candidates;
          
          break;
       }
@@ -133,6 +164,9 @@ static PPG_Token__ *ppg_token_get_most_appropriate_branch(
                         PPG_Token__ *parent_token,
                         PPG_Count *n_branch_candidates)
 {
+   PPG_LOG("Getting most appropriate branch for 0x%" PRIXPTR "\n",
+           (uintptr_t)parent_token);
+   
    // Determine the number of possible candidates
    //
    PPG_Layer highest_layer = -1;
@@ -148,6 +182,9 @@ static PPG_Token__ *ppg_token_get_most_appropriate_branch(
    for(PPG_Count i = 0; i < parent_token->n_children; ++i) {
          
       if(parent_token->children[i]->misc.state == PPG_Token_Invalid) {
+         
+         PPG_LOG("   Ignoring 0x%" PRIXPTR " as invalid\n",
+           (uintptr_t)parent_token->children[i]);
          continue;
       }
       
@@ -155,6 +192,10 @@ static PPG_Token__ *ppg_token_get_most_appropriate_branch(
       * nodes' ppg_context->layer tags are lower or equal the current ppg_context->layer
       */
       if(parent_token->children[i]->layer > ppg_context->layer) { 
+         
+         PPG_LOG("   Ignoring 0x%" PRIXPTR " due to insuitable layer\n",
+           (uintptr_t)parent_token->children[i]);
+         
          parent_token->children[i]->misc.state = PPG_Token_Invalid;
          continue; 
       }
@@ -247,7 +288,7 @@ static PPG_Token__ *ppg_token_get_next_possible_branch(
    if(furcation_already_present) {
       
       PPG_LOG("Updating furcation for token 0x%" PRIXPTR "\n", 
-            (uintptr_t)ppg_context->current_token);
+            (uintptr_t)PPG_CUR_FUR.token);
       
       PPG_CUR_FUR.branch = branch;
    }
@@ -274,8 +315,10 @@ static PPG_Token__ *ppg_token_get_next_possible_branch(
    PPG_CUR_FUR.n_branch_candidates 
                   = n_branch_candidates;
    
-   PPG_LOG("Next branch 0x%" PRIXPTR ": candidates %u\n", 
-             (uintptr_t)branch, n_branch_candidates);
+   PPG_LOG("Furcation 0x%" PRIXPTR ": candidates %u, next branch 0x%" PRIXPTR "\n", 
+           (uintptr_t)PPG_CUR_FUR.token,
+           PPG_CUR_FUR.n_branch_candidates,
+           (uintptr_t)PPG_CUR_FUR.branch);
 
    return branch;
 }

@@ -33,9 +33,11 @@ static void ppg_on_timeout(void)
       
    if(action_processed) { 
       
+      PPG_LOG("Fallback success\n");
+      
       // Fallback was possible
       
-      ppg_active_tokens_update();
+//       ppg_active_tokens_update();
    
       // If an action was processed, we consider the processing as a match
       //
@@ -46,6 +48,8 @@ static void ppg_on_timeout(void)
       ppg_delete_stored_events();
    }
    else {
+      
+      PPG_LOG("Trying to find match after timeout\n");
       
       // If no action fallback is possible,
       // we try to find a match...

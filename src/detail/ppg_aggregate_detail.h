@@ -46,6 +46,10 @@ PPG_Token ppg_global_initialize_aggregate(
 void *ppg_aggregate_new(void *aggregate__);
 
 void ppg_aggregate_reset(PPG_Aggregate *aggregate);
+  
+#if PPG_HAVE_DEBUGGING
+bool ppg_aggregate_check_initialized(PPG_Token__ *token);
+#endif
 
 PPG_Aggregate* ppg_aggregate_destroy(PPG_Aggregate *aggregate);
 

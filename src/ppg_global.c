@@ -190,3 +190,11 @@ void ppg_global_abort_pattern_matching(void)
    ppg_reset_pattern_matching_engine();
 }
 
+#if PPG_HAVE_DEBUGGING
+
+bool ppg_global_check_consistency(void)
+{
+   return ppg_token_recurse_check_initialized(&ppg_context->pattern_root);
+}
+
+#endif

@@ -22,6 +22,7 @@
 #include "ppg_action.h"
 #include "ppg_layer.h"
 #include "ppg_settings.h"
+#include "ppg_debug.h"
 
 struct PPG_TokenStruct;
 
@@ -44,6 +45,10 @@ typedef PPG_Count (*PPG_Token_Precedence_Fun)(struct PPG_TokenStruct *token);
 typedef void (*PPG_Token_Print_Self_Fun)(struct PPG_TokenStruct *p, PPG_Count indent, bool recurse);
 #endif
 
+#if PPG_HAVE_DEBUGGING
+typedef bool (*PPG_Token_Check_Initialized_Fun)(struct PPG_TokenStruct *p);
+#endif
+
 typedef struct {
                            
    PPG_Token_Match_Event_Fun 
@@ -64,7 +69,12 @@ typedef struct {
    #if PPG_PRINT_SELF_ENABLED
    PPG_Token_Print_Self_Fun
                            print_self;
-   #endif                        
+   #endif      
+                           
+   #if PPG_HAVE_DEBUGGING
+   PPG_Token_Check_Initialized_Fun
+                           check_initialized;
+   #endif
 } PPG_Token_Vtable;
 
 #define PPG_CALL_VIRT_METHOD(THIS, METHOD, ...) \
@@ -178,6 +188,23 @@ PPG_Token__* ppg_token_get_equivalent_child(
 #if PPG_PRINT_SELF_ENABLED
 void ppg_token_print_self_start(PPG_Token__ *p, PPG_Count indent);
 void ppg_token_print_self_end(PPG_Token__ *p, PPG_Count indent, bool recurse);
+#endif
+
+#if PPG_HAVE_DEBUGGING
+// Use this method directly to start recursion
+//
+bool ppg_token_check_initialized(PPG_Token__ *token);
+
+bool ppg_token_recurse_check_initialized(PPG_Token__ *token);
+
+#define PPG_ASSERT_WARN(...) \
+   if(!(__VA_ARGS__)) { \
+      PPG_LOG("Assertion failed\n"); \
+      PPG_LOG("   token: 0x%" PRIXPTR "\n", (uintptr_t)token); \
+      PPG_LOG("   assertion: %s\n", #__VA_ARGS__); \
+      PPG_LOG("   location: %s:%d\n", __FILE__, __LINE__); \
+      assertion_failed = true; \
+   }
 #endif
 
 #endif

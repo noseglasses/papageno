@@ -79,10 +79,16 @@ static void ppg_active_tokens_update_aux(
                                     PPG_Event_Queue_Entry *eqe,
                                     void *user_data)
 {
-   PPG_LOG("Event: Input %d, active: %d\n",
+   PPG_LOG("Event: Input 0x%d, active: %d\n",
            eqe->event.input,
            eqe->event.flags & PPG_Event_Active);
    
+   if(eqe->consumer) {
+      PPG_LOG("   consumer: 0x%" PRIXPTR "\n", (uintptr_t)eqe->consumer);
+      PPG_LOG("   consumer action state: %d\n", eqe->consumer->misc.action_state);
+      PPG_CALL_VIRT_METHOD(eqe->consumer, print_self, 0, false /* do not recurse */);
+   }
+  
    if(eqe->event.flags & PPG_Event_Active) {
       
       // The event activates an input
@@ -147,7 +153,7 @@ static void ppg_active_tokens_update_aux(
             else if(eqe->token_state.state 
                               == PPG_Token_Initialized) {
                
-               PPG_LOG("   Causes initialization\n");
+               PPG_LOG("   Causes finalization of 0x%" PRIXPTR "\n", (uintptr_t)eqe->consumer);
             
                // The token just became initialized, i.e. all related inputs were deactivated
                // again.
@@ -163,10 +169,6 @@ static void ppg_active_tokens_update_aux(
                
                // The token is now free to be used for the next pattern processing round.
                // Reset it.
-               
-               // Restore state flag to initialization state
-               //
-               ppg_token_reset_control_state(eqe->consumer);
                
                // Reset members
                //
@@ -190,7 +192,7 @@ static void ppg_active_tokens_update_aux(
          // active set that has been registered in one of the previous pattern matching rounds
          // and whose inputs have not all been deactivated yet. 
          
-         PPG_Token__ *token = NULL;
+         PPG_Token__ *consumer = NULL;
          bool event_consumed = false;
          PPG_Count i;
          
@@ -198,11 +200,11 @@ static void ppg_active_tokens_update_aux(
          //
          for(i = 0; i < PPG_GAT.n_tokens; ++i) {
             
-            token = PPG_GAT.tokens[PPG_GAT.free_ids[i]];
+            consumer = PPG_GAT.tokens[PPG_GAT.free_ids[i]];
             
-            event_consumed = token
+            event_consumed = consumer
                                     ->vtable->match_event(  
-                                             token, 
+                                             consumer, 
                                              &eqe->event
                                        );
             if(!event_consumed) {
@@ -215,6 +217,18 @@ static void ppg_active_tokens_update_aux(
          PPG_ASSERT(event_consumed);
          
          PPG_LOG("   consumed\n");
+      
+         // The token just became initialized, i.e. all related inputs were deactivated
+         // again.
+         
+         if((consumer->misc.action_flags & PPG_Action_Deactivate_On_Token_Unmatch) == 0) {
+         
+            if(consumer->misc.action_state == PPG_Action_Enabled) {
+               PPG_LOG("      Triggering deactivation action\n");
+               consumer->action.callback.func(false /* signal deactivation */,
+                  consumer->action.callback.user_data);
+            }
+         }
             
          // One of the tokens from the active set consumed our deactivation event
          
@@ -226,15 +240,13 @@ static void ppg_active_tokens_update_aux(
          // If the token just became initialized, we
          // can reset it and remove it from the active token set.
          //
-         if(token->misc.state == PPG_Token_Initialized) { 
+         if(consumer->misc.state == PPG_Token_Initialized) { 
             
-            // Restore state flag to initialization state
-            //
-            ppg_token_reset_control_state(token);
+            PPG_LOG("   Causes initialization of 0x%" PRIXPTR "\n", (uintptr_t)consumer);
             
             // Reset members
             //
-            PPG_CALL_VIRT_METHOD(token, reset);
+            PPG_CALL_VIRT_METHOD(consumer, reset);
             
             ppg_active_tokens_remove(i);
          }

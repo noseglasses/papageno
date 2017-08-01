@@ -62,6 +62,12 @@ static bool ppg_cluster_match_event(
              * released inputs here. Every cluster member must be 
              * pressed only once
             */
+            if(cluster->all_activated) {
+               if(ppg_bitfield_get_bit(&cluster->member_active, i)) {
+                  ppg_bitfield_set_bit(&cluster->member_active, i, false);
+                  --cluster->n_inputs_active;
+               }
+            }
 
             break;
          }
@@ -99,18 +105,25 @@ static bool ppg_cluster_match_event(
 //       PPG_LOG("O");
 #endif
    }
-#if PPG_PEDANTIC_TOKENS
    else if(cluster->n_inputs_active == 0) {
       
       if(cluster->all_activated) {
          
+#if PPG_PEDANTIC_TOKENS
          /* Cluster matches
          */
          cluster->super.misc.state = PPG_Token_Matches;
 //          PPG_LOG("O");
+#else
+         chord->super.misc.state = PPG_Token_Initialized;
+#endif
       }
    }
-#endif
+   else {
+      if(cluster->all_activated) {
+         cluster->super.misc.state = PPG_Token_Deactivation_In_Progress;
+      }
+   }
    
    return true;
 }
@@ -153,6 +166,12 @@ static PPG_Token_Vtable ppg_cluster_vtable =
    ,
    .print_self
       = (PPG_Token_Print_Self_Fun) ppg_cluster_print_self
+   #endif
+     
+   #if PPG_HAVE_DEBUGGING
+   ,
+   .check_initialized
+      = (PPG_Token_Check_Initialized_Fun)ppg_aggregate_check_initialized
    #endif
 };
    

@@ -60,7 +60,7 @@ void ppg_event_process(PPG_Event *event)
       return;
    }
    
-   PPG_LOG("Input %d, active %d\n", event->input, 
+   PPG_LOG("Input 0x%d, active %d\n", event->input, 
               event->flags & PPG_Event_Active);
    
    ppg_timeout_check();

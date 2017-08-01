@@ -27,11 +27,8 @@ static bool ppg_note_match_event(
                                  PPG_Note *note,
                                  PPG_Event *event) 
 {  
-   PPG_ASSERT(
-         (note->super.misc.state == PPG_Token_Activation_In_Progress)
-      || (note->super.misc.state == PPG_Token_Initialized)
-   );
-
+   PPG_LOG("Nt 0x%" PRIXPTR ", input 0x%d, ppg_note_match_event\n", (uintptr_t)note, note->input);
+   
    PPG_Count note_flags 
       = note->super.misc.flags;
    
@@ -72,10 +69,12 @@ static bool ppg_note_match_event(
                   PPG_LOG("Nt fin\n");
       //             PPG_LOG("N");
                   note->super.misc.state = PPG_Token_Matches;
+      #else
+                  note->super.misc.state = PPG_Token_Initialized;
       #endif
                }
-               else {
-                  
+               else {  
+               
                   // The input is not active but this is a deactivation 
                   // event. Thus, we ignore it as it belongs 
                   // to the activation of another token.
@@ -190,6 +189,23 @@ static void ppg_note_print_self(PPG_Note *p, PPG_Count indent, bool recurse)
 }
 #endif
 
+#if PPG_HAVE_DEBUGGING
+static bool ppg_note_check_initialized(PPG_Token__ *token)
+{
+   PPG_Note *note = (PPG_Note *)token;
+  
+   bool assertion_failed = false;
+   
+   assertion_failed |= ppg_token_check_initialized(token);
+   
+   PPG_ASSERT_WARN(
+      (note->super.misc.flags 
+         & PPG_Note_Type_Active) == 0);
+   
+   return assertion_failed;
+}
+#endif
+
 static PPG_Token_Vtable ppg_note_vtable =
 {
    .match_event 
@@ -207,6 +223,12 @@ static PPG_Token_Vtable ppg_note_vtable =
    ,
    .print_self
       = (PPG_Token_Print_Self_Fun) ppg_note_print_self
+   #endif
+   
+   #if PPG_HAVE_DEBUGGING
+   ,
+   .check_initialized
+      = (PPG_Token_Check_Initialized_Fun)ppg_note_check_initialized
    #endif
 };
 

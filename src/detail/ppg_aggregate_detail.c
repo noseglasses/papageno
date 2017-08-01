@@ -136,3 +136,27 @@ PPG_Token ppg_global_initialize_aggregate(
     */
    return aggregate;
 }
+
+#if PPG_HAVE_DEBUGGING
+bool ppg_aggregate_check_initialized(PPG_Token__ *token)
+{
+   PPG_Aggregate *aggregate = (PPG_Aggregate*)token;
+   
+   bool assertion_failed = false;
+   
+   assertion_failed |= ppg_token_check_initialized(token);
+   
+#if PPG_PEDANTIC_TOKENS
+   PPG_ASSERT_WARN(aggregate->all_activated == false);
+#endif
+   
+   PPG_ASSERT_WARN(aggregate->n_inputs_active == 0);
+   
+   for(PPG_Count i = 0; i < aggregate->n_members; ++i) {
+      PPG_ASSERT_WARN(ppg_bitfield_get_bit(&aggregate->member_active,
+                           i) == false);
+   }
+   
+   return assertion_failed;
+}
+#endif

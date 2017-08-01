@@ -34,11 +34,6 @@ static bool ppg_chord_match_event(
    
    PPG_ASSERT(chord->n_members != 0);
    
-   PPG_ASSERT(
-         (chord->super.misc.state == PPG_Token_Activation_In_Progress)
-      || (chord->super.misc.state == PPG_Token_Initialized)
-   );
-   
    /* Check if the input is part of the current chord 
     */
    for(PPG_Count i = 0; i < chord->n_members; ++i) {
@@ -110,18 +105,26 @@ static bool ppg_chord_match_event(
 //       PPG_LOG("C");
 #endif
    }
-#if PPG_PEDANTIC_TOKENS
    else if(chord->n_inputs_active == 0) {
       
       if(chord->all_activated) {
       
+#if PPG_PEDANTIC_TOKENS
          /* Chord matches
          */
          chord->super.misc.state = PPG_Token_Matches;
 //          PPG_LOG("C");
+#else
+         
+         chord->super.misc.state = PPG_Token_Initialized;
+#endif
       }
    }
-#endif
+   else {
+      if(chord->all_activated) {
+         chord->super.misc.state = PPG_Token_Deactivation_In_Progress;
+      }
+   }
    
    return true;
 }
@@ -164,6 +167,12 @@ static PPG_Token_Vtable ppg_chord_vtable =
    ,
    .print_self
       = (PPG_Token_Print_Self_Fun) ppg_chord_print_self
+   #endif
+   
+   #if PPG_HAVE_DEBUGGING
+   ,
+   .check_initialized
+      = (PPG_Token_Check_Initialized_Fun)ppg_aggregate_check_initialized
    #endif
 };
 

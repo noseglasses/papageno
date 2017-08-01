@@ -171,4 +171,14 @@ void ppg_global_set_number_of_inputs(PPG_Count n_inputs);
 PPG_Count ppg_global_get_number_of_inputs(void);
 #endif
 
+#if PPG_HAVE_DEBUGGING
+
+/** @brief Checks consistency of pattern matching system
+ * 
+ * @returns True if inconsistent and false if consistent
+ */
+bool ppg_global_check_consistency(void);
+
+#endif
+
 #endif

@@ -90,6 +90,8 @@ void ppg_recurse_and_prepare_active_branch(bool reset)
 {        
    if(!ppg_context->current_token) { return; }
    
+   PPG_LOG("ppg_recurse_and_prepare_active_branch: reset = %d\n", reset);
+   
    PPG_Token__ *cur_token = ppg_context->current_token;
    
    PPG_Token__ *furcation_token = NULL;
@@ -99,17 +101,25 @@ void ppg_recurse_and_prepare_active_branch(bool reset)
       furcation_token
          = (PPG_FB.cur_furcation == -1) ? NULL : PPG_CUR_FUR.token;
    
+      PPG_Token__ *branch_root;
+      
       // Recursively reset all tokens of the branch we are on
       // back to the first branch node or back to the first
       // node after the root node of the search tree.
       // 
       if(reset) {
-         ppg_branch_cleanup(cur_token, furcation_token);
+         branch_root = ppg_branch_cleanup(cur_token, furcation_token);
+      }
+      else {
+         branch_root = ppg_branch_find_root(cur_token, furcation_token);
       }
       
       if(furcation_token) {
          
          for(PPG_Count i = 0; i < furcation_token->n_children; ++i) {
+            if(furcation_token->children[i] == branch_root) {
+               continue;
+            }
             ppg_token_reset_control_state(furcation_token->children[i]);
          }
                   

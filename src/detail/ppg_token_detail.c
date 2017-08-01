@@ -37,6 +37,8 @@ void ppg_token_store_action(PPG_Token__ *token,
 
 void ppg_token_reset_control_state(PPG_Token__ *token)
 {
+   PPG_LOG("Resetting tk 0x%" PRIXPTR "\n", (uintptr_t)token);
+   
    token->misc.state = PPG_Token_Initialized;
    token->misc.action_state = PPG_Action_Disabled;
 }
@@ -168,6 +170,40 @@ static void ppg_token_print_self(PPG_Token__ *p, PPG_Count indent, bool recurse)
 }
 #endif
 
+#if PPG_HAVE_DEBUGGING
+bool ppg_token_check_initialized(PPG_Token__ *token)
+{
+   bool assertion_failed = false;
+   
+   PPG_ASSERT_WARN(token->misc.state == PPG_Token_Initialized);
+   PPG_ASSERT_WARN(token->misc.action_state == PPG_Action_Disabled);
+/*   
+#if PPG_PRINT_SELF_ENABLED
+   if(assertion_failed) {
+      PPG_CALL_VIRT_METHOD(token, print_self, 0, false);
+   }
+#endif*/
+   
+   return assertion_failed;
+}
+
+bool ppg_token_recurse_check_initialized(PPG_Token__ *token)
+{
+   bool assertion_failed = false;
+   
+   assertion_failed 
+         |= PPG_CALL_VIRT_METHOD(token, check_initialized);
+   
+   for(PPG_Count i = 0; i < token->n_children; ++i) {
+      assertion_failed 
+         |= ppg_token_recurse_check_initialized(token->children[i]);
+   }
+   
+   return assertion_failed;
+}
+
+#endif
+
 static PPG_Token_Vtable ppg_token_vtable =
 {
    .match_event 
@@ -182,7 +218,13 @@ static PPG_Token_Vtable ppg_token_vtable =
    #if PPG_PRINT_SELF_ENABLED
    ,
    .print_self
-      = (PPG_Token_Print_Self_Fun) ppg_token_print_self,
+      = (PPG_Token_Print_Self_Fun) ppg_token_print_self
+   #endif
+      
+   #if PPG_HAVE_DEBUGGING
+   ,
+   .check_initialized
+      = (PPG_Token_Check_Initialized_Fun)ppg_token_check_initialized
    #endif
 };
 
