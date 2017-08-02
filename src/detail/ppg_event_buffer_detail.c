@@ -286,7 +286,7 @@ void ppg_event_buffer_on_match_success(void)
 {
    PPG_LOG("Prp. evt bffr on suc.\n");
    
-   ppg_recurse_and_prepare_active_branch(false /* don't reset tokens*/);
+   //ppg_recurse_and_prepare_active_branch(false /* don't reset tokens*/);
             
    ppg_active_tokens_update();
    

@@ -36,27 +36,42 @@ static bool ppg_note_match_event(
    //
    PPG_ASSERT(note_flags != 0);
    
-   if(note_flags & PPG_Note_Flag_Match_Activation) {
-      
-      if(note_flags & PPG_Note_Flag_Match_Deactivation) {
-   
-         /* Set state appropriately 
-         */
-         if(note->input == event->input) {
+   switch(note_flags & (   PPG_Note_Flag_Match_Activation
+                        | PPG_Note_Flag_Match_Deactivation)) {
+     
+      case     (PPG_Note_Flag_Match_Activation
+            | PPG_Note_Flag_Match_Deactivation):
+            
+            if(note->input != event->input) {
+
+               #ifndef PPG_PEDANTIC_TOKENS
+               if(event->flags & PPG_Event_Active) {
+                        
+                  // Only if the non matching input is activated, we
+                  // complain
+                  //
+               #endif
+                  note->super.misc.state = PPG_Token_Invalid;
+               #ifndef PPG_PEDANTIC_TOKENS
+               }
+               #endif
+               return false;
+            }
                
             if(event->flags & PPG_Event_Active) {
                
                PPG_LOG("I act\n");
                
+               // Mark the note as active
+               //
                note->super.misc.flags |= PPG_Note_Type_Active;
                
       #if PPG_PEDANTIC_TOKENS
                note->super.misc.state = PPG_Token_Activation_In_Progress;
       #else 
                
-               PPG_LOG("Nt 0x%" PRIXPTR " fin\n", 
-             (uintptr_t)note);
-      //             PPG_LOG("N");
+               PPG_LOG("Nt 0x%" PRIXPTR " fin\n", (uintptr_t)note);
+               
                note->super.misc.state = PPG_Token_Matches;
       #endif
             }
@@ -70,52 +85,31 @@ static bool ppg_note_match_event(
       //             PPG_LOG("N");
                   note->super.misc.state = PPG_Token_Matches;
       #else
-                  note->super.misc.state = PPG_Token_Initialized;
+                  note->super.misc.state = PPG_Token_Finalized;
       #endif
                }
-               else {  
+               else {
                
                   // The input is not active but this is a deactivation 
                   // event. Thus, we ignore it as it belongs 
                   // to the activation of another token.
+                  
+                  // Note: Even the deactivation of the associated input must
+                  //       be ignored here.
                   //
                   return false;
                }
             }
-         }
-         else {
-      //       PPG_LOG("note invalid\n");
+            break;
             
-      #ifndef PPG_PEDANTIC_TOKENS
-            if(event->flags & PPG_Event_Active) {
-               
-               // Only if the non matching input is activated, we
-               // complain
-               //
-      #endif
-               note->super.misc.state = PPG_Token_Invalid;
-      #ifndef PPG_PEDANTIC_TOKENS
-            }
-      #endif
-            return false;
-         }
-      }
-      else {
+      case PPG_Note_Flag_Match_Activation:
          
          PPG_LOG("Only act\n");
-         
-         // Only activation
-         
-         if(note->input != event->input) {
-            
-            PPG_LOG("I wrg\n");
-            note->super.misc.state = PPG_Token_Invalid;
-            return false;
-         }
-         
-         if(event->flags & PPG_Event_Active) {
+         if(   (note->input == event->input)
+            && (event->flags & PPG_Event_Active)) {
             PPG_LOG("I mtch\n");
             note->super.misc.state = PPG_Token_Matches;
+            note->super.misc.flags |= PPG_Token_Flags_Done;
             return true;
          }
          
@@ -123,25 +117,20 @@ static bool ppg_note_match_event(
          note->super.misc.state = PPG_Token_Invalid;
          
          return false;
-      }
-   }
-   else if(note_flags & PPG_Note_Flag_Match_Deactivation) {
          
-      // Only deactivation
+      case PPG_Note_Flag_Match_Deactivation:
       
-      if(note->input != event->input) {
+         if(   (note->input == event->input)
+            && ((event->flags & PPG_Event_Active) == 0)) {
+            note->super.misc.state = PPG_Token_Finalized;
+            
+            note->super.misc.flags |= PPG_Token_Flags_Done;
+            return true;
+         }
+         
          note->super.misc.state = PPG_Token_Invalid;
+            
          return false;
-      }
-      
-      if((event->flags & PPG_Event_Active) == 0) {
-         note->super.misc.state = PPG_Token_Matches;
-         return true;
-      }
-      
-      note->super.misc.state = PPG_Token_Invalid;
-         
-      return false;
    }
    
    return true;
@@ -150,6 +139,13 @@ static bool ppg_note_match_event(
 static void ppg_note_reset(PPG_Note *note) 
 {
    ppg_token_reset_control_state((PPG_Token__*)note);
+   
+   // Notes that only match deactivation start in matching state
+   //
+   if((note->super.misc.flags 
+                     & PPG_Note_Flag_Match_Activation) == 0) {
+      note->super.misc.state = PPG_Token_Matches;
+   }
    
    // Clear the activation state
    //
@@ -196,7 +192,18 @@ static bool ppg_note_check_initialized(PPG_Token__ *token)
   
    bool assertion_failed = false;
    
-   assertion_failed |= ppg_token_check_initialized(token);
+   // Skip the parent call as we need a specialized check
+//    assertion_failed |= ppg_token_check_initialized(token);
+   
+   if((note->super.misc.flags 
+                     & PPG_Note_Flag_Match_Activation) == 0) {
+      PPG_ASSERT_WARN(note->super.misc.state == PPG_Token_Matches);
+   }
+   else {
+      PPG_ASSERT_WARN(note->super.misc.state == PPG_Token_Initialized);
+   }
+   
+   PPG_ASSERT_WARN(token->misc.action_state == PPG_Action_Disabled);
    
    PPG_ASSERT_WARN(
       (note->super.misc.flags 
@@ -240,7 +247,7 @@ PPG_Note *ppg_note_new(PPG_Note *note)
 
     note->super.vtable = &ppg_note_vtable;
     
-    note->super.misc.flags = PPG_Note_Flags_Empty;
+    note->super.misc.flags = PPG_Token_Flags_Empty;
     
     ppg_global_init_input(&note->input);
     

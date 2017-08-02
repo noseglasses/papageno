@@ -28,8 +28,7 @@
  *  Use the functions ppg_token_set_flags and ppg_token_get_flags to manipulated chord flags.
   */
 enum PPG_Chord_Flags {
-   PPG_Chord_Flags_Empty = 0, ///< Initial value
-   PPG_Chord_Flags_Disallow_Input_Deactivation = 1 ///< Set this flag to gain 
+   PPG_Chord_Flags_Disallow_Input_Deactivation = (1 << 1) ///< Set this flag to gain 
             // a chord that does not tolerate deactivation of inputs before all
             // inputs are activated. If this condition is violated, the
             // chord is considered as invalid

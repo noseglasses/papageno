@@ -48,8 +48,7 @@ PPG_Token ppg_single_note_line(
  * ppg_token_get_flags to manipulated note flags.
  */
 enum PPG_Note_Flags {
-   PPG_Note_Flags_Empty = 0, ///< Initial value
-   PPG_Note_Flag_Match_Activation = (1 << 0), ///< Match activation of corresponding input
+   PPG_Note_Flag_Match_Activation = (1 << 1), ///< Match activation of corresponding input
    PPG_Note_Flag_Match_Deactivation = (PPG_Note_Flag_Match_Activation << 1), ///< Match deactivation of corresponding input
    PPG_Note_Flags_A_N_D = PPG_Note_Flag_Match_Activation | PPG_Note_Flag_Match_Deactivation ///< Match activation and deactivation of corresponding input (only if compiled in pedantic mode)
 }; 

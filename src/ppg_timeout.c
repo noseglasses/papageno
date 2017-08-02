@@ -122,6 +122,9 @@ bool ppg_timeout_check(void)
      ) {
       
       PPG_LOG("T.out hit\n");
+      
+      PPG_LOG("Events in queue: %d\n",
+         ppg_event_buffer_size());
    
       /* Too late...
          */

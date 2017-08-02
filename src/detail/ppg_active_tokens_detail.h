@@ -25,13 +25,15 @@
 
 typedef struct {
    PPG_Token__ *tokens[PPG_ACTIVE_TOKENS_SPACE];
-   PPG_Count   pos[PPG_ACTIVE_TOKENS_SPACE];
-   PPG_Count   free_ids[PPG_ACTIVE_TOKENS_SPACE];
+//    PPG_Count   pos[PPG_ACTIVE_TOKENS_SPACE];
+//    PPG_Count   free_ids[PPG_ACTIVE_TOKENS_SPACE];
    PPG_Count   n_tokens;
 } PPG_Active_Tokens;
 
 void ppg_active_tokens_init(PPG_Active_Tokens *active_tokens);
 
 void ppg_active_tokens_update(void);
+
+bool ppg_active_tokens_check_consumption(PPG_Event *event);
 
 #endif

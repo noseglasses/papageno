@@ -47,10 +47,6 @@ void ppg_aggregate_reset(PPG_Aggregate *aggregate)
 {
    ppg_token_reset_control_state((PPG_Token__*)aggregate);
    
-#if PPG_PEDANTIC_TOKENS
-   aggregate->all_activated = false;
-#endif
-   
    aggregate->n_inputs_active = 0;
    
    for(PPG_Count i = 0; i < aggregate->n_members; ++i) {
@@ -58,6 +54,11 @@ void ppg_aggregate_reset(PPG_Aggregate *aggregate)
                            i,
                            false);
    }
+   
+   // Clear the activation state
+   //
+   aggregate->super.misc.flags 
+         &= (PPG_Count)~PPG_Aggregate_All_Active;
 }
 
 static void ppg_aggregate_deallocate_member_storage(PPG_Aggregate *aggregate) {  
@@ -146,9 +147,8 @@ bool ppg_aggregate_check_initialized(PPG_Token__ *token)
    
    assertion_failed |= ppg_token_check_initialized(token);
    
-#if PPG_PEDANTIC_TOKENS
-   PPG_ASSERT_WARN(aggregate->all_activated == false);
-#endif
+   PPG_ASSERT_WARN((aggregate->super.misc.flags 
+         & PPG_Aggregate_All_Active) == 0);
    
    PPG_ASSERT_WARN(aggregate->n_inputs_active == 0);
    

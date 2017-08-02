@@ -58,7 +58,6 @@ static bool ppg_chord_match_event(
             if(ppg_bitfield_get_bit(&chord->member_active, i)) {
                ppg_bitfield_set_bit(&chord->member_active, i, false);
                --chord->n_inputs_active;
-               return true;
             }
             else {
                
@@ -76,8 +75,11 @@ static bool ppg_chord_match_event(
    
 #if PPG_HAVE_LOGGING
    for(PPG_Count i = 0; i < chord->n_members; ++i) {
-      PPG_LOG("%d = %d\n", i, 
-                 ppg_bitfield_get_bit(&chord->member_active, i));
+      PPG_LOG("%d: 0x%d = %d\n", 
+              i, 
+              chord->inputs[i],
+              ppg_bitfield_get_bit(&chord->member_active, i)
+      );
    }
 #endif
    
@@ -95,19 +97,16 @@ static bool ppg_chord_match_event(
    
    if(chord->n_inputs_active == chord->n_members) {
       
-#if PPG_PEDANTIC_TOKENS
-      chord->all_activated = true;
-#else
+      chord->super.misc.flags |= PPG_Aggregate_All_Active;
       
       /* Chord matches
        */
       chord->super.misc.state = PPG_Token_Matches;
 //       PPG_LOG("C");
-#endif
    }
    else if(chord->n_inputs_active == 0) {
       
-      if(chord->all_activated) {
+      if(chord->super.misc.flags & PPG_Aggregate_All_Active) {
       
 #if PPG_PEDANTIC_TOKENS
          /* Chord matches
@@ -116,12 +115,12 @@ static bool ppg_chord_match_event(
 //          PPG_LOG("C");
 #else
          
-         chord->super.misc.state = PPG_Token_Initialized;
+         chord->super.misc.state = PPG_Token_Finalized;
 #endif
       }
    }
    else {
-      if(chord->all_activated) {
+      if(chord->super.misc.flags & PPG_Aggregate_All_Active) {
          chord->super.misc.state = PPG_Token_Deactivation_In_Progress;
       }
    }
@@ -143,8 +142,8 @@ static void ppg_chord_print_self(PPG_Chord *c, PPG_Count indent, bool recurse)
    PPG_I PPG_LOG("\tn I actv: %d\n", c->n_inputs_active);
    
    for(PPG_Count i = 0; i < c->n_members; ++i) {
-      PPG_I PPG_LOG("\t\tI: 0x%" PRIXPTR ", actv: %d\n", 
-              (uintptr_t)c->inputs[i],
+      PPG_I PPG_LOG("\t\tI: 0x%d, actv: %d\n", 
+              c->inputs[i],
                ppg_bitfield_get_bit(&c->member_active, i));
    }
    ppg_token_print_self_end((PPG_Token__*)c, indent, recurse);

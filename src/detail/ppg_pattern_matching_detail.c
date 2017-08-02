@@ -31,35 +31,49 @@ enum {
    PPG_Pattern_Branch_Reversion
 };
 
-PPG_Token__ * ppg_branch_cleanup(
-                        PPG_Token__ *cur_token,
-                        PPG_Token__ *end_token)
+static void ppg_branch_prepare(PPG_Token__ *branch_token)
 {
-   PPG_LOG("Branch cleanup\n");
+   PPG_LOG("Preparing branch token 0x%" PRIXPTR "\n", 
+            (uintptr_t)branch_token);
    
-   PPG_Token__ *branch_root = cur_token;
+   PPG_CALL_VIRT_METHOD(branch_token, reset);
    
-   // Unwind and cleanup back to the current furcation or to the
-   // root node
-   // 
-   while(cur_token != end_token) {
-      
-      // Reset members
-      //
-      PPG_CALL_VIRT_METHOD(cur_token, reset);
-      
-      #if PPG_HAVE_DEBUGGING
-      ppg_token_check_initialized(cur_token);
-      #endif
-      
-      branch_root = cur_token;
-      
-      cur_token = cur_token->parent;
+   for(PPG_Count i = 0; i < branch_token->n_children; ++i) {
+      ppg_token_reset_control_state(branch_token->children[i]);
    }
-   PPG_LOG("Branch cleanup done\n");
-   
-   return branch_root;
 }
+
+// PPG_Token__ * ppg_branch_cleanup(
+//                         PPG_Token__ *cur_token,
+//                         PPG_Token__ *end_token)
+// {
+//    PPG_LOG("Branch cleanup\n");
+//    
+//    PPG_Token__ *branch_root = cur_token;
+//    
+//    // Unwind and cleanup back to the current furcation or to the
+//    // root node
+//    // 
+//    while(cur_token != end_token) {
+//       
+//       // Reset members
+//       //
+//       PPG_CALL_VIRT_METHOD(cur_token, reset);
+//       
+//       #if PPG_HAVE_DEBUGGING
+//       ppg_token_check_initialized(cur_token);
+//       
+// //       PPG_CALL_VIRT_METHOD(cur_token, print_self, 0, false);
+//       #endif
+//       
+//       branch_root = cur_token;
+//       
+//       cur_token = cur_token->parent;
+//    }
+//    PPG_LOG("Branch cleanup done\n");
+//    
+//    return branch_root;
+// }
 
 PPG_Token__ * ppg_branch_find_root(
                         PPG_Token__ *cur_token,
@@ -103,11 +117,13 @@ static PPG_Token__ *ppg_furcation_revert(PPG_Token__ *start_token)
       // back to the first branch node or back to the first
       // node after the root node of the search tree.
       // 
-      ppg_branch_cleanup(start_token, furcation_token);
+//       ppg_branch_cleanup(start_token, furcation_token);
       
       // If there is no current furcation, we can't do anything else
       //
       if(!furcation_token) { 
+         
+         PPG_LOG("   No furcation found\n");
          
          // By returning NULL we signal that there is no
          // reversion to another furcation possible.
@@ -117,15 +133,18 @@ static PPG_Token__ *ppg_furcation_revert(PPG_Token__ *start_token)
       
       // If we already tried all possible branches of the current furcation
       //
-      if(PPG_CUR_FUR.n_branch_candidates == 0) {
+      if(PPG_CUR_FUR.n_branch_candidates <= 1) {
+         
+         PPG_LOG("   No branches left for token 0x%" PRIXPTR "\n", 
+            (uintptr_t)furcation_token);
          
          // ... we mark all children as initialized. 
          
-         // The actual reset of the nodes/tokens state variables
-         // has already taken place during ppg_branch_cleanup above.
-         //
          for(PPG_Count i = 0; i < furcation_token->n_children; ++i) {
             ppg_token_reset_control_state(furcation_token->children[i]);
+            
+            
+            PPG_CALL_VIRT_METHOD(furcation_token->children[i], print_self, 0, false);
          }
          
          // Set the current branch token as new start token for
@@ -144,6 +163,11 @@ static PPG_Token__ *ppg_furcation_revert(PPG_Token__ *start_token)
          PPG_CUR_FUR.branch->misc.state = PPG_Token_Invalid;
       
          --PPG_CUR_FUR.n_branch_candidates;
+         
+         PPG_LOG("   %d candidates left from %d\n", 
+                 PPG_CUR_FUR.n_branch_candidates,
+                 PPG_CUR_FUR.token->n_children
+                );
          
          break;
       }
@@ -185,6 +209,10 @@ static PPG_Token__ *ppg_token_get_most_appropriate_branch(
          
          PPG_LOG("   Ignoring 0x%" PRIXPTR " as invalid\n",
            (uintptr_t)parent_token->children[i]);
+         
+//          #if PPG_HAVE_DEBUGGING
+//          PPG_CALL_VIRT_METHOD(parent_token->children[i], print_self, 0, false);
+//          #endif
          continue;
       }
       
@@ -231,6 +259,12 @@ static PPG_Token__ *ppg_token_get_most_appropriate_branch(
 //       PPG_LOG("match_id %d\n", match_id);
    }
    
+   #if PPG_HAVE_LOGGING
+   if(!branch_token) {
+      PPG_LOG("No branch left\n");
+   }
+   #endif
+   
    return branch_token;
 }
 
@@ -256,6 +290,8 @@ static PPG_Token__ *ppg_token_get_next_possible_branch(
          revert_to_previous_furcation = true;
       }
       else {
+         
+         ppg_branch_prepare(parent_token->children[0]);
          return parent_token->children[0];
       }
    }
@@ -284,6 +320,10 @@ static PPG_Token__ *ppg_token_get_next_possible_branch(
                                              parent_token,
                                              &n_branch_candidates
       );
+      
+   if(branch) {
+      ppg_branch_prepare(branch);
+   }
 
    if(furcation_already_present) {
       
@@ -326,6 +366,31 @@ static PPG_Token__ *ppg_token_get_next_possible_branch(
 static PPG_Count ppg_process_next_event(void)
 {  
    PPG_LOG("Processing next event\n");
+   
+      
+   // If the event is a deactivation event that was obviously
+   // not matched and it is the first in the queue, 
+   // we flush.
+   //
+   if(   (ppg_event_buffer_size() == 1)
+      && !(PPG_EB.events[PPG_EB.cur].event.flags & PPG_Event_Active)
+   ) {
+      
+      PPG_LOG("orpth deact\n");
+   
+      return PPG_Pattern_Orphaned_Deactivation;
+   }
+         
+   if(!ppg_context->current_token) {
+      
+      ppg_context->current_token = &ppg_context->pattern_root;
+      
+      // The root node must be reset explicitly
+      //
+      PPG_CALL_VIRT_METHOD(ppg_context->current_token, reset);
+      
+      ppg_branch_prepare(ppg_context->current_token);
+   }
 
    PPG_LOG("Current token 0x%" PRIXPTR ", state %u\n", 
              (uintptr_t)ppg_context->current_token,
@@ -348,6 +413,7 @@ static PPG_Count ppg_process_next_event(void)
       switch (state) {
          
          case PPG_Token_Matches:
+         case PPG_Token_Finalized:
          case PPG_Token_Invalid:
             {
                PPG_LOG("Determining branch\n");
@@ -435,10 +501,12 @@ static PPG_Count ppg_process_next_event(void)
    #endif
             
    PPG_LOG("Token state after match_event: %u\n", (PPG_Count)ppg_context->current_token->misc.state);
+   PPG_LOG("Event consumed: %u\n", event_consumed);
 
    switch(ppg_context->current_token->misc.state) {
       
       case PPG_Token_Matches:
+      case PPG_Token_Finalized:
          if(ppg_context->current_token->n_children == 0){
             
             PPG_LOG("p match\n");
@@ -453,18 +521,6 @@ static PPG_Count ppg_process_next_event(void)
          return PPG_Pattern_Branch_Reversion;
          break;
    }
-   
-   // If the event is a deactivation event that was obviously
-   // not matched and it is the first in the queue, 
-   // we flush.
-   //
-   if(   !(event->flags & PPG_Event_Active)
-      && (ppg_event_buffer_size() == 1)) {
-      
-      PPG_LOG("orpth deact\n");
-   
-      return PPG_Pattern_Orphaned_Deactivation;
-   }
       
    PPG_LOG("p in prog\n");
    
@@ -478,10 +534,6 @@ bool ppg_pattern_matching_run(void)
    bool pattern_matched = false;
    
    while(ppg_event_buffer_events_left()) {
-         
-      if(!ppg_context->current_token) {
-         ppg_context->current_token = &ppg_context->pattern_root;
-      }
       
       PPG_Count process_event_result = ppg_process_next_event();
       
@@ -574,6 +626,7 @@ bool ppg_pattern_matching_process_remaining_branch_options(void)
                                              ppg_context->current_token);
       
       if(ppg_context->current_token) {
+         
          pattern_matched |= ppg_pattern_matching_run();
       }
    }

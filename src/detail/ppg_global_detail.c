@@ -34,7 +34,9 @@ bool ppg_recurse_and_process_actions(PPG_Token__ *cur_token)
    // finished. Then we go back to the parent token, that
    // was the last registered match.
    //
-   if(cur_token->misc.state != PPG_Token_Matches) {
+   if(   (cur_token->misc.state != PPG_Token_Matches)
+      && (cur_token->misc.state != PPG_Token_Finalized) 
+   ) {
       cur_token = cur_token->parent;
    }
    
@@ -69,14 +71,14 @@ bool ppg_recurse_and_process_actions(PPG_Token__ *cur_token)
    //
    for(PPG_Id i = n_actions - 1; i >= 0; --i) {
       
-      PPG_LOG("Trg act tk 0x%"
-         PRIXPTR ", func: 0x%"
-         PRIXPTR ", data: 0x%"
-         PRIXPTR "\n",
-         (uintptr_t)action_tokens[i],
-         (uintptr_t)action_tokens[i]->action.callback.func,
-         (uintptr_t)action_tokens[i]->action.callback.user_data
-      );
+//       PPG_LOG("Trg act tk 0x%"
+//          PRIXPTR ", func: 0x%"
+//          PRIXPTR ", data: 0x%"
+//          PRIXPTR "\n",
+//          (uintptr_t)action_tokens[i],
+//          (uintptr_t)action_tokens[i]->action.callback.func,
+//          (uintptr_t)action_tokens[i]->action.callback.user_data
+//       );
       
       action_tokens[i]->misc.action_state = PPG_Action_Enabled;
    }
@@ -86,50 +88,50 @@ bool ppg_recurse_and_process_actions(PPG_Token__ *cur_token)
    return n_actions > 0;
 }
 
-void ppg_recurse_and_prepare_active_branch(bool reset)
-{        
-   if(!ppg_context->current_token) { return; }
-   
-   PPG_LOG("ppg_recurse_and_prepare_active_branch: reset = %d\n", reset);
-   
-   PPG_Token__ *cur_token = ppg_context->current_token;
-   
-   PPG_Token__ *furcation_token = NULL;
-   
-   do {
-      
-      furcation_token
-         = (PPG_FB.cur_furcation == -1) ? NULL : PPG_CUR_FUR.token;
-   
-      PPG_Token__ *branch_root;
-      
-      // Recursively reset all tokens of the branch we are on
-      // back to the first branch node or back to the first
-      // node after the root node of the search tree.
-      // 
-      if(reset) {
-         branch_root = ppg_branch_cleanup(cur_token, furcation_token);
-      }
-      else {
-         branch_root = ppg_branch_find_root(cur_token, furcation_token);
-      }
-      
-      if(furcation_token) {
-         
-         for(PPG_Count i = 0; i < furcation_token->n_children; ++i) {
-            if(furcation_token->children[i] == branch_root) {
-               continue;
-            }
-            ppg_token_reset_control_state(furcation_token->children[i]);
-         }
-                  
-         cur_token = PPG_CUR_FUR.token;
-
-         --PPG_FB.cur_furcation;
-      }
-      
-   } while(furcation_token);
-}
+// void ppg_recurse_and_prepare_active_branch(bool reset)
+// {        
+//    if(!ppg_context->current_token) { return; }
+//    
+//    PPG_LOG("ppg_recurse_and_prepare_active_branch: reset = %d\n", reset);
+//    
+//    PPG_Token__ *cur_token = ppg_context->current_token;
+//    
+//    PPG_Token__ *furcation_token = NULL;
+//    
+//    do {
+//       
+//       furcation_token
+//          = (PPG_FB.cur_furcation == -1) ? NULL : PPG_CUR_FUR.token;
+//    
+//       PPG_Token__ *branch_root;
+//       
+//       // Recursively reset all tokens of the branch we are on
+//       // back to the first branch node or back to the first
+//       // node after the root node of the search tree.
+//       // 
+//       if(reset) {
+//          branch_root = ppg_branch_cleanup(cur_token, furcation_token);
+//       }
+//       else {
+//          branch_root = ppg_branch_find_root(cur_token, furcation_token);
+//       }
+//       
+//       if(furcation_token) {
+//          
+//          for(PPG_Count i = 0; i < furcation_token->n_children; ++i) {
+//             if(furcation_token->children[i] == branch_root) {
+//                continue;
+//             }
+//             ppg_token_reset_control_state(furcation_token->children[i]);
+//          }
+//                   
+//          cur_token = PPG_CUR_FUR.token;
+// 
+//          --PPG_FB.cur_furcation;
+//       }
+//       
+//    } while(furcation_token);
+// }
 
 void ppg_delete_stored_events(void)
 {

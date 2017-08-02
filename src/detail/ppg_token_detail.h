@@ -82,12 +82,14 @@ typedef struct {
    
 enum PPG_Action_State {
    PPG_Action_Disabled     = 0,
-   PPG_Action_Enabled
+   PPG_Action_Enabled,
+   PPG_Action_Activation_Triggered,
+   PPG_Action_Deactivation_Triggered
 };
 
 enum {   PPG_Token_N_State_Bits = 3 };
 enum {   PPG_Token_N_Action_Flags_Bits = 4 };
-enum {   PPG_Token_N_Action_State_Bits = 1 };
+enum {   PPG_Token_N_Action_State_Bits = 2 };
 enum {   PPG_Token_N_Flag_Bits = 16  - PPG_Token_N_State_Bits 
                                     - PPG_Token_N_Action_Flags_Bits
                                     - PPG_Token_N_Action_State_Bits};
@@ -98,6 +100,11 @@ typedef struct {
    PPG_Count action_state  : PPG_Token_N_Action_State_Bits;
    PPG_Count action_flags  : PPG_Token_N_Action_Flags_Bits;
 } PPG_Misc_Bits;
+
+enum {
+   PPG_Token_Flags_Empty = 0, ///< Initial value
+   PPG_Token_Flags_Done = 1
+};
 
 typedef struct PPG_TokenStruct {
 
@@ -123,6 +130,7 @@ enum PPG_Processing_State {
    PPG_Token_Activation_In_Progress,
    PPG_Token_Matches,
    PPG_Token_Deactivation_In_Progress,
+   PPG_Token_Finalized,
    PPG_Token_Invalid
 };
 

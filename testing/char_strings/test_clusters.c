@@ -138,8 +138,8 @@ PPG_CS_START_TEST
    // Assert that it is possible to release cluster chords
    // and still gain a match
    //
-   PPG_CS_PROCESS_STRING(  "A B b d D d a |", 
-                           PPG_CS_EXPECT_FLUSH("d")
+   PPG_CS_PROCESS_STRING(  "A B b D d a |", 
+                           PPG_CS_EXPECT_EMPTY_FLUSH
                            PPG_CS_EXPECT_NO_EXCEPTIONS
                            PPG_CS_EXPECT_ACTION_SERIES(
                               PPG_CS_A(Cluster_2)

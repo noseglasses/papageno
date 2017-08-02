@@ -51,7 +51,7 @@ PPG_CS_START_TEST
    );
    
    PPG_CS_PROCESS_ON_OFF(  "a z c |", 
-                           PPG_CS_EXPECT_FLUSH("AaCc") 
+                           PPG_CS_EXPECT_FLUSH("AazCc") 
                            PPG_CS_EXPECT_EXCEPTIONS(PPG_CS_EA | PPG_CS_EMF)
                            PPG_CS_EXPECT_NO_ACTIONS
    );

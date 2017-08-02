@@ -461,7 +461,9 @@ void ppg_cs_check_action_series(int n_actions,
    if(actions_test_success) {
       PPG_LOG("Actions test successfully passed\n");
       for(int i = 0; i < n_actions; ++i) {
-         PPG_LOG("   %s\n", ppg_cs_get_action_name(expected[i].action_id));
+         PPG_LOG("   %s, activated: %d\n", 
+               ppg_cs_get_action_name(expected[i].action_id),
+               expected[i].activated);
       }
    }
    else {
@@ -502,7 +504,6 @@ void ppg_cs_event_considered_callback(
    PPG_LOG("%c", c_char);
    #endif
 }
-
 
 void ppg_cs_list_event_queue(void)
 {

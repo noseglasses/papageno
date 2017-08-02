@@ -18,6 +18,7 @@
 #include "detail/ppg_context_detail.h"
 #include "detail/ppg_global_detail.h"
 #include "detail/ppg_pattern_matching_detail.h"
+#include "detail/ppg_signal_detail.h"
 #include "ppg_debug.h"
 // 
 #include <stdbool.h>
@@ -69,9 +70,23 @@ void ppg_event_process(PPG_Event *event)
    //
    ppg_context->time_manager.time(&ppg_context->time_last_event);
    
+   
 //    PPG_LOG("time: %ld\n", ppg_context->time_last_event);
    
    event = ppg_event_buffer_store_event(event);
+   
+   // If there are active tokens on the stack,
+   // we allow them to consume the event without
+   // storing it.
+   //
+   if(ppg_active_tokens_check_consumption(event)) {
+      
+      ppg_signal(PPG_On_Orphaned_Deactivation);       
+
+      ppg_delete_stored_events();
+      
+      return;
+   }
 
    if(ppg_check_ignore_event(event)) {
       return;

@@ -31,12 +31,15 @@ typedef struct {
    
    PPG_Bitfield member_active;
    
-#if PPG_PEDANTIC_TOKENS
-   bool all_activated;
-#endif
    PPG_Count n_inputs_active;
     
 } PPG_Aggregate;
+
+// Careful: Keep this in sync with flags for chords or clusters
+//
+enum {
+   PPG_Aggregate_All_Active = 2
+};
 
 PPG_Token ppg_global_initialize_aggregate(   
                         PPG_Aggregate *aggregate,

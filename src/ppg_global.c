@@ -176,7 +176,7 @@ void ppg_global_abort_pattern_matching(void)
    
 //    PPG_LOG("Abrt pttrn\n");
    
-   ppg_recurse_and_prepare_active_branch(true /* allow reset */);
+   //ppg_recurse_and_prepare_active_branch(true /* allow reset */);
    
 //    ppg_event_buffer_prepare_on_failure();
    
@@ -194,7 +194,7 @@ void ppg_global_abort_pattern_matching(void)
 
 bool ppg_global_check_consistency(void)
 {
-   return ppg_token_recurse_check_initialized(&ppg_context->pattern_root);
+   return false;//ppg_token_recurse_check_initialized(&ppg_context->pattern_root);
 }
 
 #endif
