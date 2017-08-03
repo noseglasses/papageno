@@ -26,7 +26,8 @@ typedef PPG_Aggregate PPG_Chord;
 
 static bool ppg_chord_match_event(  
                                  PPG_Chord *chord,
-                                 PPG_Event *event) 
+                                 PPG_Event *event,
+                                 bool modify_only_if_consuming) 
 {
    PPG_LOG("Ch. chord\n");
    
@@ -51,7 +52,10 @@ static bool ppg_chord_match_event(
          else {
             
             if(chord->super.misc.flags & PPG_Chord_Flags_Disallow_Input_Deactivation) {
-               chord->super.misc.state = PPG_Token_Invalid;
+               if(!modify_only_if_consuming) {
+                  chord->super.misc.state = PPG_Token_Invalid;
+               }
+               
                return false;
             }
             
@@ -85,7 +89,10 @@ static bool ppg_chord_match_event(
    
    if(!input_part_of_chord) {
       if(event->flags & PPG_Event_Active) {
-         chord->super.misc.state = PPG_Token_Invalid;
+         
+         if(!modify_only_if_consuming) {
+            chord->super.misc.state = PPG_Token_Invalid;
+         }
       }
       
       // Chords ignore unmatching deactivation events

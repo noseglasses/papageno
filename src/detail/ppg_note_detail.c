@@ -25,7 +25,9 @@
 
 static bool ppg_note_match_event(   
                                  PPG_Note *note,
-                                 PPG_Event *event) 
+                                 PPG_Event *event,
+                                 bool modify_only_if_consuming
+                                ) 
 {  
    PPG_LOG("Nt 0x%" PRIXPTR ", input 0x%d, ppg_note_match_event\n", (uintptr_t)note, note->input);
    
@@ -51,7 +53,9 @@ static bool ppg_note_match_event(
                   // complain
                   //
                #endif
-                  note->super.misc.state = PPG_Token_Invalid;
+                  if(!modify_only_if_consuming) {
+                     note->super.misc.state = PPG_Token_Invalid;
+                  }
                #ifndef PPG_PEDANTIC_TOKENS
                }
                #endif
@@ -114,7 +118,9 @@ static bool ppg_note_match_event(
          }
          
          PPG_LOG("I inact\n");
-         note->super.misc.state = PPG_Token_Invalid;
+         if(!modify_only_if_consuming) {
+            note->super.misc.state = PPG_Token_Invalid;
+         }
          
          return false;
          
@@ -128,8 +134,10 @@ static bool ppg_note_match_event(
             return true;
          }
          
-         note->super.misc.state = PPG_Token_Invalid;
-            
+         if(!modify_only_if_consuming) {
+            note->super.misc.state = PPG_Token_Invalid;
+         }
+         
          return false;
    }
    

@@ -81,7 +81,7 @@ void ppg_event_process(PPG_Event *event)
    //
    if(ppg_active_tokens_check_consumption(event)) {
       
-      ppg_signal(PPG_On_Orphaned_Deactivation);       
+      ppg_signal(PPG_On_Flush_Events);       
 
       ppg_delete_stored_events();
       

@@ -214,16 +214,17 @@ bool ppg_active_tokens_check_consumption(
       
       PPG_LOG("   consumer: 0x%" PRIXPTR "\n", (uintptr_t)consumer);
       PPG_LOG("   consumer action state: %d\n", consumer->misc.action_state);
-      PPG_CALL_VIRT_METHOD(consumer, print_self, 0, false /* do not recurse */);
       
       PPG_Count old_state = consumer->misc.state;
       
       event_consumed = consumer
                               ->vtable->match_event(  
                                        consumer, 
-                                       event
+                                       event,
+                                       true /*modify only if consuming*/
                                  );
-                              
+                         
+      PPG_CALL_VIRT_METHOD(consumer, print_self, 0, false /* do not recurse */);     
       if(!event_consumed) {
          continue;
       }

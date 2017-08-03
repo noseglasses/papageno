@@ -30,7 +30,8 @@ typedef struct {
 
 static bool ppg_cluster_match_event(   
                                  PPG_Cluster *cluster,
-                                 PPG_Event *event) 
+                                 PPG_Event *event,
+                                 bool modify_only_if_consuming)
 {
    bool input_part_of_cluster = false;
    
@@ -58,7 +59,9 @@ static bool ppg_cluster_match_event(
          else {
             
             if(cluster->aggregate.super.misc.flags & PPG_Cluster_Flags_Disallow_Input_Deactivation) {
-               cluster->aggregate.super.misc.state = PPG_Token_Invalid;
+               if(!modify_only_if_consuming) {
+                  cluster->aggregate.super.misc.state = PPG_Token_Invalid;
+               }
                return false;
             }
             
@@ -100,7 +103,10 @@ static bool ppg_cluster_match_event(
    
    if(!input_part_of_cluster) {
       if(event->flags & PPG_Event_Active) {
-         cluster->aggregate.super.misc.state = PPG_Token_Invalid;
+         
+         if(!modify_only_if_consuming) {
+            cluster->aggregate.super.misc.state = PPG_Token_Invalid;
+         }
       }
       
       // Clusters ignore unmatching deactivation events

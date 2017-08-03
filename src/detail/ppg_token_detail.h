@@ -30,7 +30,8 @@ struct PPG_TokenStruct;
  */
 typedef bool (*PPG_Token_Match_Event_Fun)(
                                           struct PPG_TokenStruct *token, 
-                                          PPG_Event *event
+                                          PPG_Event *event,
+                                          bool modify_only_if_consuming
                                         );
 
 typedef void (*PPG_Token_Reset_Fun)(   struct PPG_TokenStruct *token);

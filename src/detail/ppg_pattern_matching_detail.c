@@ -468,9 +468,7 @@ static PPG_Count ppg_process_next_event(void)
    
    PPG_LOG("Branch token  0x%" PRIXPTR "\n", 
              (uintptr_t)ppg_context->current_token);
-   
-   PPG_LOG("Event queue: start: %u, cur: %u, end: %u, size: %u\n", 
-              PPG_EB.start, PPG_EB.cur, PPG_EB.end, PPG_EB.size);
+
    
    PPG_Count state_before = ppg_context->current_token->misc.state;
    
@@ -480,7 +478,8 @@ static PPG_Count ppg_process_next_event(void)
          ppg_context->current_token
             ->vtable->match_event(  
                      ppg_context->current_token, 
-                     event
+                     event,
+                     false /*allow modifications in any case*/
                );
             
    PPG_EB.events[PPG_EB.cur].token_state.changed =
@@ -582,7 +581,7 @@ bool ppg_pattern_matching_run(void)
             // and rerun the overall pattern matching based on a
             // new first event.
             //
-            ppg_signal(PPG_On_Orphaned_Deactivation);       
+            ppg_signal(PPG_On_Flush_Events);       
 
             ppg_delete_stored_events();
             

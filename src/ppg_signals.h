@@ -34,7 +34,7 @@ enum PPG_Signals {
    PPG_On_Pattern_Matches,
    PPG_On_User,
    PPG_On_Match_Failed,
-   PPG_On_Orphaned_Deactivation
+   PPG_On_Flush_Events
 };
 
 #endif

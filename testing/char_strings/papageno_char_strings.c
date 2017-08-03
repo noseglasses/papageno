@@ -329,6 +329,10 @@ void ppg_cs_on_signal(
          PPG_LOG("# Registering match failed\n");
          ppg_cs_exceptions |= PPG_CS_Action_Exception_Match_Failed;
          break;
+      case PPG_On_Flush_Events:
+         PPG_LOG("# Registering flush events\n");
+         ppg_cs_flush_events();
+         break;
    }
 }
 

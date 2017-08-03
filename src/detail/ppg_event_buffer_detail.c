@@ -53,8 +53,6 @@ PPG_Event * ppg_event_buffer_store_event(PPG_Event *event)
       ++PPG_EB.end;
    }
    
-   //PPG_LOG("Storing event at %u\n", PPG_EB.end);
-   
    PPG_EB.events[new_pos] = (PPG_Event_Queue_Entry) {
       .event = *event,
       .consumer = NULL,
@@ -66,6 +64,10 @@ PPG_Event * ppg_event_buffer_store_event(PPG_Event *event)
    
    ++PPG_EB.size;
    
+   PPG_LOG("Storing event at %u\n", PPG_EB.end);
+   PPG_LOG("   start: %u, cur: %u, end: %u, size: %u\n", 
+              PPG_EB.start, PPG_EB.cur, PPG_EB.end, PPG_EB.size);
+   
    return &PPG_EB.events[new_pos].event;
 }
 
@@ -76,6 +78,10 @@ void ppg_event_buffer_init(PPG_Event_Buffer *eb)
    eb->cur = 0;
    
    eb->size = 0;
+   
+   PPG_LOG("Event queue initialized\n");
+   PPG_LOG("   start: %u, cur: %u, end: %u, size: %u\n", 
+              eb->start, eb->cur, eb->end, eb->size);
 }
 
 bool ppg_event_buffer_events_left(void)
@@ -99,6 +105,10 @@ void ppg_event_buffer_advance(void)
    #if PPG_HAVE_ASSERTIONS
    ppg_check_event_buffer_validity();
    #endif
+   
+   PPG_LOG("Event queue advanced\n");
+   PPG_LOG("   start: %u, cur: %u, end: %u, size: %u\n", 
+              PPG_EB.start, PPG_EB.cur, PPG_EB.end, PPG_EB.size);
 } 
 
 #if PPG_HAVE_ASSERTIONS
@@ -177,6 +187,10 @@ void ppg_event_buffer_truncate_at_front(void)
       ppg_even_buffer_recompute_size();
       
    }
+   PPG_LOG("Event queue truncated at front\n"); 
+   PPG_LOG("   start: %u, cur: %u, end: %u, size: %u\n", 
+              PPG_EB.start, PPG_EB.cur, PPG_EB.end, PPG_EB.size);
+   
 }
    
 // static void ppg_event_buffer_check_and_tag_considered(PPG_Event *event, 
@@ -242,6 +256,11 @@ void ppg_event_buffer_remove_first_event(void)
    }
    
    --PPG_EB.size;
+   
+   PPG_LOG("Event queue removed first event\n");
+   PPG_LOG("   start: %u, cur: %u, end: %u, size: %u\n", 
+              PPG_EB.start, PPG_EB.cur, PPG_EB.end, PPG_EB.size);
+   
 }
 
 void ppg_even_buffer_flush_and_remove_first_event(bool on_success)
