@@ -114,11 +114,11 @@ PPG_Token ppg_pattern_from_list(
                
                PPG_ERROR("Prev def:\n");
                
-               PPG_CALL_VIRT_METHOD(equivalent_child, print_self, 0, false /* do not recurse */);
+               PPG_PRINT_TOKEN(equivalent_child)
                
                PPG_ERROR("Confl:\n");
                for (PPG_Count i = 0; i < n_tokens; i++) {
-                  PPG_CALL_VIRT_METHOD(tokens[i], print_self, 0, false /* do not recurse */);
+                  PPG_PRINT_TOKEN(tokens[i])
                }
                #endif
             }

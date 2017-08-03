@@ -157,20 +157,6 @@ PPG_Signal_Callback ppg_global_set_signal_callback(PPG_Signal_Callback callback)
  */
 PPG_Signal_Callback ppg_global_get_signal_callback(void);
 
-#if 0
-/** @brief Set number of inputs
- * 
- * @param n_inputs The number of inputs
- */
-void ppg_global_set_number_of_inputs(PPG_Count n_inputs);
-
-/** @brief Retreives the registered number of inputs
- * 
- * @returns The number of inputs
- */
-PPG_Count ppg_global_get_number_of_inputs(void);
-#endif
-
 #if PPG_HAVE_DEBUGGING
 
 /** @brief Checks consistency of pattern matching system

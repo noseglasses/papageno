@@ -120,8 +120,8 @@ void ppg_token_free(PPG_Token__ *token) {
 
 PPG_Token__* ppg_token_get_equivalent_child(
                                           PPG_Token__ *parent_token,
-                                          PPG_Token__ *sample) {
-   
+                                          PPG_Token__ *sample) 
+{
    if(parent_token->n_children == 0) { return NULL; }
    
    for(PPG_Count i = 0; i < parent_token->n_children; ++i) {
@@ -183,7 +183,7 @@ bool ppg_token_check_initialized(PPG_Token__ *token)
 /*   
 #if PPG_PRINT_SELF_ENABLED
    if(assertion_failed) {
-      PPG_CALL_VIRT_METHOD(token, print_self, 0, false);
+      PPG_PRINT_TOKEN(token)
    }
 #endif*/
    

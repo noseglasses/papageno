@@ -29,8 +29,6 @@ typedef struct {
    PPG_Token__ super;
     
    PPG_Input_Id input;
-   
-   PPG_Count flags;
     
 } PPG_Note;
 

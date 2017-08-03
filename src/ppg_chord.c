@@ -115,15 +115,14 @@ static bool ppg_chord_match_event(
       
       if(chord->super.misc.flags & PPG_Aggregate_All_Active) {
       
-#if PPG_PEDANTIC_TOKENS
-         /* Chord matches
-         */
-         chord->super.misc.state = PPG_Token_Matches;
-//          PPG_LOG("C");
-#else
-         
-         chord->super.misc.state = PPG_Token_Finalized;
-#endif
+         if(chord->super.misc.flags & PPG_Token_Flags_Pedantic) {
+            /* Chord matches
+            */
+            chord->super.misc.state = PPG_Token_Matches;
+         }
+         else {
+            chord->super.misc.state = PPG_Token_Finalized;
+         }
       }
    }
    else {

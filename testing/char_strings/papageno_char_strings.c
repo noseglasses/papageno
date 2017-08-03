@@ -89,13 +89,8 @@ static long unsigned ppg_cs_run_time_ms(void)
    struct timeb a_timeb;
    
    ftime(&a_timeb);
-   
-//    if(ppg_cs_start_time_ms >= a_timeb.millitm) {
  
-      return (a_timeb.time - ppg_cs_start_time_s)*1000 + a_timeb.millitm - ppg_cs_start_time_ms;
-//    }
-// 
-//    return (a_timeb.time - ppg_cs_start_time_s - 1)*1000 + a_timeb.millitm - ppg_cs_start_time_ms;
+   return (a_timeb.time - ppg_cs_start_time_s)*1000 + a_timeb.millitm - ppg_cs_start_time_ms;
 }
 
 void ppg_cs_reset_testing_environment(void)

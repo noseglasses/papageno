@@ -38,7 +38,7 @@ typedef struct {
 // Careful: Keep this in sync with flags for chords or clusters
 //
 enum {
-   PPG_Aggregate_All_Active = 2
+   PPG_Aggregate_All_Active = 1 << 2
 };
 
 PPG_Token ppg_global_initialize_aggregate(   

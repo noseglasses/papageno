@@ -35,6 +35,6 @@ PPG_Token ppg_pattern(
 #if PPG_PRINT_SELF_ENABLED
 void ppg_pattern_print_tree(void)
 {
-   PPG_CALL_VIRT_METHOD(&ppg_context->pattern_root, print_self, 0, true /* recurse */);
+   PPG_PRINT_TOKEN_RECURSE(&ppg_context->pattern_root)
 }
 #endif

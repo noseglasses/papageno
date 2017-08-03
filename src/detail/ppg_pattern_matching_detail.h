@@ -17,6 +17,8 @@
 #ifndef PPG_PATTERN_MATCHING_DETAIL_H
 #define PPG_PATTERN_MATCHING_DETAIL_H
 
+#include <stdbool.h>
+
 // Returns true if a match occurred
 //
 bool ppg_pattern_matching_run(void);
@@ -24,10 +26,6 @@ bool ppg_pattern_matching_run(void);
 // Returns true if a match occurred
 //
 bool ppg_pattern_matching_process_remaining_branch_options(void);
-
-// PPG_Token__ * ppg_branch_cleanup(
-//                         PPG_Token__ *cur_token,
-//                         PPG_Token__ *end_token);
 
 PPG_Token__ * ppg_branch_find_root(
                         PPG_Token__ *cur_token,

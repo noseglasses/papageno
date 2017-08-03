@@ -73,7 +73,6 @@ void ppg_event_buffer_iterate2(
 // The two following functions prepare the
 // event buffer for iteration from signal callbacks.
 //
-// void ppg_event_buffer_prepare_on_success(void);
 void ppg_event_buffer_prepare_on_failure(void);
 
 void ppg_event_buffer_on_match_success(void);

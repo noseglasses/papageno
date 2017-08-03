@@ -122,14 +122,14 @@ static bool ppg_cluster_match_event(
       
       if(cluster->aggregate.super.misc.flags & PPG_Aggregate_All_Active) {
          
-#if PPG_PEDANTIC_TOKENS
-         /* Cluster matches
-         */
-         cluster->aggregate.super.misc.state = PPG_Token_Matches;
-//          PPG_LOG("O");
-#else
-         cluster->aggregate.super.misc.state = PPG_Token_Finalized;
-#endif
+         if(cluster->aggregate.super.misc.flags & PPG_Token_Flags_Pedantic) {
+            /* Cluster matches
+            */
+            cluster->aggregate.super.misc.state = PPG_Token_Matches;
+         }
+         else {
+            cluster->aggregate.super.misc.state = PPG_Token_Finalized;
+         }
       }
    }
    else if(cluster->n_lasting == cluster->aggregate.n_members) {

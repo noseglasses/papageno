@@ -50,15 +50,6 @@
  */
 #define PPG_MEDIUM_SIGNED_INT_TYPE @__PPG_MEDIUM_SIGNED_INT_TYPE@
 
-// Define PPG_PEDANTIC_TOKENS
-// to ensure that any match requires a
-// matching deactivation of an input for 
-// every activation event
-
-#if @__PPG_PEDANTIC_TOKENS_ENABLED@
-#define PPG_PEDANTIC_TOKENS
-#endif
-
 /** @brief This macro enables to define the count type from outside the
  * compile process, e.g. from a build system
  */

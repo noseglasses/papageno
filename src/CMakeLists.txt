@@ -1,14 +1,4 @@
 
-option(PAPAGENO_PEDANTIC_TOKENS_ENABLED "Enabling this option compiles Papageno in pedantic-tokens-mode"
-   FALSE)
-mark_as_advanced(PAPAGENO_PEDANTIC_TOKENS_ENABLED)
-
-if(PAPAGENO_PEDANTIC_TOKENS_ENABLED)
-   set(__PPG_PEDANTIC_TOKENS_ENABLED 1)
-else()
-   set(__PPG_PEDANTIC_TOKENS_ENABLED 0)
-endif()
-
 set(debugging_features_enabled FALSE)
 if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
    set(debugging_features_enabled TRUE)

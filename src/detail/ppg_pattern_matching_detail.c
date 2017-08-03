@@ -43,38 +43,6 @@ static void ppg_branch_prepare(PPG_Token__ *branch_token)
    }
 }
 
-// PPG_Token__ * ppg_branch_cleanup(
-//                         PPG_Token__ *cur_token,
-//                         PPG_Token__ *end_token)
-// {
-//    PPG_LOG("Branch cleanup\n");
-//    
-//    PPG_Token__ *branch_root = cur_token;
-//    
-//    // Unwind and cleanup back to the current furcation or to the
-//    // root node
-//    // 
-//    while(cur_token != end_token) {
-//       
-//       // Reset members
-//       //
-//       PPG_CALL_VIRT_METHOD(cur_token, reset);
-//       
-//       #if PPG_HAVE_DEBUGGING
-//       ppg_token_check_initialized(cur_token);
-//       
-// //       PPG_CALL_VIRT_METHOD(cur_token, print_self, 0, false);
-//       #endif
-//       
-//       branch_root = cur_token;
-//       
-//       cur_token = cur_token->parent;
-//    }
-//    PPG_LOG("Branch cleanup done\n");
-//    
-//    return branch_root;
-// }
-
 PPG_Token__ * ppg_branch_find_root(
                         PPG_Token__ *cur_token,
                         PPG_Token__ *end_token)
@@ -112,12 +80,6 @@ static PPG_Token__ *ppg_furcation_revert(PPG_Token__ *start_token)
          
       PPG_LOG("Reverting to furcation token 0x%" PRIXPTR "\n", 
             (uintptr_t)furcation_token);
-   
-      // Recursively reset all tokens of the branch we are on
-      // back to the first branch node or back to the first
-      // node after the root node of the search tree.
-      // 
-//       ppg_branch_cleanup(start_token, furcation_token);
       
       // If there is no current furcation, we can't do anything else
       //
@@ -143,8 +105,7 @@ static PPG_Token__ *ppg_furcation_revert(PPG_Token__ *start_token)
          for(PPG_Count i = 0; i < furcation_token->n_children; ++i) {
             ppg_token_reset_control_state(furcation_token->children[i]);
             
-            
-            PPG_CALL_VIRT_METHOD(furcation_token->children[i], print_self, 0, false);
+            PPG_PRINT_TOKEN(furcation_token->children[i])
          }
          
          // Set the current branch token as new start token for
@@ -211,7 +172,7 @@ static PPG_Token__ *ppg_token_get_most_appropriate_branch(
            (uintptr_t)parent_token->children[i]);
          
 //          #if PPG_HAVE_DEBUGGING
-//          PPG_CALL_VIRT_METHOD(parent_token->children[i], print_self, 0, false);
+//          PPG_PRINT_TOKEN(parent_token->children[i])
 //          #endif
          continue;
       }
@@ -232,7 +193,7 @@ static PPG_Token__ *ppg_token_get_most_appropriate_branch(
    
 //       PPG_LOG("Child %d\n", i);
       
-//       PPG_CALL_VIRT_METHOD(parent_token->children[i], print_self, 0, false);
+//       PPG_PRINT_TOKEN(parent_token->children[i])
       
       PPG_Count cur_precedence 
             = parent_token->children[i]
@@ -367,7 +328,6 @@ static PPG_Count ppg_process_next_event(void)
 {  
    PPG_LOG("Processing next event\n");
    
-      
    // If the event is a deactivation event that was obviously
    // not matched and it is the first in the queue, 
    // we flush.
@@ -431,12 +391,6 @@ static PPG_Count ppg_process_next_event(void)
 
             }
             break;
-//          case PPG_Token_Invalid:
-//             {
-//                branch_token
-//                      = ppg_furcation_revert(ppg_context->current_token);
-//             }
-//             break;
       }
                      
       // There are no possible branches left, e.g.
@@ -550,11 +504,6 @@ bool ppg_pattern_matching_run(void)
             
          case PPG_Pattern_Invalid:
             
-            // Prepare the event buffer for 
-            // user processing
-            //
-//             ppg_event_buffer_prepare_on_failure();
-            
             // If no furcation was found, there is no chance
             // for a match. Thus we remove the first stored event
             // and rerun the overall pattern matching based on a
@@ -602,7 +551,7 @@ bool ppg_pattern_matching_run(void)
       }
       
       // Prepare for restart of pattern matching
-      
+      //
       ppg_reset_pattern_matching_engine();
    }
    

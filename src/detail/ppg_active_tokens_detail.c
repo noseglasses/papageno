@@ -15,31 +15,19 @@
  */
 
 #include "detail/ppg_active_tokens_detail.h"
+#include "detail/ppg_token_detail.h"
 #include "detail/ppg_context_detail.h"
 #include "ppg_debug.h"
 
 void ppg_active_tokens_init(PPG_Active_Tokens *active_tokens)
 {
-//    for(PPG_Count i = 0; i < PPG_ACTIVE_TOKENS_SPACE; ++i) {
-//       active_tokens->free_ids[i] = i;
-//    }
    active_tokens->n_tokens = 0;
 }
 
 static void ppg_active_tokens_add(PPG_Token__ *token)
 {
    PPG_GAT.tokens[PPG_GAT.n_tokens] = token;
-   
-//    PPG_Count next_free_id = PPG_GAT.free_ids[PPG_GAT.n_tokens];
-//    
-//    // Store the token
-//    //
-//    PPG_GAT.tokens[next_free_id] = token;
-//    
-//    // Store the back pointer
-//    //
-//    PPG_GAT.pos[next_free_id] = PPG_GAT.n_tokens;
-   
+
    ++PPG_GAT.n_tokens;
 }
 
@@ -50,25 +38,6 @@ static void ppg_active_tokens_remove(PPG_Count id)
    }
    
    --PPG_GAT.n_tokens;
-   
-//    // pos is the index int the free_ids array where the
-//    // index that points into the tokens-array is stored
-//    //
-//    PPG_Count pos = PPG_GAT.pos[id];
-//    
-//    // Switch with the entry on top of the stack
-//    //
-//    PPG_GAT.free_ids[pos] = PPG_GAT.free_ids[PPG_GAT.n_tokens];
-//    
-//    // Return the id
-//    //
-//    PPG_GAT.free_ids[PPG_GAT.n_tokens] = id;
-//    
-//    // Update the back pointer
-//    //
-//    PPG_GAT.pos[PPG_GAT.free_ids[pos]] = pos;
-//    
-//    PPG_GAT.tokens[id] = NULL;
 }
 
 static void ppg_active_tokens_search_remove(PPG_Token__ *token)
@@ -90,32 +59,34 @@ static void ppg_active_tokens_on_deactivation(PPG_Token__ *consumer,
 
    if(consumer) {
       
-   #if PPG_PEDANTIC_TOKENS
+      if(consumer->misc.flags & PPG_Token_Flags_Pedantic) {
          
-      if(   (state 
-                     == PPG_Token_Matches) 
-         && (changed)) {
+         if(   (state 
+                        == PPG_Token_Matches) 
+            && (changed)) {
+               
+            PPG_LOG("   Causes activation and deactivation\n");
+         
+            if(consumer->misc.action_state == PPG_Action_Enabled) {
+                     
+               PPG_LOG("      Triggering activation action\n");
+                     
+               consumer->action.callback.func(true /* signal deactivation */,
+                        consumer->action.callback.user_data);
+               
+               consumer->misc.action_state = PPG_Action_Activation_Triggered;
+                     
+               consumer->action.callback.func(false /* signal deactivation */,
+                        consumer->action.callback.user_data);
+                     
+               consumer->misc.action_state = PPG_Action_Deactivation_Triggered;
+            }
             
-         PPG_LOG("   Causes activation and deactivation\n");
-      
-         if(consumer->misc.action_state == PPG_Action_Enabled) {
-                  
-            PPG_LOG("      Triggering activation action\n");
-                  
-            consumer->action.callback.func(true /* signal deactivation */,
-                     consumer->action.callback.user_data);
-            
-            consumer->misc.action_state = PPG_Action_Activation_Triggered;
-                  
-            consumer->action.callback.func(false /* signal deactivation */,
-                     consumer->action.callback.user_data);
-                  
-            consumer->misc.action_state = PPG_Action_Deactivation_Triggered;
+            ppg_active_tokens_search_remove(consumer);
          }
          
-         ppg_active_tokens_search_remove(consumer);
+         return;
       }
-   #endif
       
       // It there is a consumer listed, this means that the event was
       // consumed by one of the tokens of the matching branch
@@ -172,13 +143,6 @@ static void ppg_active_tokens_on_deactivation(PPG_Token__ *consumer,
                }
             }
             
-            // The token is now free to be used for the next pattern processing round.
-            // Reset it.
-            
-            // Reset members
-            //
-   //                PPG_CALL_VIRT_METHOD(consumer, reset);
-            
             // Remove it from the active set as no further events will affect it
             //
             ppg_active_tokens_search_remove(consumer);
@@ -224,7 +188,8 @@ bool ppg_active_tokens_check_consumption(
                                        true /*modify only if consuming*/
                                  );
                          
-      PPG_CALL_VIRT_METHOD(consumer, print_self, 0, false /* do not recurse */);     
+      PPG_PRINT_TOKEN(consumer)
+      
       if(!event_consumed) {
          continue;
       }
@@ -267,8 +232,6 @@ bool ppg_active_tokens_check_consumption(
    return true;
 }
 
-
-
 static void ppg_active_tokens_update_aux(
                                     PPG_Event_Queue_Entry *eqe,
                                     void *user_data)
@@ -288,7 +251,7 @@ static void ppg_active_tokens_update_aux(
    if(eqe->consumer) {
       PPG_LOG("   consumer: 0x%" PRIXPTR "\n", (uintptr_t)eqe->consumer);
       PPG_LOG("   consumer action state: %d\n", eqe->consumer->misc.action_state);
-      PPG_CALL_VIRT_METHOD(eqe->consumer, print_self, 0, false /* do not recurse */);
+      PPG_PRINT_TOKEN(eqe->consumer)
    }
   
    if(eqe->event.flags & PPG_Event_Active) {
@@ -310,20 +273,21 @@ static void ppg_active_tokens_update_aux(
          // In pedantic tokens mode, tokens can only trigger actions 
          // when all their related inputs became inactive
          //
-         #if !PPG_PEDANTIC_TOKENS
-         // As the token just matched. Lets check if
-         // we are allowed to trigger the respective action.
-         //
-         if(eqe->consumer->misc.action_state == PPG_Action_Enabled) {
+         if((eqe->consumer->misc.flags & PPG_Token_Flags_Pedantic) == 0) {
             
-            PPG_LOG("      Triggering activation action\n");
-            
-            eqe->consumer->action.callback.func(true /* signal activation */,
-               eqe->consumer->action.callback.user_data);
-            
-            eqe->consumer->misc.action_state = PPG_Action_Activation_Triggered;
+            // As the token just matched. Lets check if
+            // we are allowed to trigger the respective action.
+            //
+            if(eqe->consumer->misc.action_state == PPG_Action_Enabled) {
+               
+               PPG_LOG("      Triggering activation action\n");
+               
+               eqe->consumer->action.callback.func(true /* signal activation */,
+                  eqe->consumer->action.callback.user_data);
+               
+               eqe->consumer->misc.action_state = PPG_Action_Activation_Triggered;
+            }
          }
-         #endif
       }
       
       eqe->event.flags |= PPG_Event_Considered;
@@ -347,10 +311,7 @@ static void ppg_active_tokens_update_aux(
          
          PPG_LOG("   Not part of current match branch\n");
          
-         /*bool event_consumed = */ppg_active_tokens_check_consumption(&eqe->event);
-               
-//          PPG_ASSERT(event_consumed);
-         
+         ppg_active_tokens_check_consumption(&eqe->event);
       }
    }
 }

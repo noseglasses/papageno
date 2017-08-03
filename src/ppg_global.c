@@ -160,26 +160,12 @@ PPG_Signal_Callback ppg_global_get_signal_callback(void)
    return ppg_context->signal_callback;
 }
 
-// void ppg_global_set_number_of_inputs(PPG_Count n_inputs)
-// {
-// 
-// }
-// 
-// PPG_Count ppg_global_get_number_of_inputs(void)
-// {
-//    return ppg_context->active_inputs.n_bits;
-// }
-
 void ppg_global_abort_pattern_matching(void)
 {     
    if(!ppg_context->current_token) { return; }
    
 //    PPG_LOG("Abrt pttrn\n");
-   
-   //ppg_recurse_and_prepare_active_branch(true /* allow reset */);
-   
-//    ppg_event_buffer_prepare_on_failure();
-   
+
    // Note: It is on the user to read back any 
    //       events that were stored from the PPG_On_Abort signal callback
          

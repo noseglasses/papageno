@@ -36,8 +36,6 @@ static void ppg_on_timeout(void)
       PPG_LOG("Fallback success\n");
       
       // Fallback was possible
-      
-//       ppg_active_tokens_update();
    
       // If an action was processed, we consider the processing as a match
       //
@@ -66,15 +64,11 @@ static void ppg_on_timeout(void)
       // branches of the search tree for a pattern match.
       //
       ppg_pattern_matching_process_remaining_branch_options();
-      
-//       ppg_event_buffer_prepare_on_failure();
    }
    
    ppg_signal(PPG_On_Timeout);
    
    ppg_delete_stored_events();
-
-   //ppg_recurse_and_prepare_active_branch();
    
    ppg_reset_pattern_matching_engine();
 }
@@ -126,8 +120,8 @@ bool ppg_timeout_check(void)
       PPG_LOG("Events in queue: %d\n",
          ppg_event_buffer_size());
    
-      /* Too late...
-         */
+      // Too late...
+      //
       ppg_on_timeout();
    
       timeout_hit = true;

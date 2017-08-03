@@ -135,46 +135,6 @@ enum PPG_Processing_State {
    PPG_Token_Invalid
 };
 
-// enum {   PPG_Action_Flags_Start_Bit_Id = 3 };
-// enum {   PPG_Flags_Start_Bit_Id = PPG_Action_Flags_Start_Bit_Id + 1 };
-// 
-// enum {   PPG_N_Action_Flag_Bits = PPG_Flags_Start_Bit_Id - PPG_Action_Flags_Start_Bit_Id };
-// 
-// enum {   PPG_State_Mask = ((1 << PPG_N_Action_Flag_Bits) - 1) << PPG_Action_Flags_Start_Bit_Id };
-// 
-// enum {   PPG_Action_Flags_Mask = ~((1 << (PPG_Flags_Start_Bit_Id) - 1) };
-// 
-// enum {   PPG_Flags_Mask = ~((1 << PPG_Flags_Start_Bit_Id) - 1) };
-// 
-// enum {   PPG_Note_Flag_Match_Activation = 1 << PPG_Flags_Start_Bit_Id,
-//          PPG_Note_Flag_Match_Deactivation = PPG_Note_Flag_Match_Activation << 1,
-//          PPG_Token_Allow_Deactivation = PPG_Note_Flag_Match_Deactivation << 1
-// };
-// 
-// inline PPG_Count ppg_token_get_state(PPG_Token__ *token) 
-// {
-//    return token->misc & PPG_State_Mask;
-// }
-// inline void ppg_token_set_state(PPG_Token__ *token, PPG_Count state)
-// {
-//    token->misc &= PPG_Flags_Mask;
-//    token->misc |= state;
-// }
-// 
-// inline PPG_Count ppg_token_get_flags(PPG_Token__ *token)
-// {
-//    return (token->misc & PPG_Flags_Mask) >> PPG_Flags_Start_Bit_Id;
-// }
-// 
-// inline PPG_Count ppg_token_set_flags(PPG_Token__ *token, PPG_Count values, PPG_Count mask)
-// {
-//    // Clear bits in mask range
-//    //
-//    token->misc &= ~(mask << PPG_Flags_Start_Bit_Id); 
-//    
-//    token->misc |= ((values & mask) << PPG_Flags_Start_Bit_Id);
-// }
-
 void ppg_token_free_children(PPG_Token__ *token);
 
 void ppg_token_store_action(PPG_Token__ *token, 
@@ -200,6 +160,7 @@ void ppg_token_print_self_end(PPG_Token__ *p, PPG_Count indent, bool recurse);
 #endif
 
 #if PPG_HAVE_DEBUGGING
+
 // Use this method directly to start recursion
 //
 bool ppg_token_check_initialized(PPG_Token__ *token);
@@ -214,6 +175,16 @@ bool ppg_token_recurse_check_initialized(PPG_Token__ *token);
       PPG_LOG("   location: %s:%d\n", __FILE__, __LINE__); \
       assertion_failed = true; \
    }
+#endif
+
+#if PPG_PRINT_SELF_ENABLED
+#define PPG_PRINT_TOKEN(TOKEN) \
+    PPG_CALL_VIRT_METHOD(TOKEN, print_self, 0, false /* do not recurse */);
+#define PPG_PRINT_TOKEN_RECURSE(TOKEN) \
+    PPG_CALL_VIRT_METHOD(TOKEN, print_self, 0, true /* do not recurse */);
+#else
+#define PPG_PRINT_TOKEN(TOKEN)
+#define PPG_PRINT_TOKEN_RECURSE(TOKEN)
 #endif
 
 #endif

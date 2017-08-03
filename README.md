@@ -210,7 +210,7 @@ A token can represent an activation/deactivation of one or more inputs.
 
 Notes are the most simple building blocks of patterns. They can e.g. be arranged to form single note lines. One note can thereby represent any input. By default, e.g. when used in single note lines, notes expect only the activation of an input to match. Deactivations of an input for that a previous activation had been registered are silently ignored and consumed if the overall pattern matches.
 
-An immediate corresponding deactivation is only required if Papageno is compiled with `PPG_PEDANTIC_TOKENS`.
+An immediate corresponding deactivation is only required if tokens are marked as pedantic.
 
 Notes may also require an explicit activation or deactivation of an input. This can be forced by supplying a parameter `flag` to the `ppg_note_create` function.
 
@@ -317,7 +317,7 @@ A B a b C c
 Pedantic Tokens
 ---------------
 
-By default, tokens match if all related inputs are activated as required by the respective token. However, by defining the preprocessor macro `PPG_PEDANTIC_TOKENS`, Papageno can be compiled in a pedantic mode. If this is enabled, every token requires all related inputs first to be activated and then immediately deactivated.
+By default, tokens match if all related inputs are activated as required by the respective token. However, tokens can also be marked as pedantic. If so, every token requires all related inputs first to be activated and then immediately deactivated.
 
 In pedantic mode, the pattern
 

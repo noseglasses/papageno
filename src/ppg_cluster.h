@@ -29,7 +29,7 @@
   * ppg_token_get_flags to manipulated cluster flags.
  */
 enum PPG_Cluster_Flags {
-   PPG_Cluster_Flags_Disallow_Input_Deactivation = (2 << 1) ///< Set this flag to gain 
+   PPG_Cluster_Flags_Disallow_Input_Deactivation = (1 << 3) ///< Set this flag to gain 
             // a cluster that does not tolerate deactivation of inputs before all
             // inputs are activated. If this condition is violated, the
             // cluster is considered as invalid

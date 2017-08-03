@@ -35,9 +35,7 @@ void *ppg_aggregate_new(void *aggregate__) {
    aggregate->inputs = NULL;
    
    ppg_bitfield_init(&aggregate->member_active);
-#if PPG_PEDANTIC_TOKENS
-   aggregate->all_activated = false;
-#endif
+
    aggregate->n_inputs_active = 0;
 
    return aggregate;
@@ -83,9 +81,7 @@ static void ppg_aggregate_resize(PPG_Aggregate *aggregate,
    ppg_bitfield_resize(&aggregate->member_active,
                        n_members,
                        false /*drop old bits*/);
-#if PPG_PEDANTIC_TOKENS
-   aggregate->all_activated = false;
-#endif
+
    aggregate->n_inputs_active = 0;
       
    for(PPG_Count i = 0; i < n_members; ++i) {

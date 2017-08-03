@@ -29,7 +29,8 @@ PPG_Token ppg_note_create(PPG_Input_Id input, PPG_Count flags)
     
     note->super.misc.flags = flags;
     
-    /* Return the new end of the pattern */
+    // Return the new end of the pattern
+    //
     return note;
 }
 

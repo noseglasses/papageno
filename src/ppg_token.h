@@ -23,6 +23,16 @@
 #include "ppg_action_flags.h"
 #include "ppg_settings.h"
 
+/** @brief Token flags
+ */
+enum {
+   PPG_Token_Flags_Pedantic = 1 << 1 ///< Enables pedantic mode for tokens. 
+                                    // In pedantic mode, a token only matches when all 
+                                    // inputs have been disabled after having been 
+                                    // enabled in a way that is required by the token 
+                                    // to match in standard mode
+};
+
 /** @brief The token type
  */
 typedef void * PPG_Token;
