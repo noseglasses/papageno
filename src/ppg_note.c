@@ -47,7 +47,7 @@ PPG_Token ppg_single_note_line(
 {
 //    PPG_LOG("Adding single note line\n");
   
-   PPG_Token tokens[n_inputs];
+   PPG_Token__ *tokens[n_inputs];
       
    for (PPG_Count i = 0; i < n_inputs; i++) {
 
@@ -57,7 +57,7 @@ PPG_Token ppg_single_note_line(
    ppg_token_store_action(tokens[n_inputs - 1], action);
    
    PPG_Token__ *leaf_token 
-      = ppg_pattern_from_list(layer, n_inputs, tokens);
+      = ppg_pattern_from_list(NULL, layer, n_inputs, tokens);
   
    return leaf_token;
 }

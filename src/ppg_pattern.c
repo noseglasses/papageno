@@ -29,7 +29,7 @@ PPG_Token ppg_pattern(
    
    ppg_global_init();
       
-   return ppg_pattern_from_list(layer, n_tokens, tokens);
+   return ppg_pattern_from_list(NULL, layer, n_tokens, (PPG_Token__ **)tokens);
 }
 
 #if PPG_PRINT_SELF_ENABLED

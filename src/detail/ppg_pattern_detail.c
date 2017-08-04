@@ -21,11 +21,14 @@
 #include "ppg_action.h"
 
 PPG_Token ppg_pattern_from_list( 
+                                    PPG_Token__ *parent_token,
                                     PPG_Layer layer,
                                     PPG_Count n_tokens,
-                                    PPG_Token tokens[])
+                                    PPG_Token__ *tokens[])
 {  
-   PPG_Token__ *parent_token = &ppg_context->pattern_root;
+   if(!parent_token) {
+      parent_token = &ppg_context->pattern_root;
+   }
    
    PPG_LOG("\t%d memb\n", n_tokens);
    
@@ -37,7 +40,7 @@ PPG_Token ppg_pattern_from_list(
          // in generation macros.
       }
       
-      PPG_Token__ *cur_token = (PPG_Token__*)tokens[i];
+      PPG_Token__ *cur_token = tokens[i];
       
       PPG_Token__ *equivalent_child 
          = ppg_token_get_equivalent_child(parent_token, cur_token);

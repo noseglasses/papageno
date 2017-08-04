@@ -264,10 +264,10 @@ PPG_Token ppg_cluster(
       
    token->action = action;
    
-   PPG_Token tokens[1] = { token };
+   PPG_Token__ *tokens[1] = { token };
    
    PPG_Token__ *leaf_token 
-      = ppg_pattern_from_list(layer, 1, tokens);
+      = ppg_pattern_from_list(NULL, layer, 1, tokens);
       
    return leaf_token;
 }

@@ -165,11 +165,17 @@ __NL__   else { \
 __NL__      automatically_reset_testing_system = true; \
 __NL__   }
 
+#if PPG_PRINT_SELF_ENABLED
+   #define PPG_CS_PRINT_TREE ppg_pattern_print_tree();
+#else
+   #define PPG_CS_PRINT_TREE
+#endif
+
 #if PPG_HAVE_DEBUGGING
 #define PPG_CS_CHECK_CONSISTENCY \
 __NL__      if(ppg_global_check_consistency()) { \
 __NL__         PPG_LOG("Consistency check failed\n"); \
-__NL__         ppg_pattern_print_tree(); \
+__NL__         PPG_CS_PRINT_TREE \
 __NL__         abort(); \
 __NL__      }
 #else

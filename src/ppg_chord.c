@@ -51,7 +51,10 @@ static bool ppg_chord_match_event(
          }
          else {
             
-            if(chord->super.misc.flags & PPG_Chord_Flags_Disallow_Input_Deactivation) {
+            if(   ((chord->super.misc.flags & PPG_Aggregate_All_Active) == 0)
+               && (chord->super.misc.flags &          
+                        PPG_Chord_Flags_Disallow_Input_Deactivation)) {
+               
                if(!modify_only_if_consuming) {
                   chord->super.misc.state = PPG_Token_Invalid;
                }
@@ -207,10 +210,10 @@ PPG_Token ppg_chord(
       
    token->action = action;
       
-   PPG_Token tokens[1] = { token };
+   PPG_Token__ *tokens[1] = { token };
    
    PPG_Token__ *leaf_token 
-      = ppg_pattern_from_list(layer, 1, tokens);
+      = ppg_pattern_from_list(NULL, layer, 1, tokens);
       
    return leaf_token;
 }

@@ -503,17 +503,37 @@ bool ppg_pattern_matching_run(void)
             break;
             
          case PPG_Pattern_Invalid:
+         {
+            bool action_processed 
+               = ppg_recurse_and_process_actions(ppg_context->current_token);
+      
+            if(action_processed) { 
+               
+               PPG_LOG("Fallback success\n");
+               
+               // Fallback was possible
             
-            // If no furcation was found, there is no chance
-            // for a match. Thus we remove the first stored event
-            // and rerun the overall pattern matching based on a
-            // new first event.
-            //
-            ppg_signal(PPG_On_Match_Failed);       
+               // If an action was processed, we consider the processing as a match
+               //
+               ppg_event_buffer_on_match_success();
+               
+               // Prevent the timeout signal handler from processig events
+               //
+               ppg_delete_stored_events();
+            }
+            else {
             
-            PPG_LOG("Mtch fld\n");
-            ppg_even_buffer_flush_and_remove_first_event(false /* no success */);
-            
+               // If no furcation was found, there is no chance
+               // for a match. Thus we remove the first stored event
+               // and rerun the overall pattern matching based on a
+               // new first event.
+               //
+               ppg_signal(PPG_On_Match_Failed);       
+               
+               PPG_LOG("Mtch fld\n");
+               ppg_even_buffer_flush_and_remove_first_event(false /* no success */);
+            }
+         }
             break;
             
          case PPG_Pattern_Orphaned_Deactivation:

@@ -29,6 +29,7 @@
 #include "ppg_global.h"
 #include "ppg_input.h"
 #include "ppg_layer.h"
+#include "ppg_leader_sequences.h"
 #include "ppg_note.h"
 #include "ppg_pattern.h"
 #include "ppg_settings.h"

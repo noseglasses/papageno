@@ -35,6 +35,11 @@
  */
 #define PPG_MAX_INPUTS @__PPG_MAX_INPUTS@
 
+/** @brief The maximum number of tokens that can wait for
+ *          further events to arrive
+ */ 
+#define PPG_MAX_ACTIVE_TOKENS @__PPG_MAX_ACTIVE_TOKENS@
+
 /** @brief An unsigned integer type that is used to store 
  * small numbers
  */

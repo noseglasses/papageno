@@ -27,7 +27,6 @@ bool ppg_recurse_and_process_actions(PPG_Token__ *cur_token)
    
 //    PPG_LOG("Triggering action of most recent token\n");
    
-   PPG_Token__ *action_tokens[ppg_context->tree_depth];
    PPG_Count n_actions = 0;
    
    // It may be possible that a token was just started but not
@@ -46,7 +45,7 @@ bool ppg_recurse_and_process_actions(PPG_Token__ *cur_token)
          
          // Store the tokens that carry actions in reversed order
          //
-         action_tokens[n_actions] = cur_token;
+         cur_token->misc.action_state = PPG_Action_Enabled;
          ++n_actions;
          
          if(cur_token->misc.action_flags & PPG_Action_Fallback) {
@@ -65,25 +64,6 @@ bool ppg_recurse_and_process_actions(PPG_Token__ *cur_token)
          }
       }
    }
-   
-   // Traverse and trigger token actions traveling
-   // from the root of the token tree to its leaf
-   //
-   for(PPG_Id i = n_actions - 1; i >= 0; --i) {
-      
-//       PPG_LOG("Trg act tk 0x%"
-//          PRIXPTR ", func: 0x%"
-//          PRIXPTR ", data: 0x%"
-//          PRIXPTR "\n",
-//          (uintptr_t)action_tokens[i],
-//          (uintptr_t)action_tokens[i]->action.callback.func,
-//          (uintptr_t)action_tokens[i]->action.callback.user_data
-//       );
-      
-      action_tokens[i]->misc.action_state = PPG_Action_Enabled;
-   }
-   
-//    PPG_LOG("Done\n");
    
    return n_actions > 0;
 }

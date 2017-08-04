@@ -19,11 +19,13 @@
 
 #include "ppg_token.h"
 #include "ppg_layer.h"
+#include "detail/ppg_token_detail.h"
 
 PPG_Token ppg_pattern_from_list(   
+                                    PPG_Token__ *parent_token,
                                     PPG_Layer layer,
                                     PPG_Count n_tokens,
-                                    PPG_Token tokens[]);
+                                    PPG_Token__ *tokens[]);
 
 PPG_Count ppg_pattern_tree_depth(void);
 

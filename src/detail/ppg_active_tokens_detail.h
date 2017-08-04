@@ -19,12 +19,10 @@
 #include "detail/ppg_token_detail.h"
 #include "ppg_settings.h"
 
-#define PPG_ACTIVE_TOKENS_SPACE 16
-
 #define PPG_GAT ppg_context->active_tokens
 
 typedef struct {
-   PPG_Token__ *tokens[PPG_ACTIVE_TOKENS_SPACE];
+   PPG_Token__ *tokens[PPG_MAX_ACTIVE_TOKENS];
    PPG_Count   n_tokens;
 } PPG_Active_Tokens;
 

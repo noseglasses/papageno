@@ -27,6 +27,8 @@ void ppg_active_tokens_init(PPG_Active_Tokens *active_tokens)
 static void ppg_active_tokens_add(PPG_Token__ *token)
 {
    PPG_GAT.tokens[PPG_GAT.n_tokens] = token;
+   
+   PPG_ASSERT(PPG_GAT.n_tokens < PPG_MAX_ACTIVE_TOKENS);
 
    ++PPG_GAT.n_tokens;
 }

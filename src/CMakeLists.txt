@@ -115,7 +115,8 @@ set(source_files
 	./ppg_event.c     
 	./ppg_event_buffer.c                                                                                                                         
 	./ppg_global.c   
-	./ppg_input.c                                                                                                                         
+	./ppg_input.c                                                                                                                    
+	./ppg_leader_sequences.c                                                                                                                         
 	./ppg_note.c      
 	./ppg_pattern.c    
    ./ppg_statistics.c             
