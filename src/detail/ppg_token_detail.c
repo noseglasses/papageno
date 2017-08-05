@@ -25,6 +25,7 @@
 #include "detail/ppg_event_buffer_detail.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 void ppg_token_store_action(PPG_Token__ *token, 
                                    PPG_Action action)
@@ -43,26 +44,26 @@ void ppg_token_reset_control_state(PPG_Token__ *token)
    token->misc.action_state = PPG_Action_Disabled;
 }
 
-static void ppg_token_allocate_children(PPG_Token__ *a_This, PPG_Count n_children) {
+static void ppg_token_allocate_children(PPG_Token__ *token, PPG_Count n_children) {
 
-    a_This->children 
+    token->children 
       = (struct PPG_TokenStruct **)malloc(n_children*sizeof(struct PPG_TokenStruct*));
-    a_This->n_allocated_children = n_children;
+    token->n_allocated_children = n_children;
 }
 
-static void ppg_token_grow_children(PPG_Token__ *a_This) {
+static void ppg_token_grow_children(PPG_Token__ *token) {
 
-   if(a_This->n_allocated_children == 0) {
+   if(token->n_allocated_children == 0) {
       
-      ppg_token_allocate_children(a_This, 1);
+      ppg_token_allocate_children(token, 1);
    }
    else {
-      PPG_Token__ **oldSucessors = a_This->children;
+      PPG_Token__ **oldSucessors = token->children;
       
-      ppg_token_allocate_children(a_This, 2*a_This->n_allocated_children);
+      ppg_token_allocate_children(token, 2*token->n_allocated_children);
          
-      for(PPG_Count i = 0; i < a_This->n_children; ++i) {
-         a_This->children[i] = oldSucessors[i];
+      for(PPG_Count i = 0; i < token->n_children; ++i) {
+         token->children[i] = oldSucessors[i];
       }
       
       free(oldSucessors); 
@@ -136,6 +137,47 @@ PPG_Token__* ppg_token_get_equivalent_child(
    return NULL;
 }
 
+size_t ppg_token_dynamic_member_size(PPG_Token__ *token)
+{
+   return token->n_children*sizeof(PPG_Token__ *);
+}
+
+size_t ppg_token_dynamic_size(PPG_Token__ *token)
+{
+   return   sizeof(PPG_Token__) 
+         +  ppg_token_dynamic_member_size(token);
+}
+
+char *ppg_token_copy_dynamic_members(PPG_Token__ *token, char *buffer)
+{
+   size_t n_bytes = token->n_children*sizeof(PPG_Token__ *);
+   
+   memcpy((void*)buffer, (void*)token->children, n_bytes);
+   
+   return buffer + n_bytes;
+}
+
+char *ppg_token_placement_clone(PPG_Token__ *token, char *buffer)
+{
+   *((PPG_Token__ *)buffer) = *token;
+   
+   return ppg_token_copy_dynamic_members(token, buffer + sizeof(PPG_Token__));
+}
+
+
+void ppg_token_register_pointers_for_compression(
+                                             PPG_Token__ *token,
+                                             PPG_Compression_Context__ *ccontext)
+{
+   ppg_compression_context_register_vptr((void**)&token->vtable, ccontext);
+   
+   ppg_compression_context_register_symbol((void**)&token->action.callback.func, ccontext);
+   
+   if(token->action.callback.user_data) {
+      ppg_compression_context_register_symbol((void**)&token->action.callback.user_data, ccontext);
+   }
+}
+
 #if PPG_PRINT_SELF_ENABLED
 
 void ppg_token_print_self_start(PPG_Token__ *p, PPG_Count indent)
@@ -205,9 +247,22 @@ bool ppg_token_recurse_check_initialized(PPG_Token__ *token)
    return assertion_failed;
 }
 
+void ppg_token_traverse_tree(PPG_Token__ *token,
+                             PPG_Token_Tree_Visitor visitor,
+                             void *user_data)
+{
+   visitor(token, user_data);
+   
+   for(PPG_Count i = 0; i < token->n_children; ++i) {
+      ppg_token_traverse_tree(token->children[i],
+                              visitor,
+                              user_data);
+   }
+}
+
 #endif
 
-static PPG_Token_Vtable ppg_token_vtable =
+PPG_Token_Vtable ppg_token_vtable =
 {
    .match_event 
       = NULL,
@@ -216,7 +271,13 @@ static PPG_Token_Vtable ppg_token_vtable =
    .destroy 
       = (PPG_Token_Destroy_Fun) ppg_token_destroy,
    .equals
-      = NULL
+      = NULL,
+   .dynamic_size
+      = (PPG_Token_Dynamic_Size_Requirement_Fun)ppg_token_dynamic_size,
+   .placement_clone
+      = (PPG_Token_Placement_Clone_Fun)ppg_token_placement_clone,
+   .register_ptrs_for_compression
+      = (PPG_Token_Register_Pointers_For_Compression)ppg_token_register_pointers_for_compression
    
    #if PPG_PRINT_SELF_ENABLED
    ,

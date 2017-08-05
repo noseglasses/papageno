@@ -61,6 +61,7 @@ ppg_add_test(test_leader_sequences)
 ppg_add_test(test_note_lines)
 ppg_add_test(test_strict_notes)
 ppg_add_test(test_token_precedence)
+ppg_add_test(test_compression)
 # ppg_add_test(test_large_systems_2)
 
 target_compile_options(

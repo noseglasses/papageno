@@ -351,6 +351,14 @@ Tap dances are a concept that emerged in the context of mechanical keyboard firm
 
 Papageno allows for gaps between tap definitions. It is e.g. possible to trigger an action after 2 consecutive activations and another action after 4 consecutive activations of an input. What is going to happen after three consecutive activations hereby depends on the specified action flags (please see the description of action fallback).
 
+Leader Sequences
+----------------
+
+Leader sequences are characterized as a sequence of notes that follow after a specific token sequence, the leader. Papageno supports the definition of leader sequences through alphabetic
+mappings. A set of strings defines the sequences and every character of a string is mapped to an input that is assigned to a note. If no dedicated leader token is specified, the root
+of the pattern matching search tree is taken as the basis for all sequences. Leader sequences are associated with layers. If necessary, leader sequences can allow fallback, similar to tap dances.
+This means that for a sequence to match, only the non ambiguous part needs to be matched by a sequence of events.
+
 Patterns and Layers
 -------------------
 

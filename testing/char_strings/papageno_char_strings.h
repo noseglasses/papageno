@@ -240,6 +240,14 @@ __NL__         .func = (PPG_Action_Callback_Fun)ppg_cs_process_action,  \
 __NL__         .user_data = (void*)(uintptr_t)PPG_CS_ACTION_VAR(ACTION_NAME) \
 __NL__      } \
 __NL__   }
+
+#define PPG_CS_ACTION_CALLBACK(CALLBACK, USER_DATA) \
+__NL__   (PPG_Action) {   \
+__NL__      .callback = (PPG_Action_Callback) { \
+__NL__         .func = (PPG_Action_Callback_Fun)CALLBACK,  \
+__NL__         .user_data = (void*)USER_DATA \
+__NL__      } \
+__NL__   }
    
 #define PPG_CS_PREPARE_CONTEXT \
    \

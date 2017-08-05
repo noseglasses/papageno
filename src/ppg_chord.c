@@ -142,6 +142,21 @@ static PPG_Count ppg_chord_token_precedence(PPG_Token__ *token)
    return PPG_Token_Precedence_Chord;
 }
 
+static size_t ppg_chord_dynamic_member_size(PPG_Token *token)
+{
+   return   sizeof(PPG_Chord)
+         +  ppg_aggregate_dynamic_member_size((PPG_Aggregate *)token);
+}
+
+static char *ppg_chord_placement_clone(PPG_Token__ *token, char *buffer)
+{
+   PPG_Chord *chord = (PPG_Chord *)token;
+   
+   *((PPG_Chord *)buffer) = *chord;
+   
+   return ppg_aggregate_copy_dynamic_members(token, buffer + sizeof(PPG_Chord));
+}
+
 #if PPG_PRINT_SELF_ENABLED
 static void ppg_chord_print_self(PPG_Chord *c, PPG_Count indent, bool recurse)
 {
@@ -159,9 +174,9 @@ static void ppg_chord_print_self(PPG_Chord *c, PPG_Count indent, bool recurse)
 }
 #endif
 
-static PPG_Token_Vtable ppg_chord_vtable =
+PPG_Token_Vtable ppg_chord_vtable =
 {
-   .match_event 
+   .match_event
       = (PPG_Token_Match_Event_Fun) ppg_chord_match_event,
    .reset 
       = (PPG_Token_Reset_Fun) ppg_aggregate_reset,
@@ -170,7 +185,14 @@ static PPG_Token_Vtable ppg_chord_vtable =
    .equals
       = (PPG_Token_Equals_Fun) ppg_aggregates_equal,
    .token_precedence
-      = (PPG_Token_Precedence_Fun)ppg_chord_token_precedence
+      = (PPG_Token_Precedence_Fun)ppg_chord_token_precedence,
+   .dynamic_size
+      = (PPG_Token_Dynamic_Size_Requirement_Fun)ppg_chord_dynamic_member_size,
+   .placement_clone
+      = (PPG_Token_Placement_Clone_Fun)ppg_chord_placement_clone,
+   .register_ptrs_for_compression
+      = (PPG_Token_Register_Pointers_For_Compression)ppg_token_register_pointers_for_compression
+      
    #if PPG_PRINT_SELF_ENABLED
    ,
    .print_self

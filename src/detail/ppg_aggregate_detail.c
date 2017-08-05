@@ -20,6 +20,7 @@
 
 #include <stddef.h>
 #include <stdlib.h>
+#include <string.h>
 
 void *ppg_aggregate_new(void *aggregate__) {
     
@@ -132,6 +133,25 @@ PPG_Token ppg_global_initialize_aggregate(
    /* Return the new end of the pattern 
     */
    return aggregate;
+}
+
+size_t ppg_aggregate_dynamic_member_size(PPG_Aggregate *aggregate)
+{
+   return   ppg_token_dynamic_member_size((PPG_Token__*)aggregate)
+         +  aggregate->n_members*sizeof(PPG_Input_Id);
+}
+
+char *ppg_aggregate_copy_dynamic_members(PPG_Token__ *token, char *buffer)
+{
+   buffer = ppg_token_copy_dynamic_members(token, buffer);
+   
+   PPG_Aggregate *aggregate = (PPG_Aggregate *)token;
+   
+   size_t n_bytes = aggregate->n_members*sizeof(PPG_Input_Id);
+   
+   memcpy(buffer, (void*)aggregate->inputs, n_bytes);
+   
+   return buffer + n_bytes;
 }
 
 #if PPG_HAVE_DEBUGGING

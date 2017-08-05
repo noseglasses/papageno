@@ -49,6 +49,8 @@ PPG_Token ppg_global_initialize_aggregate(
 void *ppg_aggregate_new(void *aggregate__);
 
 void ppg_aggregate_reset(PPG_Aggregate *aggregate);
+
+size_t ppg_aggregate_dynamic_member_size(PPG_Aggregate *aggregate);
   
 #if PPG_HAVE_DEBUGGING
 bool ppg_aggregate_check_initialized(PPG_Token__ *token);
@@ -59,5 +61,7 @@ PPG_Aggregate* ppg_aggregate_destroy(PPG_Aggregate *aggregate);
 PPG_Aggregate *ppg_aggregate_alloc(void);
 
 bool ppg_aggregates_equal(PPG_Aggregate *c1, PPG_Aggregate *c2);
+
+char *ppg_aggregate_copy_dynamic_members(PPG_Token__ *token, char *buffer);
 
 #endif

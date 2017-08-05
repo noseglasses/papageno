@@ -36,4 +36,6 @@ PPG_Note *ppg_note_new(PPG_Note *note);
 
 PPG_Note *ppg_note_alloc(void);
 
+extern PPG_Token_Vtable ppg_note_vtable;
+
 #endif

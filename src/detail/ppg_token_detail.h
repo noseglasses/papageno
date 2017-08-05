@@ -23,6 +23,7 @@
 #include "ppg_layer.h"
 #include "ppg_settings.h"
 #include "ppg_debug.h"
+#include "detail/ppg_compression_detail.h"
 
 struct PPG_TokenStruct;
 
@@ -41,6 +42,17 @@ typedef struct PPG_TokenStruct * (*PPG_Token_Destroy_Fun)(struct PPG_TokenStruct
 typedef bool (*PPG_Token_Equals_Fun)(struct PPG_TokenStruct *p1, struct PPG_TokenStruct *p2);
 
 typedef PPG_Count (*PPG_Token_Precedence_Fun)(struct PPG_TokenStruct *token);
+
+typedef size_t (*PPG_Token_Dynamic_Size_Requirement_Fun)(struct PPG_TokenStruct *p);
+
+typedef char *(*PPG_Token_Placement_Clone_Fun)(struct PPG_TokenStruct *p,
+                                             char *target_buffer
+);
+
+typedef void (*PPG_Token_Register_Pointers_For_Compression)(
+                                             struct PPG_TokenStruct *p,
+                                             PPG_Compression_Context__ *ccontext
+);
 
 #if PPG_PRINT_SELF_ENABLED
 typedef void (*PPG_Token_Print_Self_Fun)(struct PPG_TokenStruct *p, PPG_Count indent, bool recurse);
@@ -67,6 +79,15 @@ typedef struct {
    PPG_Token_Precedence_Fun
                            token_precedence;
                            
+   PPG_Token_Dynamic_Size_Requirement_Fun
+                           dynamic_size;
+                           
+   PPG_Token_Placement_Clone_Fun
+                           placement_clone;
+                           
+   PPG_Token_Register_Pointers_For_Compression
+                           register_ptrs_for_compression;
+                           
    #if PPG_PRINT_SELF_ENABLED
    PPG_Token_Print_Self_Fun
                            print_self;
@@ -77,6 +98,8 @@ typedef struct {
                            check_initialized;
    #endif
 } PPG_Token_Vtable;
+
+extern PPG_Token_Vtable ppg_token_vtable;
 
 #define PPG_CALL_VIRT_METHOD(THIS, METHOD, ...) \
    ((PPG_Token__*)THIS)->vtable->METHOD(THIS, ##__VA_ARGS__);
@@ -154,6 +177,16 @@ PPG_Token__* ppg_token_get_equivalent_child(
                                           PPG_Token__ *parent_token,
                                           PPG_Token__ *sample);
 
+size_t ppg_token_dynamic_member_size(PPG_Token__ *token);
+
+char *ppg_token_copy_dynamic_members(PPG_Token__ *token, char *buffer);
+
+char *ppg_token_placement_clone(PPG_Token__ *token, char *buffer);
+
+void ppg_token_register_pointers_for_compression(
+                                             PPG_Token__ *token,
+                                             PPG_Compression_Context__ *ccontext);
+
 #if PPG_PRINT_SELF_ENABLED
 void ppg_token_print_self_start(PPG_Token__ *p, PPG_Count indent);
 void ppg_token_print_self_end(PPG_Token__ *p, PPG_Count indent, bool recurse);
@@ -166,6 +199,12 @@ void ppg_token_print_self_end(PPG_Token__ *p, PPG_Count indent, bool recurse);
 bool ppg_token_check_initialized(PPG_Token__ *token);
 
 bool ppg_token_recurse_check_initialized(PPG_Token__ *token);
+
+typedef void (*PPG_Token_Tree_Visitor)(PPG_Token__ *token, void *user_data);
+
+void ppg_token_traverse_tree(PPG_Token__ *token,
+                             PPG_Token_Tree_Visitor visitor,
+                             void *user_data);
 
 #define PPG_ASSERT_WARN(...) \
    if(!(__VA_ARGS__)) { \

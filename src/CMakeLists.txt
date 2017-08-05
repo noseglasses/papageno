@@ -97,7 +97,8 @@ endif()
 
 set(source_files        
 	./detail/ppg_active_tokens_detail.c                                                                                                                 
-	./detail/ppg_aggregate_detail.c                                                                                                       
+	./detail/ppg_aggregate_detail.c   
+	./detail/ppg_compression_detail.c                                                                                                           
 	./detail/ppg_context_detail.c                                                                                                         
 	./detail/ppg_event_buffer_detail.c
 	./detail/ppg_furcation_detail.c
@@ -111,6 +112,7 @@ set(source_files
 	./ppg_bitfield.c
 	./ppg_chord.c                                                                                                                         
 	./ppg_cluster.c                                                                                                                       
+	./ppg_compression.c                                                                                                                       
 	./ppg_context.c                                                                                                                        
 	./ppg_event.c     
 	./ppg_event_buffer.c                                                                                                                         

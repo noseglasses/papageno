@@ -155,6 +155,21 @@ static PPG_Count ppg_cluster_token_precedence(PPG_Token__ *token)
    return PPG_Token_Precedence_Cluster;
 }
 
+static size_t ppg_cluster_dynamic_member_size(PPG_Token *token)
+{
+   return   sizeof(PPG_Cluster)
+         +  ppg_aggregate_dynamic_member_size((PPG_Aggregate *)token);
+}
+
+static char *ppg_cluster_placement_clone(PPG_Token__ *token, char *buffer)
+{
+   PPG_Cluster *cluster = (PPG_Cluster *)token;
+   
+   *((PPG_Cluster *)buffer) = *cluster;
+   
+   return ppg_aggregate_copy_dynamic_members(token, buffer + sizeof(PPG_Cluster));
+}
+
 #if PPG_PRINT_SELF_ENABLED
 static void ppg_cluster_print_self(PPG_Cluster *c, PPG_Count indent, bool recurse)
 {
@@ -202,7 +217,7 @@ static void ppg_cluster_reset(PPG_Cluster *cluster)
    cluster->n_lasting = 0;
 }
 
-static PPG_Token_Vtable ppg_cluster_vtable =
+PPG_Token_Vtable ppg_cluster_vtable =
 {
    .match_event 
       = (PPG_Token_Match_Event_Fun) ppg_cluster_match_event,
@@ -213,7 +228,14 @@ static PPG_Token_Vtable ppg_cluster_vtable =
    .equals
       = (PPG_Token_Equals_Fun) ppg_aggregates_equal,
    .token_precedence
-      = (PPG_Token_Precedence_Fun)ppg_cluster_token_precedence
+      = (PPG_Token_Precedence_Fun)ppg_cluster_token_precedence,
+   .dynamic_size
+      = (PPG_Token_Dynamic_Size_Requirement_Fun)ppg_cluster_dynamic_member_size,
+   .placement_clone
+      = (PPG_Token_Placement_Clone_Fun)ppg_cluster_placement_clone,
+   .register_ptrs_for_compression
+      = (PPG_Token_Register_Pointers_For_Compression)ppg_token_register_pointers_for_compression
+      
    #if PPG_PRINT_SELF_ENABLED
    ,
    .print_self

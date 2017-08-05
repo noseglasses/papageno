@@ -175,6 +175,21 @@ static PPG_Count ppg_note_token_precedence(PPG_Token__ *token)
    return PPG_Token_Precedence_Explicit_Note;
 }
 
+static size_t ppg_note_dynamic_size(PPG_Token__ *token)
+{
+   return   sizeof(PPG_Note)
+         +  ppg_token_dynamic_member_size(token);
+}
+
+static char *ppg_note_placement_clone(PPG_Token__ *token, char *buffer)
+{
+   PPG_Note *note = (PPG_Note *)token;
+   
+   *((PPG_Note *)buffer) = *note;
+   
+   return ppg_token_copy_dynamic_members(token, buffer + sizeof(PPG_Note));
+}
+
 #if PPG_PRINT_SELF_ENABLED
 static void ppg_note_print_self(PPG_Note *p, PPG_Count indent, bool recurse)
 {
@@ -216,7 +231,7 @@ static bool ppg_note_check_initialized(PPG_Token__ *token)
 }
 #endif
 
-static PPG_Token_Vtable ppg_note_vtable =
+PPG_Token_Vtable ppg_note_vtable =
 {
    .match_event 
       = (PPG_Token_Match_Event_Fun) ppg_note_match_event,
@@ -227,7 +242,13 @@ static PPG_Token_Vtable ppg_note_vtable =
    .equals
       = (PPG_Token_Equals_Fun) ppg_note_equals,
    .token_precedence
-      = (PPG_Token_Precedence_Fun)ppg_note_token_precedence
+      = (PPG_Token_Precedence_Fun)ppg_note_token_precedence,
+   .dynamic_size 
+      = (PPG_Token_Dynamic_Size_Requirement_Fun)ppg_note_dynamic_size,
+   .placement_clone
+      = (PPG_Token_Placement_Clone_Fun)ppg_note_placement_clone,
+   .register_ptrs_for_compression
+      = (PPG_Token_Register_Pointers_For_Compression)ppg_token_register_pointers_for_compression
       
    #if PPG_PRINT_SELF_ENABLED
    ,

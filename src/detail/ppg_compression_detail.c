@@ -13,34 +13,28 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef PAPAGENO_H
-#define PAPAGENO_H
 
-/** @file */
-
-#include "ppg_action.h"
-#include "ppg_action_flags.h"
-#include "ppg_chord.h"
-#include "ppg_cluster.h"
-#include "ppg_compression.h"
-#include "ppg_context.h"
+#include "detail/ppg_compression_detail.h"
 #include "ppg_debug.h"
-#include "ppg_event.h"
-#include "ppg_event_buffer.h"
-#include "ppg_global.h"
-#include "ppg_input.h"
-#include "ppg_layer.h"
-#include "ppg_leader_sequences.h"
-#include "ppg_note.h"
-#include "ppg_pattern.h"
-#include "ppg_settings.h"
-#include "ppg_signal_callback.h"
-#include "ppg_signals.h"
-#include "ppg_statistics.h"
-#include "ppg_tap_dance.h"
-#include "ppg_time.h"
-#include "ppg_timeout.h"
-#include "ppg_token.h"
 
-#endif
+void ppg_compression_context_register_symbol(void **symbol,
+                                             PPG_Compression_Context__ *ccontext)
+{
+   PPG_ASSERT(ccontext->symbols);
+   PPG_ASSERT(ccontext->n_symbols < ccontext->n_symbols_space);
+   
+   ccontext->symbols[ccontext->n_symbols] = symbol;
+   
+   ++ccontext->n_symbols;
+}
 
+void ppg_compression_context_register_vptr(void **vptr,
+                                          PPG_Compression_Context__ *ccontext)
+{
+   PPG_ASSERT(ccontext->vptrs);
+   PPG_ASSERT(ccontext->n_vptrs < ccontext->n_vptrs_space);
+   
+   ccontext->vptrs[ccontext->n_vptrs] = vptr;
+   
+   ++ccontext->n_vptrs;
+}
