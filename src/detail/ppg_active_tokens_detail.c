@@ -22,6 +22,10 @@
 void ppg_active_tokens_init(PPG_Active_Tokens *active_tokens)
 {
    active_tokens->n_tokens = 0;
+   
+   for(size_t i = 0; i < PPG_MAX_ACTIVE_TOKENS; ++i) {
+      active_tokens->tokens[i] = NULL;
+   }
 }
 
 static void ppg_active_tokens_add(PPG_Token__ *token)

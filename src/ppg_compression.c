@@ -57,6 +57,10 @@ PPG_Compression_Context ppg_compression_init(void)
    PPG_Compression_Context__ *ccontext
       = (PPG_Compression_Context__ *)malloc(sizeof(PPG_Compression_Context__));
       
+   ccontext->symbols_lookup.buffer = NULL;
+   ccontext->symbols_lookup.n_allocated = 0;
+   ccontext->symbols_lookup.n_stored = 0;
+      
    ppg_compression_context_symbol_buffer_resize(&ccontext->symbols_lookup, 4);
    
    ccontext->target_storage = NULL;
@@ -148,7 +152,11 @@ static size_t ppg_compression_allocate_target_buffer(PPG_Compression_Context__ *
    
    PPG_ASSERT(!ccontext->target_storage);
    
-   ccontext->target_storage = (char*)malloc(size_data.memory);
+   printf("Allocating target_storage size %lu\n", size_data.memory);
+   
+   ccontext->target_storage = (char*)calloc(size_data.memory, sizeof(char));
+   
+   printf("Allocating target_storage %p\n", ccontext->target_storage);
    
    ccontext->storage_size = size_data.memory;
    
@@ -274,17 +282,26 @@ void ppg_compression_write_c_char_array(char *array_name,
 {
    printf("char %s[] = {\n", array_name);
    
+   
+   printf("array size: %lu\n", size);
+   
+   printf("array: %p\n", array);
+   
    #define ROW_LENGTH 16
    
    size_t n_rows = size / ROW_LENGTH;
    size_t n_remaining = size % ROW_LENGTH;
+   
+   printf("n_rows: %lu\n", n_rows);
+   printf("n_remaining: %lu\n", n_remaining);
+   
    
    for(size_t row = 0; row < n_rows; ++row) {
       
       printf("   ");
       
       for(size_t col = 0; col < ROW_LENGTH; ++col) {
-         printf("%x, ", array[row*ROW_LENGTH + col] & 0xff);
+         printf("0x%02x, ", (int)(array[row*ROW_LENGTH + col] & 0xff));
       }
       
       printf("\n");
@@ -293,7 +310,7 @@ void ppg_compression_write_c_char_array(char *array_name,
    if(n_remaining) {
       
       for(size_t col = 0; col < n_remaining; ++col) {
-         printf("%x, ", array[n_rows*ROW_LENGTH + col] & 0xff);
+         printf("0x%02x, ", (int)(array[n_rows*ROW_LENGTH + col] & 0xff));
       }
       
       printf("\n");
@@ -356,7 +373,7 @@ void ppg_compression_write_c_output(PPG_Compression_Context__ *ccontext,
       
       // Lookup the symbol name.
       // 
-      // TODO: Turn this inefficient linear serach into something more 
+      // TODO: Turn this inefficient linear search into something more 
       //       efficient by, e.g. sorting the buffer first
       //       and then perform a binary search.
       //

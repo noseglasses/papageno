@@ -47,7 +47,9 @@ void ppg_global_initialize_context(PPG_Context *context) {
    context->tree_depth = 0;
    context->layer = 0;
    ppg_global_init_input(&context->abort_input);
+   context->time_last_event = 0;
    context->event_timeout = 0;
+   context->event_processor = NULL;
    
    ppg_time_manager_init(&context->time_manager);
    
@@ -64,4 +66,42 @@ void ppg_global_initialize_context(PPG_Context *context) {
    #if PPG_HAVE_STATISTICS
    ppg_statistics_clear(&context->statistics);
    #endif
+   
+#define OUT(S) printf("%s: %lu\n", #S, (size_t)((size_t)&context->S - (size_t)context));
+   
+  OUT(event_buffer)
+   OUT(furcation_stack)
+   OUT(active_tokens)
+   
+   OUT(pattern_root)
+
+   OUT(current_token)
+
+   OUT(timeout_enabled)
+   OUT(papageno_enabled)
+   
+   OUT(tree_depth)
+   
+   OUT(layer)
+
+   OUT(abort_input)
+
+   OUT(time_last_event)
+
+   OUT(event_timeout)
+   
+   OUT(event_processor)
+   
+   OUT(time_manager)
+   
+   OUT(signal_callback)
+   
+   #if PPG_HAVE_STATISTICS
+   OUT(statistics)
+   #endif
+   
+   char *tmp = (char*)context;
+   for(size_t pos = 0; pos < sizeof(PPG_Context); ++pos) {
+      printf("%lu: 0x%x\n", pos, (int)(tmp[pos]));
+   }
 };

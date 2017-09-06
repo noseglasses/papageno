@@ -247,6 +247,8 @@ bool ppg_token_recurse_check_initialized(PPG_Token__ *token)
    return assertion_failed;
 }
 
+#endif
+
 void ppg_token_traverse_tree(PPG_Token__ *token,
                              PPG_Token_Tree_Visitor visitor,
                              void *user_data)
@@ -259,8 +261,6 @@ void ppg_token_traverse_tree(PPG_Token__ *token,
                               user_data);
    }
 }
-
-#endif
 
 PPG_Token_Vtable ppg_token_vtable =
 {

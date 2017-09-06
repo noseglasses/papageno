@@ -192,6 +192,13 @@ void ppg_token_print_self_start(PPG_Token__ *p, PPG_Count indent);
 void ppg_token_print_self_end(PPG_Token__ *p, PPG_Count indent, bool recurse);
 #endif
 
+
+typedef void (*PPG_Token_Tree_Visitor)(PPG_Token__ *token, void *user_data);
+
+void ppg_token_traverse_tree(PPG_Token__ *token,
+                             PPG_Token_Tree_Visitor visitor,
+                             void *user_data);
+
 #if PPG_HAVE_DEBUGGING
 
 // Use this method directly to start recursion
@@ -199,12 +206,6 @@ void ppg_token_print_self_end(PPG_Token__ *p, PPG_Count indent, bool recurse);
 bool ppg_token_check_initialized(PPG_Token__ *token);
 
 bool ppg_token_recurse_check_initialized(PPG_Token__ *token);
-
-typedef void (*PPG_Token_Tree_Visitor)(PPG_Token__ *token, void *user_data);
-
-void ppg_token_traverse_tree(PPG_Token__ *token,
-                             PPG_Token_Tree_Visitor visitor,
-                             void *user_data);
 
 #define PPG_ASSERT_WARN(...) \
    if(!(__VA_ARGS__)) { \
