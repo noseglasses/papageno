@@ -47,7 +47,7 @@ void ppg_token_reset_control_state(PPG_Token__ *token)
 static void ppg_token_allocate_children(PPG_Token__ *token, PPG_Count n_children) {
 
     token->children 
-      = (struct PPG_TokenStruct **)malloc(n_children*sizeof(struct PPG_TokenStruct*));
+      = (struct PPG_TokenStruct **)calloc(1, n_children*sizeof(struct PPG_TokenStruct*));
     token->n_allocated_children = n_children;
 }
 
@@ -171,9 +171,13 @@ void ppg_token_register_pointers_for_compression(
 {
    ppg_compression_context_register_vptr((void**)&token->vtable, ccontext);
    
+   printf("Registering token action %p\n", token->action.callback.func);
+   
    ppg_compression_context_register_symbol((void**)&token->action.callback.func, ccontext);
    
    if(token->action.callback.user_data) {
+      
+      printf("Registering token user data %p\n", token->action.callback.user_data);
       ppg_compression_context_register_symbol((void**)&token->action.callback.user_data, ccontext);
    }
 }

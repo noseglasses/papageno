@@ -30,7 +30,7 @@ static void ppg_compression_context_symbol_buffer_resize(
    }
    
    PPG_Compression_Symbol *new_buffer
-      = (PPG_Compression_Symbol *)malloc( 
+      = (PPG_Compression_Symbol *)calloc(1, 
                      new_size*sizeof(PPG_Compression_Symbol));
       
    if(!symbols->buffer) {
@@ -49,13 +49,13 @@ static void ppg_compression_context_symbol_buffer_resize(
    
    symbols->buffer = new_buffer;
    
-    symbols->n_allocated = new_size;
+   symbols->n_allocated = new_size;
 }
    
 PPG_Compression_Context ppg_compression_init(void)
 {
    PPG_Compression_Context__ *ccontext
-      = (PPG_Compression_Context__ *)malloc(sizeof(PPG_Compression_Context__));
+      = (PPG_Compression_Context__ *)calloc(1, sizeof(PPG_Compression_Context__));
       
    ccontext->symbols_lookup.buffer = NULL;
    ccontext->symbols_lookup.n_allocated = 0;
@@ -95,6 +95,10 @@ void ppg_compression_register_symbol(
                          void *symbol,
                          char *symbol_name)
 {
+   if(!symbol) { return; }
+   
+   printf("Registering symbol %s = %p\n", symbol_name, symbol);
+   
    PPG_Compression_Context__ *ccontext__  
                   = (PPG_Compression_Context__ *)ccontext;
                   
@@ -281,20 +285,17 @@ void ppg_compression_write_c_char_array(char *array_name,
                                         size_t size)
 {
    printf("char %s[] = {\n", array_name);
-   
-   
-   printf("array size: %lu\n", size);
-   
-   printf("array: %p\n", array);
+    
+//    printf("array size: %lu\n", size);
+//    printf("array: %p\n", array);
    
    #define ROW_LENGTH 16
    
    size_t n_rows = size / ROW_LENGTH;
    size_t n_remaining = size % ROW_LENGTH;
    
-   printf("n_rows: %lu\n", n_rows);
-   printf("n_remaining: %lu\n", n_remaining);
-   
+//    printf("n_rows: %lu\n", n_rows);
+//    printf("n_remaining: %lu\n", n_remaining);
    
    for(size_t row = 0; row < n_rows; ++row) {
       
@@ -380,14 +381,22 @@ void ppg_compression_write_c_output(PPG_Compression_Context__ *ccontext,
       size_t s = 0;
       for(; s < ccontext->symbols_lookup.n_stored; ++s) {
          
+//          printf("Checking symbol %s\n", ccontext->symbols_lookup.buffer[s].name);
+//          printf("   Stored symbol %p\n", ccontext->symbols_lookup.buffer[s].address);
+//          printf("   Checking symbol %p\n", *ccontext->symbols[i]);
+         
          if(ccontext->symbols_lookup.buffer[s].address == *ccontext->symbols[i]) {
             break;
          }
       }
       
-      PPG_ASSERT(s < ccontext->symbols_lookup.n_stored);
+       PPG_ASSERT(s < ccontext->symbols_lookup.n_stored);
       
-      printf("   (void*)&%s[%lu] = %s;\n", name, offset, 
+      if(!(s < ccontext->symbols_lookup.n_stored)) {
+         printf("Unable to find symbol %s\n", ccontext->symbols_lookup.buffer[s].name);
+      }
+      
+      printf("   *((void*)&%s[%lu]) = &%s;\n", name, offset, 
          ccontext->symbols_lookup.buffer[s].name
       );
    }

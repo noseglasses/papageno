@@ -40,6 +40,8 @@ PPG_CS_START_TEST
    PPG_Compression_Context ccontext
                = ppg_compression_init();
                
+   PPG_CS_INIT_COMPRESSION(ccontext)
+               
    PPG_COMPRESSION_REGISTER_SYMBOL(ccontext, ppg_cs_test_value)
    PPG_COMPRESSION_REGISTER_SYMBOL(ccontext, ppg_cs_test_callback)
 

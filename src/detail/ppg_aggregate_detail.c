@@ -77,7 +77,7 @@ static void ppg_aggregate_resize(PPG_Aggregate *aggregate,
    
    aggregate->n_members = n_members;
    
-   aggregate->inputs = (PPG_Input_Id *)malloc(n_members*sizeof(PPG_Input_Id));
+   aggregate->inputs = (PPG_Input_Id *)calloc(1, n_members*sizeof(PPG_Input_Id));
 	
    ppg_bitfield_resize(&aggregate->member_active,
                        n_members,
@@ -98,7 +98,7 @@ PPG_Aggregate* ppg_aggregate_destroy(PPG_Aggregate *aggregate) {
 }
 
 PPG_Aggregate *ppg_aggregate_alloc(void) {
-    return (PPG_Aggregate*)malloc(sizeof(PPG_Aggregate));
+    return (PPG_Aggregate*)calloc(1, sizeof(PPG_Aggregate));
 }
 
 bool ppg_aggregates_equal(PPG_Aggregate *c1, PPG_Aggregate *c2) 

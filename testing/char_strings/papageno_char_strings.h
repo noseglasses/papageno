@@ -91,7 +91,11 @@ char *ppg_cs_get_action_name(int action_id);
 
 #define PPG_CS_REGISTER_ACTION(ACTION_NAME) \
 __NL__   int PPG_CS_ACTION_VAR(ACTION_NAME) \
-__NL__      = ppg_cs_register_action(#ACTION_NAME);
+__NL__      = ppg_cs_register_action(#ACTION_NAME); \
+__NL__   \
+__NL__   if(cs_ccontext__) { \
+__NL__      PPG_COMPRESSION_REGISTER_SYMBOL(cs_ccontext__, PPG_CS_ACTION_VAR(ACTION_NAME)); \
+__NL__   }
       
 #define PPG_CS_REGISTER_ACTION_ANNONYMOUS(ACTION_NAME) \
    ppg_cs_register_action(#ACTION_NAME);
@@ -237,7 +241,7 @@ void ppg_cs_separator(void);
 __NL__   (PPG_Action) {   \
 __NL__      .callback = (PPG_Action_Callback) { \
 __NL__         .func = (PPG_Action_Callback_Fun)ppg_cs_process_action,  \
-__NL__         .user_data = (void*)(uintptr_t)PPG_CS_ACTION_VAR(ACTION_NAME) \
+__NL__         .user_data = (void*)&PPG_CS_ACTION_VAR(ACTION_NAME) \
 __NL__      } \
 __NL__   }
 
@@ -286,7 +290,23 @@ __NL__   ppg_global_init(); \
 __NL__   \
 __NL__   PPG_CS_PREPARE_CONTEXT \
 __NL__   \
-__NL__   bool automatically_reset_testing_system = true;
+__NL__   bool automatically_reset_testing_system = true; \
+__NL__   \
+__NL__   PPG_Compression_Context cs_ccontext__ = NULL;
+
+#define PPG_CS_INIT_COMPRESSION(CCONTEXT_PTR) \
+\
+__NL__   cs_ccontext__ = CCONTEXT_PTR; \
+__NL__   \
+__NL__   if(cs_ccontext__) { \
+__NL__      PPG_COMPRESSION_REGISTER_SYMBOL(cs_ccontext__, ppg_cs_process_action) \
+__NL__      PPG_COMPRESSION_REGISTER_SYMBOL(cs_ccontext__, ppg_cs_on_signal) \
+__NL__      PPG_COMPRESSION_REGISTER_SYMBOL(cs_ccontext__, ppg_cs_process_event_callback) \
+__NL__      PPG_COMPRESSION_REGISTER_SYMBOL(cs_ccontext__, ppg_cs_time) \
+__NL__      PPG_COMPRESSION_REGISTER_SYMBOL(cs_ccontext__, ppg_cs_time_difference) \
+__NL__      PPG_COMPRESSION_REGISTER_SYMBOL(cs_ccontext__, ppg_cs_time_comparison) \
+__NL__      PPG_COMPRESSION_REGISTER_SYMBOL(cs_ccontext__, ppg_cs_on_signal) \
+__NL__   }
    
 #define PPG_CS_START_TEST \
 \

@@ -21,6 +21,7 @@
 #include "ppg_settings.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 #define PPG_EB ppg_context->event_buffer
 

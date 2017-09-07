@@ -17,9 +17,17 @@
 #include "detail/ppg_compression_detail.h"
 #include "ppg_debug.h"
 
+#include "assert.h"
+
 void ppg_compression_context_register_symbol(void **symbol,
                                              PPG_Compression_Context__ *ccontext)
 {
+   assert(symbol);
+   
+   if(!(*symbol)) {
+      return;
+   }
+   
    PPG_ASSERT(ccontext->symbols);
    PPG_ASSERT(ccontext->n_symbols < ccontext->n_symbols_space);
    

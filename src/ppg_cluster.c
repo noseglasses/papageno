@@ -250,7 +250,7 @@ PPG_Token_Vtable ppg_cluster_vtable =
 };
 
 PPG_Cluster *ppg_cluster_alloc(void) {
-    return (PPG_Cluster*)malloc(sizeof(PPG_Cluster));
+    return (PPG_Cluster*)calloc(1, sizeof(PPG_Cluster));
 }
    
 PPG_Token ppg_cluster_create(

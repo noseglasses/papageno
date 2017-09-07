@@ -35,7 +35,7 @@ void ppg_furcation_stack_resize(void)
    PPG_FB.n_furcations = ppg_context->tree_depth;
    
    PPG_FB.furcations 
-         = (PPG_Furcation*)malloc(ppg_context->tree_depth*sizeof(PPG_Furcation));
+         = (PPG_Furcation*)calloc(1, ppg_context->tree_depth*sizeof(PPG_Furcation));
 }
 
 void ppg_furcation_stack_free(PPG_Furcation_Stack *stack)
