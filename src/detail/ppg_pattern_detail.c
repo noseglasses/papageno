@@ -27,7 +27,7 @@ PPG_Token ppg_pattern_from_list(
                                     PPG_Token__ *tokens[])
 {  
    if(!parent_token) {
-      parent_token = &ppg_context->pattern_root;
+      parent_token = ppg_context->pattern_root;
    }
    
    PPG_LOG("\t%d memb\n", n_tokens);
@@ -162,5 +162,5 @@ PPG_Count ppg_branch_depth(PPG_Token__ *token)
 
 PPG_Count ppg_pattern_tree_depth(void)
 {
-   return ppg_branch_depth(&ppg_context->pattern_root);
+   return ppg_branch_depth(ppg_context->pattern_root);
 }

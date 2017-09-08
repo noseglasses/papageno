@@ -17,6 +17,8 @@
 #ifndef PPG_COMPRESSION_H
 #define PPG_COMPRESSION_H
 
+#include "stddef.h"
+
 typedef void *  PPG_Compression_Context;
 
 PPG_Compression_Context ppg_compression_init(void);
@@ -39,5 +41,9 @@ void ppg_compression_register_symbol(
          
 void ppg_compression_run(  PPG_Compression_Context ccontext,
                            char *name_tag);
+
+void ppg_compression_register_aux_array(void *context, 
+                                        void *aux_array, 
+                                        size_t aux_array_size);
 
 #endif

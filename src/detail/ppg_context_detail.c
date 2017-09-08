@@ -54,12 +54,14 @@ void ppg_global_initialize_context(PPG_Context *context) {
    ppg_time_manager_init(&context->time_manager);
    
    ppg_signal_callback_init(&context->signal_callback);
+   
+   context->pattern_root = ppg_token_alloc();
 
    /* Initialize the pattern root
    */
-   ppg_token_new(&context->pattern_root);
+   ppg_token_new(context->pattern_root);
    
-   context->pattern_root.misc.state = PPG_Token_Initialized;
+   context->pattern_root->misc.state = PPG_Token_Initialized;
    
    context->current_token = NULL;
    

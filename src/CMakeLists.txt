@@ -134,7 +134,11 @@ foreach(file ${source_files})
 endforeach()
 
 if(TARGET_SUPPORTS_SHARED_LIBS)
-   add_library(papageno SHARED ${source_files_full_path})
+   set(initial_lib_type "SHARED")
 else()
-   add_library(papageno STATIC ${source_files_full_path})
+   set(initial_lib_type "STATIC")
 endif()
+
+set(PAPAGENO_LIBRARY_TYPE "${initial_lib_type}" CACHE STRING "The type of papageno library to build SHARED/STATIC. Note that not all platforms support shared libraries.")
+
+add_library(papageno ${PAPAGENO_LIBRARY_TYPE} ${source_files_full_path})

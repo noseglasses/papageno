@@ -44,6 +44,11 @@ void ppg_token_reset_control_state(PPG_Token__ *token)
    token->misc.action_state = PPG_Action_Disabled;
 }
 
+PPG_Token__ *ppg_token_alloc(void) 
+{
+    return (PPG_Token__*)calloc(1, sizeof(PPG_Token__));
+}
+
 static void ppg_token_allocate_children(PPG_Token__ *token, PPG_Count n_children) {
 
     token->children 
@@ -161,6 +166,12 @@ char *ppg_token_placement_clone(PPG_Token__ *token, char *buffer)
 {
    *((PPG_Token__ *)buffer) = *token;
    
+   PPG_Token__ *clone = (PPG_Token__ *)buffer;
+   
+//    printf("Replacing children pointer %p with %p\n", clone->children, (PPG_Token__ **)(buffer + sizeof(PPG_Token__)));
+   
+   clone->children = (PPG_Token__ **)(buffer + sizeof(PPG_Token__));
+   
    return ppg_token_copy_dynamic_members(token, buffer + sizeof(PPG_Token__));
 }
 
@@ -195,6 +206,7 @@ void ppg_token_print_self_start(PPG_Token__ *p, PPG_Count indent)
    PPG_I PPG_LOG("\ta.u_d: 0x%" PRIXPTR "\n", (uintptr_t)p->action.callback.user_data);
    PPG_I PPG_LOG("\tst: %d\n", (PPG_Count)p->misc.state);
    PPG_I PPG_LOG("\tlyr: %d\n", p->layer);
+   PPG_I PPG_LOG("\tcldr: 0x%" PRIXPTR "\n", (uintptr_t)p->children);
 }
 
 void ppg_token_print_self_end(PPG_Token__ *p, PPG_Count indent, bool recurse)

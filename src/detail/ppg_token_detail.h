@@ -165,6 +165,8 @@ void ppg_token_store_action(PPG_Token__ *token,
 
 void ppg_token_reset_control_state(   PPG_Token__ *token);
 
+PPG_Token__ *ppg_token_alloc(void);
+
 PPG_Token__ *ppg_token_new(PPG_Token__ *token);
 
 PPG_Token__* ppg_token_destroy(PPG_Token__ *token);

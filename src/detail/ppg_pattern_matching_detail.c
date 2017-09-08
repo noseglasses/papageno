@@ -343,7 +343,7 @@ static PPG_Count ppg_process_next_event(void)
          
    if(!ppg_context->current_token) {
       
-      ppg_context->current_token = &ppg_context->pattern_root;
+      ppg_context->current_token = ppg_context->pattern_root;
       
       // The root node must be reset explicitly
       //

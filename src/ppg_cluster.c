@@ -167,6 +167,12 @@ static char *ppg_cluster_placement_clone(PPG_Token__ *token, char *buffer)
    
    *((PPG_Cluster *)buffer) = *cluster;
    
+   PPG_Token__ *clone = (PPG_Token__ *)buffer;
+   
+//    printf("Replacing children pointer %p with %p\n", clone->children, (PPG_Token__ **)(buffer + sizeof(PPG_Cluster)));
+   
+   clone->children = (PPG_Token__ **)(buffer + sizeof(PPG_Cluster));
+   
    return ppg_aggregate_copy_dynamic_members(token, buffer + sizeof(PPG_Cluster));
 }
 

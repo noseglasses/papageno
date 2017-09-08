@@ -33,7 +33,7 @@ typedef struct PPG_Context_Struct
    PPG_Furcation_Stack furcation_stack;
    PPG_Active_Tokens active_tokens;
    
-   PPG_Token__ pattern_root;
+   PPG_Token__ *pattern_root;
 
    PPG_Token__ *current_token;
 

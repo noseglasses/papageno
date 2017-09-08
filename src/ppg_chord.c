@@ -154,6 +154,12 @@ static char *ppg_chord_placement_clone(PPG_Token__ *token, char *buffer)
    
    *((PPG_Chord *)buffer) = *chord;
    
+   PPG_Token__ *clone = (PPG_Token__ *)buffer;
+   
+//    printf("Replacing children pointer %p with %p\n", clone->children, (PPG_Token__ **)(buffer + sizeof(PPG_Chord)));
+   
+   clone->children = (PPG_Token__ **)(buffer + sizeof(PPG_Chord));
+   
    return ppg_aggregate_copy_dynamic_members(token, buffer + sizeof(PPG_Chord));
 }
 

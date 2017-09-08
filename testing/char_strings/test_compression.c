@@ -15,6 +15,9 @@
  */
 
 #include "papageno_char_strings.h"
+
+#include "detail/ppg_context_detail.h"
+#include "detail/ppg_compression_detail.h"
    
 enum {
    ppg_cs_layer_0 = 0
@@ -28,6 +31,8 @@ void ppg_cs_test_callback(bool activation, void *user_data)
    
    *val = 17;
 }
+
+#include "ppg_compressed_context.h"
 
 PPG_CS_START_TEST
 
@@ -115,8 +120,20 @@ PPG_CS_START_TEST
    
    ppg_cs_compile();
    
+   PPG_CS_PRINT_TREE
+   
    ppg_compression_run(ccontext, "test");
    
-   ppg_compression_finalize(ccontext);
+//    PPG_CS_PRINT_TREE
+   
+//    PPG_Compression_Context__ *ccontext__ = (PPG_Compression_Context__ *)ccontext;
+//    PPG_Context *compression_context = (PPG_Context*)ccontext__->target_storage;
+//    PPG_PRINT_TOKEN_RECURSE(compression_context->pattern_root)
+   
+   PPG_INITIALIZE_CONTEXT_test
+   
+   PPG_PRINT_TOKEN_RECURSE(((PPG_Context*)test_context)->pattern_root)
+   
+//    ppg_compression_finalize(ccontext);
    
 PPG_CS_END_TEST

@@ -82,7 +82,7 @@ void ppg_reset_pattern_matching_engine(void)
    // The token root's state has been reset to PPG_Token_Initialized 
    // during cleanup.
    //
-   ppg_context->pattern_root.misc.state
+   ppg_context->pattern_root->misc.state
          = PPG_Token_Initialized;
    
    // Start with the first token in the queue

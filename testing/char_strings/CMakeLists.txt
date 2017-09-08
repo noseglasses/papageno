@@ -26,6 +26,8 @@ macro(ppg_add_test test_name)
 		"${test_name}"
 		papageno_char_strings
 	)
+	
+	include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
 #	add_test(NAME <name> COMMAND <command> [<arg>...]
 #         [CONFIGURATIONS <config>...]

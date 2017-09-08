@@ -38,7 +38,9 @@ void ppg_context_destroy(void *context)
    
    ppg_furcation_stack_free(&context__->furcation_stack);
    
-   ppg_token_free_children(&context__->pattern_root);
+   ppg_token_destroy(context__->pattern_root);
+   
+   free(context__->pattern_root);
    
    free(context__);
 }

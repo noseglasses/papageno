@@ -187,6 +187,12 @@ static char *ppg_note_placement_clone(PPG_Token__ *token, char *buffer)
    
    *((PPG_Note *)buffer) = *note;
    
+   PPG_Token__ *clone = (PPG_Token__ *)buffer;
+   
+//    printf("Replacing children pointer %p with %p\n", clone->children, (PPG_Token__ **)(buffer + sizeof(PPG_Note)));
+   
+   clone->children = (PPG_Token__ **)(buffer + sizeof(PPG_Note));
+   
    return ppg_token_copy_dynamic_members(token, buffer + sizeof(PPG_Note));
 }
 
