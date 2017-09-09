@@ -32,7 +32,7 @@ static void ppg_compression_context_symbol_buffer_resize(
    }
    
    PPG_Compression_Symbol *new_buffer
-      = (PPG_Compression_Symbol *)calloc(1, 
+      = (PPG_Compression_Symbol *)malloc( 
                      new_size*sizeof(PPG_Compression_Symbol));
       
    if(!symbols->buffer) {
@@ -57,8 +57,8 @@ static void ppg_compression_context_symbol_buffer_resize(
 PPG_Compression_Context ppg_compression_init(void)
 {
    PPG_Compression_Context__ *ccontext
-      = (PPG_Compression_Context__ *)calloc(1, sizeof(PPG_Compression_Context__));
-      
+      = (PPG_Compression_Context__ *)malloc(sizeof(PPG_Compression_Context__));
+   
    ccontext->symbols_lookup.buffer = NULL;
    ccontext->symbols_lookup.n_allocated = 0;
    ccontext->symbols_lookup.n_stored = 0;
@@ -99,7 +99,7 @@ void ppg_compression_register_symbol(
 {
    if(!symbol) { return; }
    
-   printf("Registering symbol %s = %p\n", symbol_name, symbol);
+//    printf("Registering symbol %s = %p\n", symbol_name, symbol);
    
    PPG_Compression_Context__ *ccontext__  
                   = (PPG_Compression_Context__ *)ccontext;
@@ -159,11 +159,11 @@ static size_t ppg_compression_allocate_target_buffer(PPG_Compression_Context__ *
    
    PPG_ASSERT(!ccontext->target_storage);
    
-   printf("Allocating target_storage size %lu\n", size_data.memory);
+//    printf("Allocating target_storage size %lu\n", size_data.memory);
    
-   ccontext->target_storage = (char*)calloc(size_data.memory, sizeof(char));
+   ccontext->target_storage = (char*)malloc(size_data.memory);
    
-   printf("Allocating target_storage %p\n", ccontext->target_storage);
+//    printf("Allocating target_storage %p\n", ccontext->target_storage);
    
    ccontext->storage_size = size_data.memory;
    
@@ -231,7 +231,9 @@ static void ppg_compression_generate_relative_addresses(
       token->children[i] = (PPG_Token__ *)((char*)token->children[i] - (char*)begin_of_buffer);
    }
    
-   token->children = (PPG_Token__ **)((char*)token->children - (char*)begin_of_buffer);
+   if(token->children) {
+      token->children = (PPG_Token__ **)((char*)token->children - (char*)begin_of_buffer);
+   }
 }
 
 static void ppg_compression_generate_absolute_addresses(
@@ -288,7 +290,7 @@ static void ppg_compression_convert_all_addresses_to_relative(PPG_Compression_Co
    ppg_token_traverse_tree(target_context->pattern_root,
                            NULL,
                            (PPG_Token_Tree_Visitor)ppg_compression_generate_relative_addresses,
-                           (void *)&target);
+                           (void *)target);
    
    target_context->pattern_root = (PPG_Token__ *)((char*)target_context->pattern_root 
                                           - target);
@@ -384,7 +386,7 @@ void ppg_compression_write_c_char_array(char *array_name,
    printf("};\n\n");
 }
 
-void ppg_compression_register_aux_array(void *context, 
+void ppg_compression_setup_context(void *context, 
                                         void *aux_array, 
                                         size_t aux_array_size)
 {
@@ -430,6 +432,12 @@ void ppg_compression_register_aux_array(void *context,
                            NULL,
                            (void *)context);
    
+   // Reset the parent pointers
+   //
+   ppg_token_traverse_tree(the_context->pattern_root,
+                           (PPG_Token_Tree_Visitor)ppg_compression_restore_tree_relations,
+                           NULL,
+                           (void *)context);
 }
 
 void ppg_compression_write_c_output(PPG_Compression_Context__ *ccontext,
@@ -503,11 +511,11 @@ void ppg_compression_write_c_output(PPG_Compression_Context__ *ccontext,
          }
       }
       
-       PPG_ASSERT(s < ccontext->symbols_lookup.n_stored);
+      PPG_ASSERT(s < ccontext->symbols_lookup.n_stored);
       
-      if(!(s < ccontext->symbols_lookup.n_stored)) {
-         printf("Unable to find symbol %s\n", ccontext->symbols_lookup.buffer[s].name);
-      }
+//       if(!(s < ccontext->symbols_lookup.n_stored)) {
+//          printf("Unable to find symbol %s\n", ccontext->symbols_lookup.buffer[s].name);
+//       }
       
       printf("   *((uintptr_t*)&%s[%lu]) = (uintptr_t)&%s; \\\n", context_name, offset, 
          ccontext->symbols_lookup.buffer[s].name
@@ -516,7 +524,7 @@ void ppg_compression_write_c_output(PPG_Compression_Context__ *ccontext,
    
    printf("   \\\n");
    
-   printf("   ppg_compression_register_aux_array(%s, %s, sizeof(%s)); \\\n",
+   printf("   ppg_compression_setup_context(%s, %s, sizeof(%s)); \\\n",
           context_name, aux_name, aux_name);
    
    printf("   \\\n");

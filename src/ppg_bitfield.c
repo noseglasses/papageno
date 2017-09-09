@@ -85,7 +85,7 @@ void ppg_bitfield_resize(PPG_Bitfield *bitfield,
       if(bitfield->bitarray) {
          
          uint8_t *new_bitarray
-            = (uint8_t*)calloc(cells, sizeof(PPG_Bitfield_Storage_Type));
+            = (uint8_t*)malloc(cells*sizeof(PPG_Bitfield_Storage_Type));
             
          // Copy the content of the previous bitarray
          //
@@ -109,7 +109,7 @@ void ppg_bitfield_resize(PPG_Bitfield *bitfield,
       }
       else {
          bitfield->bitarray 
-            = (uint8_t*)calloc(cells, sizeof(PPG_Bitfield_Storage_Type));
+            = (uint8_t*)malloc(cells*sizeof(PPG_Bitfield_Storage_Type));
       }
       
       bitfield->n_bits = n_bits;

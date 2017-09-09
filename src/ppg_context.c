@@ -25,7 +25,7 @@ void* ppg_context_create(void)
 {
 //    PPG_LOG("Cr. new cntxt\n");
    
-   PPG_Context *context = (PPG_Context *)calloc(1, sizeof(PPG_Context));
+   PPG_Context *context = (PPG_Context *)malloc(sizeof(PPG_Context));
    
    ppg_global_initialize_context(context);
    

@@ -285,5 +285,5 @@ PPG_Note *ppg_note_new(PPG_Note *note)
 }
 
 PPG_Note *ppg_note_alloc(void) {
-    return (PPG_Note*)calloc(1, sizeof(PPG_Note));
+    return (PPG_Note*)malloc(sizeof(PPG_Note));
 }
