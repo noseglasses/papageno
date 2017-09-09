@@ -198,7 +198,8 @@ void ppg_token_print_self_end(PPG_Token__ *p, PPG_Count indent, bool recurse);
 typedef void (*PPG_Token_Tree_Visitor)(PPG_Token__ *token, void *user_data);
 
 void ppg_token_traverse_tree(PPG_Token__ *token,
-                             PPG_Token_Tree_Visitor visitor,
+                             PPG_Token_Tree_Visitor pre_children_visitor,
+                             PPG_Token_Tree_Visitor post_children_visitor,
                              void *user_data);
 
 #if PPG_HAVE_DEBUGGING

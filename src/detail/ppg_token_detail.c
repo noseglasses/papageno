@@ -266,15 +266,23 @@ bool ppg_token_recurse_check_initialized(PPG_Token__ *token)
 #endif
 
 void ppg_token_traverse_tree(PPG_Token__ *token,
-                             PPG_Token_Tree_Visitor visitor,
+                             PPG_Token_Tree_Visitor pre_children_visitor,
+                             PPG_Token_Tree_Visitor post_children_visitor,
                              void *user_data)
 {
-   visitor(token, user_data);
+   if(pre_children_visitor) {
+      pre_children_visitor(token, user_data);
+   }
    
    for(PPG_Count i = 0; i < token->n_children; ++i) {
       ppg_token_traverse_tree(token->children[i],
-                              visitor,
+                              pre_children_visitor,
+                              post_children_visitor,
                               user_data);
+   }
+   
+   if(post_children_visitor) {
+      post_children_visitor(token, user_data);
    }
 }
 

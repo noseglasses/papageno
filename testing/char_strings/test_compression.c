@@ -126,8 +126,11 @@ PPG_CS_START_TEST
    
 //    PPG_CS_PRINT_TREE
    
-//    PPG_Compression_Context__ *ccontext__ = (PPG_Compression_Context__ *)ccontext;
+   PPG_Compression_Context__ *ccontext__ = (PPG_Compression_Context__ *)ccontext;
 //    PPG_Context *compression_context = (PPG_Context*)ccontext__->target_storage;
+   
+   printf("sizeof target storage: %lu\n", ccontext__->storage_size);
+   printf("sizeof test_context: %lu\n", sizeof(test_context));
 //    PPG_PRINT_TOKEN_RECURSE(compression_context->pattern_root)
    
    PPG_INITIALIZE_CONTEXT_test

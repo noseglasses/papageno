@@ -154,6 +154,7 @@ static size_t ppg_compression_allocate_target_buffer(PPG_Compression_Context__ *
    //
    ppg_token_traverse_tree(ppg_context->pattern_root,
                            (PPG_Token_Tree_Visitor)ppg_compression_collect_token_size_requirement,
+                           NULL,
                            (void *)&size_data);
    
    PPG_ASSERT(!ccontext->target_storage);
@@ -223,6 +224,26 @@ static void ppg_compression_copy_token(
 //    PPG_CALL_VIRT_METHOD(new_token, print_self, 0, false);
 }
 
+static void ppg_compression_generate_relative_addresses(
+                                 PPG_Token__ *token, void *begin_of_buffer)
+{
+   for(PPG_Count i = 0; i < token->n_children; ++i) {
+      token->children[i] = (PPG_Token__ *)((char*)token->children[i] - (char*)begin_of_buffer);
+   }
+   
+   token->children = (PPG_Token__ **)((char*)token->children - (char*)begin_of_buffer);
+}
+
+static void ppg_compression_generate_absolute_addresses(
+                                 PPG_Token__ *token, void *begin_of_buffer)
+{
+   token->children = (PPG_Token__ **)((char*)begin_of_buffer + (uintptr_t)token->children);
+   
+   for(PPG_Count i = 0; i < token->n_children; ++i) {
+      token->children[i] = (PPG_Token__ *)((char*)begin_of_buffer + (uintptr_t)token->children[i]);
+   }
+}
+
 static void ppg_compression_restore_tree_relations(PPG_Token__ *token)
 {
    for(PPG_Count i = 0; i < token->n_children; ++i) {
@@ -246,6 +267,7 @@ static void ppg_compression_copy_context(PPG_Compression_Context__ *ccontext)
    
    ppg_token_traverse_tree(ppg_context->pattern_root,
                            (PPG_Token_Tree_Visitor)ppg_compression_copy_token,
+                           NULL,
                            (void *)&target);
    
    // We destroyed parent-child relation during the previous tree traverse.
@@ -253,6 +275,23 @@ static void ppg_compression_copy_context(PPG_Compression_Context__ *ccontext)
    //
    ppg_context->pattern_root->parent = NULL;
    ppg_compression_restore_tree_relations(ppg_context->pattern_root);
+}
+
+static void ppg_compression_convert_all_addresses_to_relative(PPG_Compression_Context__ *ccontext)
+{
+   char *target = ccontext->target_storage;
+   
+   PPG_Context *target_context = (PPG_Context*)target;
+   
+   // Convert pointers to relative addresses
+   //
+   ppg_token_traverse_tree(target_context->pattern_root,
+                           NULL,
+                           (PPG_Token_Tree_Visitor)ppg_compression_generate_relative_addresses,
+                           (void *)&target);
+   
+   target_context->pattern_root = (PPG_Token__ *)((char*)target_context->pattern_root 
+                                          - target);
 }
 
 static void ppg_compression_register_pointers(
@@ -301,6 +340,7 @@ void ppg_compression_generate_dynamic_assignment_information(
    //
    ppg_token_traverse_tree(context->pattern_root,
                            (PPG_Token_Tree_Visitor)ppg_compression_register_pointers,
+                           NULL,
                            (void *)ccontext);
 }
 
@@ -377,6 +417,19 @@ void ppg_compression_register_aux_array(void *context,
             break;
       }
    }
+   
+   PPG_Context *the_context = (PPG_Context *)context;
+   
+   // Convert relative addresses to absolute addresses
+   //
+   the_context->pattern_root = (PPG_Token__*)((char*)context_c 
+                                          + (uintptr_t)the_context->pattern_root);
+   
+   ppg_token_traverse_tree(the_context->pattern_root,
+                           (PPG_Token_Tree_Visitor)ppg_compression_generate_absolute_addresses,
+                           NULL,
+                           (void *)context);
+   
 }
 
 void ppg_compression_write_c_output(PPG_Compression_Context__ *ccontext,
@@ -495,6 +548,11 @@ void ppg_compression_run(PPG_Compression_Context ccontext,
    ccontext__->n_vptrs_space = sizeof(vptrs);
 
    ppg_compression_generate_dynamic_assignment_information(ccontext__);
+   
+   // Important: This must be done last, as it invalidates any pointers
+   //            of the token tree. Thus no tree traversal is possible afterwards.
+   //
+   ppg_compression_convert_all_addresses_to_relative(ccontext__);
    
    // Now the compression context is complete
    
