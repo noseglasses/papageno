@@ -15,12 +15,28 @@
  */
 
 #include "papageno_char_strings.h"
+
+#ifdef PPG_CS_COMPRESSED_CODE_FILE
+#include PPG_CS_COMPRESSED_CODE_FILE
+#endif
    
 enum {
    ppg_cs_layer_0 = 0
 };
 
 PPG_CS_START_TEST
+   
+   #ifdef PPG_CS_COMPRESS_CONTEXT
+   
+   PPG_LOGGING_SET_ENABLED(false)
+   
+   // This assignment serves just to silence an unused variable
+   // warning
+   //
+   automatically_reset_testing_system = false;
+   (void)automatically_reset_testing_system;
+   PPG_CS_INIT_COMPRESSION(ccontext)
+   #endif
 
    PPG_CS_REGISTER_ACTION(Pattern_1)
    PPG_CS_REGISTER_ACTION(Pattern_2)
@@ -29,6 +45,10 @@ PPG_CS_START_TEST
    PPG_CS_REGISTER_ACTION(3_Taps)
    PPG_CS_REGISTER_ACTION(5_Taps)
    
+   #ifdef PPG_CS_READ_COMPRESSED_CONTEXT
+   PPG_INITIALIZE_CONTEXT_test
+   PPG_LOGGING_SET_ENABLED(true)
+   #else
    ppg_pattern(
       ppg_cs_layer_0, /* Layer id */
       PPG_TOKENS(
@@ -89,6 +109,13 @@ PPG_CS_START_TEST
    );
    
    ppg_cs_compile();
+   #endif // PPG_CS_READ_COMPRESSED_CONTEXT
+   
+   #ifdef PPG_CS_COMPRESS_CONTEXT
+   ppg_compression_run(ccontext, "test");
+   #endif
+   
+   #ifndef PPG_CS_SUPPRESS_TESTS
    
    PPG_CS_PROCESS_ON_OFF(  "a b c", 
                            PPG_CS_EXPECT_EMPTY_FLUSH
@@ -149,5 +176,7 @@ PPG_CS_START_TEST
                               PPG_CS_A(5_Taps)
                            )
    );
+   
+   #endif // ifndef PPG_CS_SUPPRESS_TESTS
    
 PPG_CS_END_TEST

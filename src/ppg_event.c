@@ -57,7 +57,7 @@ static bool ppg_check_ignore_event(PPG_Event *event)
 
 void ppg_event_process(PPG_Event *event)
 {
-   if(!ppg_context->papageno_enabled) {
+   if(!ppg_context->properties.papageno_enabled) {
       return;
    }
    

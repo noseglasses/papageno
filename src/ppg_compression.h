@@ -42,8 +42,6 @@ void ppg_compression_register_symbol(
 void ppg_compression_run(  PPG_Compression_Context ccontext,
                            char *name_tag);
 
-void ppg_compression_setup_context(   void *context, 
-                                        void *aux_array, 
-                                        size_t aux_array_size);
+void ppg_compression_setup_context(void *context);
 
 #endif

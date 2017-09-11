@@ -119,10 +119,10 @@ enum {   PPG_Token_N_Flag_Bits = 16  - PPG_Token_N_State_Bits
                                     - PPG_Token_N_Action_State_Bits};
                                     
 typedef struct {
-   PPG_Count state         : PPG_Token_N_State_Bits;
-   PPG_Count flags         : PPG_Token_N_Flag_Bits;
-   PPG_Count action_state  : PPG_Token_N_Action_State_Bits;
-   PPG_Count action_flags  : PPG_Token_N_Action_Flags_Bits;
+   unsigned int state         : PPG_Token_N_State_Bits;
+   unsigned int flags         : PPG_Token_N_Flag_Bits;
+   unsigned int action_state  : PPG_Token_N_Action_State_Bits;
+   unsigned int action_flags  : PPG_Token_N_Action_Flags_Bits;
 } PPG_Misc_Bits;
 
 enum {

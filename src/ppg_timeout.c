@@ -77,7 +77,7 @@ bool ppg_timeout_check(void)
 {  
 //    PPG_LOG("Checking timeout\n");
    
-   if(!ppg_context->timeout_enabled) { 
+   if(!ppg_context->properties.timeout_enabled) { 
       
 //       PPG_LOG("Timeout disabled\n");
       return false;

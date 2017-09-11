@@ -113,7 +113,8 @@ set(source_files
 	./ppg_chord.c                                                                                                                         
 	./ppg_cluster.c                                                                                                                       
 	./ppg_compression.c                                                                                                                       
-	./ppg_context.c                                                                                                                        
+	./ppg_context.c                                                                                                                            
+	./ppg_debug.c                                                                                                                       
 	./ppg_event.c     
 	./ppg_event_buffer.c                                                                                                                         
 	./ppg_global.c   

@@ -44,9 +44,6 @@ typedef struct {
    size_t n_symbols;
    size_t n_symbols_space;
    
-   void ***vptrs;
-   size_t n_vptrs;
-   size_t n_vptrs_space;
 } PPG_Compression_Context__;
 
 typedef struct {

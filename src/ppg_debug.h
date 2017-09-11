@@ -22,6 +22,7 @@
 #include "ppg_settings.h"
 
 #include <stdlib.h>
+#include <stdbool.h>
 
 #ifdef PPG_BUILDING_FOR_QMK 
 #   ifndef USER_PRINT
@@ -36,14 +37,35 @@
 // to enable verbose class output of token classes
 
 #ifdef PPG_BUILDING_FOR_QMK 
-#   define PPG_LOG(...) uprintf(__VA_ARGS__);
+#   define PPG_LOG(...) \
+   if(ppg_logging_get_enabled()) { \
+      uprintf(__VA_ARGS__); \
+   }
 
 #else
 #   include <stdio.h>
-#   define PPG_LOG(...) printf(__VA_ARGS__);
+#   define PPG_LOG(...) \
+   if(ppg_logging_get_enabled()) { \
+      printf(__VA_ARGS__); \
+   }
+   
 #endif
 
+/** @brief Dynamically toggle logging output
+ */
+bool ppg_logging_set_enabled(bool state);
+
+/** @brief Get state of dynamic logging settings
+ */
+bool ppg_logging_get_enabled();
+
+#define PPG_LOGGING_SET_ENABLED(STATE) \
+   ppg_logging_set_enabled(STATE);
+#else
+#define PPG_LOGGING_SET_ENABLED(STATE)
+
 #endif //PPG_HAVE_LOGGING
+
 
 #ifdef PPG_BUILDING_FOR_QMK 
    /** @brief A macro for printf style error output

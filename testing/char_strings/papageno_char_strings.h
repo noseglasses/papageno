@@ -296,6 +296,9 @@ __NL__   PPG_Compression_Context cs_ccontext__ = NULL;
 
 #define PPG_CS_INIT_COMPRESSION(CCONTEXT_PTR) \
 \
+__NL__   PPG_Compression_Context CCONTEXT_PTR \
+__NL__               = ppg_compression_init(); \
+\
 __NL__   cs_ccontext__ = CCONTEXT_PTR; \
 __NL__   \
 __NL__   if(cs_ccontext__) { \

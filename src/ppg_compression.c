@@ -67,7 +67,7 @@ PPG_Compression_Context ppg_compression_init(void)
    
    ccontext->target_storage = NULL;
    ccontext->symbols = NULL;
-   ccontext->vptrs = NULL;
+//    ccontext->vptrs = NULL;
    ccontext->storage_size = 0;
    
    return (PPG_Compression_Context)ccontext;
@@ -148,7 +148,7 @@ static size_t ppg_compression_allocate_target_buffer(PPG_Compression_Context__ *
          .n_tokens = 0
       };
    
-   size_data.memory += sizeof(PPG_Context);
+   size_data.memory += ppg_context_get_size_requirements (ppg_context);
    
    // Collect the size requirements of all tokens in the tree
    //
@@ -234,11 +234,39 @@ static void ppg_compression_generate_relative_addresses(
    if(token->children) {
       token->children = (PPG_Token__ **)((char*)token->children - (char*)begin_of_buffer);
    }
+   
+   if(token->vtable == &ppg_token_vtable) {
+      token->vtable = (PPG_Token_Vtable *)1;
+   }
+   else if(token->vtable == &ppg_note_vtable) {
+      token->vtable = (PPG_Token_Vtable *)2;
+   }
+   else if(token->vtable == &ppg_chord_vtable) {
+      token->vtable = (PPG_Token_Vtable *)3;
+   }
+   else if(token->vtable == &ppg_cluster_vtable) {
+      token->vtable = (PPG_Token_Vtable *)4;
+   }
 }
 
 static void ppg_compression_generate_absolute_addresses(
                                  PPG_Token__ *token, void *begin_of_buffer)
 {
+   switch((uintptr_t)token->vtable) {
+      case 1:
+         token->vtable = &ppg_token_vtable;
+         break;
+      case 2:
+         token->vtable = &ppg_note_vtable;
+         break;
+      case 3:
+         token->vtable = &ppg_chord_vtable;
+         break;
+      case 4:
+         token->vtable = &ppg_cluster_vtable;
+         break;
+   }
+   
    token->children = (PPG_Token__ **)((char*)begin_of_buffer + (uintptr_t)token->children);
    
    for(PPG_Count i = 0; i < token->n_children; ++i) {
@@ -257,13 +285,10 @@ static void ppg_compression_restore_tree_relations(PPG_Token__ *token)
 
 static void ppg_compression_copy_context(PPG_Compression_Context__ *ccontext)
 {
-   char *target = ccontext->target_storage;
+   void *target = ppg_context_copy(ppg_context, 
+                                   ccontext->target_storage);
    
-   PPG_Context *target_context = (PPG_Context*)target;
-   
-   *target_context = *ppg_context;
-   
-   target += sizeof(PPG_Context);
+   PPG_Context *target_context = (PPG_Context*)ccontext->target_storage;
    
    target_context->pattern_root = (PPG_Token__ *)target;
    
@@ -277,6 +302,17 @@ static void ppg_compression_copy_context(PPG_Compression_Context__ *ccontext)
    //
    ppg_context->pattern_root->parent = NULL;
    ppg_compression_restore_tree_relations(ppg_context->pattern_root);
+   
+   // As this is not a dynamically allocated context, we 
+   // have to prevent auto destruction
+   //
+   target_context->properties.destruction_enabled = false;
+   
+   byte 6096 in the test_note_lines example contains the context
+   properties which seem for strange reasons not to be reproduced
+   during extraction.
+   
+   TODO: Reenable all tests
 }
 
 static void ppg_compression_convert_all_addresses_to_relative(PPG_Compression_Context__ *ccontext)
@@ -293,6 +329,9 @@ static void ppg_compression_convert_all_addresses_to_relative(PPG_Compression_Co
                            (void *)target);
    
    target_context->pattern_root = (PPG_Token__ *)((char*)target_context->pattern_root 
+                                          - target);
+   
+   target_context->furcation_stack.furcations = (PPG_Furcation *)((char*)target_context->furcation_stack.furcations 
                                           - target);
 }
 
@@ -386,46 +425,21 @@ void ppg_compression_write_c_char_array(char *array_name,
    printf("};\n\n");
 }
 
-void ppg_compression_setup_context(void *context, 
-                                        void *aux_array, 
-                                        size_t aux_array_size)
+void ppg_compression_setup_context(void *context)
 {
-   size_t n_vptrs = aux_array_size/sizeof(PPG_Compression_VPtr_Info);
-   
-   PPG_Compression_VPtr_Info *vptr_info 
-      = (PPG_Compression_VPtr_Info *)aux_array;
-      
    char *context_c = (char*)context;
    
-   for(size_t i = 0; i < n_vptrs; ++i) {
-      
-      uintptr_t *vptr_pos = (uintptr_t *)&context_c[vptr_info[i].offset];
-      
-      switch(vptr_info[i].token_type_id) {
-         case 1:
-            *vptr_pos = (uintptr_t)&ppg_token_vtable;
-            break;
-         case 2:
-            *vptr_pos = (uintptr_t)&ppg_note_vtable;
-            break;
-         case 3:
-            *vptr_pos = (uintptr_t)&ppg_chord_vtable;
-            break;
-         case 4:
-            *vptr_pos = (uintptr_t)&ppg_cluster_vtable;
-            break;
-         default:
-            assert(0);
-            break;
-      }
-   }
-   
    PPG_Context *the_context = (PPG_Context *)context;
+   
+   assert(the_context->properties.papageno_enabled);
    
    // Convert relative addresses to absolute addresses
    //
    the_context->pattern_root = (PPG_Token__*)((char*)context_c 
                                           + (uintptr_t)the_context->pattern_root);
+   
+   the_context->furcation_stack.furcations = (PPG_Furcation *)((char*)context_c 
+                     + (uintptr_t)the_context->furcation_stack.furcations);
    
    ppg_token_traverse_tree(the_context->pattern_root,
                            (PPG_Token_Tree_Visitor)ppg_compression_generate_absolute_addresses,
@@ -438,6 +452,10 @@ void ppg_compression_setup_context(void *context,
                            (PPG_Token_Tree_Visitor)ppg_compression_restore_tree_relations,
                            NULL,
                            (void *)context);
+   
+   printf("properties: %u\n", *((unsigned char*)&the_context->properties));
+   
+   assert(the_context->properties.papageno_enabled);
 }
 
 void ppg_compression_write_c_output(PPG_Compression_Context__ *ccontext,
@@ -445,42 +463,14 @@ void ppg_compression_write_c_output(PPG_Compression_Context__ *ccontext,
 {
    // Start with writing the raw data
    //
-   char context_name[100], aux_name[100];
+   char context_name[100]/*, aux_name[100]*/;
    
    sprintf(context_name, "%s_context", name_tag);
-   sprintf(aux_name, "%s_context_aux", name_tag);
+//    sprintf(aux_name, "%s_context_aux", name_tag);
    
    ppg_compression_write_c_char_array(context_name,
                                       ccontext->target_storage,
                                       ccontext->storage_size);
-   
-   // Prepare an array with information about vptrs
-   //
-   PPG_Compression_VPtr_Info vptr_info[ccontext->n_vptrs];
-   
-   for(size_t i = 0; i < ccontext->n_vptrs; ++i) {
-      
-      vptr_info[i].offset = (char*)ccontext->vptrs[i] 
-                  - ccontext->target_storage;
-      
-      if(*ccontext->vptrs[i] == &ppg_token_vtable) {
-         vptr_info[i].token_type_id = 1;
-      }
-      else if(*ccontext->vptrs[i] == &ppg_note_vtable) {
-         vptr_info[i].token_type_id = 2;
-      }
-      else if(*ccontext->vptrs[i] == &ppg_chord_vtable) {
-         vptr_info[i].token_type_id = 3;
-      }
-      else if(*ccontext->vptrs[i] == &ppg_cluster_vtable) {
-         vptr_info[i].token_type_id = 4;
-      }
-   }
-   
-   ppg_compression_write_c_char_array(
-            aux_name,
-            (char*)vptr_info,
-            ccontext->n_vptrs*sizeof(PPG_Compression_VPtr_Info));
    
    printf("#define PPG_INITIALIZE_CONTEXT_%s \\\n", name_tag);
    printf("   \\\n");
@@ -524,12 +514,12 @@ void ppg_compression_write_c_output(PPG_Compression_Context__ *ccontext,
    
    printf("   \\\n");
    
-   printf("   ppg_compression_setup_context(%s, %s, sizeof(%s)); \\\n",
-          context_name, aux_name, aux_name);
+   printf("   ppg_compression_setup_context(%s); \\\n",
+          context_name/*, aux_name, aux_name*/);
    
    printf("   \\\n");
    
-   printf("   ppg_set_context((PPG_Context)%s);\n", context_name);
+   printf("   ppg_global_set_current_context((void*)%s);\n", context_name);
 }
          
 void ppg_compression_run(PPG_Compression_Context ccontext,
@@ -549,11 +539,6 @@ void ppg_compression_run(PPG_Compression_Context ccontext,
    ccontext__->symbols = symbols;
    ccontext__->n_symbols = 0;
    ccontext__->n_symbols_space = sizeof(symbols);
-   
-   void **vptrs[n_tokens];
-   ccontext__->vptrs = vptrs;
-   ccontext__->n_vptrs = 0;
-   ccontext__->n_vptrs_space = sizeof(vptrs);
 
    ppg_compression_generate_dynamic_assignment_information(ccontext__);
    
@@ -561,6 +546,14 @@ void ppg_compression_run(PPG_Compression_Context ccontext,
    //            of the token tree. Thus no tree traversal is possible afterwards.
    //
    ppg_compression_convert_all_addresses_to_relative(ccontext__);
+   
+   
+   PPG_Context *target_context = (PPG_Context*)ccontext__->target_storage;
+   
+   assert(target_context->properties.papageno_enabled 
+         == ppg_context->properties.papageno_enabled);
+
+   assert(target_context->properties.papageno_enabled);
    
    // Now the compression context is complete
    

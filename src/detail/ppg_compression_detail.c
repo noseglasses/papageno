@@ -36,13 +36,13 @@ void ppg_compression_context_register_symbol(void **symbol,
    ++ccontext->n_symbols;
 }
 
-void ppg_compression_context_register_vptr(void **vptr,
-                                          PPG_Compression_Context__ *ccontext)
-{
-   PPG_ASSERT(ccontext->vptrs);
-   PPG_ASSERT(ccontext->n_vptrs < ccontext->n_vptrs_space);
-   
-   ccontext->vptrs[ccontext->n_vptrs] = vptr;
-   
-   ++ccontext->n_vptrs;
-}
+// void ppg_compression_context_register_vptr(void **vptr,
+//                                           PPG_Compression_Context__ *ccontext)
+// {
+//    PPG_ASSERT(ccontext->vptrs);
+//    PPG_ASSERT(ccontext->n_vptrs < ccontext->n_vptrs_space);
+//    
+//    ccontext->vptrs[ccontext->n_vptrs] = vptr;
+//    
+//    ++ccontext->n_vptrs;
+// }

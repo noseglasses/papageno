@@ -23,8 +23,8 @@
 #include "detail/ppg_token_detail.h"
 
 typedef struct {
-   PPG_Count state         : PPG_Token_N_State_Bits;
-   bool changed            : 1;
+   unsigned int state         : PPG_Token_N_State_Bits;
+   unsigned int changed       : 1;
 } PPG_Token_State;
 
 typedef struct {

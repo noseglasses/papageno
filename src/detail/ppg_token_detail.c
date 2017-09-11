@@ -180,7 +180,7 @@ void ppg_token_register_pointers_for_compression(
                                              PPG_Token__ *token,
                                              PPG_Compression_Context__ *ccontext)
 {
-   ppg_compression_context_register_vptr((void**)&token->vtable, ccontext);
+//    ppg_compression_context_register_vptr((void**)&token->vtable, ccontext);
    
    ppg_compression_context_register_symbol((void**)&token->action.callback.func, ccontext);
    

@@ -42,8 +42,15 @@ void ppg_global_initialize_context(PPG_Context *context) {
    
 //    ppg_bitfield_init(&context->active_inputs);
    
-   context->timeout_enabled = true;
-   context->papageno_enabled = true;
+   context->properties.timeout_enabled = true;
+   context->properties.papageno_enabled = true;
+      
+   #if PPG_HAVE_LOGGING
+   context->properties.logging_enabled = true;
+   #endif
+   
+   context->properties.destruction_enabled = true;
+   
    context->tree_depth = 0;
    context->layer = 0;
    ppg_global_init_input(&context->abort_input);
@@ -68,42 +75,27 @@ void ppg_global_initialize_context(PPG_Context *context) {
    #if PPG_HAVE_STATISTICS
    ppg_statistics_clear(&context->statistics);
    #endif
-   
-// #define OUT(S) printf("%s: %lu\n", #S, (size_t)((size_t)&context->S - (size_t)context));
-//    
-//   OUT(event_buffer)
-//    OUT(furcation_stack)
-//    OUT(active_tokens)
-//    
-//    OUT(pattern_root)
-// 
-//    OUT(current_token)
-// 
-//    OUT(timeout_enabled)
-//    OUT(papageno_enabled)
-//    
-//    OUT(tree_depth)
-//    
-//    OUT(layer)
-// 
-//    OUT(abort_input)
-// 
-//    OUT(time_last_event)
-// 
-//    OUT(event_timeout)
-//    
-//    OUT(event_processor)
-//    
-//    OUT(time_manager)
-//    
-//    OUT(signal_callback)
-//    
-//    #if PPG_HAVE_STATISTICS
-//    OUT(statistics)
-//    #endif
-//    
-//    unsigned char *tmp = (unsigned char*)context;
-//    for(size_t pos = 0; pos < sizeof(PPG_Context); ++pos) {
-//       printf("%lu: 0x%x\n", pos, (int)(tmp[pos]));
-//    }
 };
+
+size_t ppg_context_get_size_requirements(PPG_Context *context)
+{
+   return sizeof(PPG_Context)
+         + context->furcation_stack.n_furcations*sizeof(PPG_Furcation);
+}
+
+char *ppg_context_copy(PPG_Context *context, void *target__)
+{
+   char *target = target__;
+   
+   PPG_Context *target_context = (PPG_Context*)target;
+   
+   *target_context = *ppg_context;
+   
+   target += sizeof(PPG_Context);
+   
+   target_context->furcation_stack.furcations = (PPG_Furcation *)target;
+   
+   target += context->furcation_stack.n_furcations*sizeof(PPG_Furcation);
+   
+   return target;
+}

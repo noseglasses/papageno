@@ -105,25 +105,25 @@ PPG_Event_Processor_Fun ppg_global_set_default_event_processor(PPG_Event_Process
 
 bool ppg_global_set_enabled(bool state)
 {
-   bool old_state = ppg_context->papageno_enabled;
+   bool old_state = ppg_context->properties.papageno_enabled;
    
-   ppg_context->papageno_enabled = state;
+   ppg_context->properties.papageno_enabled = state;
 
    return old_state;
 }
 
 bool ppg_global_set_timeout_enabled(bool state)
 {
-   bool previous_state = ppg_context->timeout_enabled;
+   bool previous_state = ppg_context->properties.timeout_enabled;
    
-   ppg_context->timeout_enabled = state;
+   ppg_context->properties.timeout_enabled = state;
    
    return previous_state;
 }
 
 bool ppg_global_get_timeout_enabled(void)
 {
-   return ppg_context->timeout_enabled;
+   return ppg_context->properties.timeout_enabled;
 }
 
 PPG_Layer ppg_global_set_layer(PPG_Layer layer)

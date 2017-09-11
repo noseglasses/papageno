@@ -1,0 +1,20 @@
+if("${PAPAGENO_TEST_EXECUTABLE}" STREQUAL "")
+   message(FATAL_ERROR "No PAPAGENO_TEST_EXECUTABLE provided")
+endif()
+
+ if("${PAPAGENO_COMPRESSED_CODE_FILE}" STREQUAL "")
+   message(FATAL_ERROR "No PAPAGENO_COMPRESSED_CODE_FILE provided")
+endif()  
+
+if(NOT EXISTS "${PAPAGENO_TEST_EXECUTABLE}")
+   message("Cannot find test executable ${PAPAGENO_TEST_EXECUTABLE}")
+   
+   if(EXISTS "${PAPAGENO_COMPRESSED_CODE_FILE}")
+      file(REMOVE "${PAPAGENO_COMPRESSED_CODE_FILE}")
+   endif()
+endif()
+
+message("Executing ${PAPAGENO_TEST_EXECUTABLE}")
+
+execute_process(COMMAND "${PAPAGENO_TEST_EXECUTABLE}"
+                OUTPUT_FILE "${PAPAGENO_COMPRESSED_CODE_FILE}")

@@ -41,9 +41,6 @@ PPG_CS_START_TEST
    //
    automatically_reset_testing_system = false;
    (void)automatically_reset_testing_system;
-
-   PPG_Compression_Context ccontext
-               = ppg_compression_init();
                
    PPG_CS_INIT_COMPRESSION(ccontext)
                

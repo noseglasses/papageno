@@ -27,6 +27,15 @@
 
 #include <stddef.h>
 
+typedef struct {
+   unsigned int timeout_enabled    : 1;
+   unsigned int papageno_enabled   : 1;
+   #if PPG_HAVE_LOGGING
+   unsigned int logging_enabled   : 1;
+   #endif
+   unsigned int destruction_enabled : 1;
+} PPG_Context_Properties;
+
 typedef struct PPG_Context_Struct
 {
    PPG_Event_Buffer event_buffer;
@@ -36,9 +45,8 @@ typedef struct PPG_Context_Struct
    PPG_Token__ *pattern_root;
 
    PPG_Token__ *current_token;
-
-   bool timeout_enabled;
-   bool papageno_enabled;
+   
+   PPG_Context_Properties properties;
    
    PPG_Count tree_depth;
    
@@ -65,6 +73,10 @@ typedef struct PPG_Context_Struct
 PPG_Context *ppg_context;
 
 void ppg_global_initialize_context(PPG_Context *context);
+
+size_t ppg_context_get_size_requirements(PPG_Context *context);
+
+char *ppg_context_copy(PPG_Context *context, void *target__);
 
 /* The following macros influence the build
 
