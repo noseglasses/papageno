@@ -37,76 +37,80 @@ PPG_CS_START_TEST
    (void)automatically_reset_testing_system;
    PPG_CS_INIT_COMPRESSION(ccontext)
    #endif
+   
+   #include "test_node_lines_actions.h"
 
-   PPG_CS_REGISTER_ACTION(Pattern_1)
-   PPG_CS_REGISTER_ACTION(Pattern_2)
-   PPG_CS_REGISTER_ACTION(Pattern_3)
-   PPG_CS_REGISTER_ACTION(Single_Note_Line_1)
-   PPG_CS_REGISTER_ACTION(3_Taps)
-   PPG_CS_REGISTER_ACTION(5_Taps)
+//    PPG_CS_REGISTER_ACTION(Pattern_1)
+//    PPG_CS_REGISTER_ACTION(Pattern_2)
+//    PPG_CS_REGISTER_ACTION(Pattern_3)
+//    PPG_CS_REGISTER_ACTION(Single_Note_Line_1)
+//    PPG_CS_REGISTER_ACTION(3_Taps)
+//    PPG_CS_REGISTER_ACTION(5_Taps)
    
    #ifdef PPG_CS_READ_COMPRESSED_CONTEXT
    PPG_INITIALIZE_CONTEXT_test
    PPG_LOGGING_SET_ENABLED(true)
    #else
-   ppg_pattern(
-      ppg_cs_layer_0, /* Layer id */
-      PPG_TOKENS(
-         PPG_CS_N('a'),
-         PPG_CS_N('b'),
-         ppg_token_set_action(
-            PPG_CS_N('c'),
-            PPG_CS_ACTION(Pattern_1)
-         )
-      )
-   );
    
-   ppg_pattern(
-      ppg_cs_layer_0, /* Layer id */
-      PPG_TOKENS(
-         PPG_CS_N('a'),
-         PPG_CS_N('a'),
-         ppg_token_set_action(
-            PPG_CS_N('c'),
-            PPG_CS_ACTION(Pattern_2)
-         )
-      )
-   );
-   
-   ppg_pattern(
-      ppg_cs_layer_0, /* Layer id */
-      PPG_TOKENS(
-         PPG_CS_N('a'),
-         PPG_CS_N('b'),
-         ppg_token_set_action(
-            PPG_CS_N('d'),
-            PPG_CS_ACTION(Pattern_3)
-         )
-      )
-   );
-   
-   ppg_single_note_line(
-      ppg_cs_layer_0,
-      PPG_CS_ACTION(Single_Note_Line_1),
-      PPG_INPUTS(
-         PPG_CS_CHAR('r'),
-         PPG_CS_CHAR('n'),
-         PPG_CS_CHAR('m')
-      )
-   );
-   
-   ppg_tap_dance(
-      ppg_cs_layer_0,
-      PPG_CS_CHAR('a'), /* The tap key */
-      PPG_TAP_DEFINITIONS(
-         PPG_TAP(3, 
-            PPG_CS_ACTION(3_Taps)
-         ),
-         PPG_TAP(5, 
-            PPG_CS_ACTION(5_Taps)
-         )
-      )
-   );
+   #include "test_node_lines_token_tree.h"
+//    ppg_pattern(
+//       ppg_cs_layer_0, /* Layer id */
+//       PPG_TOKENS(
+//          PPG_CS_N('a'),
+//          PPG_CS_N('b'),
+//          ppg_token_set_action(
+//             PPG_CS_N('c'),
+//             PPG_CS_ACTION(Pattern_1)
+//          )
+//       )
+//    );
+//    
+//    ppg_pattern(
+//       ppg_cs_layer_0, /* Layer id */
+//       PPG_TOKENS(
+//          PPG_CS_N('a'),
+//          PPG_CS_N('a'),
+//          ppg_token_set_action(
+//             PPG_CS_N('c'),
+//             PPG_CS_ACTION(Pattern_2)
+//          )
+//       )
+//    );
+//    
+//    ppg_pattern(
+//       ppg_cs_layer_0, /* Layer id */
+//       PPG_TOKENS(
+//          PPG_CS_N('a'),
+//          PPG_CS_N('b'),
+//          ppg_token_set_action(
+//             PPG_CS_N('d'),
+//             PPG_CS_ACTION(Pattern_3)
+//          )
+//       )
+//    );
+//    
+//    ppg_single_note_line(
+//       ppg_cs_layer_0,
+//       PPG_CS_ACTION(Single_Note_Line_1),
+//       PPG_INPUTS(
+//          PPG_CS_CHAR('r'),
+//          PPG_CS_CHAR('n'),
+//          PPG_CS_CHAR('m')
+//       )
+//    );
+//    
+//    ppg_tap_dance(
+//       ppg_cs_layer_0,
+//       PPG_CS_CHAR('a'), /* The tap key */
+//       PPG_TAP_DEFINITIONS(
+//          PPG_TAP(3, 
+//             PPG_CS_ACTION(3_Taps)
+//          ),
+//          PPG_TAP(5, 
+//             PPG_CS_ACTION(5_Taps)
+//          )
+//       )
+//    );
    
    ppg_cs_compile();
    #endif // PPG_CS_READ_COMPRESSED_CONTEXT
@@ -117,65 +121,66 @@ PPG_CS_START_TEST
    
    #ifndef PPG_CS_SUPPRESS_TESTS
    
-   PPG_CS_PROCESS_ON_OFF(  "a b c", 
-                           PPG_CS_EXPECT_EMPTY_FLUSH
-                           PPG_CS_EXPECT_NO_EXCEPTIONS
-                           PPG_CS_EXPECT_ACTION_SERIES(
-                              PPG_CS_A(Pattern_1)
-                           )
-   );
-   
-   //PPG_PATTERN_PRINT_TREE
-   
-   PPG_CS_PROCESS_ON_OFF(  "a a c", 
-                           PPG_CS_EXPECT_EMPTY_FLUSH
-                           PPG_CS_EXPECT_NO_EXCEPTIONS
-                           PPG_CS_EXPECT_ACTION_SERIES(
-                              PPG_CS_A(Pattern_2)
-                           )
-   );
-   
-   PPG_CS_PROCESS_ON_OFF(  "a b d", 
-                           PPG_CS_EXPECT_EMPTY_FLUSH
-                           PPG_CS_EXPECT_NO_EXCEPTIONS
-                           PPG_CS_EXPECT_ACTION_SERIES(
-                              PPG_CS_A(Pattern_3)
-                           )
-   );
-   
-   PPG_CS_PROCESS_ON_OFF(  "r n m", 
-                           PPG_CS_EXPECT_EMPTY_FLUSH
-                           PPG_CS_EXPECT_NO_EXCEPTIONS
-                           PPG_CS_EXPECT_ACTION_SERIES(
-                              PPG_CS_A(Single_Note_Line_1)
-                           )
-   );
-   
-   PPG_CS_PROCESS_ON_OFF(  "a a a |", 
-                           PPG_CS_EXPECT_EMPTY_FLUSH
-                           PPG_CS_EXPECT_EXCEPTIONS(PPG_CS_ET)
-                           PPG_CS_EXPECT_ACTION_SERIES(
-                              PPG_CS_A(3_Taps)
-                           )
-   );
-   
-   PPG_PATTERN_PRINT_TREE
-   
-   PPG_CS_PROCESS_ON_OFF(  "a a a a |", 
-                           PPG_CS_EXPECT_EMPTY_FLUSH
-                           PPG_CS_EXPECT_EXCEPTIONS(PPG_CS_ET)
-                           PPG_CS_EXPECT_ACTION_SERIES(
-                              PPG_CS_A(3_Taps)
-                           )
-   );
-   
-   PPG_CS_PROCESS_ON_OFF(  "a a a a a |",  
-                           PPG_CS_EXPECT_EMPTY_FLUSH
-                           PPG_CS_EXPECT_NO_EXCEPTIONS
-                           PPG_CS_EXPECT_ACTION_SERIES(
-                              PPG_CS_A(5_Taps)
-                           )
-   );
+   #include "test_node_lines_tests.h"
+//    PPG_CS_PROCESS_ON_OFF(  "a b c", 
+//                            PPG_CS_EXPECT_EMPTY_FLUSH
+//                            PPG_CS_EXPECT_NO_EXCEPTIONS
+//                            PPG_CS_EXPECT_ACTION_SERIES(
+//                               PPG_CS_A(Pattern_1)
+//                            )
+//    );
+//    
+//    //PPG_PATTERN_PRINT_TREE
+//    
+//    PPG_CS_PROCESS_ON_OFF(  "a a c", 
+//                            PPG_CS_EXPECT_EMPTY_FLUSH
+//                            PPG_CS_EXPECT_NO_EXCEPTIONS
+//                            PPG_CS_EXPECT_ACTION_SERIES(
+//                               PPG_CS_A(Pattern_2)
+//                            )
+//    );
+//    
+//    PPG_CS_PROCESS_ON_OFF(  "a b d", 
+//                            PPG_CS_EXPECT_EMPTY_FLUSH
+//                            PPG_CS_EXPECT_NO_EXCEPTIONS
+//                            PPG_CS_EXPECT_ACTION_SERIES(
+//                               PPG_CS_A(Pattern_3)
+//                            )
+//    );
+//    
+//    PPG_CS_PROCESS_ON_OFF(  "r n m", 
+//                            PPG_CS_EXPECT_EMPTY_FLUSH
+//                            PPG_CS_EXPECT_NO_EXCEPTIONS
+//                            PPG_CS_EXPECT_ACTION_SERIES(
+//                               PPG_CS_A(Single_Note_Line_1)
+//                            )
+//    );
+//    
+//    PPG_CS_PROCESS_ON_OFF(  "a a a |", 
+//                            PPG_CS_EXPECT_EMPTY_FLUSH
+//                            PPG_CS_EXPECT_EXCEPTIONS(PPG_CS_ET)
+//                            PPG_CS_EXPECT_ACTION_SERIES(
+//                               PPG_CS_A(3_Taps)
+//                            )
+//    );
+//    
+//    PPG_PATTERN_PRINT_TREE
+//    
+//    PPG_CS_PROCESS_ON_OFF(  "a a a a |", 
+//                            PPG_CS_EXPECT_EMPTY_FLUSH
+//                            PPG_CS_EXPECT_EXCEPTIONS(PPG_CS_ET)
+//                            PPG_CS_EXPECT_ACTION_SERIES(
+//                               PPG_CS_A(3_Taps)
+//                            )
+//    );
+//    
+//    PPG_CS_PROCESS_ON_OFF(  "a a a a a |",  
+//                            PPG_CS_EXPECT_EMPTY_FLUSH
+//                            PPG_CS_EXPECT_NO_EXCEPTIONS
+//                            PPG_CS_EXPECT_ACTION_SERIES(
+//                               PPG_CS_A(5_Taps)
+//                            )
+//    );
    
    #endif // ifndef PPG_CS_SUPPRESS_TESTS
    

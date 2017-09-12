@@ -303,16 +303,19 @@ static void ppg_compression_copy_context(PPG_Compression_Context__ *ccontext)
    ppg_context->pattern_root->parent = NULL;
    ppg_compression_restore_tree_relations(ppg_context->pattern_root);
    
+//    printf("properties: %d\n", *((int*)&target_context->properties));
+   
    // As this is not a dynamically allocated context, we 
    // have to prevent auto destruction
    //
    target_context->properties.destruction_enabled = false;
    
-   byte 6096 in the test_note_lines example contains the context
-   properties which seem for strange reasons not to be reproduced
-   during extraction.
-   
-   TODO: Reenable all tests
+//    printf("properties: %d\n", *((int*)&target_context->properties));
+//    byte 6096 in the test_note_lines example contains the context
+//    properties which seem for strange reasons not to be reproduced
+//    during extraction.
+//    
+//    TODO: Reenable all tests
 }
 
 static void ppg_compression_convert_all_addresses_to_relative(PPG_Compression_Context__ *ccontext)
@@ -389,7 +392,6 @@ void ppg_compression_write_c_char_array(char *array_name,
                                         char *array,
                                         size_t size)
 {
-   printf("char %s[] = {\n", array_name);
     
 //    printf("array size: %lu\n", size);
 //    printf("array: %p\n", array);
@@ -398,6 +400,24 @@ void ppg_compression_write_c_char_array(char *array_name,
    
    size_t n_rows = size / ROW_LENGTH;
    size_t n_remaining = size % ROW_LENGTH;
+   
+//    printf("/*\n");
+//    
+//    for(size_t row = 0; row < n_rows; ++row) {
+//       
+//       for(size_t col = 0; col < ROW_LENGTH; ++col) {
+//          printf("%lu: 0x%02x\n",  row*ROW_LENGTH + col, (int)(array[row*ROW_LENGTH + col] & 0xff));
+//       }
+//    }
+//    
+//    if(n_remaining) {      
+//       for(size_t col = 0; col < ROW_LENGTH; ++col) {
+//          printf("%lu: 0x%02x\n", n_rows*ROW_LENGTH + col, (int)(array[n_rows*ROW_LENGTH + col] & 0xff));
+//       }
+//    }
+//    printf("*/\n\n");
+   
+   printf("char %s[] = {\n", array_name);
    
 //    printf("n_rows: %lu\n", n_rows);
 //    printf("n_remaining: %lu\n", n_remaining);
@@ -421,7 +441,7 @@ void ppg_compression_write_c_char_array(char *array_name,
       
       printf("\n");
    }
-   
+      
    printf("};\n\n");
 }
 
@@ -453,7 +473,7 @@ void ppg_compression_setup_context(void *context)
                            NULL,
                            (void *)context);
    
-   printf("properties: %u\n", *((unsigned char*)&the_context->properties));
+//    printf("properties: %u\n", *((unsigned char*)&the_context->properties));
    
    assert(the_context->properties.papageno_enabled);
 }
@@ -467,6 +487,11 @@ void ppg_compression_write_c_output(PPG_Compression_Context__ *ccontext,
    
    sprintf(context_name, "%s_context", name_tag);
 //    sprintf(aux_name, "%s_context_aux", name_tag);
+   
+   
+//    printf("properties before write: %d\n", *((int*)&((PPG_Context*)(ccontext->target_storage))->properties));
+   
+//    printf("Written at %lu\n", (size_t)((char*)&((PPG_Context*)(ccontext->target_storage))->properties - (char*)ccontext->target_storage));
    
    ppg_compression_write_c_char_array(context_name,
                                       ccontext->target_storage,
