@@ -559,7 +559,7 @@ void ppg_compression_run(PPG_Compression_Context ccontext,
    
    // Use stack memory to hold symbol and vptr data
    ///
-   void **symbols[2*n_tokens];
+   void **symbols[4*n_tokens];
    
    ccontext__->symbols = symbols;
    ccontext__->n_symbols = 0;

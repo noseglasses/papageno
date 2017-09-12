@@ -291,8 +291,10 @@ __NL__   \
 __NL__   PPG_CS_PREPARE_CONTEXT \
 __NL__   \
 __NL__   bool automatically_reset_testing_system = true; \
+__NL__   (void)automatically_reset_testing_system; \
 __NL__   \
-__NL__   PPG_Compression_Context cs_ccontext__ = NULL;
+__NL__   PPG_Compression_Context cs_ccontext__ = NULL; \
+__NL__   (void)cs_ccontext__;
 
 #define PPG_CS_INIT_COMPRESSION(CCONTEXT_PTR) \
 \

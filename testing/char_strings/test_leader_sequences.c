@@ -76,7 +76,7 @@ static void ppg_cs_retreive_string(uint8_t sequence_id,
          strcpy(buffer, "bar");
          break;
       case 2:
-         strcpy(buffer, "Klaatubaradanikto");
+         strcpy(buffer, "Klaatubaradan");
          break;
    }
 }
@@ -98,7 +98,7 @@ PPG_CS_START_TEST
 
    PPG_CS_REGISTER_ACTION(Foo)
    PPG_CS_REGISTER_ACTION(Bar)
-   PPG_CS_REGISTER_ACTION(Klaatubaradanikto)
+   PPG_CS_REGISTER_ACTION(Klaatubaradan)
    
    PPG_Token leader_token
       = 
@@ -169,7 +169,7 @@ PPG_CS_START_TEST
                            PPG_CS_EXPECT_EMPTY_FLUSH
                            PPG_CS_EXPECT_NO_EXCEPTIONS
                            PPG_CS_EXPECT_ACTION_SERIES(
-                              PPG_CS_A(Klaatubaradanikto)
+                              PPG_CS_A(Klaatubaradan)
                            )
    );
    
@@ -193,7 +193,7 @@ PPG_CS_START_TEST
                            PPG_CS_EXPECT_EMPTY_FLUSH
                            PPG_CS_EXPECT_NO_EXCEPTIONS
                            PPG_CS_EXPECT_ACTION_SERIES(
-                              PPG_CS_A(Klaatubaradanikto)
+                              PPG_CS_A(Klaatubaradan)
                            )
    );
    

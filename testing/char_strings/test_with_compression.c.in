@@ -1,0 +1,62 @@
+/* Copyright 2017 Florian Fleissner
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include "papageno_char_strings.h"
+
+#include @PPG_CS_COMPRESSION_INCLUDES_INCLUDE_FILE@
+
+@PPG_CS_COMPRESSED_CODE_FILE@
+   
+#include @PPG_CS_COMPRESSION_LAYERS_INCLUDE_FILE@
+
+PPG_CS_START_TEST
+   
+   #ifdef PPG_CS_COMPRESS_CONTEXT
+   
+   PPG_LOGGING_SET_ENABLED(true)
+   
+   // This assignment serves just to silence an unused variable
+   // warning
+   //
+   automatically_reset_testing_system = false;
+   (void)automatically_reset_testing_system;
+   PPG_CS_INIT_COMPRESSION(ccontext)
+   
+   #endif
+      
+   #include @PPG_CS_COMPRESSION_ACTIONS_INCLUDE_FILE@
+   
+   #ifdef PPG_CS_READ_COMPRESSED_CONTEXT
+   PPG_INITIALIZE_CONTEXT_test
+   PPG_LOGGING_SET_ENABLED(true)
+   #else
+   
+   #include @PPG_CS_COMPRESSION_TOKEN_TREE_INCLUDE_FILE@
+   
+   ppg_cs_compile();
+   #endif // PPG_CS_READ_COMPRESSED_CONTEXT
+   
+   #ifdef PPG_CS_COMPRESS_CONTEXT
+   ppg_compression_run(ccontext, "test");
+   #endif
+   
+   #ifndef PPG_CS_SUPPRESS_TESTS
+   
+   #include @PPG_CS_COMPRESSION_TESTS_INCLUDE_FILE@
+   
+   #endif // ifndef PPG_CS_SUPPRESS_TESTS
+   
+PPG_CS_END_TEST

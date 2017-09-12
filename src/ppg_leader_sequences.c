@@ -40,9 +40,16 @@ void ppg_alphabetic_leader_sequences(
       //
       functions.retreive_string(seq, buffer, PPG_MAX_SEQUENCE_LENGTH);
       
+//       printf("buffer: \'%s\'\n", buffer);
+      
       PPG_Count n_tokens = 0;
       
       for(int i = 0; buffer[i]; i++) {
+         
+         if(i >=  PPG_MAX_SEQUENCE_LENGTH) {
+            PPG_ERROR("Leader sequence \'%s\' exceeds maximum tolerated length %d\n",
+                  buffer, PPG_MAX_SEQUENCE_LENGTH);
+         }
          
          PPG_Input_Id input = functions.input_from_char(buffer[i]);
          

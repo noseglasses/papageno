@@ -1,0 +1,1 @@
+PPG_CS_REGISTER_ACTION(Pattern)

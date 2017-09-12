@@ -1,0 +1,19 @@
+ppg_cluster(
+   ppg_cs_layer_0,
+   PPG_CS_ACTION(Cluster_1),
+   PPG_INPUTS(
+      PPG_CS_CHAR('a'),
+      PPG_CS_CHAR('b'),
+      PPG_CS_CHAR('c')
+   )
+);
+
+ppg_cluster(
+   ppg_cs_layer_0,
+   PPG_CS_ACTION(Cluster_2),
+   PPG_INPUTS(
+      PPG_CS_CHAR('a'),
+      PPG_CS_CHAR('b'),
+      PPG_CS_CHAR('d')
+   )
+);
