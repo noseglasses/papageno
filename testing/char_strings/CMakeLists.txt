@@ -15,6 +15,45 @@ target_link_libraries(
 	papageno
 )
 
+macro(ppg_add_test test_name)
+
+   set(multi_value_args "")
+   set(one_value_args "COMPILE_DEFINITIONS;LINK_LIBRARIES")
+   set(options "")
+
+   cmake_parse_arguments(args "${options}" "${one_value_args}"
+                     "${multi_value_args}" ${ARGN} )
+
+   set(test_code_file "${CMAKE_CURRENT_SOURCE_DIR}/${test_name}.c")
+
+   # Add the normal test executable
+   #
+   set(run_target_name "${test_name}_run")
+
+	add_executable(
+		"${run_target_name}"
+		"${test_code_file}"
+	)
+
+   set_target_properties(
+      "${run_target_name}"
+      PROPERTIES COMPILE_FLAGS 
+         "${args_COMPILE_DEFINITIONS}"
+   )
+
+	target_link_libraries(
+		"${run_target_name}"
+		papageno_char_strings
+	)
+
+   if(DEFINED args_LINK_LIBRARIES)
+      target_link_libraries(
+         "${run_target_name}"
+         "${args_LINK_LIBRARIES}"
+      )
+	endif()
+endmacro()
+
 macro(ppg_get_test_file_defines
    test_name_
    type_list_
@@ -36,7 +75,7 @@ macro(ppg_get_test_file_defines
    endforeach()
 endmacro()
 
-macro(ppg_add_test test_name)
+macro(ppg_add_test_with_compression test_name)
 
    set(multi_value_args "")
    set(one_value_args "COMPILE_DEFINITIONS;LINK_LIBRARIES")
@@ -62,12 +101,12 @@ macro(ppg_add_test test_name)
    configure_file("${test_code_file}" "${run_target_name_c}")
 
 	add_executable(
-		"${test_name}_run"
+		"${run_target_name}"
 		"${run_target_name_c}"
 	)
 
    set_target_properties(
-      "${test_name}_run"
+      "${run_target_name}"
       PROPERTIES COMPILE_FLAGS 
          "${args_COMPILE_DEFINITIONS}"
    )
@@ -80,7 +119,7 @@ macro(ppg_add_test test_name)
    if(DEFINED args_LINK_LIBRARIES)
       target_link_libraries(
          "${run_target_name}"
-         "${papageno_char_strings}"
+         "${args_LINK_LIBRARIES}"
       )
 	endif()
 
@@ -117,7 +156,7 @@ macro(ppg_add_test test_name)
    if(DEFINED args_LINK_LIBRARIES)
       target_link_libraries(
          "${build_compress_executable_target_name}"
-         "${papageno_char_strings}"
+         "${args_LINK_LIBRARIES}"
       )
    endif()
 
@@ -180,7 +219,7 @@ macro(ppg_add_test test_name)
    if(DEFINED args_LINK_LIBRARIES)
       target_link_libraries(
          "${extract_and_test_target_name}"
-         "${papageno_char_strings}"
+         "${args_LINK_LIBRARIES}"
       )
    endif()
 
@@ -191,11 +230,6 @@ macro(ppg_add_test test_name)
 	)
 	
 	include_directories("${CMAKE_CURRENT_BINARY_DIR}")
-
-#	add_test(NAME <name> COMMAND <command> [<arg>...]
-#         [CONFIGURATIONS <config>...]
-#         [WORKING_DIRECTORY <dir>])
-
 	
 	if(PAPAGENO_TEST_COVERAGE)
 	      
@@ -208,56 +242,22 @@ macro(ppg_add_test test_name)
 	
 endmacro()
 
-# macro(ppg_create_if_not_existent filename)
-#    if(NOT EXISTS "${filename}")
-#       file(WRITE "${filename}" "")
-#    endif()
-# endmacro()
-# 
-# macro(ppg_add_test test_name)
-#    ppg_create_if_not_existent("${CMAKE_CURRENT_SOURCE_DIR}/${test_name}_actions.h")
-#    ppg_create_if_not_existent("${CMAKE_CURRENT_SOURCE_DIR}/${test_name}_tests.h")
-#    ppg_create_if_not_existent("${CMAKE_CURRENT_SOURCE_DIR}/${test_name}_token_tree.h")
-#    ppg_create_if_not_existent("${CMAKE_CURRENT_SOURCE_DIR}/${test_name}_includes.h")
-#    ppg_create_if_not_existent("${CMAKE_CURRENT_SOURCE_DIR}/${test_name}_layers.h")
-# endmacro()
- 
-ppg_add_test(test_abort_trigger)
-ppg_add_test(test_chords)
-ppg_add_test(test_clusters)
 ppg_add_test(test_context_switching)
 ppg_add_test(test_enable_disable)
 ppg_add_test(test_enable_disable_timeout)
 ppg_add_test(test_fallback)
-ppg_add_test(test_large_systems COMPILE_DEFINITIONS 
+ 
+ppg_add_test_with_compression(test_abort_trigger)
+ppg_add_test_with_compression(test_chords)
+ppg_add_test_with_compression(test_clusters)
+ppg_add_test_with_compression(test_large_systems COMPILE_DEFINITIONS 
    "-DPAPAGENO_TEST__TREE_DEPTH=4 -DPAPAGENO_TEST__N_CHARS=4 -DPAPAGENO_TEST__FAIL=1"
    LINK_LIBRARIES "m"
 )
-ppg_add_test(test_layers)
-ppg_add_test(test_leader_sequences)
-ppg_add_test(test_note_lines)
-ppg_add_test(test_strict_notes)
-ppg_add_test(test_token_precedence)
-# ppg_add_test(test_compression)
+ppg_add_test_with_compression(test_layers)
+ppg_add_test_with_compression(test_leader_sequences)
+ppg_add_test_with_compression(test_note_lines)
+ppg_add_test_with_compression(test_strict_notes)
+ppg_add_test_with_compression(test_token_precedence)
 
-
-# ppg_add_test(test_large_systems_2)
-
-# target_compile_options(
-#    test_large_systems 
-#    PUBLIC
-#    -DPAPAGENO_TEST__TREE_DEPTH=4
-# 	-DPAPAGENO_TEST__N_CHARS=4
-#    -DPAPAGENO_TEST__FAIL=1
-# )
-
-# target_compile_options(
-#    test_large_systems_2
-#    PUBLIC
-#    -DPAPAGENO_TEST__FAIL=0
-# )
-
-
-# target_link_libraries(test_large_systems m)
-
-# set_property(TARGET test_char_strings PROPERTY C_STANDARD 99)
+# ppg_add_test_with_compression(test_large_systems_2)
