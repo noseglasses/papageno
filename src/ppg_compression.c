@@ -489,7 +489,7 @@ void ppg_compression_write_c_output(PPG_Compression_Context__ *ccontext,
       
       PPG_ASSERT(s >= 0);
       
-      printf("   *((uintptr_t*)&%s[%lu]) = (uintptr_t)&%s; \\\n", context_name, offset, 
+      printf("   *((uintptr_t*)&%s[%lu]) = (uintptr_t)&%s; \\\n", context_name, (long unsigned int)offset, 
          ccontext->symbols_lookup.buffer[s].name
       );
    }
