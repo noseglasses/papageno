@@ -73,7 +73,7 @@ PPG_Time ppg_global_get_timeout(void);
  * can be supplied with a custom input processor. If non is specified the default one is used
  * if defined.
  * 
- * @param fun The default input processor callback
+ * @param event_processor The default input processor callback
  * @returns The callback that was active before resetting
  */
 PPG_Event_Processor_Fun ppg_global_set_default_event_processor(PPG_Event_Processor_Fun event_processor);

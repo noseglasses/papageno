@@ -433,6 +433,32 @@ This flexible approach makes it possible to use different instances of Papageno 
 
 Please note that due to this implementation detail, Papageno cannot be guaranteed to be thread safe.
 
+Compression
+-----------
+
+The core of Papageno's data structures is the dynamically allocated search tree. Although the amount of memory allocation is restricted to the absolute minimum, it can lead to fragmentation. This is especially painful on embedded systems where memory is a limited resource. To partially remedy this problem, Papageno supports a compression of its data structures.
+
+Compression basically means that after the token tree is established. It is copied and shrinked to fit into a statically allocated memory block. All dynamically allocated memory chunks apart from the token tree's data strucures are also packed into the same buffer.
+
+Compression brings two major benefits:
+
+- avoids dynamic allocation/deallocation of memory
+- allows for smaller programms as program code that is required for dynamic generation of data structures
+   can be stripped from resulting binaries
+
+Both points reduce the memory footprint of the generated application.
+
+Papageno supports C-output of the compressed data structures. After importing  automatically generated setup code sets all those pointers to functions and variables that are volatile and cannot be stored in the compressed data set.
+
+The generation of a compressed executable is a two-step process:
+
+1. The program is be compiled in an intermediate mode that generates the dynamic data structures and exports them
+2. The program is compiled again, thereby using the compressed data structures
+
+For this to work in stage 1. the program must be compiled and run on the target platform. If memory is already at the limit this requires that other program parts that are not related to Papageno are temporarily removed. If related, callbacks may be replaced by empty skeleton functions to saturate Papageno's interface.
+
+Another option is to use an emulator during stage 1. and provide more memory than available on the actual target platform. This avoids the necessity to remove other program parts.
+
 The Library
 ===========
 

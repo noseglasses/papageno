@@ -58,10 +58,21 @@ bool ppg_logging_set_enabled(bool state);
 /** @brief Get state of dynamic logging settings
  */
 bool ppg_logging_get_enabled();
-
+   
+/** @brief A macro to dynamically toggle logging. 
+ * 
+ * This macro helps to prevent
+ * undefined symbol errors when logging is suppressed in optimized builds.
+ */
 #define PPG_LOGGING_SET_ENABLED(STATE) \
    ppg_logging_set_enabled(STATE);
 #else
+   
+/** @brief A macro to dynamically toggle logging. 
+ * 
+ * This macro helps to prevent
+ * undefined symbol errors when logging is suppressed in optimized builds.
+ */
 #define PPG_LOGGING_SET_ENABLED(STATE)
 
 #endif //PPG_HAVE_LOGGING

@@ -52,6 +52,15 @@ macro(ppg_add_test test_name)
          "${args_LINK_LIBRARIES}"
       )
 	endif()
+	
+	if(PAPAGENO_TEST_COVERAGE)
+	      
+      SETUP_TARGET_FOR_JOINT_COVERAGE(
+         NAME "${run_target_name}_coverage"
+         EXECUTABLE "${run_target_name}"
+         DEPENDENCIES "${run_target_name}"
+      )
+   endif()
 endmacro()
 
 macro(ppg_get_test_file_defines
@@ -86,6 +95,8 @@ macro(ppg_add_test_with_compression test_name)
 
    set(test_code_file "${CMAKE_CURRENT_SOURCE_DIR}/test_with_compression.c.in")
 
+	include_directories("${CMAKE_CURRENT_BINARY_DIR}")
+	
    ppg_get_test_file_defines(
       "${test_name}"
       "actions;tests;token_tree;includes;layers"
@@ -128,6 +139,15 @@ macro(ppg_add_test_with_compression test_name)
 		COMMAND "${run_target_name}"
 		WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
 	)
+	
+	if(PAPAGENO_TEST_COVERAGE)
+	      
+      SETUP_TARGET_FOR_JOINT_COVERAGE(
+         NAME "${run_target_name}_coverage"
+         EXECUTABLE "${run_target_name}"
+         DEPENDENCIES "${run_target_name}"
+      )
+   endif()
 	   
    # Add an executable that compresses the context
    #
@@ -157,6 +177,15 @@ macro(ppg_add_test_with_compression test_name)
       target_link_libraries(
          "${build_compress_executable_target_name}"
          "${args_LINK_LIBRARIES}"
+      )
+   endif()
+   
+   if(PAPAGENO_TEST_COVERAGE)
+	      
+      SETUP_TARGET_FOR_JOINT_COVERAGE(
+         NAME "${build_compress_executable_target_name}_coverage"
+         EXECUTABLE "${build_compress_executable_target_name}"
+         DEPENDENCIES "${build_compress_executable_target_name}"
       )
    endif()
 
@@ -229,16 +258,15 @@ macro(ppg_add_test_with_compression test_name)
 		WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
 	)
 	
-	include_directories("${CMAKE_CURRENT_BINARY_DIR}")
-	
-	if(PAPAGENO_TEST_COVERAGE)
+   if(PAPAGENO_TEST_COVERAGE)
 	      
       SETUP_TARGET_FOR_JOINT_COVERAGE(
-         NAME "${test_name}_coverage"
-         EXECUTABLE "${test_name}"
-         DEPENDENCIES "${test_name}"
+         NAME "${extract_and_test_target_name}_coverage"
+         EXECUTABLE "${extract_and_test_target_name}"
+         DEPENDENCIES "${extract_and_test_target_name}"
       )
    endif()
+
 	
 endmacro()
 

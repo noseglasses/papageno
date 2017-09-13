@@ -529,14 +529,6 @@ void ppg_compression_run(PPG_Compression_Context ccontext,
    //
    ppg_compression_convert_all_addresses_to_relative(ccontext__);
    
-   
-   PPG_Context *target_context = (PPG_Context*)ccontext__->target_storage;
-   
-   assert(target_context->properties.papageno_enabled 
-         == ppg_context->properties.papageno_enabled);
-
-   assert(target_context->properties.papageno_enabled);
-   
    // Now the compression context is complete
    
    ppg_compression_write_c_output(ccontext__, name_tag);
