@@ -62,6 +62,14 @@ PPG_Aggregate *ppg_aggregate_alloc(void);
 
 bool ppg_aggregates_equal(PPG_Aggregate *c1, PPG_Aggregate *c2);
 
-char *ppg_aggregate_copy_dynamic_members(PPG_Token__ *token, char *buffer);
+char *ppg_aggregate_copy_dynamic_members(PPG_Token__ *source,
+                                         PPG_Token__ *target,
+                                         char *buffer);
+
+void ppg_aggregate_addresses_to_relative(  PPG_Token__ *token,
+                                       void *begin_of_buffer);
+
+void ppg_aggregate_addresses_to_absolute(  PPG_Token__ *token,
+                                       void *begin_of_buffer);
 
 #endif

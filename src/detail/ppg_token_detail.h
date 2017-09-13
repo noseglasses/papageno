@@ -54,6 +54,16 @@ typedef void (*PPG_Token_Register_Pointers_For_Compression)(
                                              PPG_Compression_Context__ *ccontext
 );
 
+typedef void (*PPG_Token_Addresses_To_Relative)(
+                                             struct PPG_TokenStruct *p,
+                                             void *begin_of_buffer
+);
+
+typedef void (*PPG_Token_Addresses_To_Absolute)(
+                                             struct PPG_TokenStruct *p,
+                                             void *begin_of_buffer
+);
+
 #if PPG_PRINT_SELF_ENABLED
 typedef void (*PPG_Token_Print_Self_Fun)(struct PPG_TokenStruct *p, PPG_Count indent, bool recurse);
 #endif
@@ -87,6 +97,12 @@ typedef struct {
                            
    PPG_Token_Register_Pointers_For_Compression
                            register_ptrs_for_compression;
+                           
+   PPG_Token_Addresses_To_Relative   
+                           addresses_to_relative;
+                           
+   PPG_Token_Addresses_To_Absolute   
+                           addresses_to_absolute;
                            
    #if PPG_PRINT_SELF_ENABLED
    PPG_Token_Print_Self_Fun
@@ -188,6 +204,12 @@ char *ppg_token_placement_clone(PPG_Token__ *token, char *buffer);
 void ppg_token_register_pointers_for_compression(
                                              PPG_Token__ *token,
                                              PPG_Compression_Context__ *ccontext);
+
+void ppg_token_addresses_to_relative(  PPG_Token__ *token,
+                                       void *begin_of_buffer);
+
+void ppg_token_addresses_to_absolute(  PPG_Token__ *token,
+                                       void *begin_of_buffer);
 
 #if PPG_PRINT_SELF_ENABLED
 void ppg_token_print_self_start(PPG_Token__ *p, PPG_Count indent);

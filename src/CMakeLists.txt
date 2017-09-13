@@ -108,7 +108,8 @@ set(source_files
 	./detail/ppg_pattern_detail.c                                                                                                         
 	./detail/ppg_pattern_matching_detail.c
 	./detail/ppg_signal_detail.c
-	./detail/ppg_token_detail.c                                                                                                           
+	./detail/ppg_token_detail.c     
+	./detail/ppg_token_vtable_detail.c                                                                                                           
 	./ppg_bitfield.c
 	./ppg_chord.c                                                                                                                         
 	./ppg_cluster.c                                                                                                                       

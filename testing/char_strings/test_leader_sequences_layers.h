@@ -10,6 +10,8 @@ enum {
    case UPPER_CASE_QUOTED: \
       return LOWER_CASE_QUOTED;
    
+#ifndef PPG_CS_READ_COMPRESSED_CONTEXT
+      
 static PPG_Input_Id ppg_cs_input_from_alphabetic_character(char c) {   
    
    switch(c) {
@@ -73,3 +75,5 @@ static PPG_Action ppg_cs_retreive_action(uint8_t sequence_id)
       }
    };
 }
+
+#endif // #ifndef PPG_CS_READ_COMPRESSED_CONTEXT

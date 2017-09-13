@@ -16,10 +16,7 @@
 
 #include "detail/ppg_compression_detail.h"
 #include "detail/ppg_context_detail.h"
-#include "detail/ppg_token_detail.h"
-#include "detail/ppg_note_detail.h"
-#include "detail/ppg_chord_detail.h"
-#include "detail/ppg_cluster_detail.h"
+#include "detail/ppg_token_vtable_detail.h"
 
 #include "assert.h"
 
@@ -98,6 +95,10 @@ void ppg_compression_register_symbol(
                          char *symbol_name)
 {
    if(!symbol) { return; }
+   
+   if(!symbol_name) {
+      PPG_ERROR("Trying to register a symbol with NULL symbol name\n");
+   }
    
 //    printf("Registering symbol %s = %p\n", symbol_name, symbol);
    
@@ -227,51 +228,17 @@ static void ppg_compression_copy_token(
 static void ppg_compression_generate_relative_addresses(
                                  PPG_Token__ *token, void *begin_of_buffer)
 {
-   for(PPG_Count i = 0; i < token->n_children; ++i) {
-      token->children[i] = (PPG_Token__ *)((char*)token->children[i] - (char*)begin_of_buffer);
-   }
+   PPG_CALL_VIRT_METHOD(token, addresses_to_relative, begin_of_buffer);
    
-   if(token->children) {
-      token->children = (PPG_Token__ **)((char*)token->children - (char*)begin_of_buffer);
-   }
-   
-   if(token->vtable == &ppg_token_vtable) {
-      token->vtable = (PPG_Token_Vtable *)1;
-   }
-   else if(token->vtable == &ppg_note_vtable) {
-      token->vtable = (PPG_Token_Vtable *)2;
-   }
-   else if(token->vtable == &ppg_chord_vtable) {
-      token->vtable = (PPG_Token_Vtable *)3;
-   }
-   else if(token->vtable == &ppg_cluster_vtable) {
-      token->vtable = (PPG_Token_Vtable *)4;
-   }
+   token->vtable = (PPG_Token_Vtable*)ppg_token_vtable_id_from_ptr(token->vtable);
 }
 
 static void ppg_compression_generate_absolute_addresses(
                                  PPG_Token__ *token, void *begin_of_buffer)
 {
-   switch((uintptr_t)token->vtable) {
-      case 1:
-         token->vtable = &ppg_token_vtable;
-         break;
-      case 2:
-         token->vtable = &ppg_note_vtable;
-         break;
-      case 3:
-         token->vtable = &ppg_chord_vtable;
-         break;
-      case 4:
-         token->vtable = &ppg_cluster_vtable;
-         break;
-   }
    
-   token->children = (PPG_Token__ **)((char*)begin_of_buffer + (uintptr_t)token->children);
-   
-   for(PPG_Count i = 0; i < token->n_children; ++i) {
-      token->children[i] = (PPG_Token__ *)((char*)begin_of_buffer + (uintptr_t)token->children[i]);
-   }
+   token->vtable = (PPG_Token_Vtable*)ppg_token_vtable_ptr_from_id((uintptr_t)token->vtable);
+   PPG_CALL_VIRT_METHOD(token, addresses_to_absolute, begin_of_buffer);
 }
 
 static void ppg_compression_restore_tree_relations(PPG_Token__ *token)
@@ -514,23 +481,13 @@ void ppg_compression_write_c_output(PPG_Compression_Context__ *ccontext,
       //       efficient by, e.g. sorting the buffer first
       //       and then perform a binary search.
       //
-      size_t s = 0;
-      for(; s < ccontext->symbols_lookup.n_stored; ++s) {
-         
-//          printf("Checking symbol %s\n", ccontext->symbols_lookup.buffer[s].name);
-//          printf("   Stored symbol %p\n", ccontext->symbols_lookup.buffer[s].address);
-//          printf("   Checking symbol %p\n", *ccontext->symbols[i]);
-         
-         if(ccontext->symbols_lookup.buffer[s].address == *ccontext->symbols[i]) {
-            break;
-         }
+      int s = ppg_compression_check_symbol_registered(ccontext, *ccontext->symbols[i]);
+      
+      if(s < 0) {
+         PPG_ERROR("Unable to find symbol %p\n", *ccontext->symbols[i]);
       }
       
-      PPG_ASSERT(s < ccontext->symbols_lookup.n_stored);
-      
-//       if(!(s < ccontext->symbols_lookup.n_stored)) {
-//          printf("Unable to find symbol %s\n", ccontext->symbols_lookup.buffer[s].name);
-//       }
+      PPG_ASSERT(s >= 0);
       
       printf("   *((uintptr_t*)&%s[%lu]) = (uintptr_t)&%s; \\\n", context_name, offset, 
          ccontext->symbols_lookup.buffer[s].name

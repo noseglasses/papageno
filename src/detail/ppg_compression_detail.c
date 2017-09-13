@@ -19,6 +19,28 @@
 
 #include "assert.h"
 
+int ppg_compression_check_symbol_registered(PPG_Compression_Context__ *ccontext,
+                                            void *symbol)
+{
+   int s = 0;
+   for(; s < ccontext->symbols_lookup.n_stored; ++s) {
+      
+//          printf("Checking symbol %s\n", ccontext->symbols_lookup.buffer[s].name);
+//          printf("   Stored symbol %p\n", ccontext->symbols_lookup.buffer[s].address);
+//          printf("   Checking symbol %p\n", symbol);
+      
+      if(ccontext->symbols_lookup.buffer[s].address == symbol) {
+         break;
+      }
+   }
+   
+   if(!(s < ccontext->symbols_lookup.n_stored)) {
+      s = -1;
+   }
+   
+   return s;
+}
+
 void ppg_compression_context_register_symbol(void **symbol,
                                              PPG_Compression_Context__ *ccontext)
 {
@@ -31,9 +53,17 @@ void ppg_compression_context_register_symbol(void **symbol,
    PPG_ASSERT(ccontext->symbols);
    PPG_ASSERT(ccontext->n_symbols < ccontext->n_symbols_space);
    
-   ccontext->symbols[ccontext->n_symbols] = symbol;
+   int s = ppg_compression_check_symbol_registered(ccontext, *symbol);
    
-   ++ccontext->n_symbols;
+   if(s < 0) {
+      PPG_LOG("Symbol %p unregistered\n", *symbol);
+   }
+   else {
+   
+      ccontext->symbols[ccontext->n_symbols] = symbol;
+      
+      ++ccontext->n_symbols;
+   }
 }
 
 // void ppg_compression_context_register_vptr(void **vptr,

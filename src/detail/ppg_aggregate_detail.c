@@ -138,20 +138,69 @@ PPG_Token ppg_global_initialize_aggregate(
 size_t ppg_aggregate_dynamic_member_size(PPG_Aggregate *aggregate)
 {
    return   ppg_token_dynamic_member_size((PPG_Token__*)aggregate)
-         +  aggregate->n_members*sizeof(PPG_Input_Id);
+         +  aggregate->n_members*sizeof(PPG_Input_Id)
+         +  ppg_bitfield_get_num_cells(&aggregate->member_active)
+               *sizeof(PPG_Bitfield_Storage_Type);
 }
 
-char *ppg_aggregate_copy_dynamic_members(PPG_Token__ *token, char *buffer)
+char *ppg_aggregate_copy_dynamic_members(PPG_Token__ *source, 
+                                         PPG_Token__ *target, 
+                                         char *buffer)
 {
-   buffer = ppg_token_copy_dynamic_members(token, buffer);
+   PPG_Aggregate *aggregate = (PPG_Aggregate *)source;
    
-   PPG_Aggregate *aggregate = (PPG_Aggregate *)token;
+   PPG_Aggregate *copy_of_aggregate = (PPG_Aggregate *)target;
+   
+   buffer = ppg_token_copy_dynamic_members(source, buffer);
    
    size_t n_bytes = aggregate->n_members*sizeof(PPG_Input_Id);
    
    memcpy(buffer, (void*)aggregate->inputs, n_bytes);
    
+   copy_of_aggregate->inputs = (PPG_Input_Id *)buffer;
+   
+   buffer += n_bytes;
+   
+   n_bytes = ppg_bitfield_get_num_cells(&aggregate->member_active)
+               *sizeof(PPG_Bitfield_Storage_Type);
+   
+   memcpy(buffer, (void*)aggregate->member_active.bitarray, n_bytes);
+   
+   copy_of_aggregate->member_active.bitarray = (PPG_Bitfield_Storage_Type *)buffer;
+   
    return buffer + n_bytes;
+}
+
+void ppg_aggregate_addresses_to_relative(  PPG_Token__ *token,
+                                       void *begin_of_buffer
+) 
+{
+   ppg_token_addresses_to_relative(token, begin_of_buffer);
+   
+   PPG_Aggregate *aggregate = (PPG_Aggregate *)token;
+   
+   aggregate->inputs = (PPG_Input_Id *)((char*)aggregate->inputs
+                                 - (char*)begin_of_buffer);
+   
+   aggregate->member_active.bitarray = (PPG_Bitfield_Storage_Type *)
+                        ((char*)aggregate->member_active.bitarray
+                                 - (char*)begin_of_buffer);
+}
+
+void ppg_aggregate_addresses_to_absolute(  PPG_Token__ *token,
+                                       void *begin_of_buffer
+) 
+{
+   ppg_token_addresses_to_absolute(token, begin_of_buffer);
+   
+   PPG_Aggregate *aggregate = (PPG_Aggregate *)token;
+   
+   aggregate->inputs = (PPG_Input_Id *)((char*)begin_of_buffer
+                              + (size_t)aggregate->inputs);
+   
+   aggregate->member_active.bitarray = (PPG_Bitfield_Storage_Type *)
+         ((char*)begin_of_buffer
+               + (size_t)aggregate->member_active.bitarray);
 }
 
 #if PPG_HAVE_DEBUGGING

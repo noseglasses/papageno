@@ -51,6 +51,9 @@ typedef struct {
    size_t offset;
 } PPG_Compression_VPtr_Info;
 
+int ppg_compression_check_symbol_registered(PPG_Compression_Context__ *ccontext,
+                                            void *symbol);
+
 void ppg_compression_context_register_symbol(void **symbol,
                                              PPG_Compression_Context__ *ccontext);
 

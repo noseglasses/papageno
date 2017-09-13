@@ -254,8 +254,11 @@ PPG_Token_Vtable ppg_note_vtable =
    .placement_clone
       = (PPG_Token_Placement_Clone_Fun)ppg_note_placement_clone,
    .register_ptrs_for_compression
-      = (PPG_Token_Register_Pointers_For_Compression)ppg_token_register_pointers_for_compression
-      
+      = (PPG_Token_Register_Pointers_For_Compression)ppg_token_register_pointers_for_compression,
+   .addresses_to_relative
+      = (PPG_Token_Addresses_To_Relative)ppg_token_addresses_to_relative,
+   .addresses_to_absolute
+      = (PPG_Token_Addresses_To_Absolute)ppg_token_addresses_to_absolute
    #if PPG_PRINT_SELF_ENABLED
    ,
    .print_self

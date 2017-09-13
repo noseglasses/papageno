@@ -26,7 +26,7 @@ PPG_CS_START_TEST
    
    #ifdef PPG_CS_COMPRESS_CONTEXT
    
-   PPG_LOGGING_SET_ENABLED(true)
+   PPG_LOGGING_SET_ENABLED(false)
    
    // This assignment serves just to silence an unused variable
    // warning

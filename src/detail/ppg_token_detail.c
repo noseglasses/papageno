@@ -282,6 +282,30 @@ void ppg_token_traverse_tree(PPG_Token__ *token,
    }
 }
 
+void ppg_token_addresses_to_relative(  PPG_Token__ *token,
+                                       void *begin_of_buffer
+) 
+{
+   for(PPG_Count i = 0; i < token->n_children; ++i) {
+      token->children[i] = (PPG_Token__ *)((char*)token->children[i] - (char*)begin_of_buffer);
+   }
+   
+   if(token->children) {
+      token->children = (PPG_Token__ **)((char*)token->children - (char*)begin_of_buffer);
+   }
+}
+
+void ppg_token_addresses_to_absolute(  PPG_Token__ *token,
+                                       void *begin_of_buffer
+) 
+{
+   token->children = (PPG_Token__ **)((char*)begin_of_buffer + (uintptr_t)token->children);
+   
+   for(PPG_Count i = 0; i < token->n_children; ++i) {
+      token->children[i] = (PPG_Token__ *)((char*)begin_of_buffer + (uintptr_t)token->children[i]);
+   }
+}
+
 PPG_Token_Vtable ppg_token_vtable =
 {
    .match_event 
@@ -297,7 +321,11 @@ PPG_Token_Vtable ppg_token_vtable =
    .placement_clone
       = (PPG_Token_Placement_Clone_Fun)ppg_token_placement_clone,
    .register_ptrs_for_compression
-      = (PPG_Token_Register_Pointers_For_Compression)ppg_token_register_pointers_for_compression
+      = (PPG_Token_Register_Pointers_For_Compression)ppg_token_register_pointers_for_compression,
+   .addresses_to_relative
+      = (PPG_Token_Addresses_To_Relative)ppg_token_addresses_to_relative,
+   .addresses_to_absolute
+      = (PPG_Token_Addresses_To_Absolute)ppg_token_addresses_to_absolute
    
    #if PPG_PRINT_SELF_ENABLED
    ,

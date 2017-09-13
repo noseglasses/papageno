@@ -22,6 +22,8 @@
 #include "detail/ppg_token_detail.h"
 #include "detail/ppg_token_precedence_detail.h"
 
+#include <string.h>
+
 typedef struct {
    PPG_Aggregate aggregate;
    PPG_Bitfield member_active_lasting;
@@ -158,7 +160,9 @@ static PPG_Count ppg_cluster_token_precedence(PPG_Token__ *token)
 static size_t ppg_cluster_dynamic_member_size(PPG_Token *token)
 {
    return   sizeof(PPG_Cluster)
-         +  ppg_aggregate_dynamic_member_size((PPG_Aggregate *)token);
+         +  ppg_aggregate_dynamic_member_size((PPG_Aggregate *)token)
+         +  ppg_bitfield_get_num_cells(&((PPG_Cluster *)token)->member_active_lasting)
+               *sizeof(PPG_Bitfield_Storage_Type);
 }
 
 static char *ppg_cluster_placement_clone(PPG_Token__ *token, char *buffer)
@@ -167,13 +171,49 @@ static char *ppg_cluster_placement_clone(PPG_Token__ *token, char *buffer)
    
    *((PPG_Cluster *)buffer) = *cluster;
    
-   PPG_Token__ *clone = (PPG_Token__ *)buffer;
+   PPG_Cluster *clone = (PPG_Cluster *)buffer;
+   PPG_Token__ *clone_token = (PPG_Token__ *)buffer;
    
 //    printf("Replacing children pointer %p with %p\n", clone->children, (PPG_Token__ **)(buffer + sizeof(PPG_Cluster)));
    
-   clone->children = (PPG_Token__ **)(buffer + sizeof(PPG_Cluster));
+   clone_token->children = (PPG_Token__ **)(buffer + sizeof(PPG_Cluster));
    
-   return ppg_aggregate_copy_dynamic_members(token, buffer + sizeof(PPG_Cluster));
+   buffer = ppg_aggregate_copy_dynamic_members(token, clone_token, buffer + sizeof(PPG_Cluster));
+   
+   size_t n_bytes = ppg_bitfield_get_num_cells(&cluster->member_active_lasting)
+               *sizeof(PPG_Bitfield_Storage_Type);
+   
+   memcpy(buffer, (void*)cluster->member_active_lasting.bitarray, n_bytes);
+   
+   clone->member_active_lasting.bitarray = (PPG_Bitfield_Storage_Type *)buffer;
+   
+   return buffer + n_bytes;
+}
+
+static void ppg_cluster_addresses_to_relative(  PPG_Token__ *token,
+                                       void *begin_of_buffer
+) 
+{
+   ppg_aggregate_addresses_to_relative(token, begin_of_buffer);
+   
+   PPG_Cluster *cluster = (PPG_Cluster *)token;
+   
+   cluster->member_active_lasting.bitarray = (PPG_Bitfield_Storage_Type *)
+                        ((char*)cluster->member_active_lasting.bitarray
+                                 - (char*)begin_of_buffer);
+}
+
+static void ppg_cluster_addresses_to_absolute(  PPG_Token__ *token,
+                                       void *begin_of_buffer
+) 
+{
+   ppg_aggregate_addresses_to_absolute(token, begin_of_buffer);
+   
+   PPG_Cluster *cluster = (PPG_Cluster *)token;
+   
+   cluster->member_active_lasting.bitarray = (PPG_Bitfield_Storage_Type *)
+         ((char*)begin_of_buffer
+               + (size_t)cluster->member_active_lasting.bitarray);
 }
 
 #if PPG_PRINT_SELF_ENABLED
@@ -240,8 +280,11 @@ PPG_Token_Vtable ppg_cluster_vtable =
    .placement_clone
       = (PPG_Token_Placement_Clone_Fun)ppg_cluster_placement_clone,
    .register_ptrs_for_compression
-      = (PPG_Token_Register_Pointers_For_Compression)ppg_token_register_pointers_for_compression
-      
+      = (PPG_Token_Register_Pointers_For_Compression)ppg_token_register_pointers_for_compression,
+   .addresses_to_relative
+      = (PPG_Token_Addresses_To_Relative)ppg_cluster_addresses_to_relative,
+   .addresses_to_absolute
+      = (PPG_Token_Addresses_To_Absolute)ppg_cluster_addresses_to_absolute
    #if PPG_PRINT_SELF_ENABLED
    ,
    .print_self
