@@ -136,7 +136,7 @@ void ppg_cs_flush_events(void)
 
 void ppg_cs_process_action(bool activation, void *user_data) {
    
-   PPG_Count action_id = *((int*)user_data);
+   PPG_Count action_id = *((uintptr_t*)&user_data);
    
    PPG_LOG("***** Action: %s\n", ppg_cs_action_names[action_id]);
    

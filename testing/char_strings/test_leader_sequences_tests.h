@@ -16,7 +16,7 @@ PPG_CS_PROCESS_STRING(  "A B C c b a BAR bar",
                         )
 );
 
-PPG_CS_PROCESS_STRING(  "A B C c b a KLAATUBARADANIKTO klaatubaradanikto",
+PPG_CS_PROCESS_STRING(  "A B C c b a KLAATUBARADAN klaatubaradan",
                         PPG_CS_EXPECT_EMPTY_FLUSH
                         PPG_CS_EXPECT_NO_EXCEPTIONS
                         PPG_CS_EXPECT_ACTION_SERIES(

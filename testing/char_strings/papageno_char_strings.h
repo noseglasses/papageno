@@ -241,7 +241,7 @@ void ppg_cs_separator(void);
 __NL__   (PPG_Action) {   \
 __NL__      .callback = (PPG_Action_Callback) { \
 __NL__         .func = (PPG_Action_Callback_Fun)ppg_cs_process_action,  \
-__NL__         .user_data = (void*)&PPG_CS_ACTION_VAR(ACTION_NAME) \
+__NL__         .user_data = (void*)(uintptr_t)PPG_CS_ACTION_VAR(ACTION_NAME) \
 __NL__      } \
 __NL__   }
 
