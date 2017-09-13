@@ -59,4 +59,8 @@ PPG_CS_START_TEST
    
    #endif // ifndef PPG_CS_SUPPRESS_TESTS
    
+   #ifdef PPG_CS_COMPRESS_CONTEXT
+   ppg_compression_finalize(ccontext);
+   #endif
+   
 PPG_CS_END_TEST

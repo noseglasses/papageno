@@ -440,11 +440,13 @@ The core of Papageno's data structures is the dynamically allocated search tree.
 
 Compression basically means that after the token tree is established. It is copied and shrinked to fit into a statically allocated memory block. All dynamically allocated memory chunks apart from the token tree's data strucures are also packed into the same buffer.
 
-Compression brings two major benefits:
+Compression has multiple advantages:
 
-- avoids dynamic allocation/deallocation of memory
+- it avoids dynamic allocation/deallocation of memory
 - allows for smaller programms as program code that is required for dynamic generation of data structures
    can be stripped from resulting binaries
+- program startup is accelerated as no dynamic data structures are
+   established
 
 Both points reduce the memory footprint of the generated application.
 
