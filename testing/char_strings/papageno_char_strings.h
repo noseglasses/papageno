@@ -74,6 +74,9 @@ int ppg_cs_register_action(char *action_name);
 
 char *ppg_cs_get_action_name(int action_id);
 
+#define PPG_CS_PREVENT_UNUSED_WARNING(SYMBOL) \
+   (void)SYMBOL;
+
 #define PPG_CS_PASTE(A, B) A##B
 
 #define PPG_CS_ACTION_VAR(ACTION_NAME) \
@@ -290,11 +293,14 @@ __NL__   ppg_global_init(); \
 __NL__   \
 __NL__   PPG_CS_PREPARE_CONTEXT \
 __NL__   \
+__NL__   void *cs_test_context = ppg_global_get_current_context(); \
+__NL__   PPG_CS_PREVENT_UNUSED_WARNING(cs_test_context) \
+__NL__   \
 __NL__   bool automatically_reset_testing_system = true; \
-__NL__   (void)automatically_reset_testing_system; \
+__NL__   PPG_CS_PREVENT_UNUSED_WARNING(automatically_reset_testing_system) \
 __NL__   \
 __NL__   PPG_Compression_Context cs_ccontext__ = NULL; \
-__NL__   (void)cs_ccontext__;
+__NL__   PPG_CS_PREVENT_UNUSED_WARNING(cs_ccontext__)
 
 #define PPG_CS_INIT_COMPRESSION(CCONTEXT_PTR) \
 \
@@ -322,6 +328,7 @@ __NL__      PPG_CS_INIT \
    
 #define PPG_CS_END_TEST \
    \
+__NL__   ppg_global_set_current_context(cs_test_context); \
 __NL__   ppg_global_finalize();   \
 __NL__   \
 __NL__   return 0; \
