@@ -436,30 +436,30 @@ Please note that due to this implementation detail, Papageno cannot be guarantee
 Compression
 -----------
 
-The core of Papageno's data structures is the dynamically allocated search tree. Although the amount of memory allocation is restricted to the absolute minimum, it can lead to fragmentation. This is especially painful on embedded systems where memory is a limited resource. To partially remedy this problem, Papageno supports a compression of its data structures.
+The core of Papageno's data structures is a dynamically allocated search tree. Although the required amount of memory allocation is restricted to the absolute minimum, it generally is prone to cause fragmentation. This is especially painful on embedded systems where memory often is a limited resource. To be more memory effient, Papageno supports a compression of its data structures.
 
 Compression basically means that after the token tree is established. It is copied and shrinked to fit into a statically allocated memory block. All dynamically allocated memory chunks apart from the token tree's data strucures are also packed into the same buffer.
 
 Compression has multiple advantages:
 
-- it avoids dynamic allocation/deallocation of memory
-- allows for smaller programms as program code that is required for dynamic generation of data structures
-   can be stripped from resulting binaries
-- program startup is accelerated as no dynamic data structures are
-   established
+- it completely eliminates dynamic allocation/deallocation of memory
+- allows for smaller programms
+- program startup is accelerated
 
-Both points reduce the memory footprint of the generated application.
-
-Papageno supports C-output of the compressed data structures. After importing  automatically generated setup code sets all those pointers to functions and variables that are volatile and cannot be stored in the compressed data set.
+The memory footprint of the generated application benefits in two ways. Firstly, packing and static memory prevents fragmentation. Secondly, in the final binary no code is needed to dynamically establish data structures, thus reducing program storage requirements.
 
 The generation of a compressed executable is a two-step process:
 
-1. The program is be compiled in an intermediate mode that generates the dynamic data structures and exports them
-2. The program is compiled again, thereby using the compressed data structures
+1. An instrumentized version of the program is compiled that generates the dynamic data structures and exports them as C-code
+2. The final version of the program is compiled using the exported compressed data structures
 
-For this to work in stage 1. the program must be compiled and run on the target platform. If memory is already at the limit this requires that other program parts that are not related to Papageno are temporarily removed. If related, callbacks may be replaced by empty skeleton functions to saturate Papageno's interface.
+For stage 1 to work, the program must be compiled and run on the target platform. If memory is already at the limit this requires that other program parts which are not related to Papageno are temporarily removed to save memory. Related, callbacks may be replaced by stubs to comply with Papageno's interface without wasting memory. This is possible as Papageno is not actually being executed during stage 1.
 
-Another option is to use an emulator during stage 1. and provide more memory than available on the actual target platform. This avoids the necessity to remove other program parts.
+Another option to avoid program modifications is to use an emulator during stage 1. I can be used to emulate the target platform with sufficiently more memory than the actual hardware provides.
+
+Papageno supports C-output to export the compressed data structures. It comes with automatically generated setup code that rewires all those pointers to functions and variables that are volatile and cannot be stored in the compressed data set.
+
+For this to work, any callbacks, e.g. action callback functions and their user data, if supplied, must be registered with Papageno's compression system.
 
 The Library
 ===========

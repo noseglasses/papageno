@@ -132,7 +132,7 @@ PPG_Token ppg_pattern_from_list(
                
          cur_token->layer = layer;
          
-         printf("Adding %p to %p\n", cur_token, parent_token);
+//          printf("Adding %p to %p\n", cur_token, parent_token);
          ppg_token_add_child(parent_token, cur_token);
          
          parent_token = cur_token;
