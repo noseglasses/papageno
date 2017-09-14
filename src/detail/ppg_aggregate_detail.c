@@ -93,6 +93,8 @@ static void ppg_aggregate_resize(PPG_Aggregate *aggregate,
 PPG_Aggregate* ppg_aggregate_destroy(PPG_Aggregate *aggregate) {
    
    ppg_aggregate_deallocate_member_storage(aggregate);
+   
+   ppg_token_destroy((PPG_Token__*)aggregate);
 
    return aggregate;
 }

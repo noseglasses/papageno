@@ -30,6 +30,8 @@ PPG_Token ppg_pattern_from_list(
       parent_token = ppg_context->pattern_root;
    }
    
+   PPG_LOG("\troot: %p\n", parent_token);
+   
    PPG_LOG("\t%d memb\n", n_tokens);
    
    for (PPG_Count i = 0; i < n_tokens; i++) { 
@@ -130,6 +132,7 @@ PPG_Token ppg_pattern_from_list(
                
          cur_token->layer = layer;
          
+         printf("Adding %p to %p\n", cur_token, parent_token);
          ppg_token_add_child(parent_token, cur_token);
          
          parent_token = cur_token;

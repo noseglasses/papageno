@@ -92,8 +92,11 @@ void ppg_token_free_children(PPG_Token__ *token)
 {
    if(!token->children) { return; }
    
+//    printf("Token %p frees %d children\n", token, token->n_children);
+   
    for(PPG_Count i = 0; i < token->n_children; ++i) {
       
+//       printf("Child %d of %p\n", i, token);
       ppg_token_free(token->children[i]);
    }
    
@@ -105,6 +108,8 @@ void ppg_token_free_children(PPG_Token__ *token)
 
 PPG_Token__* ppg_token_destroy(PPG_Token__ *token) {
 
+//    printf("Destroying token %p\n", token);
+   
    ppg_token_free_children(token);
    
    return token;
