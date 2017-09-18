@@ -23,6 +23,7 @@
 #include "detail/ppg_context_detail.h"
 #include "ppg_input.h"
 #include "detail/ppg_event_buffer_detail.h"
+#include "detail/ppg_malloc_detail.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -46,13 +47,13 @@ void ppg_token_reset_control_state(PPG_Token__ *token)
 
 PPG_Token__ *ppg_token_alloc(void) 
 {
-    return (PPG_Token__*)malloc(sizeof(PPG_Token__));
+    return (PPG_Token__*)PPG_MALLOC(sizeof(PPG_Token__));
 }
 
 static void ppg_token_allocate_children(PPG_Token__ *token, PPG_Count n_children) {
 
     token->children 
-      = (struct PPG_TokenStruct **)malloc(n_children*sizeof(struct PPG_TokenStruct*));
+      = (struct PPG_TokenStruct **)PPG_MALLOC(n_children*sizeof(struct PPG_TokenStruct*));
     token->n_allocated_children = n_children;
 }
 

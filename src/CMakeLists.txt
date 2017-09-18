@@ -103,7 +103,8 @@ set(source_files
 	./detail/ppg_event_buffer_detail.c
 	./detail/ppg_furcation_detail.c
 	./detail/ppg_global_detail.c     
-	./detail/ppg_input_detail.c                                                                                                           
+	./detail/ppg_input_detail.c      
+	./detail/ppg_malloc_detail.c                                                                                                            
 	./detail/ppg_note_detail.c                                                                                                            
 	./detail/ppg_pattern_detail.c                                                                                                         
 	./detail/ppg_pattern_matching_detail.c

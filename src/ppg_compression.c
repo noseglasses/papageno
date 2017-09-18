@@ -17,6 +17,7 @@
 #include "detail/ppg_compression_detail.h"
 #include "detail/ppg_context_detail.h"
 #include "detail/ppg_token_vtable_detail.h"
+#include "detail/ppg_malloc_detail.h"
 
 #include "assert.h"
 
@@ -29,7 +30,7 @@ static void ppg_compression_context_symbol_buffer_resize(
    }
    
    PPG_Compression_Symbol *new_buffer
-      = (PPG_Compression_Symbol *)malloc( 
+      = (PPG_Compression_Symbol *)PPG_MALLOC( 
                      new_size*sizeof(PPG_Compression_Symbol));
       
    if(!symbols->buffer) {
@@ -54,7 +55,7 @@ static void ppg_compression_context_symbol_buffer_resize(
 PPG_Compression_Context ppg_compression_init(void)
 {
    PPG_Compression_Context__ *ccontext
-      = (PPG_Compression_Context__ *)malloc(sizeof(PPG_Compression_Context__));
+      = (PPG_Compression_Context__ *)PPG_MALLOC(sizeof(PPG_Compression_Context__));
    
    ccontext->symbols_lookup.buffer = NULL;
    ccontext->symbols_lookup.n_allocated = 0;
@@ -162,7 +163,7 @@ static size_t ppg_compression_allocate_target_buffer(PPG_Compression_Context__ *
    
 //    printf("Allocating target_storage size %lu\n", size_data.memory);
    
-   ccontext->target_storage = (char*)malloc(size_data.memory);
+   ccontext->target_storage = (char*)PPG_MALLOC(size_data.memory);
    
 //    printf("Allocating target_storage %p\n", ccontext->target_storage);
    

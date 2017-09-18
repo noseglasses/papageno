@@ -18,6 +18,7 @@
 #include "detail/ppg_context_detail.h"
 #include "detail/ppg_furcation_detail.h"
 #include "ppg_debug.h"
+#include "detail/ppg_malloc_detail.h"
 
 #include <stdlib.h>
 
@@ -25,7 +26,7 @@ void* ppg_context_create(void)
 {
 //    PPG_LOG("Cr. new cntxt\n");
    
-   PPG_Context *context = (PPG_Context *)malloc(sizeof(PPG_Context));
+   PPG_Context *context = (PPG_Context *)PPG_MALLOC(sizeof(PPG_Context));
    
    ppg_global_initialize_context(context);
    

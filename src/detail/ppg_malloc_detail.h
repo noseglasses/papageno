@@ -14,37 +14,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "detail/ppg_furcation_detail.h"
-#include "detail/ppg_context_detail.h"
-#include "detail/ppg_pattern_detail.h"
+#ifndef PPG_MALLOC_DETAIL_H
+#define PPG_MALLOC_DETAIL_H
+
 #include "ppg_debug.h"
-#include "detail/ppg_malloc_detail.h"
 
-#include <stdlib.h>
+#if PPG_HAVE_ASSERTIONS
 
-void ppg_furcation_stack_init(PPG_Furcation_Stack *stack)
-{
-   stack->furcations = NULL;
-   stack->n_furcations = 0;
-   stack->cur_furcation = -1;
-}
+void *ppg_safe_malloc(size_t n_bytes,
+                      char *file,
+                      unsigned long line);
 
-void ppg_furcation_stack_resize(void)
-{
-   if(PPG_FB.furcations) { return; }
+#define PPG_MALLOC(N_BYTES) \
+   ppg_safe_malloc(N_BYTES, __FILE__, __LINE__)
    
-   PPG_FB.n_furcations = ppg_context->tree_depth;
-   
-   PPG_FB.furcations 
-         = (PPG_Furcation*)PPG_MALLOC(ppg_context->tree_depth*sizeof(PPG_Furcation));
-}
+#else
 
-void ppg_furcation_stack_free(PPG_Furcation_Stack *stack)
-{
-   if(!stack->furcations) { return; }
+void *ppg_safe_malloc(size_t n_bytes);
+
+#define PPG_MALLOC(N_BYTES) \
+   ppg_safe_malloc(N_BYTES)
    
-   free(stack->furcations);
-   
-   stack->furcations = NULL;
-}
-   
+#endif
+
+#endif

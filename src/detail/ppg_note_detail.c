@@ -20,6 +20,7 @@
 #include "detail/ppg_input_detail.h"
 #include "detail/ppg_token_detail.h"
 #include "detail/ppg_token_precedence_detail.h"
+#include "detail/ppg_malloc_detail.h"
 
 #include <stdlib.h>
 
@@ -288,5 +289,5 @@ PPG_Note *ppg_note_new(PPG_Note *note)
 }
 
 PPG_Note *ppg_note_alloc(void) {
-    return (PPG_Note*)malloc(sizeof(PPG_Note));
+    return (PPG_Note*)PPG_MALLOC(sizeof(PPG_Note));
 }

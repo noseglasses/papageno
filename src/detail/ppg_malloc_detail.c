@@ -14,37 +14,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "detail/ppg_furcation_detail.h"
-#include "detail/ppg_context_detail.h"
-#include "detail/ppg_pattern_detail.h"
-#include "ppg_debug.h"
 #include "detail/ppg_malloc_detail.h"
 
-#include <stdlib.h>
+#include "string.h"
 
-void ppg_furcation_stack_init(PPG_Furcation_Stack *stack)
+#if PPG_HAVE_ASSERTIONS
+
+void *ppg_safe_malloc(size_t n_bytes,
+                      char *file,
+                      unsigned long line)
 {
-   stack->furcations = NULL;
-   stack->n_furcations = 0;
-   stack->cur_furcation = -1;
+    void* p = malloc(n_bytes);
+    if (!p)
+    {
+        PPG_ERROR("[%s:%lu]Out of memory(%lu bytes)\n",
+                file, line, (unsigned long)n_bytes);
+         abort();
+    }
+    return p;
 }
 
-void ppg_furcation_stack_resize(void)
+#else
+
+void *ppg_safe_malloc(size_t n_bytes)
 {
-   if(PPG_FB.furcations) { return; }
-   
-   PPG_FB.n_furcations = ppg_context->tree_depth;
-   
-   PPG_FB.furcations 
-         = (PPG_Furcation*)PPG_MALLOC(ppg_context->tree_depth*sizeof(PPG_Furcation));
+    void* p = malloc(n_bytes);
+    if (!p)
+    {
+        PPG_ERROR("Out of memory(%lu bytes)\n",
+                (unsigned long)n_bytes);
+         abort();
+    }
+    return p;
 }
 
-void ppg_furcation_stack_free(PPG_Furcation_Stack *stack)
-{
-   if(!stack->furcations) { return; }
-   
-   free(stack->furcations);
-   
-   stack->furcations = NULL;
-}
-   
+#endif

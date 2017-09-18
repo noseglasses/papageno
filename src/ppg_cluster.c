@@ -21,6 +21,7 @@
 #include "detail/ppg_pattern_detail.h"
 #include "detail/ppg_token_detail.h"
 #include "detail/ppg_token_precedence_detail.h"
+#include "detail/ppg_malloc_detail.h"
 
 #include <string.h>
 
@@ -299,7 +300,7 @@ PPG_Token_Vtable ppg_cluster_vtable =
 };
 
 PPG_Cluster *ppg_cluster_alloc(void) {
-    return (PPG_Cluster*)malloc(sizeof(PPG_Cluster));
+    return (PPG_Cluster*)PPG_MALLOC(sizeof(PPG_Cluster));
 }
    
 PPG_Token ppg_cluster_create(
