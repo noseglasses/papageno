@@ -124,6 +124,7 @@ matrix:
             - git-all
             - libelf-dev
             - gcc-avr
+            - avr-libc
       script:
         - mkdir -p simavr
         - cd simavr
