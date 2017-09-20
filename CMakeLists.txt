@@ -163,7 +163,6 @@ endif()
 add_subdirectory(src)
 
 if(PAPAGENO_TESTING_ENABLED)
-   CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/CTestCustom.cmake" "${CMAKE_BINARY_DIR}/CTestCustom.cmake" COPYONLY)
 	include(CTest)
 	enable_testing()
 	add_subdirectory(testing)
