@@ -123,6 +123,7 @@ matrix:
           packages:
             - git-all
             - libelf-dev
+            - gcc-avr
       script:
         - mkdir -p simavr
         - cd simavr
