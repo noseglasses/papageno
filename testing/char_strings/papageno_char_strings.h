@@ -22,6 +22,34 @@
 #include <stdlib.h>
 #include <ctype.h>
 
+#ifdef __AVR__
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#include <avr/sleep.h>
+
+#define PPG_STDOUT_REDIRECTION_SETUP \
+          \
+__NL__     static int uart_putchar(char c, FILE *stream) { \
+__NL__        if (c == '\n') \
+__NL__           uart_putchar('\r', stream); \
+__NL__       while(!(UCSR0A & _BV(UDRE0))); \
+__NL__            UDR1 = c; \
+__NL__        return 0; \
+__NL__     } \
+__NL__      \
+__NL__     static FILE mystdout = FDEV_SETUP_STREAM(uart_putchar, NULL, \
+                                          _FDEV_SETUP_WRITE);
+
+#define PPG_REDIRECT_STDOUT \
+   stdout = &mystdout;
+   
+#else // #ifdef __AVR__
+   
+#define PPG_STDOUT_REDIRECTION_SETUP
+#define PPG_REDIRECT_STDOUT
+   
+#endif // #ifdef __AVR__
+
 // Note: Preprocessor macro functions can be 
 //       hard to debug.
 //
@@ -283,6 +311,8 @@ __NL__   ppg_cs_set_timeout_ms(PPG_CS_Timeout_MS); \
 
 #define PPG_CS_INIT \
    \
+         PPG_REDIRECT_STDOUT \
+   \
 __NL__   ppg_cs_init(); \
 __NL__   \
 __NL__   PPG_CS_REGISTER_ACTION_ANNONYMOUS(Initialized)   \
@@ -320,18 +350,31 @@ __NL__      PPG_COMPRESSION_REGISTER_SYMBOL(cs_ccontext__, ppg_cs_on_signal) \
 __NL__   }
    
 #define PPG_CS_START_TEST \
-\
+         \
+__NL__   PPG_STDOUT_REDIRECTION_SETUP \
+__NL__   \
 __NL__   int main(int argc, char **argv) \
 __NL__   { \
 __NL__      \
 __NL__      PPG_CS_INIT \
+
+#ifdef __AVR__
+#define PPG_MAIN_EXIT \
+__NL__   	cli(); \
+__NL__   	sleep_mode(); \
+__NL__      \
+__NL__      abort();
+#else
+#define PPG_MAIN_EXIT \
+__NL__   return 0;
+#endif
    
 #define PPG_CS_END_TEST \
    \
 __NL__   ppg_global_set_current_context(cs_test_context); \
 __NL__   ppg_global_finalize();   \
 __NL__   \
-__NL__   return 0; \
+__NL__   PPG_MAIN_EXIT \
 __NL__}
 
 #define PPG_CS_N(CHAR) \

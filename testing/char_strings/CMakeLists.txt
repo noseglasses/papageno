@@ -15,7 +15,34 @@ target_link_libraries(
 	papageno
 )
 
-macro(ppg_add_test test_name)
+function(ppg_generate_test)
+
+   set(multi_value_args "")
+   set(one_value_args "NAME;EXECUTABLE")
+   set(options "")
+
+   cmake_parse_arguments(args "${options}" "${one_value_args}"
+                     "${multi_value_args}" ${ARGN} )
+       
+   if("${PAPAGENO_PLATFORM_ACTUAL}" STREQUAL "avr-gcc")
+      
+      add_test(
+         NAME "${args_NAME}" 
+         COMMAND ${CMAKE_COMMAND} "-DCMD=${PAPAGENO_RUN_WRAPPER};${args_EXECUTABLE}"
+            -P "${CMAKE_CURRENT_SOURCE_DIR}/TestAndCheck.script.cmake"
+         ${args_UNPARSED_ARGUMENTS}
+      )
+   else()
+      add_test(
+         NAME "${args_NAME}" 
+         COMMAND ${PAPAGENO_RUN_WRAPPER} "${args_EXECUTABLE}"
+         ${args_UNPARSED_ARGUMENTS}
+      )
+   endif()
+
+endfunction()
+	
+function(ppg_add_test test_name)
 
    set(multi_value_args "")
    set(one_value_args "COMPILE_DEFINITIONS;LINK_LIBRARIES")
@@ -53,6 +80,12 @@ macro(ppg_add_test test_name)
       )
 	endif()
 	
+	ppg_generate_test(
+		NAME "${run_target_name}" 
+		EXECUTABLE "${run_target_name}"
+		WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+	)
+	
 	if(PAPAGENO_TEST_COVERAGE)
 	      
       SETUP_TARGET_FOR_JOINT_COVERAGE(
@@ -61,7 +94,7 @@ macro(ppg_add_test test_name)
          DEPENDENCIES "${run_target_name}"
       )
    endif()
-endmacro()
+endfunction()
 
 macro(ppg_get_test_file_defines
    test_name_
@@ -84,7 +117,7 @@ macro(ppg_get_test_file_defines
    endforeach()
 endmacro()
 
-macro(ppg_add_test_with_compression test_name)
+function(ppg_add_test_with_compression test_name)
 
    set(multi_value_args "")
    set(one_value_args "COMPILE_DEFINITIONS;LINK_LIBRARIES")
@@ -134,9 +167,9 @@ macro(ppg_add_test_with_compression test_name)
       )
 	endif()
 
-	add_test(
+	ppg_generate_test(
 		NAME "${run_target_name}" 
-		COMMAND "${run_target_name}"
+		EXECUTABLE "${run_target_name}"
 		WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
 	)
 	
@@ -198,6 +231,7 @@ macro(ppg_add_test_with_compression test_name)
       COMMAND ${CMAKE_COMMAND} 
          "-DPAPAGENO_TEST_EXECUTABLE=${CMAKE_CURRENT_BINARY_DIR}/${build_compress_executable_target_name}"
          "-DPAPAGENO_COMPRESSED_CODE_FILE=${compressed_code_file}"
+         "-DPAPAGENO_RUN_WRAPPER=\"${PAPAGENO_RUN_WRAPPER}\""
          -P "${CMAKE_CURRENT_SOURCE_DIR}/TestingWithCompression.script.cmake"
 		WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
    )
@@ -211,9 +245,9 @@ macro(ppg_add_test_with_compression test_name)
    # stage.
    #
    set(compress_test_target_name "${test_name}_compress")
-   add_test(
+   ppg_generate_test(
       NAME "${compress_test_target_name}" 
-      COMMAND "${CMAKE_CURRENT_BINARY_DIR}/${build_compress_executable_target_name}"
+      EXECUTABLE "${CMAKE_CURRENT_BINARY_DIR}/${build_compress_executable_target_name}"
       WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
    )
 
@@ -252,9 +286,9 @@ macro(ppg_add_test_with_compression test_name)
       )
    endif()
 
-	add_test(
+	ppg_generate_test(
 		NAME "${extract_and_test_target_name}" 
-		COMMAND "${extract_and_test_target_name}"
+		EXECUTABLE "${extract_and_test_target_name}"
 		WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
 	)
 	
@@ -267,8 +301,7 @@ macro(ppg_add_test_with_compression test_name)
       )
    endif()
 
-	
-endmacro()
+endfunction()
 
 ppg_add_test(test_context_switching)
 ppg_add_test(test_enable_disable)
@@ -278,14 +311,20 @@ ppg_add_test(test_fallback)
 ppg_add_test_with_compression(test_abort_trigger)
 ppg_add_test_with_compression(test_chords)
 ppg_add_test_with_compression(test_clusters)
-ppg_add_test_with_compression(test_large_systems COMPILE_DEFINITIONS 
-   "-DPAPAGENO_TEST__TREE_DEPTH=4 -DPAPAGENO_TEST__N_CHARS=4 -DPAPAGENO_TEST__FAIL=1"
-   LINK_LIBRARIES "m"
-)
 ppg_add_test_with_compression(test_layers)
 ppg_add_test_with_compression(test_leader_sequences)
 ppg_add_test_with_compression(test_note_lines)
 ppg_add_test_with_compression(test_strict_notes)
 ppg_add_test_with_compression(test_token_precedence)
+
+if(NOT "${PAPAGENO_PLATFORM_ACTUAL}" STREQUAL "avr-gcc")
+
+   # The following test is too large for the atmel platform
+   #
+   ppg_add_test_with_compression(test_large_systems COMPILE_DEFINITIONS 
+      "-DPAPAGENO_TEST__TREE_DEPTH=4 -DPAPAGENO_TEST__N_CHARS=4 -DPAPAGENO_TEST__FAIL=1"
+      LINK_LIBRARIES "m"
+   )
+endif()
 
 # ppg_add_test_with_compression(test_large_systems_2)

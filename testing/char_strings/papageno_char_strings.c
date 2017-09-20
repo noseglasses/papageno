@@ -17,16 +17,72 @@
 #include "papageno_char_strings.h"
 
 #include <stdio.h>
-#include <unistd.h>
-#include <sys/timeb.h> 
 #include <string.h>
+
+#ifdef __AVR__
+
+  // The following has been taken from the tmk and qmk projects
+
+  #include <stdint.h>
+  
+  #ifndef TIMER_PRESCALER
+  #   if F_CPU > 16000000
+  #       define TIMER_PRESCALER      256
+  #   elif F_CPU > 2000000
+  #       define TIMER_PRESCALER      64
+  #   elif F_CPU > 250000
+  #       define TIMER_PRESCALER      8
+  #   else
+  #       define TIMER_PRESCALER      1
+  #   endif
+  #endif
+  #define TIMER_RAW_FREQ      (F_CPU/TIMER_PRESCALER)
+  #define TIMER_RAW           TCNT0
+  #define TIMER_RAW_TOP       (TIMER_RAW_FREQ/1000)
+  
+  #if (TIMER_RAW_TOP > 255)
+  #   error "Timer0 can't count 1ms at this clock freq. Use larger prescaler."
+  #endif
+  
+  #define TIMER_DIFF(a, b, max)   ((a) >= (b) ?  (a) - (b) : (max) - (b) + (a))
+  #define TIMER_DIFF_8(a, b)      TIMER_DIFF(a, b, UINT8_MAX)
+  #define TIMER_DIFF_16(a, b)     TIMER_DIFF(a, b, UINT16_MAX)
+  #define TIMER_DIFF_32(a, b)     TIMER_DIFF(a, b, UINT32_MAX)
+  #define TIMER_DIFF_RAW(a, b)    TIMER_DIFF_8(a, b)
+  
+  static uint32_t current_time = 0;
+  
+  void timer_init(void) {current_time = 0;}
+  
+  void timer_clear(void) {current_time = 0;}
+  
+  uint16_t timer_read(void) { return current_time & 0xFFFF; }
+  uint32_t timer_read32(void) { return current_time; }
+  uint16_t timer_elapsed(uint16_t last) { return TIMER_DIFF_16(timer_read(), last); }
+  uint32_t timer_elapsed32(uint32_t last) { return TIMER_DIFF_32(timer_read32(), last); }
+  
+  void set_time(uint32_t t) { current_time = t; }
+  void advance_time(uint32_t ms) { current_time += ms; }
+  
+  void wait_ms(uint32_t ms) {
+     advance_time(ms);
+  }
+#else
+
+#include <sys/timeb.h> 
+#include <unistd.h>
+#endif
 
 int ppg_cs_exceptions = PPG_CS_Action_Exception_None;
 
+#ifdef __AVR__
+static uint32_t ppg_cs_timeout_ms = 0;
+static uint32_t ppg_cs_start_time_ms = 0;
+#else
 static long unsigned ppg_cs_timeout_ms = 0;
-
 static long unsigned ppg_cs_start_time_s = 0;
 static long unsigned ppg_cs_start_time_ms = 0;
+#endif
 
 static bool ppg_cs_test_success = true;
 
@@ -46,7 +102,9 @@ void ppg_cs_init(void)
 
    ppg_cs_timeout_ms = 0;
 
+   #ifndef __AVR__
    ppg_cs_start_time_s = 0;
+   #endif
    ppg_cs_start_time_ms = 0;
 
    ppg_cs_test_success = true;
@@ -76,21 +134,29 @@ char *ppg_cs_get_action_name(int action_id)
 
 static void ppg_cs_store_start_time(void)
 {
+   #ifdef __AVR__
+   ppg_cs_start_time_ms = timer_read32();
+   #else
    struct timeb a_timeb;
    
    ftime(&a_timeb);
    
    ppg_cs_start_time_s = a_timeb.time;
    ppg_cs_start_time_ms = a_timeb.millitm;
+   #endif
 }
 
 static long unsigned ppg_cs_run_time_ms(void)
 {
+   #ifdef __AVR__
+   return timer_read32() - ppg_cs_start_time_ms;
+   #else
    struct timeb a_timeb;
    
    ftime(&a_timeb);
  
    return (a_timeb.time - ppg_cs_start_time_s)*1000 + a_timeb.millitm - ppg_cs_start_time_ms;
+   #endif
 }
 
 void ppg_cs_reset_testing_environment(void)
@@ -194,17 +260,27 @@ bool ppg_cs_check_and_process_control_char(char c)
    switch(c) {
       case PPG_CS_CC_Short_Delay:
       {
+         #ifdef __AVR__
+         wait_ms(ppg_cs_timeout_ms);
+         PPG_LOG("Short delay: %lu\n", ppg_cs_timeout_ms);
+         #else
          int microseconds = (int)((double)ppg_cs_timeout_ms*0.3*1000);
          PPG_LOG("Short delay: %d\n", microseconds);
          usleep(microseconds);
+         #endif
       }
          break;
          
       case PPG_CS_CC_Long_Delay:
       {
+         #ifdef __AVR__
+         wait_ms(ppg_cs_timeout_ms*3);
+         PPG_LOG("Long delay: %lu\n", ppg_cs_timeout_ms*3);
+         #else
          int microseconds = (int)((double)ppg_cs_timeout_ms*3*1000);
          PPG_LOG("Long delay: %d\n", microseconds);
          usleep(microseconds);
+         #endif
       }
          break;
       case PPG_CS_CC_Noop:
@@ -388,6 +464,10 @@ void ppg_cs_check_test_success(char *file, int line)
    if(!ppg_cs_test_success) {
       PPG_LOG("! %s: %d\n", file, line);
       PPG_LOG("Test failed. Aborting.\n");
+      
+      #ifdef __AVR__
+      printf("__PAPAGENO_TEST_FAILED__\n");
+      #endif
       abort();
    }
    else {

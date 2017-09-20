@@ -14,10 +14,52 @@ endmacro(use_c99)
 
 use_c99()
 
+set(PAPAGENO_PLATFORM "" CACHE STRING "Set the platform to build for. Currently supported: generic, avr-gcc")
+mark_as_advanced(PAPAGENO_PLATFORM)
+
+set(PAPAGENO_PLATFORM_CMAKE_FILE "" CACHE FILEPATH "A path to a cmake file that contains platform specific settings")
+mark_as_advanced(PAPAGENO_PLATFORM_CMAKE_FILE)
+   
+if(EXISTS "${PAPAGENO_PLATFORM_CMAKE_FILE}")
+   include("${PAPAGENO_PLATFORM_CMAKE_FILE}")
+else ()
+
+   if(NOT "${PAPAGENO_PLATFORM_CMAKE_FILE}" STREQUAL "")
+      message(WARNING "The specified PAPAGENO_PLATFORM_CMAKE_FILE=${PAPAGENO_PLATFORM_CMAKE_FILE} cannot be found")
+   endif()
+         
+   include("${CMAKE_SOURCE_DIR}/cmake/platforms/platform_generic.cmake")
+endif()
+
+get_filename_component(c_cmp_basename "${CMAKE_C_COMPILER}" NAME)
+
+if("${PAPAGENO_PLATFORM}" STREQUAL "") 
+   if("${c_cmp_basename}" STREQUAL "avr-gcc")
+      set(PAPAGENO_PLATFORM_ACTUAL "avr-gcc" CACHE INTERNAL "" FORCE)
+   else()
+      set(PAPAGENO_PLATFORM_ACTUAL "generic" CACHE INTERNAL "" FORCE)
+   endif()
+else()
+   set(PAPAGENO_PLATFORM_ACTUAL "${PAPAGENO_PLATFORM}" CACHE INTERNAL "" FORCE)
+endif()
+
+if("${PAPAGENO_PLATFORM_ACTUAL}" STREQUAL "avr-gcc")
+   set(PAPAGENO_RUN_WRAPPER "run_avr" "-m" "${PAPAGENO_ATMEL_ARCHITECTURE}")
+endif()
+
 option(PAPAGENO_DOXYGEN "Build the doxygen documentation of the Papageno API" FALSE)
 mark_as_advanced(PAPAGENO_DOXYGEN)
 
-option(PAPAGENO_TESTING_ENABLED "Build and run testing environment" TRUE)
+if("${PAPAGENO_PLATFORM_ACTUAL}" STREQUAL "avr-gcc")
+   if(NOT DEFINED PAPAGENO_TESTING_ENABLED)
+      message("Build of testing system disabled as not available in cross builds")
+      set(testing_state_initial FALSE) 
+   endif()
+else()
+   set(testing_state_initial FALSE) 
+endif()
+
+option(PAPAGENO_TESTING_ENABLED "Build and run testing environment" ${testing_state_initial})
 mark_as_advanced(PAPAGENO_TESTING_ENABLED)
 
 option(PAPAGENO_TEST_COVERAGE "This flags enables testing code coverage" FALSE)
@@ -121,6 +163,7 @@ endif()
 add_subdirectory(src)
 
 if(PAPAGENO_TESTING_ENABLED)
+   CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/CTestCustom.cmake" "${CMAKE_BINARY_DIR}/CTestCustom.cmake" COPYONLY)
 	include(CTest)
 	enable_testing()
 	add_subdirectory(testing)

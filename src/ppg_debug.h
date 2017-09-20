@@ -57,7 +57,7 @@ bool ppg_logging_set_enabled(bool state);
 
 /** @brief Get state of dynamic logging settings
  */
-bool ppg_logging_get_enabled();
+bool ppg_logging_get_enabled(void);
    
 /** @brief A macro to dynamically toggle logging. 
  * 

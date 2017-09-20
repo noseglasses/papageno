@@ -187,10 +187,11 @@ void ppg_token_register_pointers_for_compression(
                                              PPG_Compression_Context__ *ccontext)
 {
 //    ppg_compression_context_register_vptr((void**)&token->vtable, ccontext);
-   
+   PPG_LOG("\tcb.: 0x%" PRIXPTR "\n", (uintptr_t)token->action.callback.func);
    ppg_compression_context_register_symbol((void**)&token->action.callback.func, ccontext);
    
    if(token->action.callback.user_data) {
+      PPG_LOG("\tu.d.: 0x%" PRIXPTR "\n", (uintptr_t)token->action.callback.user_data);
       ppg_compression_context_register_symbol((void**)&token->action.callback.user_data, ccontext);
    }
 }

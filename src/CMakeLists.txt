@@ -53,47 +53,11 @@ else()
    set(__PPG_STATISTICS_ENABLED 0)
 endif()
 
-set(PAPAGENO_PLATFORM "" CACHE STRING "Set the platform to build for. Currently supported: generic, avr-gcc")
-mark_as_advanced(PAPAGENO_PLATFORM)
-
-set(PAPAGENO_PLATFORM_CMAKE_FILE "" CACHE FILEPATH "A path to a cmake file that contains platform specific settings")
-mark_as_advanced(PAPAGENO_PLATFORM_CMAKE_FILE)
-
-if(EXISTS "${PAPAGENO_PLATFORM_CMAKE_FILE}")
-   include("${PAPAGENO_PLATFORM_CMAKE_FILE}")
-else ()
-
-   if(NOT "${PAPAGENO_PLATFORM_CMAKE_FILE}" STREQUAL "")
-      message(WARNING "The specified PAPAGENO_PLATFORM_CMAKE_FILE=${PAPAGENO_PLATFORM_CMAKE_FILE} cannot be found")
-   endif()
-
-   get_filename_component(c_cmp_basename "${CMAKE_C_COMPILER}" NAME)
-
-   if("${PAPAGENO_PLATFORM}" STREQUAL "") 
-      if("${c_cmp_basename}" STREQUAL "avr-gcc")
-         set(platform "avr-gcc")
-      else()
-         set(platform "generic")
-      endif()
-   else()
-      set(platform "${PAPAGENO_PLATFORM}")
-   endif()
-         
-   include("${CMAKE_SOURCE_DIR}/cmake/platforms/platform_${platform}.cmake")
-endif()
-
 configure_file(
    "${CMAKE_SOURCE_DIR}/src/ppg_settings.h.in"
    "${CMAKE_BINARY_DIR}/src/ppg_settings.h"
    @ONLY
 )
-
-if("${platform}" STREQUAL "avr-gcc")
-   if(PAPAGENO_TESTING_ENABLED)
-      message("Build of testing system disabled as not available in cross builds")
-      set(PAPAGENO_TESTING_ENABLED FALSE CACHE BOOL "" FORCE) 
-   endif()
-endif()
 
 set(source_files        
 	./detail/ppg_active_tokens_detail.c                                                                                                                 

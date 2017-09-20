@@ -115,6 +115,26 @@ matrix:
         - ./cmake-3.8.2-Linux-x86_64/bin/cmake -DCMAKE_C_CLANG_TIDY:STRING="/usr/bin/clang-tidy-3.8;-checks=-*,readability-*" ../..
         - make
         
+    # Cross-build and test using avr-gcc and simavr
+    #
+    - os: linux
+      addons:
+        apt:
+          packages:
+            - git-all
+      script:
+        - mkdir -p simavr
+        - cd simavr
+        - git clone https://github.com/buserror/simavr.git
+        - cd simavr
+        - sudo make install RELEASE=1
+      script: 
+         - mkdir -p build/release
+         - cd build/release
+         - cmake -DCMAKE_TOOLCHAIN_FILE=$PWD/../../cmake/toolchains/Toolchain-avr-gcc.cmake -DPAPAGENO_PLATFORM_CMAKE_FILE=$PWD/../../cmake/platforms/platform_atmega1280.cmake ../..
+         - make
+         - ctest -D ExperimentalTest --output-on-failure
+        
     # works on Trusty
     - os: linux
       addons:

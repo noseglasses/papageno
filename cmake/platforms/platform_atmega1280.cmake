@@ -36,4 +36,8 @@ set(__PPG_TIME_IDENTIFIER_TYPE uintptr_t)
 
 # Add some platform specific compiler flags
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mmcu=atmega32u4 -funsigned-char -funsigned-bitfields -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -fno-inline-small-functions -fno-strict-aliasing -gdwarf-2  -Os -Wall -Wstrict-prototypes -Werror")
+set(PAPAGENO_ATMEL_ARCHITECTURE "atmega1280")
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mmcu=${PAPAGENO_ATMEL_ARCHITECTURE} -funsigned-char -funsigned-bitfields -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -fno-inline-small-functions -fno-strict-aliasing -gdwarf-2  -Os -Wall -Wstrict-prototypes -Werror -D__AVR__")
+
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mmcu=${PAPAGENO_ATMEL_ARCHITECTURE}")

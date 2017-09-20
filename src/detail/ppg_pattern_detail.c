@@ -93,6 +93,9 @@ PPG_Token ppg_pattern_from_list(
          
          PPG_LOG("new def: 0x%" PRIXPTR "\n", (uintptr_t)cur_token);
          
+         PPG_LOG("   act. clbk. 0x%" PRIXPTR "\n", (uintptr_t)cur_token->action.callback.func);
+         PPG_LOG("   act. u.d. 0x%" PRIXPTR "\n", (uintptr_t)cur_token->action.callback.user_data);
+         
          #if PPG_HAVE_ASSERTIONS
          
          /* Detect pattern ambiguities

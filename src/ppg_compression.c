@@ -449,6 +449,7 @@ void ppg_compression_setup_context(void *context)
 void ppg_compression_write_c_output(PPG_Compression_Context__ *ccontext,
                                     char *name_tag)
 {
+   printf("\n/*__PPG_START_OF_GENERATED_CODE__*/\n\n");
    // Start with writing the raw data
    //
    char context_name[100]/*, aux_name[100]*/;
@@ -460,6 +461,8 @@ void ppg_compression_write_c_output(PPG_Compression_Context__ *ccontext,
 //    printf("properties before write: %d\n", *((int*)&((PPG_Context*)(ccontext->target_storage))->properties));
    
 //    printf("Written at %lu\n", (size_t)((char*)&((PPG_Context*)(ccontext->target_storage))->properties - (char*)ccontext->target_storage));
+   
+   printf("/* Size of context %zu bytes */\n", ccontext->storage_size);
    
    ppg_compression_write_c_char_array(context_name,
                                       ccontext->target_storage,
@@ -503,6 +506,7 @@ void ppg_compression_write_c_output(PPG_Compression_Context__ *ccontext,
    printf("   \\\n");
    
    printf("   ppg_global_set_current_context((void*)%s);\n", context_name);
+   printf("\n/*__PPG_END_OF_GENERATED_CODE__*/\n");
 }
          
 void ppg_compression_run(PPG_Compression_Context ccontext,
