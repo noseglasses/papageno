@@ -462,7 +462,7 @@ void ppg_compression_write_c_output(PPG_Compression_Context__ *ccontext,
    
 //    printf("Written at %lu\n", (size_t)((char*)&((PPG_Context*)(ccontext->target_storage))->properties - (char*)ccontext->target_storage));
    
-   printf("/* Size of context %zu bytes */\n", ccontext->storage_size);
+   printf("/* Size of context %lu bytes */\n", (unsigned long)ccontext->storage_size);
    
    ppg_compression_write_c_char_array(context_name,
                                       ccontext->target_storage,
