@@ -122,6 +122,7 @@ matrix:
         apt:
           packages:
             - git-all
+            - libelf-dev
       script:
         - mkdir -p simavr
         - cd simavr
