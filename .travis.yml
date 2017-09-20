@@ -125,6 +125,7 @@ matrix:
             - libelf-dev
             - gcc-avr
             - avr-libc
+            - freeglut3-dev
       script:
         - mkdir -p simavr
         - cd simavr
