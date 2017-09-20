@@ -56,7 +56,7 @@ if("${PAPAGENO_PLATFORM_ACTUAL}" STREQUAL "avr-gcc")
       set(testing_state_initial FALSE) 
    endif()
 else()
-   set(testing_state_initial FALSE) 
+   set(testing_state_initial TRUE) 
 endif()
 
 option(PAPAGENO_TESTING_ENABLED "Build and run testing environment" ${testing_state_initial})
