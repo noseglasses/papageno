@@ -25,20 +25,22 @@ endif()
 set(command ${PAPAGENO_RUN_WRAPPER} "${PAPAGENO_TEST_EXECUTABLE}"
                 ${file_indicator} "${output_file}")
 
-message("Executing " ${command})
+message("Executing ${command}")
 
 execute_process(
    COMMAND ${command}
    RESULT_VARIABLE result
-   OUTPUT_VARIABLE output
-   ERROR_VARIABLE error
 )
 
 if((NOT "${result}" EQUAL 0))
-   message("Error running "   ${command})
+   message("Error running ${command}")
    message("result: ${result}")
-   message("output: ${output}")
-   message("error: ${error}")
+
+   if(EXISTS "${output_file}")
+      message("Output file content:")
+      file(READ "${output_file}" file_content)
+      message("${file_content}")
+   endif()
    message(FATAL_ERROR "Exit with error")
 endif()    
            
@@ -63,7 +65,7 @@ endif()
 
 if((NOT "${result}" EQUAL 0))
 
-   message("Error running "   ${command})
+   message("Error running ${command}")
    message("result: ${result}")
    message("output: ${output}")
    message("error: ${error}")
