@@ -133,7 +133,6 @@ matrix:
         - cd simavr
         - sudo make RELEASE=1
         - sudo make install RELEASE=1
-        - run_avr -h
         - cd ../..
         - mkdir -p build/release
         - cd build/release
