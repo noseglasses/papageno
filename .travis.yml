@@ -137,7 +137,7 @@ matrix:
         - cd ../..
         - mkdir -p build/release
         - cd build/release
-        - cmake -DCMAKE_TOOLCHAIN_FILE=$PWD/../../cmake/toolchains/Toolchain-avr-gcc.cmake -DPAPAGENO_PLATFORM_CMAKE_FILE=$PWD/../../cmake/platforms/platform_atmega1280.cmake -DPAPAGENO_TESTING_ENABLED=TRUE ../..
+        - cmake -DCMAKE_TOOLCHAIN_FILE=$PWD/../../cmake/toolchains/Toolchain-avr-gcc.cmake -DPAPAGENO_PLATFORM=atmega1280 -DPAPAGENO_TESTING_ENABLED=TRUE ../..
         - make
         - ctest -D ExperimentalTest --output-on-failure
         

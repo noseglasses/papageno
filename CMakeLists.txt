@@ -14,10 +14,15 @@ endmacro(use_c99)
 
 use_c99()
 
-set(PAPAGENO_PLATFORM "" CACHE STRING "Set the platform to build for. Currently supported: generic, avr-gcc")
+set(default_platform "")
+
+set(papageno_platform_description "Set the platform to build for. Currently supported: generic, atmega32u4, atmega1280")
+set(PAPAGENO_PLATFORM "${default_platform}" CACHE STRING "${papageno_platform_description}")
 mark_as_advanced(PAPAGENO_PLATFORM)
 
-set(PAPAGENO_PLATFORM_CMAKE_FILE "" CACHE FILEPATH "A path to a cmake file that contains platform specific settings")
+set(default_plaform_file "${CMAKE_SOURCE_DIR}/cmake/platforms/platform_${PAPAGENO_PLATFORM}.cmake")
+
+set(PAPAGENO_PLATFORM_CMAKE_FILE "${default_plaform_file}" CACHE FILEPATH "A path to a cmake file that contains platform specific settings")
 mark_as_advanced(PAPAGENO_PLATFORM_CMAKE_FILE)
    
 if(EXISTS "${PAPAGENO_PLATFORM_CMAKE_FILE}")
@@ -25,26 +30,42 @@ if(EXISTS "${PAPAGENO_PLATFORM_CMAKE_FILE}")
 else ()
 
    if(NOT "${PAPAGENO_PLATFORM_CMAKE_FILE}" STREQUAL "")
-      message(WARNING "The specified PAPAGENO_PLATFORM_CMAKE_FILE=${PAPAGENO_PLATFORM_CMAKE_FILE} cannot be found")
+      message(WARNING "The specified PAPAGENO_PLATFORM_CMAKE_FILE=${PAPAGENO_PLATFORM_CMAKE_FILE} cannot be found. Falling back to generic platform.")
    endif()
          
    include("${CMAKE_SOURCE_DIR}/cmake/platforms/platform_generic.cmake")
 endif()
 
-get_filename_component(c_cmp_basename "${CMAKE_C_COMPILER}" NAME)
-
-if("${PAPAGENO_PLATFORM}" STREQUAL "") 
-   if("${c_cmp_basename}" STREQUAL "avr-gcc")
-      set(PAPAGENO_PLATFORM_ACTUAL "avr-gcc" CACHE INTERNAL "" FORCE)
-   else()
-      set(PAPAGENO_PLATFORM_ACTUAL "generic" CACHE INTERNAL "" FORCE)
+if("${PAPAGENO_PLATFORM}" STREQUAL "")
+   if(NOT "${__PPG_PLATFORM}" STREQUAL "")
+      set(PAPAGENO_PLATFORM "${__PPG_PLATFORM}" CACHE STRING "${papageno_platform_description}" FORCE)
    endif()
-else()
-   set(PAPAGENO_PLATFORM_ACTUAL "${PAPAGENO_PLATFORM}" CACHE INTERNAL "" FORCE)
 endif()
 
+get_filename_component(c_cmp_basename "${CMAKE_C_COMPILER}" NAME)
+
+if("${c_cmp_basename}" STREQUAL "avr-gcc")
+   set(PAPAGENO_PLATFORM_ACTUAL "avr-gcc" CACHE INTERNAL "" FORCE)
+else()
+   set(PAPAGENO_PLATFORM_ACTUAL "generic" CACHE INTERNAL "" FORCE)
+endif()
+
+# message("PAPAGENO_PLATFORM=${PAPAGENO_PLATFORM}")
+# message("PAPAGENO_PLATFORM_CMAKE_FILE=${PAPAGENO_PLATFORM_CMAKE_FILE}")
+# message("PAPAGENO_PLATFORM_ACTUAL=${PAPAGENO_PLATFORM_ACTUAL}")
+
 if("${PAPAGENO_PLATFORM_ACTUAL}" STREQUAL "avr-gcc")
-   set(PAPAGENO_RUN_WRAPPER "run_avr" "-m" "${PAPAGENO_ATMEL_ARCHITECTURE}")
+
+   find_program(
+      PAPAGENO_SIMAVR_EXECUTABLE
+      NAMES simavr run_avr
+   )
+
+   if(NOT EXISTS "${PAPAGENO_SIMAVR_EXECUTABLE}")
+      message(WARNING "Unable to find the simavr or run_avr executable. Please specify its absolute path through the variable PAPAGENO_SIMAVR_EXECUTABLE")
+   endif()
+
+   set(PAPAGENO_RUN_WRAPPER "${PAPAGENO_SIMAVR_EXECUTABLE}" -m ${PAPAGENO_PLATFORM})
 endif()
 
 option(PAPAGENO_DOXYGEN "Build the doxygen documentation of the Papageno API" FALSE)

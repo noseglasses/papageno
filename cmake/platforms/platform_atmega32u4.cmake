@@ -1,3 +1,5 @@
+set(__PPG_PLATFORM atmega32u4)
+
 set(__PPG_MAX_EVENTS 100)
 
 set(__PPG_MAX_INPUTS 256)
