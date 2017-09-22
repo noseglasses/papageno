@@ -277,13 +277,6 @@ static void ppg_compression_copy_context(PPG_Compression_Context__ *ccontext)
    // have to prevent auto destruction
    //
    target_context->properties.destruction_enabled = false;
-   
-//    printf("properties: %d\n", *((int*)&target_context->properties));
-//    byte 6096 in the test_note_lines example contains the context
-//    properties which seem for strange reasons not to be reproduced
-//    during extraction.
-//    
-//    TODO: Reenable all tests
 }
 
 static void ppg_compression_convert_all_addresses_to_relative(PPG_Compression_Context__ *ccontext)
@@ -300,9 +293,6 @@ static void ppg_compression_convert_all_addresses_to_relative(PPG_Compression_Co
                            (void *)target);
    
    target_context->pattern_root = (PPG_Token__ *)((char*)target_context->pattern_root 
-                                          - target);
-   
-   target_context->furcation_stack.furcations = (PPG_Furcation *)((char*)target_context->furcation_stack.furcations 
                                           - target);
 }
 
@@ -419,15 +409,14 @@ void ppg_compression_setup_context(void *context)
    
    PPG_Context *the_context = (PPG_Context *)context;
    
-   assert(the_context->properties.papageno_enabled);
+   PPG_ASSERT(the_context->properties.papageno_enabled);
+   
+   ppg_restore_context(the_context);
    
    // Convert relative addresses to absolute addresses
    //
    the_context->pattern_root = (PPG_Token__*)((char*)context_c 
                                           + (uintptr_t)the_context->pattern_root);
-   
-   the_context->furcation_stack.furcations = (PPG_Furcation *)((char*)context_c 
-                     + (uintptr_t)the_context->furcation_stack.furcations);
    
    ppg_token_traverse_tree(the_context->pattern_root,
                            (PPG_Token_Tree_Visitor)ppg_compression_generate_absolute_addresses,
@@ -443,7 +432,7 @@ void ppg_compression_setup_context(void *context)
    
 //    printf("properties: %u\n", *((unsigned char*)&the_context->properties));
    
-   assert(the_context->properties.papageno_enabled);
+   PPG_ASSERT(the_context->properties.papageno_enabled);
 }
 
 void ppg_compression_write_c_output(PPG_Compression_Context__ *ccontext,

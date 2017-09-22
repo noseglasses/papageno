@@ -304,7 +304,7 @@ static PPG_Token__ *ppg_token_get_next_possible_branch(
       PPG_LOG("Creating furcation for token 0x%" PRIXPTR "\n", 
             (uintptr_t)parent_token);
 
-      PPG_ASSERT(PPG_FB.cur_furcation < PPG_FB.n_furcations - 1);
+      //PPG_ASSERT(PPG_FB.cur_furcation < PPG_FB.n_furcations - 1);
       
       ++PPG_FB.cur_furcation;
                   

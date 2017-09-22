@@ -44,7 +44,7 @@ int ppg_compression_check_symbol_registered(PPG_Compression_Context__ *ccontext,
 void ppg_compression_context_register_symbol(void **symbol,
                                              PPG_Compression_Context__ *ccontext)
 {
-   assert(symbol);
+   PPG_ASSERT(symbol);
    
    if(!(*symbol)) {
       return;

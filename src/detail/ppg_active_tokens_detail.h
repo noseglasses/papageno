@@ -22,9 +22,15 @@
 #define PPG_GAT ppg_context->active_tokens
 
 typedef struct {
-   PPG_Token__ *tokens[PPG_MAX_ACTIVE_TOKENS];
+   PPG_Token__ **tokens;
    PPG_Count   n_tokens;
+   PPG_Count   max_tokens;
 } PPG_Active_Tokens;
+
+void ppg_active_tokens_resize(PPG_Active_Tokens *active_tokens,
+                              PPG_Count new_size);
+
+void ppg_active_tokens_restore(PPG_Active_Tokens *active_tokens);
 
 void ppg_active_tokens_init(PPG_Active_Tokens *active_tokens);
 

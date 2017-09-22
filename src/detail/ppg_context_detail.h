@@ -78,6 +78,8 @@ size_t ppg_context_get_size_requirements(PPG_Context *context);
 
 char *ppg_context_copy(PPG_Context *context, void *target__);
 
+void ppg_restore_context(PPG_Context *context);
+
 /* The following macros influence the build
 
 PPG_DISABLE_CONTEXT_SWITCHING 

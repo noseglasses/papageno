@@ -45,7 +45,7 @@ void ppg_global_compile(void)
    // Initialize the furcation buffer to ensure correct size (the maximum
    // search tree depth)
    //
-   ppg_furcation_stack_resize();
+   ppg_furcation_stack_restore(&ppg_context->furcation_stack);
 }
 
 void ppg_global_finalize(void) {

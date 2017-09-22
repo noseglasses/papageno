@@ -17,15 +17,54 @@
 #include "detail/ppg_active_tokens_detail.h"
 #include "detail/ppg_token_detail.h"
 #include "detail/ppg_context_detail.h"
+#include "detail/ppg_malloc_detail.h"
+
 #include "ppg_debug.h"
+
+#include <assert.h>
+#include <string.h>
+
+void ppg_active_tokens_resize(PPG_Active_Tokens *active_tokens,
+                              PPG_Count new_size)
+{
+   PPG_ASSERT(active_tokens);
+   
+   if(new_size <= active_tokens->max_tokens) { return; }
+   
+   PPG_Token__ **new_tokens
+      = (PPG_Token__**)PPG_MALLOC(sizeof(PPG_Token__*)*new_size);
+      
+   active_tokens->max_tokens = new_size;
+   
+   if(active_tokens->tokens && (active_tokens->n_tokens > 0)) {
+      memcpy(new_tokens, active_tokens->tokens, 
+             sizeof(PPG_Token__ *)*active_tokens->n_tokens);
+   }
+   
+   active_tokens->tokens = new_tokens;
+}
 
 void ppg_active_tokens_init(PPG_Active_Tokens *active_tokens)
 {
+   active_tokens->tokens = NULL;
    active_tokens->n_tokens = 0;
+   active_tokens->max_tokens = 0;
+   
+   ppg_active_tokens_resize(active_tokens, PPG_MAX_ACTIVE_TOKENS);
    
    for(size_t i = 0; i < PPG_MAX_ACTIVE_TOKENS; ++i) {
       active_tokens->tokens[i] = NULL;
    }
+}
+
+void ppg_active_tokens_restore(PPG_Active_Tokens *active_tokens)
+{
+   PPG_Count saved_size = active_tokens->max_tokens;
+   
+   active_tokens->tokens = NULL;
+   active_tokens->max_tokens = 0; // This forces resize 
+   
+   ppg_active_tokens_resize(active_tokens, saved_size);
 }
 
 static void ppg_active_tokens_add(PPG_Token__ *token)

@@ -36,6 +36,7 @@ typedef struct {
    PPG_Furcation *furcations;
    PPG_Count n_furcations;
    PPG_Id cur_furcation;
+   PPG_Id max_furcations;
 } PPG_Furcation_Stack;
 
 #define PPG_FB ppg_context->furcation_stack
@@ -45,7 +46,10 @@ typedef struct {
 //
 void ppg_furcation_stack_init(PPG_Furcation_Stack *stack);
 
-void ppg_furcation_stack_resize(void);
+void ppg_furcation_stack_resize(PPG_Furcation_Stack *stack, 
+                                PPG_Count new_size);
+
+void ppg_furcation_stack_restore(PPG_Furcation_Stack *stack);
 
 void ppg_furcation_stack_free(PPG_Furcation_Stack *stack);
 

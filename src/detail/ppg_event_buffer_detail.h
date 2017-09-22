@@ -37,7 +37,8 @@ typedef struct {
 //
 typedef struct {
    
-   PPG_Event_Queue_Entry events[PPG_MAX_EVENTS];
+//    PPG_Event_Queue_Entry events[PPG_MAX_EVENTS];
+   PPG_Event_Queue_Entry *events;
    
    PPG_Event_Buffer_Index_Type start;
    PPG_Event_Buffer_Index_Type end;
@@ -45,9 +46,16 @@ typedef struct {
    
    PPG_Count size;
    
+   PPG_Count max_size;
+   
 } PPG_Event_Buffer;
 
+void ppg_event_buffer_resize(PPG_Event_Buffer *event_buffer,
+                             PPG_Count new_size);
+
 PPG_Count ppg_event_buffer_size(void);
+
+void ppg_event_buffer_restore(PPG_Event_Buffer *eb);
 
 PPG_Event * ppg_event_buffer_store_event(PPG_Event *event);
 

@@ -17,17 +17,39 @@
 #include "detail/ppg_event_buffer_detail.h"
 #include "detail/ppg_context_detail.h"
 #include "detail/ppg_global_detail.h"
+#include "detail/ppg_malloc_detail.h"
 #include "ppg_debug.h"
 #include "ppg_settings.h"
 
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 #define PPG_EB ppg_context->event_buffer
 
 PPG_Count ppg_event_buffer_size(void)
 {
    return PPG_EB.size;
+}
+
+void ppg_event_buffer_resize(PPG_Event_Buffer *event_buffer,
+                             PPG_Count new_size)
+{
+   PPG_ASSERT(event_buffer);
+   
+   if(new_size <= event_buffer->max_size) { return; }
+   
+   PPG_Event_Queue_Entry *new_events
+      = (PPG_Event_Queue_Entry*)PPG_MALLOC(sizeof(PPG_Event_Queue_Entry)*new_size);
+      
+   event_buffer->max_size = new_size;
+   
+   if(event_buffer->events && (event_buffer->size > 0)) {
+      memcpy(new_events, event_buffer->events, 
+             sizeof(PPG_Event_Queue_Entry)*event_buffer->size);
+   }
+   
+   event_buffer->events = new_events;
 }
 
 // Reurns an in place version of the event
@@ -74,15 +96,30 @@ PPG_Event * ppg_event_buffer_store_event(PPG_Event *event)
 
 void ppg_event_buffer_init(PPG_Event_Buffer *eb)
 {
+   eb->events = NULL;
+   
    eb->start = 0;
    eb->end = 0;
    eb->cur = 0;
    
    eb->size = 0;
+   eb->max_size = 0;
+   
+   ppg_event_buffer_resize(eb, PPG_MAX_EVENTS);
    
    PPG_LOG("Event queue initialized\n");
    PPG_LOG("   start: %u, cur: %u, end: %u, size: %u\n", 
               eb->start, eb->cur, eb->end, eb->size);
+}
+
+void ppg_event_buffer_restore(PPG_Event_Buffer *eb)
+{
+   PPG_Count safed_size = eb->max_size;
+   
+   eb->events = NULL; 
+   eb->max_size = 0; // This forces resize 
+   
+   ppg_event_buffer_resize(eb, safed_size);
 }
 
 bool ppg_event_buffer_events_left(void)

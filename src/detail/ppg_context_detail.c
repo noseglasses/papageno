@@ -19,6 +19,8 @@
 #include "ppg_statistics.h"
 #include "ppg_debug.h"
 
+#include <assert.h>
+
 PPG_Context *ppg_context = NULL;
 
 /** @brief This function initializes a signal callback
@@ -79,8 +81,7 @@ void ppg_global_initialize_context(PPG_Context *context) {
 
 size_t ppg_context_get_size_requirements(PPG_Context *context)
 {
-   return sizeof(PPG_Context)
-         + context->furcation_stack.n_furcations*sizeof(PPG_Furcation);
+   return sizeof(PPG_Context);
 }
 
 char *ppg_context_copy(PPG_Context *context, void *target__)
@@ -93,9 +94,19 @@ char *ppg_context_copy(PPG_Context *context, void *target__)
    
    target += sizeof(PPG_Context);
    
-   target_context->furcation_stack.furcations = (PPG_Furcation *)target;
-   
-   target += context->furcation_stack.n_furcations*sizeof(PPG_Furcation);
-   
    return target;
+}
+
+void ppg_restore_context(PPG_Context *context)
+{
+   PPG_ASSERT(context);
+   
+   // Restore the members buffer, which means to let them allocated their
+   // dynamically allocated data structures
+
+   ppg_event_buffer_restore(&context->event_buffer);
+
+   ppg_furcation_stack_restore(&context->furcation_stack);
+   
+   ppg_active_tokens_restore(&context->active_tokens);
 }
