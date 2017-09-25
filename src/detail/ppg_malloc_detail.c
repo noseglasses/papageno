@@ -18,16 +18,25 @@
 
 #include "string.h"
 
-#if PPG_HAVE_ASSERTIONS
+// static void ppg_debug_malloc(void)
+// {
+//    printf("__malloc_heap_start = %p\n", __malloc_heap_start);
+//    printf("__malloc_heap_end = %p\n", __malloc_heap_end);
+//    
+// //    printf("__malloc_heap_margin = %lu\n", (unsigned long)__malloc_heap_margin);
+// }
 
+#if PPG_HAVE_ASSERTIONS
 void *ppg_safe_malloc(size_t n_bytes,
                       char *file,
                       unsigned long line)
 {
+//    ppg_debug_malloc();
+   
     void* p = malloc(n_bytes);
     if (!p)
     {
-        PPG_ERROR("[%s:%lu]Out of memory(%lu bytes)\n",
+        PPG_ERROR("[%s:%lu] Out of memory(%lu bytes)\n",
                 file, line, (unsigned long)n_bytes);
          abort();
     }
@@ -38,6 +47,9 @@ void *ppg_safe_malloc(size_t n_bytes,
 
 void *ppg_safe_malloc(size_t n_bytes)
 {
+//    ppg_debug_malloc();
+   printf("allocating %lu bytes\n", (unsigned long)n_bytes);
+   
     void* p = malloc(n_bytes);
     if (!p)
     {

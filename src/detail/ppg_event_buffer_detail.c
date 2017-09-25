@@ -94,23 +94,28 @@ PPG_Event * ppg_event_buffer_store_event(PPG_Event *event)
    return &PPG_EB.events[new_pos].event;
 }
 
-void ppg_event_buffer_init(PPG_Event_Buffer *eb)
+void ppg_event_buffer_reset(PPG_Event_Buffer *eb)
 {
-   eb->events = NULL;
-   
    eb->start = 0;
    eb->end = 0;
    eb->cur = 0;
    
    eb->size = 0;
-   eb->max_size = 0;
    
-   ppg_event_buffer_resize(eb, PPG_MAX_EVENTS);
-   
-   PPG_LOG("Event queue initialized\n");
+   PPG_LOG("Event queue reset\n");
    PPG_LOG("   start: %u, cur: %u, end: %u, size: %u\n", 
               eb->start, eb->cur, eb->end, eb->size);
 }
+
+void ppg_event_buffer_init(PPG_Event_Buffer *eb)
+{
+   ppg_event_buffer_reset(eb);
+   
+   eb->max_size = 0;
+   
+   ppg_event_buffer_resize(eb, PPG_MAX_EVENTS);
+}
+
 
 void ppg_event_buffer_restore(PPG_Event_Buffer *eb)
 {
@@ -198,7 +203,7 @@ static void ppg_flush_non_considered_events(PPG_Event_Queue_Entry *eqe,
 void ppg_event_buffer_truncate_at_front(void)
 {
    if(PPG_EB.cur == PPG_EB.end) {
-      ppg_event_buffer_init(&PPG_EB);
+      ppg_event_buffer_reset(&PPG_EB);
    }
    else {
       
@@ -263,7 +268,7 @@ void ppg_even_buffer_flush_and_remove_first_event(bool on_success)
       ppg_event_buffer_remove_first_event();
    }
    else {
-      ppg_event_buffer_init(&PPG_EB);
+      ppg_event_buffer_reset(&PPG_EB);
    }
 }
 

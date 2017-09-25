@@ -60,6 +60,7 @@ void ppg_bitfield_resize(PPG_Bitfield *bitfield,
  * @param bitfield The bitfield to check
  */
 PPG_Count ppg_bitfield_get_num_cells(PPG_Bitfield *bitfield);
+PPG_Count ppg_bitfield_get_num_cells_from_bits(uint8_t n_bits);
 
 /** @brief Sets all bits to zero
  * 

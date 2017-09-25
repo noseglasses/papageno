@@ -1,3 +1,5 @@
+set(__PPG_PLATFORM atmega1280)
+
 set(__PPG_MAX_EVENTS 100)
 
 set(__PPG_MAX_INPUTS 255)

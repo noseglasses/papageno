@@ -70,7 +70,7 @@ bool ppg_recurse_and_process_actions(PPG_Token__ *cur_token)
 
 void ppg_delete_stored_events(void)
 {
-   ppg_event_buffer_init(&ppg_context->event_buffer); 
+   ppg_event_buffer_reset(&ppg_context->event_buffer); 
 }
 
 void ppg_reset_pattern_matching_engine(void)

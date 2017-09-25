@@ -26,10 +26,10 @@ void ppg_bitfield_init(PPG_Bitfield *bitfield)
    bitfield->bitarray = NULL;
 }
 
-PPG_Count ppg_bitfield_get_num_cells(PPG_Bitfield *bitfield)
+PPG_Count ppg_bitfield_get_num_cells_from_bits(uint8_t n_bits)
 {
-   PPG_Count cells = bitfield->n_bits/(8*sizeof(PPG_Bitfield_Storage_Type));
-   PPG_Count bits = bitfield->n_bits%(8*sizeof(PPG_Bitfield_Storage_Type));
+   PPG_Count cells = n_bits/(8*sizeof(PPG_Bitfield_Storage_Type));
+   PPG_Count bits = n_bits%(8*sizeof(PPG_Bitfield_Storage_Type));
       
    if(bits != 0) {
       cells += 1;
@@ -38,11 +38,16 @@ PPG_Count ppg_bitfield_get_num_cells(PPG_Bitfield *bitfield)
    return cells;
 }
 
+PPG_Count ppg_bitfield_get_num_cells(PPG_Bitfield *bitfield)
+{
+   return ppg_bitfield_get_num_cells_from_bits(bitfield->n_bits);
+}
+
 void ppg_bitfield_clear(PPG_Bitfield *bitfield)
 {
    if(!bitfield->bitarray) { return; }
   
-   PPG_Count cells = ppg_bitfield_get_num_cells(bitfield);
+   PPG_Count cells = ppg_bitfield_get_num_cells_from_bits(bitfield->n_bits);
    
    memset(bitfield->bitarray, 0, cells);
 }
@@ -83,7 +88,7 @@ void ppg_bitfield_resize(PPG_Bitfield *bitfield,
 {
    if(bitfield->n_bits != n_bits) {
             
-      PPG_Count cells = ppg_bitfield_get_num_cells(bitfield);
+      PPG_Count cells = ppg_bitfield_get_num_cells_from_bits(n_bits);
       
       if(bitfield->bitarray) {
          
@@ -94,14 +99,8 @@ void ppg_bitfield_resize(PPG_Bitfield *bitfield,
          //
          if(keep_content) {
                
-            PPG_Count old_cells = bitfield->n_bits
-                     /(8*sizeof(PPG_Bitfield_Storage_Type));
-            PPG_Count old_bits = bitfield->n_bits
-                     %(8*sizeof(PPG_Bitfield_Storage_Type));
-            
-            if(old_bits != 0) { 
-               old_cells += 1;
-            }
+            PPG_Count old_cells 
+               = ppg_bitfield_get_num_cells_from_bits(bitfield->n_bits);
                
             memcpy(new_bitarray, bitfield->bitarray, old_cells);
          }
@@ -113,6 +112,10 @@ void ppg_bitfield_resize(PPG_Bitfield *bitfield,
       else {
          bitfield->bitarray 
             = (uint8_t*)PPG_MALLOC(cells*sizeof(PPG_Bitfield_Storage_Type));
+         
+         for(size_t cell_id = 0; cell_id < cells; ++cell_id) {
+            bitfield->bitarray[cell_id] = 0;
+         }
       }
       
       bitfield->n_bits = n_bits;
@@ -132,7 +135,7 @@ void ppg_bitfield_copy(PPG_Bitfield *source, PPG_Bitfield *target)
          false /* no need to keep content as it is overwritten */);
    }
 
-   PPG_Count cells = ppg_bitfield_get_num_cells(source);
+   PPG_Count cells = ppg_bitfield_get_num_cells_from_bits(source->n_bits);
    
    memcpy(target->bitarray, source->bitarray, cells);
 }

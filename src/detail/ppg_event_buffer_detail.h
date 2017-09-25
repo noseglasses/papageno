@@ -61,6 +61,8 @@ PPG_Event * ppg_event_buffer_store_event(PPG_Event *event);
 
 void ppg_event_buffer_init(PPG_Event_Buffer *eb);
 
+void ppg_event_buffer_reset(PPG_Event_Buffer *eb);
+
 bool ppg_event_buffer_events_left(void);
 
 void ppg_event_buffer_advance(void);
