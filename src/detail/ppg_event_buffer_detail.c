@@ -112,6 +112,7 @@ void ppg_event_buffer_init(PPG_Event_Buffer *eb)
    ppg_event_buffer_reset(eb);
    
    eb->max_size = 0;
+   eb->events = NULL;
    
    ppg_event_buffer_resize(eb, PPG_MAX_EVENTS);
 }
@@ -125,6 +126,15 @@ void ppg_event_buffer_restore(PPG_Event_Buffer *eb)
    eb->max_size = 0; // This forces resize 
    
    ppg_event_buffer_resize(eb, safed_size);
+}
+
+void ppg_event_buffer_free(PPG_Event_Buffer *event_buffer)
+{
+   if(!event_buffer->events) { return; }
+   
+   free(event_buffer->events);
+   
+   event_buffer->events = NULL;
 }
 
 bool ppg_event_buffer_events_left(void)

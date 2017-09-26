@@ -48,7 +48,7 @@ void *ppg_safe_malloc(size_t n_bytes,
 void *ppg_safe_malloc(size_t n_bytes)
 {
 //    ppg_debug_malloc();
-   printf("allocating %lu bytes\n", (unsigned long)n_bytes);
+//    printf("allocating %lu bytes\n", (unsigned long)n_bytes);
    
     void* p = malloc(n_bytes);
     if (!p)

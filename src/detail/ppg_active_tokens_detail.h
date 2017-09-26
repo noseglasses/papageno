@@ -34,6 +34,8 @@ void ppg_active_tokens_restore(PPG_Active_Tokens *active_tokens);
 
 void ppg_active_tokens_init(PPG_Active_Tokens *active_tokens);
 
+void ppg_active_tokens_free(PPG_Active_Tokens *active_tokens);
+
 void ppg_active_tokens_update(void);
 
 bool ppg_active_tokens_check_consumption(PPG_Event *event);

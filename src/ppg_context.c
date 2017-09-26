@@ -39,7 +39,9 @@ void ppg_context_destroy(void *context)
    
    if(!context__->properties.destruction_enabled) { return; }
    
+   ppg_event_buffer_free(&context__->event_buffer);
    ppg_furcation_stack_free(&context__->furcation_stack);
+   ppg_active_tokens_free(&context__->active_tokens);
    
    ppg_token_destroy(context__->pattern_root);
    

@@ -67,6 +67,15 @@ void ppg_active_tokens_restore(PPG_Active_Tokens *active_tokens)
    ppg_active_tokens_resize(active_tokens, saved_size);
 }
 
+void ppg_active_tokens_free(PPG_Active_Tokens *active_tokens)
+{
+   if(!active_tokens->tokens) { return; }
+   
+   free(active_tokens->tokens);
+   
+   active_tokens->tokens = NULL;
+}
+
 static void ppg_active_tokens_add(PPG_Token__ *token)
 {
    PPG_GAT.tokens[PPG_GAT.n_tokens] = token;
