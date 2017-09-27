@@ -14,11 +14,11 @@ if(NOT EXISTS "${PAPAGENO_TEST_EXECUTABLE}")
    endif()
 endif()
 
+set(output_file "${PAPAGENO_COMPRESSED_CODE_FILE}.tmp")
+
 if(NOT "${PAPAGENO_RUN_WRAPPER}" STREQUAL "")
-   set(output_file "${PAPAGENO_COMPRESSED_CODE_FILE}.tmp")
    set(file_indicator ERROR_FILE)
 else()
-   set(output_file "${PAPAGENO_COMPRESSED_CODE_FILE}")
    set(file_indicator OUTPUT_FILE)
 endif()
 
@@ -44,7 +44,7 @@ if((NOT "${result}" EQUAL 0))
    message(FATAL_ERROR "Exit with error")
 endif()    
            
-if(NOT "${PAPAGENO_RUN_WRAPPER}" STREQUAL "")
+# if(NOT "${PAPAGENO_RUN_WRAPPER}" STREQUAL "")
 
    set(command
       COMMAND cat "${output_file}"
@@ -58,16 +58,14 @@ if(NOT "${PAPAGENO_RUN_WRAPPER}" STREQUAL "")
       
       OUTPUT_FILE "${PAPAGENO_COMPRESSED_CODE_FILE}"
       RESULT_VARIABLE result
-      OUTPUT_VARIABLE output
       ERROR_VARIABLE error
    )
-endif()
+# endif()
 
 if((NOT "${result}" EQUAL 0))
 
    message("Error running ${command}")
    message("result: ${result}")
-   message("output: ${output}")
    message("error: ${error}")
    message(FATAL_ERROR "Exit with error")
 endif()

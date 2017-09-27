@@ -14,7 +14,7 @@ endmacro(use_c99)
 
 use_c99()
 
-set(default_platform "")
+set(default_platform "generic")
 
 set(papageno_platform_description "Set the platform to build for. Currently supported: generic, atmega32u4, atmega1280")
 set(PAPAGENO_PLATFORM "${default_platform}" CACHE STRING "${papageno_platform_description}")
