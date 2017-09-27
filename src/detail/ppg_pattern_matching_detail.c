@@ -453,8 +453,8 @@ static PPG_Count ppg_process_next_event(void)
    ++ppg_context->statistics.n_token_checks;
    #endif
             
-   PPG_LOG("Token state after match_event: %u\n", (PPG_Count)ppg_context->current_token->misc.state);
-   PPG_LOG("Event consumed: %u\n", event_consumed);
+//    PPG_LOG("Token state after match_event: %u\n", (PPG_Count)ppg_context->current_token->misc.state);
+//    PPG_LOG("Event consumed: %u\n", event_consumed);
 
    switch(ppg_context->current_token->misc.state) {
       
@@ -509,7 +509,7 @@ bool ppg_pattern_matching_run(void)
       
             if(action_processed) { 
                
-               PPG_LOG("Fallback success\n");
+//                PPG_LOG("Fallback success\n");
                
                // Fallback was possible
             

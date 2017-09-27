@@ -20,6 +20,7 @@
 /** @file */
 
 #include "ppg_settings.h"
+#include "ppg_context.h"
 
 #include <stdlib.h>
 #include <stdbool.h>
@@ -33,6 +34,8 @@
 
 #if PPG_HAVE_LOGGING
 
+#   include <stdio.h>
+
 // Define the preprocessor macro PPG_PRINT_SELF_ENABLED
 // to enable verbose class output of token classes
 
@@ -43,7 +46,7 @@
    }
 
 #else
-#   include <stdio.h>
+// #   include <stdio.h>
 #   define PPG_LOG(...) \
    if(ppg_logging_get_enabled()) { \
       printf(__VA_ARGS__); \

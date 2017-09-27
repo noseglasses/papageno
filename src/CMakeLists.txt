@@ -106,6 +106,14 @@ else()
    set(initial_lib_type "STATIC")
 endif()
 
+if(PAPAGENO_QMK)
+   if("${PAPAGENO_ADDITIONAL_INCLUDE_PATHS}" STREQUAL "")
+      message(WARNING "The build option PAPAGENO_QMK has been enabled. This suggests that a dedicated version of Papageno is supposed to be build that can be linked with the Quantum Mechanical Keyboard firmware. However, the build variable PAPAGENO_ADDITIONAL_INCLUDE_PATHS is empty. For the build system to find appropriate QMK headers, please add a list of related paths to PAPAGENO_ADDITIONAL_INCLUDE_PATHS.")
+   endif()
+
+   add_definitions("-DPPG_BUILDING_FOR_QMK=1")
+endif()
+
 set(PAPAGENO_LIBRARY_TYPE "${initial_lib_type}" CACHE STRING "The type of papageno library to build SHARED/STATIC. Note that not all platforms support shared libraries.")
 
 add_library(papageno ${PAPAGENO_LIBRARY_TYPE} ${source_files_full_path})

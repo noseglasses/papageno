@@ -119,11 +119,11 @@ static void ppg_active_tokens_on_deactivation(PPG_Token__ *consumer,
                         == PPG_Token_Matches) 
             && (changed)) {
                
-            PPG_LOG("   Causes activation and deactivation\n");
+//             PPG_LOG("   Cs act & deact\n");
          
             if(consumer->misc.action_state == PPG_Action_Enabled) {
                      
-               PPG_LOG("      Triggering activation action\n");
+//                PPG_LOG("      T.a.a.\n");
                      
                consumer->action.callback.func(true /* signal deactivation */,
                         consumer->action.callback.user_data);
@@ -152,7 +152,7 @@ static void ppg_active_tokens_on_deactivation(PPG_Token__ *consumer,
          if(state 
                      == PPG_Token_Deactivation_In_Progress) {
             
-            PPG_LOG("   Causes deactivation\n");
+//             PPG_LOG("   C. d.\n");
          
             // It turned from state "matching" to state
             // "deactivation in progress"
@@ -161,7 +161,7 @@ static void ppg_active_tokens_on_deactivation(PPG_Token__ *consumer,
 
                if(consumer->misc.action_state == PPG_Action_Enabled) {
                   
-                  PPG_LOG("      Triggering deactivation action\n");
+//                   PPG_LOG("      T.e.a.\n");
                   consumer->action.callback.func(false /* signal deactivation */,
                      consumer->action.callback.user_data);
                   
@@ -172,8 +172,8 @@ static void ppg_active_tokens_on_deactivation(PPG_Token__ *consumer,
          else if(state 
                            == PPG_Token_Finalized) {
             
-            PPG_LOG("   Causes finalization of 0x%" PRIXPTR "\n", (uintptr_t)consumer);
-         
+//             PPG_LOG("   Causes finalization of 0x%" PRIXPTR "\n", (uintptr_t)consumer);
+//             PPG_LOG("Fin\n");
             // The token just became initialized, i.e. all related inputs were deactivated
             // again.
             
@@ -181,7 +181,7 @@ static void ppg_active_tokens_on_deactivation(PPG_Token__ *consumer,
                || (consumer->misc.action_state != PPG_Action_Deactivation_Triggered)) {
                
                if(consumer->misc.action_state == PPG_Action_Enabled) {
-                  PPG_LOG("      Triggering activation action\n");
+//                   PPG_LOG("      T.a.a.\n");
                   consumer->action.callback.func(true /* signal deactivation */,
                      consumer->action.callback.user_data);
                   
@@ -189,7 +189,7 @@ static void ppg_active_tokens_on_deactivation(PPG_Token__ *consumer,
                }
                
                if(consumer->misc.action_state == PPG_Action_Activation_Triggered) {
-                  PPG_LOG("      Triggering deactivation action\n");
+//                   PPG_LOG("      T.d.a.\n");
                   consumer->action.callback.func(false /* signal deactivation */,
                      consumer->action.callback.user_data);
                   
@@ -230,8 +230,8 @@ bool ppg_active_tokens_check_consumption(
       
       consumer = PPG_GAT.tokens[i];
       
-      PPG_LOG("   consumer: 0x%" PRIXPTR "\n", (uintptr_t)consumer);
-      PPG_LOG("   consumer action state: %d\n", consumer->misc.action_state);
+//       PPG_LOG("   consumer: 0x%" PRIXPTR "\n", (uintptr_t)consumer);
+//       PPG_LOG("   consumer action state: %d\n", consumer->misc.action_state);
       
       PPG_Count old_state = consumer->misc.state;
       
@@ -261,9 +261,9 @@ bool ppg_active_tokens_check_consumption(
       return false;
    }
    
-   PPG_LOG("   consumed\n");
-   PPG_LOG("   new_state: %d\n", new_state);
-   PPG_LOG("   state_changed: %d\n", state_changed);
+//    PPG_LOG("   consumed\n");
+//    PPG_LOG("   new_state: %d\n", new_state);
+//    PPG_LOG("   state_changed: %d\n", state_changed);
 
    // The token just became initialized, i.e. all related inputs were deactivated
    // again.
@@ -290,9 +290,9 @@ static void ppg_active_tokens_update_aux(
                                     PPG_Event_Queue_Entry *eqe,
                                     void *user_data)
 {
-   PPG_LOG("Event: Input 0x%d, active: %d\n",
-           eqe->event.input,
-           eqe->event.flags & PPG_Event_Active);
+//    PPG_LOG("Event: Input 0x%d, active: %d\n",
+//            eqe->event.input,
+//            eqe->event.flags & PPG_Event_Active);
    
    // Check if the event has already been considered 
    // This is the case for deactivation events that
@@ -303,8 +303,8 @@ static void ppg_active_tokens_update_aux(
    }
       
    if(eqe->consumer) {
-      PPG_LOG("   consumer: 0x%" PRIXPTR "\n", (uintptr_t)eqe->consumer);
-      PPG_LOG("   consumer action state: %d\n", eqe->consumer->misc.action_state);
+//       PPG_LOG("   consumer: 0x%" PRIXPTR "\n", (uintptr_t)eqe->consumer);
+//       PPG_LOG("   consumer action state: %d\n", eqe->consumer->misc.action_state);
       PPG_PRINT_TOKEN(eqe->consumer)
    }
   
@@ -315,7 +315,7 @@ static void ppg_active_tokens_update_aux(
       if(   (eqe->token_state.state == PPG_Token_Matches)
          && eqe->token_state.changed
       ) {
-         PPG_LOG("   Causes token match\n");
+//          PPG_LOG("   Causes token match\n");
          
          // The last event led to a match
             
@@ -334,7 +334,7 @@ static void ppg_active_tokens_update_aux(
             //
             if(eqe->consumer->misc.action_state == PPG_Action_Enabled) {
                
-               PPG_LOG("      Triggering activation action\n");
+//                PPG_LOG("      Triggering activation action\n");
                
                eqe->consumer->action.callback.func(true /* signal activation */,
                   eqe->consumer->action.callback.user_data);
@@ -363,7 +363,7 @@ static void ppg_active_tokens_update_aux(
       }
       else {
          
-         PPG_LOG("   Not part of current match branch\n");
+//          PPG_LOG("   Not part of current match branch\n");
          
          ppg_active_tokens_check_consumption(&eqe->event);
       }
@@ -372,8 +372,8 @@ static void ppg_active_tokens_update_aux(
 
 void ppg_active_tokens_update(void)
 {
-   PPG_LOG("************************\n")
-   PPG_LOG("Activating active tokens\n")
+//    PPG_LOG("************************\n")
+//    PPG_LOG("Activating active tokens\n")
    ppg_event_buffer_iterate2(
       (PPG_Event_Processor_Visitor)ppg_active_tokens_update_aux, 
       NULL);

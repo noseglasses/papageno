@@ -80,6 +80,8 @@ char *ppg_context_copy(PPG_Context *context, void *target__);
 
 void ppg_restore_context(PPG_Context *context);
 
+void ppg_print_context(PPG_Context *context);
+
 /* The following macros influence the build
 
 PPG_DISABLE_CONTEXT_SWITCHING 

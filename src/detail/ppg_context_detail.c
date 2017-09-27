@@ -99,6 +99,7 @@ char *ppg_context_copy(PPG_Context *context, void *target__)
 
 void ppg_restore_context(PPG_Context *context)
 {
+   PPG_LOG("rst ctxt\n");
    PPG_ASSERT(context);
    
    // Restore the members buffer, which means to let them allocated their
@@ -109,4 +110,15 @@ void ppg_restore_context(PPG_Context *context)
    ppg_furcation_stack_restore(&context->furcation_stack);
    
    ppg_active_tokens_restore(&context->active_tokens);
+   
+   ppg_print_context(context);
+}
+
+void ppg_print_context(PPG_Context *context)
+{
+   PPG_LOG("tree_depth: %d\n", (int)context->tree_depth);
+   PPG_LOG("layer: %d\n", (int)context->layer);
+   PPG_LOG("abort_input: %d\n", (int)context->abort_input);
+   PPG_LOG("time_last_event: %d\n", (int)context->time_last_event);
+   PPG_LOG("event_timeout: %d\n", (int)context->event_timeout);
 }

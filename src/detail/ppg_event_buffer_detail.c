@@ -240,9 +240,9 @@ void ppg_event_buffer_truncate_at_front(void)
       ppg_even_buffer_recompute_size();
       
    }
-   PPG_LOG("Event queue truncated at front\n"); 
-   PPG_LOG("   start: %u, cur: %u, end: %u, size: %u\n", 
-              PPG_EB.start, PPG_EB.cur, PPG_EB.end, PPG_EB.size);
+//    PPG_LOG("Event queue truncated at front\n"); 
+//    PPG_LOG("   start: %u, cur: %u, end: %u, size: %u\n", 
+//               PPG_EB.start, PPG_EB.cur, PPG_EB.end, PPG_EB.size);
    
 }
 
@@ -262,15 +262,15 @@ void ppg_event_buffer_remove_first_event(void)
    
    --PPG_EB.size;
    
-   PPG_LOG("Event queue removed first event\n");
-   PPG_LOG("   start: %u, cur: %u, end: %u, size: %u\n", 
-              PPG_EB.start, PPG_EB.cur, PPG_EB.end, PPG_EB.size);
+//    PPG_LOG("Event queue removed first event\n");
+//    PPG_LOG("   start: %u, cur: %u, end: %u, size: %u\n", 
+//               PPG_EB.start, PPG_EB.cur, PPG_EB.end, PPG_EB.size);
    
 }
 
 void ppg_even_buffer_flush_and_remove_first_event(bool on_success)
 {
-   PPG_LOG("Flushing and removing first event\n");
+//    PPG_LOG("Flushing and removing first event\n");
    
    ppg_context->event_processor(&PPG_EB.events[PPG_EB.start].event, NULL);
    

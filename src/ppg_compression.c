@@ -18,7 +18,9 @@
 #include "detail/ppg_context_detail.h"
 #include "detail/ppg_token_vtable_detail.h"
 #include "detail/ppg_malloc_detail.h"
+#include "ppg_debug.h"
 
+#include <stdio.h>
 #include "assert.h"
 
 static void ppg_compression_context_symbol_buffer_resize(
@@ -405,6 +407,7 @@ void ppg_compression_write_c_char_array(char *array_name,
 
 void ppg_compression_setup_context(void *context)
 {
+//    uprintf("c setup ctxt\n");
    char *context_c = (char*)context;
    
    PPG_Context *the_context = (PPG_Context *)context;
@@ -451,7 +454,15 @@ void ppg_compression_write_c_output(PPG_Compression_Context__ *ccontext,
    
 //    printf("Written at %lu\n", (size_t)((char*)&((PPG_Context*)(ccontext->target_storage))->properties - (char*)ccontext->target_storage));
    
-   printf("/* Size of context %lu bytes */\n", (unsigned long)ccontext->storage_size);
+   printf("/*\nSize of context %lu bytes\n\n", (unsigned long)ccontext->storage_size);
+   
+   printf("tree_depth: %d\n", (int)ppg_context->tree_depth);
+   printf("layer: %d\n", (int)ppg_context->layer);
+   printf("abort_input: %d\n", (int)ppg_context->abort_input);
+   printf("time_last_event: %d\n", (int)ppg_context->time_last_event);
+   printf("event_timeout: %d\n", (int)ppg_context->event_timeout);
+   
+   printf("*/\n\n");
    
    ppg_compression_write_c_char_array(context_name,
                                       ccontext->target_storage,
@@ -488,7 +499,6 @@ void ppg_compression_write_c_output(PPG_Compression_Context__ *ccontext,
    }
    
    printf("   \\\n");
-   
    printf("   ppg_compression_setup_context(%s); \\\n",
           context_name/*, aux_name, aux_name*/);
    

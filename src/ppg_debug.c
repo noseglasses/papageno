@@ -27,6 +27,6 @@ bool ppg_logging_set_enabled(bool state)
 
 bool ppg_logging_get_enabled(void)
 {
-   return ppg_context && ppg_context->properties.logging_enabled;
+   return !ppg_context || ppg_context->properties.logging_enabled;
 }
 #endif

@@ -33,7 +33,7 @@ static void ppg_on_timeout(void)
       
    if(action_processed) { 
       
-      PPG_LOG("Fallback success\n");
+//       PPG_LOG("Fallback success\n");
       
       // Fallback was possible
    
@@ -47,7 +47,7 @@ static void ppg_on_timeout(void)
    }
    else {
       
-      PPG_LOG("Trying to find match after timeout\n");
+//       PPG_LOG("Trying to find match after timeout\n");
       
       // If no action fallback is possible,
       // we try to find a match...

@@ -89,6 +89,9 @@ mark_as_advanced(PAPAGENO_TEST_COVERAGE)
 option(PAPAGENO_VALGRIND "Run tests using valgrind to detect memory related errors" FALSE)
 mark_as_advanced(PAPAGENO_VALGRIND)
 
+option(PAPAGENO_QMK "Builds a dedicated version of Papageno to be used with the Quantum Mechanical Keyboard firmware" FALSE)
+mark_as_advanced(PAPAGENO_QMK)
+
 set(PAPAGENO_ADDITIONAL_INCLUDE_PATHS "" CACHE STRING "Add additional include paths that are necessary to build")
 mark_as_advanced(PAPAGENO_ADDITIONAL_INCLUDE_PATHS)
 
