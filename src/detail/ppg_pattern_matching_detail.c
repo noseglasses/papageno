@@ -180,9 +180,23 @@ static PPG_Token__ *ppg_token_get_most_appropriate_branch(
       /* Accept only paths through the search tree whose
       * nodes' ppg_context->layer tags are lower or equal the current ppg_context->layer
       */
-      if(parent_token->children[i]->layer > ppg_context->layer) { 
+      /* Note: Positive layer values are interpreted as lower boundaries,
+       *       negative layer values are interpreted as upper boundaries by taking the
+       *       negative and subtracting one.
+       */
+      if(parent_token->children[i]->layer < 0) {
          
-         PPG_LOG("   Ignoring 0x%" PRIXPTR " due to insuitable layer\n",
+         if(ppg_context->layer > (-parent_token->children[i]->layer - 1)) {
+            PPG_LOG("   Ignoring 0x%" PRIXPTR " due to insuitably low layer\n",
+            (uintptr_t)parent_token->children[i]);
+            
+            parent_token->children[i]->misc.state = PPG_Token_Invalid;
+            continue; 
+         }
+      }
+      else if(parent_token->children[i]->layer > ppg_context->layer) { 
+         
+         PPG_LOG("   Ignoring 0x%" PRIXPTR " due to insuitably high layer\n",
            (uintptr_t)parent_token->children[i]);
          
          parent_token->children[i]->misc.state = PPG_Token_Invalid;

@@ -21,4 +21,7 @@
 
 #include "ppg_settings.h"
 
+#define PPG_LAYER_UPPER_BOUNDARY(L) (-(L + 1))
+#define PPG_LAYER_LOWER_BOUNDARY(L) (L)
+
 #endif
