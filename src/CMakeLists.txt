@@ -293,7 +293,7 @@ foreach(file ${source_files_detail} ${header_files_detail})
 endforeach()
 
 update_sym_link(
-   \"${CMAKE_SOURCE_DIR}/src/\${file}\"
+   \"${arduino_build_dir}/src\"
    \"${CMAKE_BINARY_DIR}/src/${settings_file}\"
    \"${settings_file}\"
 )
