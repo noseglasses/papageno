@@ -23,7 +23,7 @@ int ppg_compression_check_symbol_registered(PPG_Compression_Context__ *ccontext,
                                             void *symbol)
 {
    int s = 0;
-   for(; s < ccontext->symbols_lookup.n_stored; ++s) {
+   for(; s < (int)ccontext->symbols_lookup.n_stored; ++s) {
       
 //          printf("Checking symbol %s\n", ccontext->symbols_lookup.buffer[s].name);
 //          printf("   Stored symbol %p\n", ccontext->symbols_lookup.buffer[s].address);
@@ -34,7 +34,7 @@ int ppg_compression_check_symbol_registered(PPG_Compression_Context__ *ccontext,
       }
    }
    
-   if(!(s < ccontext->symbols_lookup.n_stored)) {
+   if(!(s < (int)ccontext->symbols_lookup.n_stored)) {
       s = -1;
    }
    

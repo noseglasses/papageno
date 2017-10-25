@@ -198,7 +198,7 @@ static void ppg_even_buffer_recompute_size(void)
 }
 
 static void ppg_flush_non_considered_events(PPG_Event_Queue_Entry *eqe, 
-                                            void* user_data)
+                                            void *user_data)
 {
    if(!(eqe->event.flags & PPG_Event_Considered)) {
 

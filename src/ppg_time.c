@@ -23,7 +23,9 @@ static void ppg_default_time(PPG_Time *time)
    *time = 0;
 }
 
-static void ppg_default_time_difference(PPG_Time time1, PPG_Time time2, PPG_Time *delta)
+static void ppg_default_time_difference(PPG_Time time1, 
+                                        PPG_Time time2, 
+                                        PPG_Time *delta)
 {
    *delta = 0;
 }

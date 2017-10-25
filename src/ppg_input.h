@@ -35,6 +35,10 @@ typedef uint8_t PPG_Input_Id;
  */
 #define PPG_INPUTS(...) \
    sizeof((PPG_Input_Id[]){ __VA_ARGS__ })/sizeof(PPG_Input_Id), \
-   (PPG_Input_Id[]){ __VA_ARGS__ }
+   \
+   /* The following akward construnct serves to silence the compiler warning \
+    * error: taking address of temporary array \
+    */ \
+   (PPG_Input_Id*)(const PPG_Input_Id[]){ __VA_ARGS__ }
 
 #endif

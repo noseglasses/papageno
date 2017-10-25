@@ -62,7 +62,7 @@ PPG_Token__ * ppg_branch_find_root(
    return branch_root;
 }
 
-static PPG_Token__ *ppg_furcation_revert(PPG_Token__ *start_token)
+static PPG_Token__ *ppg_furcation_revert(void)
 {
    // If there is no current furcation, we at least clean up to 
    // the root node. Otherwise we cleanup to the current furcation.
@@ -107,11 +107,6 @@ static PPG_Token__ *ppg_furcation_revert(PPG_Token__ *start_token)
             
             PPG_PRINT_TOKEN(furcation_token->children[i])
          }
-         
-         // Set the current branch token as new start token for
-         // further branch cleanup
-         //
-         start_token = PPG_CUR_FUR.token;
          
          // Replace the current furcation with the previous one (if possible)
          //
@@ -275,7 +270,7 @@ static PPG_Token__ *ppg_token_get_next_possible_branch(
       
       PPG_LOG("Reverting to previous furcation\n");
       
-      parent_token = ppg_furcation_revert(parent_token);
+      parent_token = ppg_furcation_revert();
       
       if(!parent_token) {
          

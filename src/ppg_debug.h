@@ -113,6 +113,7 @@ bool ppg_logging_get_enabled(void);
 /** @brief A macro for printf style output
  */
 #define PPG_LOG(...)
+#define PPG_LOG_NOOP
 #endif
 
 #endif
