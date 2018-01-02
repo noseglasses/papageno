@@ -83,16 +83,16 @@ matrix:
         - MATRIX_EVAL="CC=clang-3.6 && CXX=clang++-3.6"
 
     # works on Precise and Trusty
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-trusty-3.7
-          packages:
-            - clang-3.7
-      env:
-        - MATRIX_EVAL="CC=clang-3.7 && CXX=clang++-3.7"
+    #- os: linux
+      #addons:
+        #apt:
+          #sources:
+            #- ubuntu-toolchain-r-test
+            #- llvm-toolchain-trusty-3.7
+          #packages:
+            #- clang-3.7
+      #env:
+        #- MATRIX_EVAL="CC=clang-3.7 && CXX=clang++-3.7"
 
     # Build using clang-tidy
     #
