@@ -290,6 +290,8 @@ static void ppg_active_tokens_update_aux(
                                     PPG_Event_Queue_Entry *eqe,
                                     void *user_data)
 {
+   PPG_UNUSED(user_data);
+   
 //    PPG_LOG("Event: Input 0x%d, active: %d\n",
 //            eqe->event.input,
 //            eqe->event.flags & PPG_Event_Active);

@@ -81,11 +81,14 @@ void ppg_global_initialize_context(PPG_Context *context) {
 
 size_t ppg_context_get_size_requirements(PPG_Context *context)
 {
+   PPG_UNUSED(context);
    return sizeof(PPG_Context);
 }
 
 char *ppg_context_copy(PPG_Context *context, void *target__)
 {
+   PPG_UNUSED(context);
+   
    char *target = target__;
    
    PPG_Context *target_context = (PPG_Context*)target;
@@ -116,6 +119,11 @@ void ppg_restore_context(PPG_Context *context)
 
 void ppg_print_context(PPG_Context *context)
 {
+   // The following is necessary as the PPG_LOG macros might be
+   // defined empty.
+   //
+   PPG_UNUSED(context);
+   
    PPG_LOG("tree_depth: %d\n", (int)context->tree_depth);
    PPG_LOG("layer: %d\n", (int)context->layer);
    PPG_LOG("abort_input: %d\n", (int)context->abort_input);

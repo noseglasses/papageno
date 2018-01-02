@@ -116,4 +116,6 @@ bool ppg_logging_get_enabled(void);
 #define PPG_LOG_NOOP
 #endif
 
+#define PPG_UNUSED(X) (void)(X)
+
 #endif
