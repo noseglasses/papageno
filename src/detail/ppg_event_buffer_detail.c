@@ -200,6 +200,8 @@ static void ppg_even_buffer_recompute_size(void)
 static void ppg_flush_non_considered_events(PPG_Event_Queue_Entry *eqe, 
                                             void *user_data)
 {
+   PPG_UNUSED(user_data);
+   
    if(!(eqe->event.flags & PPG_Event_Considered)) {
 
       // Events that were not considered and are 
@@ -270,6 +272,8 @@ void ppg_event_buffer_remove_first_event(void)
 
 void ppg_even_buffer_flush_and_remove_first_event(bool on_success)
 {
+   PPG_UNUSED(on_success);
+   
 //    PPG_LOG("Flushing and removing first event\n");
    
    ppg_context->event_processor(&PPG_EB.events[PPG_EB.start].event, NULL);

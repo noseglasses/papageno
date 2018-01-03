@@ -195,24 +195,27 @@ set(PAPAGENO_LIBRARY_TYPE "${initial_lib_type}" CACHE STRING "The type of papage
 
 add_library(papageno ${PAPAGENO_LIBRARY_TYPE} ${source_files_full_path})
 
-set(arduino_build_dir "${CMAKE_BINARY_DIR}/arduino")
-file(MAKE_DIRECTORY "${arduino_build_dir}")
+set(PAPAGENO_ARDUINO_BUILD_DIR "${CMAKE_BINARY_DIR}/arduino" CACHE PATH "The path where Arduino library is generated")
+
+file(MAKE_DIRECTORY "${PAPAGENO_ARDUINO_BUILD_DIR}")
 
 # Add a target to generate an arduino library
 #
-set(arduino_library "${arduino_build_dir}/Papageno.zip")
+set(arduino_library "${PAPAGENO_ARDUINO_BUILD_DIR}/Papageno.zip")
 
-set(generate_arduino_script "${arduino_build_dir}/generate_arduino.script.cmake")
 
-set(arduino_library_description_file "${arduino_build_dir}/library.properties")
+set(arduino_library_description_file "${PAPAGENO_ARDUINO_BUILD_DIR}/library.properties")
 
-file(WRITE "${generate_arduino_script}"
+set(generate_arduino_library_description_script 
+   "${PAPAGENO_ARDUINO_BUILD_DIR}/generate_arduino_library_description.script.cmake")
+
+file(WRITE "${generate_arduino_library_description_script}"
 "
 file(WRITE \"${arduino_library_description_file}\"
 \"name=Papageno
 version=0.0.0
-author=Florian Fleissner
-maintainer=Florian Fleissner <shinynoseglasses@gmail.com>
+author=noseglasses
+maintainer=noseglasses <shinynoseglasses@gmail.com>
 sentence=Papageno pattern matching library.
 paragraph=Papageno pattern matching library.
 category=Communication
@@ -221,7 +224,21 @@ architectures=avr
 dot_a_linkage=true
 includes=papageno.h
 \")
+"
+)
 
+add_custom_command(
+   OUTPUT "${arduino_library_description_file}"
+   COMMAND "${CMAKE_COMMAND}" -P "${generate_arduino_library_description_script}"
+   COMMENT "Generating Papageno Arduino library description"
+)
+
+add_custom_target(arduino_library_description_file DEPENDS "${arduino_library_description_file}")
+
+set(generate_arduino_script "${PAPAGENO_ARDUINO_BUILD_DIR}/generate_arduino.script.cmake")
+
+file(WRITE "${generate_arduino_script}"
+"
 execute_process(
    COMMAND zip \"${arduino_library}\" 
       ${source_files_src_path} 
@@ -238,7 +255,7 @@ execute_process(
 execute_process(
    COMMAND zip -u \"${arduino_library}\"
       \"library.properties\"
-   WORKING_DIRECTORY \"${arduino_build_dir}\"
+   WORKING_DIRECTORY \"${PAPAGENO_ARDUINO_BUILD_DIR}\"
 )
 ")
 
@@ -249,18 +266,20 @@ add_custom_command(
       ${header_files_full_path} 
       "${CMAKE_BINARY_DIR}/src/${settings_file}"
    COMMAND "${CMAKE_COMMAND}" -P "${generate_arduino_script}" 
+   COMMENT "Generating Papageno Arduino library zipped archive"
 )
 
 add_custom_target(arduino_zip DEPENDS "${arduino_library}")
+add_dependencies(arduino_zip arduino_library_description_file)
 
 # Generate a dummy arduino library by using symbolic links to source files
 #
-set(sym_links_creation_script "${arduino_build_dir}/generate_symlinks.script.cmake")
+set(sym_links_creation_script "${PAPAGENO_ARDUINO_BUILD_DIR}/generate_symlinks.script.cmake")
 
 file(WRITE "${sym_links_creation_script}"
 "
-file(MAKE_DIRECTORY \"${arduino_build_dir}/src\")
-file(MAKE_DIRECTORY \"${arduino_build_dir}/src/detail\")
+file(MAKE_DIRECTORY \"${PAPAGENO_ARDUINO_BUILD_DIR}/src\")
+file(MAKE_DIRECTORY \"${PAPAGENO_ARDUINO_BUILD_DIR}/src/detail\")
 
 function(update_sym_link
    work_dir_
@@ -278,7 +297,7 @@ endfunction()
 
 foreach(file ${source_files_} ${header_files_})
    update_sym_link(
-      \"${arduino_build_dir}/src\"
+      \"${PAPAGENO_ARDUINO_BUILD_DIR}/src\"
       \"${CMAKE_SOURCE_DIR}/src/\${file}\" 
       \"\${file}\"
    )
@@ -286,28 +305,36 @@ endforeach()
 
 foreach(file ${source_files_detail} ${header_files_detail})
    update_sym_link(
-      \"${arduino_build_dir}/src/detail\"
+      \"${PAPAGENO_ARDUINO_BUILD_DIR}/src/detail\"
       \"${CMAKE_SOURCE_DIR}/src/detail/\${file}\"
       \"\${file}\"
    )
 endforeach()
+")
 
+if(NOT "${PAPAGENO_ARDUINO_BUILD_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
+
+   file(APPEND "${sym_links_creation_script}"
+"
 update_sym_link(
-   \"${arduino_build_dir}/src\"
+   \"${PAPAGENO_ARDUINO_BUILD_DIR}/src\"
    \"${CMAKE_BINARY_DIR}/src/${settings_file}\"
    \"${settings_file}\"
 )
 ")
+endif()
 
 add_custom_command(
-   OUTPUT "${arduino_build_dir}/src/ppg_context.h"
+   OUTPUT "${PAPAGENO_ARDUINO_BUILD_DIR}/src/ppg_context.h"
    DEPENDS 
       ${source_files_full_path} 
       ${header_files_full_path} 
       "${CMAKE_BINARY_DIR}/src/${settings_file}"
-   COMMAND "${CMAKE_COMMAND}" -P "${sym_links_creation_script}" 
+   COMMAND "${CMAKE_COMMAND}" -P "${sym_links_creation_script}"
+   COMMENT "Generating Papageno Arduino library symlinks"
 )
 
-add_custom_target(arduino_symlinks DEPENDS "${arduino_build_dir}/src/ppg_context.h")
+add_custom_target(arduino_symlinks DEPENDS "${PAPAGENO_ARDUINO_BUILD_DIR}/src/ppg_context.h")
+add_dependencies(arduino_symlinks arduino_library_description_file)
 
 add_custom_target(arduino DEPENDS arduino_symlinks arduino_zip)

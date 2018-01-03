@@ -139,6 +139,7 @@ static bool ppg_chord_match_event(
 
 static PPG_Count ppg_chord_token_precedence(PPG_Token__ *token)
 {
+   PPG_UNUSED(token);
    return PPG_Token_Precedence_Chord;
 }
 

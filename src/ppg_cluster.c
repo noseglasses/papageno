@@ -155,6 +155,7 @@ static bool ppg_cluster_match_event(
 
 static PPG_Count ppg_cluster_token_precedence(PPG_Token__ *token)
 {
+   PPG_UNUSED(token);
    return PPG_Token_Precedence_Cluster;
 }
 

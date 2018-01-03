@@ -27,6 +27,8 @@ static void ppg_default_time_difference(PPG_Time time1,
                                         PPG_Time time2, 
                                         PPG_Time *delta)
 {
+   PPG_UNUSED(time1);
+   PPG_UNUSED(time2);
    *delta = 0;
 }
 
@@ -34,6 +36,8 @@ PPG_Time_Comparison_Result_Type ppg_default_time_comparison(
                         PPG_Time time1,
                         PPG_Time time2)
 {
+   PPG_UNUSED(time1);
+   PPG_UNUSED(time2);
    return 0;
 }
 
