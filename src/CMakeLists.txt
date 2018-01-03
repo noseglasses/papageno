@@ -229,7 +229,8 @@ includes=papageno.h
 
 add_custom_command(
    OUTPUT "${arduino_library_description_file}"
-   COMMAND "${CMAKE_COMMAND}" -P "${generate_arduino_library_description_script}" 
+   COMMAND "${CMAKE_COMMAND}" -P "${generate_arduino_library_description_script}"
+   COMMENT "Generating Papageno Arduino library description"
 )
 
 add_custom_target(arduino_library_description_file DEPENDS "${arduino_library_description_file}")
@@ -265,6 +266,7 @@ add_custom_command(
       ${header_files_full_path} 
       "${CMAKE_BINARY_DIR}/src/${settings_file}"
    COMMAND "${CMAKE_COMMAND}" -P "${generate_arduino_script}" 
+   COMMENT "Generating Papageno Arduino library zipped archive"
 )
 
 add_custom_target(arduino_zip DEPENDS "${arduino_library}")
@@ -328,7 +330,8 @@ add_custom_command(
       ${source_files_full_path} 
       ${header_files_full_path} 
       "${CMAKE_BINARY_DIR}/src/${settings_file}"
-   COMMAND "${CMAKE_COMMAND}" -P "${sym_links_creation_script}" 
+   COMMAND "${CMAKE_COMMAND}" -P "${sym_links_creation_script}"
+   COMMENT "Generating Papageno Arduino library symlinks"
 )
 
 add_custom_target(arduino_symlinks DEPENDS "${PAPAGENO_ARDUINO_BUILD_DIR}/src/ppg_context.h")
