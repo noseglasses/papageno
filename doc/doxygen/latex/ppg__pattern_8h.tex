@@ -1,0 +1,40 @@
+\hypertarget{ppg__pattern_8h}{\section{/home/travis/build/noseglasses/papageno/src/ppg\-\_\-pattern.h File Reference}
+\label{ppg__pattern_8h}\index{/home/travis/build/noseglasses/papageno/src/ppg\-\_\-pattern.\-h@{/home/travis/build/noseglasses/papageno/src/ppg\-\_\-pattern.\-h}}
+}
+{\ttfamily \#include \char`\"{}ppg\-\_\-token.\-h\char`\"{}}\\*
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{ppg__token_8h_a87940c8d6eedc90a71ca6c4e841304e5}{P\-P\-G\-\_\-\-Token} \hyperlink{ppg__pattern_8h_adac3875b0110bca04218819bb56ab8d4}{ppg\-\_\-pattern} (P\-P\-G\-\_\-\-Layer layer, P\-P\-G\-\_\-\-Count n\-\_\-tokens, \hyperlink{ppg__token_8h_a87940c8d6eedc90a71ca6c4e841304e5}{P\-P\-G\-\_\-\-Token} tokens\mbox{[}$\,$\mbox{]})
+\begin{DoxyCompactList}\small\item\em Defines a pattern that consists of tokens. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{ppg__pattern_8h_adac3875b0110bca04218819bb56ab8d4}{\index{ppg\-\_\-pattern.\-h@{ppg\-\_\-pattern.\-h}!ppg\-\_\-pattern@{ppg\-\_\-pattern}}
+\index{ppg\-\_\-pattern@{ppg\-\_\-pattern}!ppg_pattern.h@{ppg\-\_\-pattern.\-h}}
+\subsubsection[{ppg\-\_\-pattern}]{\setlength{\rightskip}{0pt plus 5cm}{\bf P\-P\-G\-\_\-\-Token} ppg\-\_\-pattern (
+\begin{DoxyParamCaption}
+\item[{P\-P\-G\-\_\-\-Layer}]{layer, }
+\item[{P\-P\-G\-\_\-\-Count}]{n\-\_\-tokens, }
+\item[{{\bf P\-P\-G\-\_\-\-Token}}]{tokens\mbox{[}$\,$\mbox{]}}
+\end{DoxyParamCaption}
+)}}\label{ppg__pattern_8h_adac3875b0110bca04218819bb56ab8d4}
+
+
+Defines a pattern that consists of tokens. 
+
+\begin{DoxyNote}{Note}
+Use setter functions that operate on tokens to change attributes of the tokens that make up the pattern. This is e.\-g. required to assign an action to a token, or to modify fall through behavior.
+\end{DoxyNote}
+
+\begin{DoxyParams}{Parameters}
+{\em layer} & The layer the pattern is associated with \\
+\hline
+{\em n\-\_\-tokens} & The number of tokens combined to form the pattern \\
+\hline
+{\em tokens} & The tokens that make up the pattern \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The final token 
+\end{DoxyReturn}

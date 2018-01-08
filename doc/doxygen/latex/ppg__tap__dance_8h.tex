@@ -1,0 +1,101 @@
+\hypertarget{ppg__tap__dance_8h}{\section{/home/travis/build/noseglasses/papageno/src/ppg\-\_\-tap\-\_\-dance.h File Reference}
+\label{ppg__tap__dance_8h}\index{/home/travis/build/noseglasses/papageno/src/ppg\-\_\-tap\-\_\-dance.\-h@{/home/travis/build/noseglasses/papageno/src/ppg\-\_\-tap\-\_\-dance.\-h}}
+}
+{\ttfamily \#include \char`\"{}ppg\-\_\-action.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}ppg\-\_\-token.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}ppg\-\_\-input.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}ppg\-\_\-layer.\-h\char`\"{}}\\*
+\subsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structPPG__Tap__Definition}{P\-P\-G\-\_\-\-Tap\-\_\-\-Definition}
+\begin{DoxyCompactList}\small\item\em A tap specification. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{ppg__tap__dance_8h_ae6bdd338ab744019d348dd527268ce8b}{P\-P\-G\-\_\-\-T\-A\-P\-\_\-\-D\-E\-F\-I\-N\-I\-T\-I\-O\-N\-S}(...)
+\begin{DoxyCompactList}\small\item\em Auxiliary macro to simplify passing tap definitions. \end{DoxyCompactList}\item 
+\#define \hyperlink{ppg__tap__dance_8h_a5365facf28c55536194d5c22f61dd4fa}{P\-P\-G\-\_\-\-T\-A\-P}(T\-A\-P\-\_\-\-C\-O\-U\-N\-T, A\-C\-T\-I\-O\-N)~(\hyperlink{structPPG__Tap__Definition}{P\-P\-G\-\_\-\-Tap\-\_\-\-Definition}) \{ .action = A\-C\-T\-I\-O\-N, .tap\-\_\-count = T\-A\-P\-\_\-\-C\-O\-U\-N\-T \}
+\begin{DoxyCompactList}\small\item\em This macro simplifies the specification of taps as actions that are associated with specific a number of taps. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{ppg__token_8h_a87940c8d6eedc90a71ca6c4e841304e5}{P\-P\-G\-\_\-\-Token} \hyperlink{ppg__tap__dance_8h_ac3a097668d11e41814e6e42c9768705a}{ppg\-\_\-tap\-\_\-dance} (P\-P\-G\-\_\-\-Layer layer, \hyperlink{ppg__input_8h_a83636f010a52c9de62d0425629f0a158}{P\-P\-G\-\_\-\-Input\-\_\-\-Id} input, P\-P\-G\-\_\-\-Count n\-\_\-tap\-\_\-definitions, \hyperlink{structPPG__Tap__Definition}{P\-P\-G\-\_\-\-Tap\-\_\-\-Definition} tap\-\_\-definitions\mbox{[}$\,$\mbox{]})
+\begin{DoxyCompactList}\small\item\em Defines a tap dance. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\hypertarget{ppg__tap__dance_8h_a5365facf28c55536194d5c22f61dd4fa}{\index{ppg\-\_\-tap\-\_\-dance.\-h@{ppg\-\_\-tap\-\_\-dance.\-h}!P\-P\-G\-\_\-\-T\-A\-P@{P\-P\-G\-\_\-\-T\-A\-P}}
+\index{P\-P\-G\-\_\-\-T\-A\-P@{P\-P\-G\-\_\-\-T\-A\-P}!ppg_tap_dance.h@{ppg\-\_\-tap\-\_\-dance.\-h}}
+\subsubsection[{P\-P\-G\-\_\-\-T\-A\-P}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\-P\-G\-\_\-\-T\-A\-P(
+\begin{DoxyParamCaption}
+\item[{}]{T\-A\-P\-\_\-\-C\-O\-U\-N\-T, }
+\item[{}]{A\-C\-T\-I\-O\-N}
+\end{DoxyParamCaption}
+)~({\bf P\-P\-G\-\_\-\-Tap\-\_\-\-Definition}) \{ .action = A\-C\-T\-I\-O\-N, .tap\-\_\-count = T\-A\-P\-\_\-\-C\-O\-U\-N\-T \}}}\label{ppg__tap__dance_8h_a5365facf28c55536194d5c22f61dd4fa}
+
+
+This macro simplifies the specification of taps as actions that are associated with specific a number of taps. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em T\-A\-P\-\_\-\-C\-O\-U\-N\-T} & The number of taps the action is associated with \\
+\hline
+{\em A\-C\-T\-I\-O\-N} & The action \\
+\hline
+\end{DoxyParams}
+\hypertarget{ppg__tap__dance_8h_ae6bdd338ab744019d348dd527268ce8b}{\index{ppg\-\_\-tap\-\_\-dance.\-h@{ppg\-\_\-tap\-\_\-dance.\-h}!P\-P\-G\-\_\-\-T\-A\-P\-\_\-\-D\-E\-F\-I\-N\-I\-T\-I\-O\-N\-S@{P\-P\-G\-\_\-\-T\-A\-P\-\_\-\-D\-E\-F\-I\-N\-I\-T\-I\-O\-N\-S}}
+\index{P\-P\-G\-\_\-\-T\-A\-P\-\_\-\-D\-E\-F\-I\-N\-I\-T\-I\-O\-N\-S@{P\-P\-G\-\_\-\-T\-A\-P\-\_\-\-D\-E\-F\-I\-N\-I\-T\-I\-O\-N\-S}!ppg_tap_dance.h@{ppg\-\_\-tap\-\_\-dance.\-h}}
+\subsubsection[{P\-P\-G\-\_\-\-T\-A\-P\-\_\-\-D\-E\-F\-I\-N\-I\-T\-I\-O\-N\-S}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\-P\-G\-\_\-\-T\-A\-P\-\_\-\-D\-E\-F\-I\-N\-I\-T\-I\-O\-N\-S(
+\begin{DoxyParamCaption}
+\item[{}]{...}
+\end{DoxyParamCaption}
+)}}\label{ppg__tap__dance_8h_ae6bdd338ab744019d348dd527268ce8b}
+{\bfseries Value\-:}
+\begin{DoxyCode}
+\textcolor{keyword}{sizeof}((\hyperlink{structPPG__Tap__Definition}{PPG\_Tap\_Definition}[])\{ \_\_VA\_ARGS\_\_ \})/\textcolor{keyword}{sizeof}(
+      \hyperlink{structPPG__Tap__Definition}{PPG\_Tap\_Definition}), \(\backslash\)
+   (\hyperlink{structPPG__Tap__Definition}{PPG\_Tap\_Definition}[])\{ \_\_VA\_ARGS\_\_ \}
+\end{DoxyCode}
+
+
+Auxiliary macro to simplify passing tap definitions. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em ...} & The array members \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Function Documentation}
+\hypertarget{ppg__tap__dance_8h_ac3a097668d11e41814e6e42c9768705a}{\index{ppg\-\_\-tap\-\_\-dance.\-h@{ppg\-\_\-tap\-\_\-dance.\-h}!ppg\-\_\-tap\-\_\-dance@{ppg\-\_\-tap\-\_\-dance}}
+\index{ppg\-\_\-tap\-\_\-dance@{ppg\-\_\-tap\-\_\-dance}!ppg_tap_dance.h@{ppg\-\_\-tap\-\_\-dance.\-h}}
+\subsubsection[{ppg\-\_\-tap\-\_\-dance}]{\setlength{\rightskip}{0pt plus 5cm}{\bf P\-P\-G\-\_\-\-Token} ppg\-\_\-tap\-\_\-dance (
+\begin{DoxyParamCaption}
+\item[{P\-P\-G\-\_\-\-Layer}]{layer, }
+\item[{{\bf P\-P\-G\-\_\-\-Input\-\_\-\-Id}}]{input, }
+\item[{P\-P\-G\-\_\-\-Count}]{n\-\_\-tap\-\_\-definitions, }
+\item[{{\bf P\-P\-G\-\_\-\-Tap\-\_\-\-Definition}}]{tap\-\_\-definitions\mbox{[}$\,$\mbox{]}}
+\end{DoxyParamCaption}
+)}}\label{ppg__tap__dance_8h_ac3a097668d11e41814e6e42c9768705a}
+
+
+Defines a tap dance. 
+
+Tap dances are a sequence of input presses of the same input. With each press an action can be associated. As an enhancement to the original tap dance idea. It is also possible to fall back to the last action if e.\-g. an action is defined for three input presses and five input presses. If default\-\_\-action\-\_\-flags contains P\-P\-G\-\_\-\-Action\-\_\-\-Fallback the action associated with the next lower amount of input presses is triggered, in this example the action associated with three presses.
+
+
+\begin{DoxyParams}{Parameters}
+{\em layer} & The layer the pattern is associated with \\
+\hline
+{\em input} & The input the tap dance is associated with \\
+\hline
+{\em n\-\_\-tap\-\_\-definitions} & The number of tap definitions \\
+\hline
+{\em tap\-\_\-definitions} & A tap definitions array. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The constructed token 
+\end{DoxyReturn}

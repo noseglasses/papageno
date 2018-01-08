@@ -1,0 +1,306 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info.cleaned - src/detail/ppg_aggregate_detail.c</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../index.html">top level</a> - <a href="index.html">src/detail</a> - ppg_aggregate_detail.c<span style="font-size: 80%;"> (source / <a href="ppg_aggregate_detail.c.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info.cleaned</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">84</td>
+            <td class="headerCovTableEntry">93</td>
+            <td class="headerCovTableEntryHi">90.3 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-01-08</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">12</td>
+            <td class="headerCovTableEntry">13</td>
+            <td class="headerCovTableEntryHi">92.3 %</td>
+          </tr>
+          <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /* Copyright 2017 noseglasses &lt;shinynoseglasses@gmail.com&gt;</a>
+<span class="lineNum">       2 </span>            :  *
+<span class="lineNum">       3 </span>            :  * This program is free software: you can redistribute it and/or modify
+<span class="lineNum">       4 </span>            :  * it under the terms of the GNU Lesser General Public License as published by
+<span class="lineNum">       5 </span>            :  * the Free Software Foundation, either version 3 of the License, or
+<span class="lineNum">       6 </span>            :  * (at your option) any later version.
+<span class="lineNum">       7 </span>            :  *
+<span class="lineNum">       8 </span>            :  * This program is distributed in the hope that it will be useful,
+<span class="lineNum">       9 </span>            :  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<span class="lineNum">      10 </span>            :  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<span class="lineNum">      11 </span>            :  * GNU Lesser General Public License for more details.
+<span class="lineNum">      12 </span>            :  *
+<span class="lineNum">      13 </span>            :  * You should have received a copy of the GNU Lesser General Public License
+<span class="lineNum">      14 </span>            :  * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+<span class="lineNum">      15 </span>            :  */
+<span class="lineNum">      16 </span>            : 
+<span class="lineNum">      17 </span>            : #include &quot;detail/ppg_aggregate_detail.h&quot;
+<span class="lineNum">      18 </span>            : #include &quot;detail/ppg_input_detail.h&quot;
+<span class="lineNum">      19 </span>            : #include &quot;detail/ppg_context_detail.h&quot;
+<span class="lineNum">      20 </span>            : #include &quot;detail/ppg_malloc_detail.h&quot;
+<span class="lineNum">      21 </span>            : 
+<span class="lineNum">      22 </span>            : #include &lt;stddef.h&gt;
+<span class="lineNum">      23 </span>            : #include &lt;stdlib.h&gt;
+<a name="24"><span class="lineNum">      24 </span>            : #include &lt;string.h&gt;</a>
+<span class="lineNum">      25 </span>            : 
+<span class="lineNum">      26 </span><span class="lineCov">         38 : void *ppg_aggregate_new(void *aggregate__) {</span>
+<span class="lineNum">      27 </span>            :     
+<span class="lineNum">      28 </span>            :    /* Explict call to parent constructor
+<span class="lineNum">      29 </span>            :     */
+<span class="lineNum">      30 </span><span class="lineCov">         38 :    ppg_token_new((PPG_Token__*)aggregate__);</span>
+<span class="lineNum">      31 </span>            :    
+<span class="lineNum">      32 </span><span class="lineCov">         38 :    PPG_Aggregate *aggregate = (PPG_Aggregate*)aggregate__;</span>
+<span class="lineNum">      33 </span>            :       
+<span class="lineNum">      34 </span>            :    /* Initialize the aggregate
+<span class="lineNum">      35 </span>            :     */
+<span class="lineNum">      36 </span><span class="lineCov">         38 :    aggregate-&gt;n_members = 0;</span>
+<span class="lineNum">      37 </span><span class="lineCov">         38 :    aggregate-&gt;inputs = NULL;</span>
+<span class="lineNum">      38 </span>            :    
+<span class="lineNum">      39 </span><span class="lineCov">         38 :    ppg_bitfield_init(&amp;aggregate-&gt;member_active);</span>
+<span class="lineNum">      40 </span>            : 
+<span class="lineNum">      41 </span><span class="lineCov">         38 :    aggregate-&gt;n_inputs_active = 0;</span>
+<span class="lineNum">      42 </span>            : 
+<span class="lineNum">      43 </span><span class="lineCov">         38 :    return aggregate;</span>
+<a name="44"><span class="lineNum">      44 </span>            : }</a>
+<span class="lineNum">      45 </span>            : 
+<span class="lineNum">      46 </span><span class="lineCov">        135 : void ppg_aggregate_reset(PPG_Aggregate *aggregate) </span>
+<span class="lineNum">      47 </span>            : {
+<span class="lineNum">      48 </span><span class="lineCov">        135 :    ppg_token_reset_control_state((PPG_Token__*)aggregate);</span>
+<span class="lineNum">      49 </span>            :    
+<span class="lineNum">      50 </span><span class="lineCov">        135 :    aggregate-&gt;n_inputs_active = 0;</span>
+<span class="lineNum">      51 </span>            :    
+<span class="lineNum">      52 </span><span class="lineCov">        540 :    for(PPG_Count i = 0; i &lt; aggregate-&gt;n_members; ++i) {</span>
+<span class="lineNum">      53 </span><span class="lineCov">        405 :       ppg_bitfield_set_bit(&amp;aggregate-&gt;member_active,</span>
+<span class="lineNum">      54 </span>            :                            i,
+<span class="lineNum">      55 </span>            :                            false);
+<span class="lineNum">      56 </span>            :    }
+<span class="lineNum">      57 </span>            :    
+<span class="lineNum">      58 </span>            :    // Clear the activation state
+<span class="lineNum">      59 </span>            :    //
+<span class="lineNum">      60 </span>            :    aggregate-&gt;super.misc.flags 
+<span class="lineNum">      61 </span><span class="lineCov">        135 :          &amp;= (PPG_Count)~PPG_Aggregate_All_Active;</span>
+<a name="62"><span class="lineNum">      62 </span><span class="lineCov">        135 : }</span></a>
+<span class="lineNum">      63 </span>            : 
+<span class="lineNum">      64 </span><span class="lineCov">         76 : static void ppg_aggregate_deallocate_member_storage(PPG_Aggregate *aggregate) {  </span>
+<span class="lineNum">      65 </span>            :    
+<span class="lineNum">      66 </span><span class="lineCov">         76 :    if(aggregate-&gt;inputs) {</span>
+<span class="lineNum">      67 </span><span class="lineCov">         38 :       free(aggregate-&gt;inputs);</span>
+<span class="lineNum">      68 </span><span class="lineCov">         38 :       aggregate-&gt;inputs = NULL;</span>
+<span class="lineNum">      69 </span>            :    }
+<span class="lineNum">      70 </span>            :    
+<span class="lineNum">      71 </span><span class="lineCov">         76 :    ppg_bitfield_destroy(&amp;aggregate-&gt;member_active);</span>
+<a name="72"><span class="lineNum">      72 </span><span class="lineCov">         76 : }</span></a>
+<span class="lineNum">      73 </span>            : 
+<span class="lineNum">      74 </span><span class="lineCov">         38 : static void ppg_aggregate_resize(PPG_Aggregate *aggregate, </span>
+<span class="lineNum">      75 </span>            :                      PPG_Count n_members)
+<span class="lineNum">      76 </span>            : {
+<span class="lineNum">      77 </span><span class="lineCov">         38 :    ppg_aggregate_deallocate_member_storage(aggregate);</span>
+<span class="lineNum">      78 </span>            :    
+<span class="lineNum">      79 </span><span class="lineCov">         38 :    aggregate-&gt;n_members = n_members;</span>
+<span class="lineNum">      80 </span>            :    
+<span class="lineNum">      81 </span><span class="lineCov">         38 :    aggregate-&gt;inputs = (PPG_Input_Id *)PPG_MALLOC(n_members*sizeof(PPG_Input_Id));</span>
+<span class="lineNum">      82 </span>            :         
+<span class="lineNum">      83 </span><span class="lineCov">         38 :    ppg_bitfield_resize(&amp;aggregate-&gt;member_active,</span>
+<span class="lineNum">      84 </span>            :                        n_members,
+<span class="lineNum">      85 </span>            :                        false /*drop old bits*/);
+<span class="lineNum">      86 </span>            : 
+<span class="lineNum">      87 </span><span class="lineCov">         38 :    aggregate-&gt;n_inputs_active = 0;</span>
+<span class="lineNum">      88 </span>            :       
+<span class="lineNum">      89 </span><span class="lineCov">        152 :    for(PPG_Count i = 0; i &lt; n_members; ++i) {</span>
+<span class="lineNum">      90 </span><span class="lineCov">        114 :       ppg_global_init_input(&amp;aggregate-&gt;inputs[i]);</span>
+<span class="lineNum">      91 </span>            :    }
+<a name="92"><span class="lineNum">      92 </span><span class="lineCov">         38 : }</span></a>
+<span class="lineNum">      93 </span>            : 
+<span class="lineNum">      94 </span><span class="lineCov">         38 : PPG_Aggregate* ppg_aggregate_destroy(PPG_Aggregate *aggregate) {</span>
+<span class="lineNum">      95 </span>            :    
+<span class="lineNum">      96 </span><span class="lineCov">         38 :    ppg_aggregate_deallocate_member_storage(aggregate);</span>
+<span class="lineNum">      97 </span>            :    
+<span class="lineNum">      98 </span><span class="lineCov">         38 :    ppg_token_destroy((PPG_Token__*)aggregate);</span>
+<span class="lineNum">      99 </span>            : 
+<span class="lineNum">     100 </span><span class="lineCov">         38 :    return aggregate;</span>
+<a name="101"><span class="lineNum">     101 </span>            : }</a>
+<span class="lineNum">     102 </span>            : 
+<span class="lineNum">     103 </span><span class="lineCov">         20 : PPG_Aggregate *ppg_aggregate_alloc(void) {</span>
+<span class="lineNum">     104 </span><span class="lineCov">         20 :     return (PPG_Aggregate*)PPG_MALLOC(sizeof(PPG_Aggregate));</span>
+<a name="105"><span class="lineNum">     105 </span>            : }</a>
+<span class="lineNum">     106 </span>            : 
+<span class="lineNum">     107 </span><span class="lineCov">         33 : bool ppg_aggregates_equal(PPG_Aggregate *c1, PPG_Aggregate *c2) </span>
+<span class="lineNum">     108 </span>            : {
+<span class="lineNum">     109 </span><span class="lineCov">         33 :    if(c1-&gt;n_members != c2-&gt;n_members) { return false; }</span>
+<span class="lineNum">     110 </span>            :    
+<span class="lineNum">     111 </span><span class="lineCov">         33 :    PPG_Count n_equalities = 0;</span>
+<span class="lineNum">     112 </span>            :    
+<span class="lineNum">     113 </span><span class="lineCov">        132 :    for(PPG_Count i = 0; i &lt; c1-&gt;n_members; ++i) {</span>
+<span class="lineNum">     114 </span><span class="lineCov">        366 :       for(PPG_Count j = 0; j &lt; c1-&gt;n_members; ++j) {</span>
+<span class="lineNum">     115 </span><span class="lineCov">        279 :          if(c1-&gt;inputs[i] == c2-&gt;inputs[j]) {</span>
+<span class="lineNum">     116 </span><span class="lineCov">         12 :             ++n_equalities;</span>
+<span class="lineNum">     117 </span><span class="lineCov">         12 :             break;</span>
+<span class="lineNum">     118 </span>            :          }
+<span class="lineNum">     119 </span>            :       }
+<span class="lineNum">     120 </span>            :    }
+<span class="lineNum">     121 </span>            :    
+<span class="lineNum">     122 </span><span class="lineCov">         33 :    return n_equalities == c1-&gt;n_members;</span>
+<a name="123"><span class="lineNum">     123 </span>            : }</a>
+<span class="lineNum">     124 </span>            : 
+<span class="lineNum">     125 </span><span class="lineCov">         38 : PPG_Token ppg_global_initialize_aggregate(   </span>
+<span class="lineNum">     126 </span>            :                         PPG_Aggregate *aggregate,
+<span class="lineNum">     127 </span>            :                         PPG_Count n_inputs,
+<span class="lineNum">     128 </span>            :                         PPG_Input_Id inputs[])
+<span class="lineNum">     129 </span>            : {
+<span class="lineNum">     130 </span><span class="lineCov">         38 :    ppg_aggregate_resize(aggregate, n_inputs);</span>
+<span class="lineNum">     131 </span>            :     
+<span class="lineNum">     132 </span><span class="lineCov">        152 :    for(PPG_Count i = 0; i &lt; n_inputs; ++i) {</span>
+<span class="lineNum">     133 </span><span class="lineCov">        114 :       aggregate-&gt;inputs[i] = inputs[i];</span>
+<span class="lineNum">     134 </span>            :    }
+<span class="lineNum">     135 </span>            :     
+<span class="lineNum">     136 </span>            :    /* Return the new end of the pattern 
+<span class="lineNum">     137 </span>            :     */
+<span class="lineNum">     138 </span><span class="lineCov">         38 :    return aggregate;</span>
+<a name="139"><span class="lineNum">     139 </span>            : }</a>
+<span class="lineNum">     140 </span>            : 
+<span class="lineNum">     141 </span><span class="lineCov">         24 : size_t ppg_aggregate_dynamic_member_size(PPG_Aggregate *aggregate)</span>
+<span class="lineNum">     142 </span>            : {
+<span class="lineNum">     143 </span><span class="lineCov">         48 :    return   ppg_token_dynamic_member_size((PPG_Token__*)aggregate)</span>
+<span class="lineNum">     144 </span><span class="lineCov">         24 :          +  aggregate-&gt;n_members*sizeof(PPG_Input_Id)</span>
+<span class="lineNum">     145 </span><span class="lineCov">         24 :          +  ppg_bitfield_get_num_cells(&amp;aggregate-&gt;member_active)</span>
+<span class="lineNum">     146 </span><span class="lineCov">         24 :                *sizeof(PPG_Bitfield_Storage_Type);</span>
+<a name="147"><span class="lineNum">     147 </span>            : }</a>
+<span class="lineNum">     148 </span>            : 
+<span class="lineNum">     149 </span><span class="lineCov">         24 : char *ppg_aggregate_copy_dynamic_members(PPG_Token__ *source, </span>
+<span class="lineNum">     150 </span>            :                                          PPG_Token__ *target, 
+<span class="lineNum">     151 </span>            :                                          char *buffer)
+<span class="lineNum">     152 </span>            : {
+<span class="lineNum">     153 </span><span class="lineCov">         24 :    PPG_Aggregate *aggregate = (PPG_Aggregate *)source;</span>
+<span class="lineNum">     154 </span>            :    
+<span class="lineNum">     155 </span><span class="lineCov">         24 :    PPG_Aggregate *copy_of_aggregate = (PPG_Aggregate *)target;</span>
+<span class="lineNum">     156 </span>            :    
+<span class="lineNum">     157 </span><span class="lineCov">         24 :    buffer = ppg_token_copy_dynamic_members(source, buffer);</span>
+<span class="lineNum">     158 </span>            :    
+<span class="lineNum">     159 </span><span class="lineCov">         24 :    size_t n_bytes = aggregate-&gt;n_members*sizeof(PPG_Input_Id);</span>
+<span class="lineNum">     160 </span>            :    
+<span class="lineNum">     161 </span><span class="lineCov">         24 :    memcpy(buffer, (void*)aggregate-&gt;inputs, n_bytes);</span>
+<span class="lineNum">     162 </span>            :    
+<span class="lineNum">     163 </span><span class="lineCov">         24 :    copy_of_aggregate-&gt;inputs = (PPG_Input_Id *)buffer;</span>
+<span class="lineNum">     164 </span>            :    
+<span class="lineNum">     165 </span><span class="lineCov">         24 :    buffer += n_bytes;</span>
+<span class="lineNum">     166 </span>            :    
+<span class="lineNum">     167 </span><span class="lineCov">         24 :    n_bytes = ppg_bitfield_get_num_cells(&amp;aggregate-&gt;member_active)</span>
+<span class="lineNum">     168 </span>            :                *sizeof(PPG_Bitfield_Storage_Type);
+<span class="lineNum">     169 </span>            :    
+<span class="lineNum">     170 </span><span class="lineCov">         24 :    memcpy(buffer, (void*)aggregate-&gt;member_active.bitarray, n_bytes);</span>
+<span class="lineNum">     171 </span>            :    
+<span class="lineNum">     172 </span><span class="lineCov">         24 :    copy_of_aggregate-&gt;member_active.bitarray = (PPG_Bitfield_Storage_Type *)buffer;</span>
+<span class="lineNum">     173 </span>            :    
+<span class="lineNum">     174 </span><span class="lineCov">         24 :    return buffer + n_bytes;</span>
+<a name="175"><span class="lineNum">     175 </span>            : }</a>
+<span class="lineNum">     176 </span>            : 
+<span class="lineNum">     177 </span><span class="lineCov">         24 : void ppg_aggregate_addresses_to_relative(  PPG_Token__ *token,</span>
+<span class="lineNum">     178 </span>            :                                        void *begin_of_buffer
+<span class="lineNum">     179 </span>            : ) 
+<span class="lineNum">     180 </span>            : {
+<span class="lineNum">     181 </span><span class="lineCov">         24 :    ppg_token_addresses_to_relative(token, begin_of_buffer);</span>
+<span class="lineNum">     182 </span>            :    
+<span class="lineNum">     183 </span><span class="lineCov">         24 :    PPG_Aggregate *aggregate = (PPG_Aggregate *)token;</span>
+<span class="lineNum">     184 </span>            :    
+<span class="lineNum">     185 </span><span class="lineCov">         48 :    aggregate-&gt;inputs = (PPG_Input_Id *)((char*)aggregate-&gt;inputs</span>
+<span class="lineNum">     186 </span><span class="lineCov">         24 :                                  - (char*)begin_of_buffer);</span>
+<span class="lineNum">     187 </span>            :    
+<span class="lineNum">     188 </span><span class="lineCov">         24 :    aggregate-&gt;member_active.bitarray = (PPG_Bitfield_Storage_Type *)</span>
+<span class="lineNum">     189 </span><span class="lineCov">         24 :                         ((char*)aggregate-&gt;member_active.bitarray</span>
+<span class="lineNum">     190 </span><span class="lineCov">         24 :                                  - (char*)begin_of_buffer);</span>
+<a name="191"><span class="lineNum">     191 </span><span class="lineCov">         24 : }</span></a>
+<span class="lineNum">     192 </span>            : 
+<span class="lineNum">     193 </span><span class="lineCov">         12 : void ppg_aggregate_addresses_to_absolute(  PPG_Token__ *token,</span>
+<span class="lineNum">     194 </span>            :                                        void *begin_of_buffer
+<span class="lineNum">     195 </span>            : ) 
+<span class="lineNum">     196 </span>            : {
+<span class="lineNum">     197 </span><span class="lineCov">         12 :    ppg_token_addresses_to_absolute(token, begin_of_buffer);</span>
+<span class="lineNum">     198 </span>            :    
+<span class="lineNum">     199 </span><span class="lineCov">         12 :    PPG_Aggregate *aggregate = (PPG_Aggregate *)token;</span>
+<span class="lineNum">     200 </span>            :    
+<span class="lineNum">     201 </span><span class="lineCov">         12 :    aggregate-&gt;inputs = (PPG_Input_Id *)((char*)begin_of_buffer</span>
+<span class="lineNum">     202 </span><span class="lineCov">         12 :                               + (size_t)aggregate-&gt;inputs);</span>
+<span class="lineNum">     203 </span>            :    
+<span class="lineNum">     204 </span><span class="lineCov">         12 :    aggregate-&gt;member_active.bitarray = (PPG_Bitfield_Storage_Type *)</span>
+<span class="lineNum">     205 </span>            :          ((char*)begin_of_buffer
+<span class="lineNum">     206 </span><span class="lineCov">         12 :                + (size_t)aggregate-&gt;member_active.bitarray);</span>
+<span class="lineNum">     207 </span><span class="lineCov">         12 : }</span>
+<a name="208"><span class="lineNum">     208 </span>            : </a>
+<span class="lineNum">     209 </span>            : #if PPG_HAVE_DEBUGGING
+<span class="lineNum">     210 </span><span class="lineNoCov">          0 : bool ppg_aggregate_check_initialized(PPG_Token__ *token)</span>
+<span class="lineNum">     211 </span>            : {
+<span class="lineNum">     212 </span><span class="lineNoCov">          0 :    PPG_Aggregate *aggregate = (PPG_Aggregate*)token;</span>
+<span class="lineNum">     213 </span>            :    
+<span class="lineNum">     214 </span><span class="lineNoCov">          0 :    bool assertion_failed = false;</span>
+<span class="lineNum">     215 </span>            :    
+<span class="lineNum">     216 </span><span class="lineNoCov">          0 :    assertion_failed |= ppg_token_check_initialized(token);</span>
+<span class="lineNum">     217 </span>            :    
+<span class="lineNum">     218 </span><span class="lineNoCov">          0 :    PPG_ASSERT_WARN((aggregate-&gt;super.misc.flags </span>
+<span class="lineNum">     219 </span>            :          &amp; PPG_Aggregate_All_Active) == 0);
+<span class="lineNum">     220 </span>            :    
+<span class="lineNum">     221 </span><span class="lineNoCov">          0 :    PPG_ASSERT_WARN(aggregate-&gt;n_inputs_active == 0);</span>
+<span class="lineNum">     222 </span>            :    
+<span class="lineNum">     223 </span><span class="lineNoCov">          0 :    for(PPG_Count i = 0; i &lt; aggregate-&gt;n_members; ++i) {</span>
+<span class="lineNum">     224 </span><span class="lineNoCov">          0 :       PPG_ASSERT_WARN(ppg_bitfield_get_bit(&amp;aggregate-&gt;member_active,</span>
+<span class="lineNum">     225 </span>            :                            i) == false);
+<span class="lineNum">     226 </span>            :    }
+<span class="lineNum">     227 </span>            :    
+<span class="lineNum">     228 </span><span class="lineNoCov">          0 :    return assertion_failed;</span>
+<span class="lineNum">     229 </span>            : }
+<span class="lineNum">     230 </span>            : #endif
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.10</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

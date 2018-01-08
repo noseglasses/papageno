@@ -1,0 +1,148 @@
+\hypertarget{ppg__note_8h}{\section{/home/travis/build/noseglasses/papageno/src/ppg\-\_\-note.h File Reference}
+\label{ppg__note_8h}\index{/home/travis/build/noseglasses/papageno/src/ppg\-\_\-note.\-h@{/home/travis/build/noseglasses/papageno/src/ppg\-\_\-note.\-h}}
+}
+{\ttfamily \#include \char`\"{}ppg\-\_\-token.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}ppg\-\_\-action.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}ppg\-\_\-input.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}ppg\-\_\-layer.\-h\char`\"{}}\\*
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{ppg__note_8h_a2e60d67abdf256e265c4224bba5638e2}{ppg\-\_\-sequence}(...)~\hyperlink{ppg__note_8h_a3a9030a24a1d669f1dd7353cdd078029}{ppg\-\_\-single\-\_\-note\-\_\-line}(\-\_\-\-\_\-\-V\-A\-\_\-\-A\-R\-G\-S\-\_\-\-\_\-)
+\end{DoxyCompactItemize}
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{ppg__note_8h_a65a617f372e2b47fd997481d1fd9db28}{P\-P\-G\-\_\-\-Note\-\_\-\-Flags} \{ \hyperlink{ppg__note_8h_a65a617f372e2b47fd997481d1fd9db28ab865db0d89a275f0c9d56efb5de11c61}{P\-P\-G\-\_\-\-Note\-\_\-\-Flag\-\_\-\-Match\-\_\-\-Activation} = (1 $<$$<$ 2), 
+\hyperlink{ppg__note_8h_a65a617f372e2b47fd997481d1fd9db28abd8633b0ae55267c5278a5fd6c265a91}{P\-P\-G\-\_\-\-Note\-\_\-\-Flag\-\_\-\-Match\-\_\-\-Deactivation} = (P\-P\-G\-\_\-\-Note\-\_\-\-Flag\-\_\-\-Match\-\_\-\-Activation $<$$<$ 1), 
+\hyperlink{ppg__note_8h_a65a617f372e2b47fd997481d1fd9db28a815be3783f5557d3f5a88a4f681d7f42}{P\-P\-G\-\_\-\-Note\-\_\-\-Flags\-\_\-\-A\-\_\-\-N\-\_\-\-D} = P\-P\-G\-\_\-\-Note\-\_\-\-Flag\-\_\-\-Match\-\_\-\-Activation $\vert$ P\-P\-G\-\_\-\-Note\-\_\-\-Flag\-\_\-\-Match\-\_\-\-Deactivation
+ \}
+\begin{DoxyCompactList}\small\item\em Flags that configure note behavior. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{ppg__token_8h_a87940c8d6eedc90a71ca6c4e841304e5}{P\-P\-G\-\_\-\-Token} \hyperlink{ppg__note_8h_a3a9030a24a1d669f1dd7353cdd078029}{ppg\-\_\-single\-\_\-note\-\_\-line} (P\-P\-G\-\_\-\-Layer layer, \hyperlink{structPPG__Action}{P\-P\-G\-\_\-\-Action} action, P\-P\-G\-\_\-\-Count n\-\_\-inputs, \hyperlink{ppg__input_8h_a83636f010a52c9de62d0425629f0a158}{P\-P\-G\-\_\-\-Input\-\_\-\-Id} inputs\mbox{[}$\,$\mbox{]})
+\begin{DoxyCompactList}\small\item\em Defines a stand alone pattern that consists of single notes. \end{DoxyCompactList}\item 
+\hyperlink{ppg__token_8h_a87940c8d6eedc90a71ca6c4e841304e5}{P\-P\-G\-\_\-\-Token} \hyperlink{ppg__note_8h_af1367bba037b91effa959087c4a7a589}{ppg\-\_\-note\-\_\-create} (\hyperlink{ppg__input_8h_a83636f010a52c9de62d0425629f0a158}{P\-P\-G\-\_\-\-Input\-\_\-\-Id} input, P\-P\-G\-\_\-\-Count flags)
+\begin{DoxyCompactList}\small\item\em Generates a note token. \end{DoxyCompactList}\item 
+\hyperlink{ppg__token_8h_a87940c8d6eedc90a71ca6c4e841304e5}{P\-P\-G\-\_\-\-Token} \hyperlink{ppg__note_8h_a5a5e4d145fb83d220f736a9ee801e65f}{ppg\-\_\-note\-\_\-create\-\_\-standard} (\hyperlink{ppg__input_8h_a83636f010a52c9de62d0425629f0a158}{P\-P\-G\-\_\-\-Input\-\_\-\-Id} input)
+\begin{DoxyCompactList}\small\item\em Generates a note token with standard behavior. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\hypertarget{ppg__note_8h_a2e60d67abdf256e265c4224bba5638e2}{\index{ppg\-\_\-note.\-h@{ppg\-\_\-note.\-h}!ppg\-\_\-sequence@{ppg\-\_\-sequence}}
+\index{ppg\-\_\-sequence@{ppg\-\_\-sequence}!ppg_note.h@{ppg\-\_\-note.\-h}}
+\subsubsection[{ppg\-\_\-sequence}]{\setlength{\rightskip}{0pt plus 5cm}\#define ppg\-\_\-sequence(
+\begin{DoxyParamCaption}
+\item[{}]{...}
+\end{DoxyParamCaption}
+)~{\bf ppg\-\_\-single\-\_\-note\-\_\-line}(\-\_\-\-\_\-\-V\-A\-\_\-\-A\-R\-G\-S\-\_\-\-\_\-)}}\label{ppg__note_8h_a2e60d67abdf256e265c4224bba5638e2}
+An alias for ppg\-\_\-single\-\_\-note\-\_\-line 
+
+\subsection{Enumeration Type Documentation}
+\hypertarget{ppg__note_8h_a65a617f372e2b47fd997481d1fd9db28}{\index{ppg\-\_\-note.\-h@{ppg\-\_\-note.\-h}!P\-P\-G\-\_\-\-Note\-\_\-\-Flags@{P\-P\-G\-\_\-\-Note\-\_\-\-Flags}}
+\index{P\-P\-G\-\_\-\-Note\-\_\-\-Flags@{P\-P\-G\-\_\-\-Note\-\_\-\-Flags}!ppg_note.h@{ppg\-\_\-note.\-h}}
+\subsubsection[{P\-P\-G\-\_\-\-Note\-\_\-\-Flags}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf P\-P\-G\-\_\-\-Note\-\_\-\-Flags}}}\label{ppg__note_8h_a65a617f372e2b47fd997481d1fd9db28}
+
+
+Flags that configure note behavior. 
+
+Use the functions ppg\-\_\-token\-\_\-set\-\_\-flags and ppg\-\_\-token\-\_\-get\-\_\-flags to manipulated note flags. \begin{Desc}
+\item[Enumerator]\par
+\begin{description}
+\index{P\-P\-G\-\_\-\-Note\-\_\-\-Flag\-\_\-\-Match\-\_\-\-Activation@{P\-P\-G\-\_\-\-Note\-\_\-\-Flag\-\_\-\-Match\-\_\-\-Activation}!ppg\-\_\-note.\-h@{ppg\-\_\-note.\-h}}\index{ppg\-\_\-note.\-h@{ppg\-\_\-note.\-h}!P\-P\-G\-\_\-\-Note\-\_\-\-Flag\-\_\-\-Match\-\_\-\-Activation@{P\-P\-G\-\_\-\-Note\-\_\-\-Flag\-\_\-\-Match\-\_\-\-Activation}}\item[{\em 
+\hypertarget{ppg__note_8h_a65a617f372e2b47fd997481d1fd9db28ab865db0d89a275f0c9d56efb5de11c61}{P\-P\-G\-\_\-\-Note\-\_\-\-Flag\-\_\-\-Match\-\_\-\-Activation}\label{ppg__note_8h_a65a617f372e2b47fd997481d1fd9db28ab865db0d89a275f0c9d56efb5de11c61}
+}]Match activation of corresponding input. \index{P\-P\-G\-\_\-\-Note\-\_\-\-Flag\-\_\-\-Match\-\_\-\-Deactivation@{P\-P\-G\-\_\-\-Note\-\_\-\-Flag\-\_\-\-Match\-\_\-\-Deactivation}!ppg\-\_\-note.\-h@{ppg\-\_\-note.\-h}}\index{ppg\-\_\-note.\-h@{ppg\-\_\-note.\-h}!P\-P\-G\-\_\-\-Note\-\_\-\-Flag\-\_\-\-Match\-\_\-\-Deactivation@{P\-P\-G\-\_\-\-Note\-\_\-\-Flag\-\_\-\-Match\-\_\-\-Deactivation}}\item[{\em 
+\hypertarget{ppg__note_8h_a65a617f372e2b47fd997481d1fd9db28abd8633b0ae55267c5278a5fd6c265a91}{P\-P\-G\-\_\-\-Note\-\_\-\-Flag\-\_\-\-Match\-\_\-\-Deactivation}\label{ppg__note_8h_a65a617f372e2b47fd997481d1fd9db28abd8633b0ae55267c5278a5fd6c265a91}
+}]Match deactivation of corresponding input. \index{P\-P\-G\-\_\-\-Note\-\_\-\-Flags\-\_\-\-A\-\_\-\-N\-\_\-\-D@{P\-P\-G\-\_\-\-Note\-\_\-\-Flags\-\_\-\-A\-\_\-\-N\-\_\-\-D}!ppg\-\_\-note.\-h@{ppg\-\_\-note.\-h}}\index{ppg\-\_\-note.\-h@{ppg\-\_\-note.\-h}!P\-P\-G\-\_\-\-Note\-\_\-\-Flags\-\_\-\-A\-\_\-\-N\-\_\-\-D@{P\-P\-G\-\_\-\-Note\-\_\-\-Flags\-\_\-\-A\-\_\-\-N\-\_\-\-D}}\item[{\em 
+\hypertarget{ppg__note_8h_a65a617f372e2b47fd997481d1fd9db28a815be3783f5557d3f5a88a4f681d7f42}{P\-P\-G\-\_\-\-Note\-\_\-\-Flags\-\_\-\-A\-\_\-\-N\-\_\-\-D}\label{ppg__note_8h_a65a617f372e2b47fd997481d1fd9db28a815be3783f5557d3f5a88a4f681d7f42}
+}]Match activation and deactivation of corresponding input (only if compiled in pedantic mode) \end{description}
+\end{Desc}
+
+
+\subsection{Function Documentation}
+\hypertarget{ppg__note_8h_af1367bba037b91effa959087c4a7a589}{\index{ppg\-\_\-note.\-h@{ppg\-\_\-note.\-h}!ppg\-\_\-note\-\_\-create@{ppg\-\_\-note\-\_\-create}}
+\index{ppg\-\_\-note\-\_\-create@{ppg\-\_\-note\-\_\-create}!ppg_note.h@{ppg\-\_\-note.\-h}}
+\subsubsection[{ppg\-\_\-note\-\_\-create}]{\setlength{\rightskip}{0pt plus 5cm}{\bf P\-P\-G\-\_\-\-Token} ppg\-\_\-note\-\_\-create (
+\begin{DoxyParamCaption}
+\item[{{\bf P\-P\-G\-\_\-\-Input\-\_\-\-Id}}]{input, }
+\item[{P\-P\-G\-\_\-\-Count}]{flags}
+\end{DoxyParamCaption}
+)}}\label{ppg__note_8h_af1367bba037b91effa959087c4a7a589}
+
+
+Generates a note token. 
+
+Use this function to generate tokens that are passed to the ppg\-\_\-pattern function to generate complex patterns.
+
+\begin{DoxyNote}{Note}
+Notes that are generated by this function must be passed to ppg\-\_\-pattern to be effective 
+
+Use setter functions that operate on tokens to change attributes of the generated token
+\end{DoxyNote}
+
+\begin{DoxyParams}{Parameters}
+{\em input} & The input that is represented by the note \\
+\hline
+{\em flags} & The note flags \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The constructed tokenis 
+\end{DoxyReturn}
+\hypertarget{ppg__note_8h_a5a5e4d145fb83d220f736a9ee801e65f}{\index{ppg\-\_\-note.\-h@{ppg\-\_\-note.\-h}!ppg\-\_\-note\-\_\-create\-\_\-standard@{ppg\-\_\-note\-\_\-create\-\_\-standard}}
+\index{ppg\-\_\-note\-\_\-create\-\_\-standard@{ppg\-\_\-note\-\_\-create\-\_\-standard}!ppg_note.h@{ppg\-\_\-note.\-h}}
+\subsubsection[{ppg\-\_\-note\-\_\-create\-\_\-standard}]{\setlength{\rightskip}{0pt plus 5cm}{\bf P\-P\-G\-\_\-\-Token} ppg\-\_\-note\-\_\-create\-\_\-standard (
+\begin{DoxyParamCaption}
+\item[{{\bf P\-P\-G\-\_\-\-Input\-\_\-\-Id}}]{input}
+\end{DoxyParamCaption}
+)}}\label{ppg__note_8h_a5a5e4d145fb83d220f736a9ee801e65f}
+
+
+Generates a note token with standard behavior. 
+
+Use this function to generate tokens that are passed to the ppg\-\_\-pattern function to generate complex patterns.
+
+This is a convenience function that yields the same result as ppg\-\_\-note\-\_\-create(input, P\-P\-G\-\_\-\-Note\-\_\-\-Flags\-\_\-\-A\-\_\-\-N\-\_\-\-D)
+
+\begin{DoxyNote}{Note}
+Notes that are generated by this function must be passed to ppg\-\_\-pattern to be effective 
+
+Use setter functions that operate on tokens to change attributes of the generated token
+\end{DoxyNote}
+
+\begin{DoxyParams}{Parameters}
+{\em input} & The input that is represented by the note \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The constructed tokenis 
+\end{DoxyReturn}
+\hypertarget{ppg__note_8h_a3a9030a24a1d669f1dd7353cdd078029}{\index{ppg\-\_\-note.\-h@{ppg\-\_\-note.\-h}!ppg\-\_\-single\-\_\-note\-\_\-line@{ppg\-\_\-single\-\_\-note\-\_\-line}}
+\index{ppg\-\_\-single\-\_\-note\-\_\-line@{ppg\-\_\-single\-\_\-note\-\_\-line}!ppg_note.h@{ppg\-\_\-note.\-h}}
+\subsubsection[{ppg\-\_\-single\-\_\-note\-\_\-line}]{\setlength{\rightskip}{0pt plus 5cm}{\bf P\-P\-G\-\_\-\-Token} ppg\-\_\-single\-\_\-note\-\_\-line (
+\begin{DoxyParamCaption}
+\item[{P\-P\-G\-\_\-\-Layer}]{layer, }
+\item[{{\bf P\-P\-G\-\_\-\-Action}}]{action, }
+\item[{P\-P\-G\-\_\-\-Count}]{n\-\_\-inputs, }
+\item[{{\bf P\-P\-G\-\_\-\-Input\-\_\-\-Id}}]{inputs\mbox{[}$\,$\mbox{]}}
+\end{DoxyParamCaption}
+)}}\label{ppg__note_8h_a3a9030a24a1d669f1dd7353cdd078029}
+
+
+Defines a stand alone pattern that consists of single notes. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em layer} & The layer the pattern is associated with \\
+\hline
+{\em action} & The action that is supposed to be carried out if the pattern matches \\
+\hline
+{\em n\-\_\-inputs} & The number of inputs passed as array \\
+\hline
+{\em inputs} & Inputpositions that represent the notes of the single note line \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The constructed token 
+\end{DoxyReturn}

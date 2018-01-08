@@ -1,0 +1,122 @@
+\hypertarget{ppg__cluster_8h}{\section{/home/travis/build/noseglasses/papageno/src/ppg\-\_\-cluster.h File Reference}
+\label{ppg__cluster_8h}\index{/home/travis/build/noseglasses/papageno/src/ppg\-\_\-cluster.\-h@{/home/travis/build/noseglasses/papageno/src/ppg\-\_\-cluster.\-h}}
+}
+{\ttfamily \#include \char`\"{}ppg\-\_\-token.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}ppg\-\_\-input.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}ppg\-\_\-layer.\-h\char`\"{}}\\*
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{ppg__cluster_8h_ac6293cfb7d7bff6418a17c563b5439ed}{P\-P\-G\-\_\-\-C\-L\-U\-S\-T\-E\-R\-\_\-\-C\-R\-E\-A\-T\-E}(...)~\hyperlink{ppg__cluster_8h_af732e5217967ae9bafa0f7c553ab100a}{ppg\-\_\-cluster\-\_\-create}(\hyperlink{ppg__input_8h_a4f6bfc32c0adab8a54a8bca185ffb519}{P\-P\-G\-\_\-\-I\-N\-P\-U\-T\-S}(\-\_\-\-\_\-\-V\-A\-\_\-\-A\-R\-G\-S\-\_\-\-\_\-))
+\begin{DoxyCompactList}\small\item\em Auxiliary macro to create a cluster based on a set of input specifications. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{ppg__cluster_8h_a1e6ae86778d3aaaa1f828bbb2a85511a}{P\-P\-G\-\_\-\-Cluster\-\_\-\-Flags} \{ \hyperlink{ppg__cluster_8h_a1e6ae86778d3aaaa1f828bbb2a85511aac908a6c61ff5c3c555baae0521677eb8}{P\-P\-G\-\_\-\-Cluster\-\_\-\-Flags\-\_\-\-Disallow\-\_\-\-Input\-\_\-\-Deactivation} = (1 $<$$<$ 3)
+ \}
+\begin{DoxyCompactList}\small\item\em Flags that configure cluster behavior. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{ppg__token_8h_a87940c8d6eedc90a71ca6c4e841304e5}{P\-P\-G\-\_\-\-Token} \hyperlink{ppg__cluster_8h_af2889b1cbb1e9ba4e6feb801b6d226cc}{ppg\-\_\-cluster} (P\-P\-G\-\_\-\-Layer layer, \hyperlink{structPPG__Action}{P\-P\-G\-\_\-\-Action} action, P\-P\-G\-\_\-\-Count n\-\_\-inputs, \hyperlink{ppg__input_8h_a83636f010a52c9de62d0425629f0a158}{P\-P\-G\-\_\-\-Input\-\_\-\-Id} inputs\mbox{[}$\,$\mbox{]})
+\begin{DoxyCompactList}\small\item\em Defines a stand alone note cluster. \end{DoxyCompactList}\item 
+\hyperlink{ppg__token_8h_a87940c8d6eedc90a71ca6c4e841304e5}{P\-P\-G\-\_\-\-Token} \hyperlink{ppg__cluster_8h_af732e5217967ae9bafa0f7c553ab100a}{ppg\-\_\-cluster\-\_\-create} (P\-P\-G\-\_\-\-Count n\-\_\-inputs, \hyperlink{ppg__input_8h_a83636f010a52c9de62d0425629f0a158}{P\-P\-G\-\_\-\-Input\-\_\-\-Id} inputs\mbox{[}$\,$\mbox{]})
+\begin{DoxyCompactList}\small\item\em Generates a cluster token. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\hypertarget{ppg__cluster_8h_ac6293cfb7d7bff6418a17c563b5439ed}{\index{ppg\-\_\-cluster.\-h@{ppg\-\_\-cluster.\-h}!P\-P\-G\-\_\-\-C\-L\-U\-S\-T\-E\-R\-\_\-\-C\-R\-E\-A\-T\-E@{P\-P\-G\-\_\-\-C\-L\-U\-S\-T\-E\-R\-\_\-\-C\-R\-E\-A\-T\-E}}
+\index{P\-P\-G\-\_\-\-C\-L\-U\-S\-T\-E\-R\-\_\-\-C\-R\-E\-A\-T\-E@{P\-P\-G\-\_\-\-C\-L\-U\-S\-T\-E\-R\-\_\-\-C\-R\-E\-A\-T\-E}!ppg_cluster.h@{ppg\-\_\-cluster.\-h}}
+\subsubsection[{P\-P\-G\-\_\-\-C\-L\-U\-S\-T\-E\-R\-\_\-\-C\-R\-E\-A\-T\-E}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\-P\-G\-\_\-\-C\-L\-U\-S\-T\-E\-R\-\_\-\-C\-R\-E\-A\-T\-E(
+\begin{DoxyParamCaption}
+\item[{}]{...}
+\end{DoxyParamCaption}
+)~{\bf ppg\-\_\-cluster\-\_\-create}({\bf P\-P\-G\-\_\-\-I\-N\-P\-U\-T\-S}(\-\_\-\-\_\-\-V\-A\-\_\-\-A\-R\-G\-S\-\_\-\-\_\-))}}\label{ppg__cluster_8h_ac6293cfb7d7bff6418a17c563b5439ed}
+
+
+Auxiliary macro to create a cluster based on a set of input specifications. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em ...} & A list of inputs \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Enumeration Type Documentation}
+\hypertarget{ppg__cluster_8h_a1e6ae86778d3aaaa1f828bbb2a85511a}{\index{ppg\-\_\-cluster.\-h@{ppg\-\_\-cluster.\-h}!P\-P\-G\-\_\-\-Cluster\-\_\-\-Flags@{P\-P\-G\-\_\-\-Cluster\-\_\-\-Flags}}
+\index{P\-P\-G\-\_\-\-Cluster\-\_\-\-Flags@{P\-P\-G\-\_\-\-Cluster\-\_\-\-Flags}!ppg_cluster.h@{ppg\-\_\-cluster.\-h}}
+\subsubsection[{P\-P\-G\-\_\-\-Cluster\-\_\-\-Flags}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf P\-P\-G\-\_\-\-Cluster\-\_\-\-Flags}}}\label{ppg__cluster_8h_a1e6ae86778d3aaaa1f828bbb2a85511a}
+
+
+Flags that configure cluster behavior. 
+
+Use the functions ppg\-\_\-token\-\_\-set\-\_\-flags and ppg\-\_\-token\-\_\-get\-\_\-flags to manipulated cluster flags. \begin{Desc}
+\item[Enumerator]\par
+\begin{description}
+\index{P\-P\-G\-\_\-\-Cluster\-\_\-\-Flags\-\_\-\-Disallow\-\_\-\-Input\-\_\-\-Deactivation@{P\-P\-G\-\_\-\-Cluster\-\_\-\-Flags\-\_\-\-Disallow\-\_\-\-Input\-\_\-\-Deactivation}!ppg\-\_\-cluster.\-h@{ppg\-\_\-cluster.\-h}}\index{ppg\-\_\-cluster.\-h@{ppg\-\_\-cluster.\-h}!P\-P\-G\-\_\-\-Cluster\-\_\-\-Flags\-\_\-\-Disallow\-\_\-\-Input\-\_\-\-Deactivation@{P\-P\-G\-\_\-\-Cluster\-\_\-\-Flags\-\_\-\-Disallow\-\_\-\-Input\-\_\-\-Deactivation}}\item[{\em 
+\hypertarget{ppg__cluster_8h_a1e6ae86778d3aaaa1f828bbb2a85511aac908a6c61ff5c3c555baae0521677eb8}{P\-P\-G\-\_\-\-Cluster\-\_\-\-Flags\-\_\-\-Disallow\-\_\-\-Input\-\_\-\-Deactivation}\label{ppg__cluster_8h_a1e6ae86778d3aaaa1f828bbb2a85511aac908a6c61ff5c3c555baae0521677eb8}
+}]Set this flag to gain. \end{description}
+\end{Desc}
+
+
+\subsection{Function Documentation}
+\hypertarget{ppg__cluster_8h_af2889b1cbb1e9ba4e6feb801b6d226cc}{\index{ppg\-\_\-cluster.\-h@{ppg\-\_\-cluster.\-h}!ppg\-\_\-cluster@{ppg\-\_\-cluster}}
+\index{ppg\-\_\-cluster@{ppg\-\_\-cluster}!ppg_cluster.h@{ppg\-\_\-cluster.\-h}}
+\subsubsection[{ppg\-\_\-cluster}]{\setlength{\rightskip}{0pt plus 5cm}{\bf P\-P\-G\-\_\-\-Token} ppg\-\_\-cluster (
+\begin{DoxyParamCaption}
+\item[{P\-P\-G\-\_\-\-Layer}]{layer, }
+\item[{{\bf P\-P\-G\-\_\-\-Action}}]{action, }
+\item[{P\-P\-G\-\_\-\-Count}]{n\-\_\-inputs, }
+\item[{{\bf P\-P\-G\-\_\-\-Input\-\_\-\-Id}}]{inputs\mbox{[}$\,$\mbox{]}}
+\end{DoxyParamCaption}
+)}}\label{ppg__cluster_8h_af2889b1cbb1e9ba4e6feb801b6d226cc}
+
+
+Defines a stand alone note cluster. 
+
+All members must be activated/pressed at least once for the cluster to be considered as match.
+
+
+\begin{DoxyParams}{Parameters}
+{\em layer} & The layer the pattern is associated with \\
+\hline
+{\em action} & The action that is supposed to be carried out if the pattern matches \\
+\hline
+{\em n\-\_\-inputs} & The number of inputs \\
+\hline
+{\em inputs} & A pointer to an array of input definitions. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The constructed token 
+\end{DoxyReturn}
+\hypertarget{ppg__cluster_8h_af732e5217967ae9bafa0f7c553ab100a}{\index{ppg\-\_\-cluster.\-h@{ppg\-\_\-cluster.\-h}!ppg\-\_\-cluster\-\_\-create@{ppg\-\_\-cluster\-\_\-create}}
+\index{ppg\-\_\-cluster\-\_\-create@{ppg\-\_\-cluster\-\_\-create}!ppg_cluster.h@{ppg\-\_\-cluster.\-h}}
+\subsubsection[{ppg\-\_\-cluster\-\_\-create}]{\setlength{\rightskip}{0pt plus 5cm}{\bf P\-P\-G\-\_\-\-Token} ppg\-\_\-cluster\-\_\-create (
+\begin{DoxyParamCaption}
+\item[{P\-P\-G\-\_\-\-Count}]{n\-\_\-inputs, }
+\item[{{\bf P\-P\-G\-\_\-\-Input\-\_\-\-Id}}]{inputs\mbox{[}$\,$\mbox{]}}
+\end{DoxyParamCaption}
+)}}\label{ppg__cluster_8h_af732e5217967ae9bafa0f7c553ab100a}
+
+
+Generates a cluster token. 
+
+Use this function to generate tokens that are passed to the ppg\-\_\-pattern function to generate complex patterns. Every member of the cluster must have been activated at least once for the cluster to be considered as match.
+
+\begin{DoxyNote}{Note}
+Clusters that are generated by this function must be passed to ppg\-\_\-pattern to be effective 
+
+Use setter functions that operate on tokens to change attributes of the generated token
+\end{DoxyNote}
+
+\begin{DoxyParams}{Parameters}
+{\em n\-\_\-inputs} & The number of inputs that are associated with the cluster \\
+\hline
+{\em inputs} & An array of input ids that represent the notes of the cluster \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The constructed token 
+\end{DoxyReturn}

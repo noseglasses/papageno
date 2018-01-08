@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info.cleaned - src/ppg_time.c</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">src</a> - ppg_time.c<span style="font-size: 80%;"> (source / <a href="ppg_time.c.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info.cleaned</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">9</td>
+            <td class="headerCovTableEntry">19</td>
+            <td class="headerCovTableEntryLo">47.4 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-01-08</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntryLo">33.3 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /* Copyright 2017 noseglasses &lt;shinynoseglasses@gmail.com&gt;</a>
+<span class="lineNum">       2 </span>            :  *
+<span class="lineNum">       3 </span>            :  * This program is free software: you can redistribute it and/or modify
+<span class="lineNum">       4 </span>            :  * it under the terms of the GNU Lesser General Public License as published by
+<span class="lineNum">       5 </span>            :  * the Free Software Foundation, either version 3 of the License, or
+<span class="lineNum">       6 </span>            :  * (at your option) any later version.
+<span class="lineNum">       7 </span>            :  *
+<span class="lineNum">       8 </span>            :  * This program is distributed in the hope that it will be useful,
+<span class="lineNum">       9 </span>            :  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<span class="lineNum">      10 </span>            :  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<span class="lineNum">      11 </span>            :  * GNU Lesser General Public License for more details.
+<span class="lineNum">      12 </span>            :  *
+<span class="lineNum">      13 </span>            :  * You should have received a copy of the GNU Lesser General Public License
+<span class="lineNum">      14 </span>            :  * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+<span class="lineNum">      15 </span>            :  */
+<span class="lineNum">      16 </span>            : 
+<span class="lineNum">      17 </span>            : #include &quot;ppg_time.h&quot;
+<span class="lineNum">      18 </span>            : #include &quot;ppg_global.h&quot;
+<a name="19"><span class="lineNum">      19 </span>            : #include &quot;detail/ppg_context_detail.h&quot;</a>
+<span class="lineNum">      20 </span>            : 
+<span class="lineNum">      21 </span><span class="lineNoCov">          0 : static void ppg_default_time(PPG_Time *time)</span>
+<span class="lineNum">      22 </span>            : {
+<span class="lineNum">      23 </span><span class="lineNoCov">          0 :    *time = 0;</span>
+<a name="24"><span class="lineNum">      24 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">      25 </span>            : 
+<span class="lineNum">      26 </span><span class="lineNoCov">          0 : static void ppg_default_time_difference(PPG_Time time1, </span>
+<span class="lineNum">      27 </span>            :                                         PPG_Time time2, 
+<span class="lineNum">      28 </span>            :                                         PPG_Time *delta)
+<span class="lineNum">      29 </span>            : {
+<span class="lineNum">      30 </span>            :    PPG_UNUSED(time1);
+<span class="lineNum">      31 </span>            :    PPG_UNUSED(time2);
+<span class="lineNum">      32 </span><span class="lineNoCov">          0 :    *delta = 0;</span>
+<a name="33"><span class="lineNum">      33 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">      34 </span>            : 
+<span class="lineNum">      35 </span><span class="lineNoCov">          0 : PPG_Time_Comparison_Result_Type ppg_default_time_comparison(</span>
+<span class="lineNum">      36 </span>            :                         PPG_Time time1,
+<span class="lineNum">      37 </span>            :                         PPG_Time time2)
+<span class="lineNum">      38 </span>            : {
+<span class="lineNum">      39 </span>            :    PPG_UNUSED(time1);
+<span class="lineNum">      40 </span>            :    PPG_UNUSED(time2);
+<span class="lineNum">      41 </span><span class="lineNoCov">          0 :    return 0;</span>
+<a name="42"><span class="lineNum">      42 </span>            : }</a>
+<span class="lineNum">      43 </span>            : 
+<span class="lineNum">      44 </span><span class="lineCov">         41 : void ppg_time_manager_init(PPG_Time_Manager *time_manager)</span>
+<span class="lineNum">      45 </span>            : {
+<span class="lineNum">      46 </span><span class="lineCov">         41 :    time_manager-&gt;time = ppg_default_time;</span>
+<span class="lineNum">      47 </span><span class="lineCov">         41 :    time_manager-&gt;time_difference = ppg_default_time_difference;</span>
+<span class="lineNum">      48 </span><span class="lineCov">         41 :    time_manager-&gt;compare_times = ppg_default_time_comparison;</span>
+<a name="49"><span class="lineNum">      49 </span><span class="lineCov">         41 : }</span></a>
+<span class="lineNum">      50 </span>            : 
+<span class="lineNum">      51 </span><span class="lineCov">         41 : PPG_Time_Manager ppg_global_set_time_manager(PPG_Time_Manager time_manager)</span>
+<span class="lineNum">      52 </span>            : {
+<span class="lineNum">      53 </span><span class="lineCov">         41 :    PPG_Time_Manager old_time_manager = ppg_context-&gt;time_manager;</span>
+<span class="lineNum">      54 </span>            :    
+<span class="lineNum">      55 </span><span class="lineCov">         41 :    ppg_context-&gt;time_manager = time_manager;</span>
+<span class="lineNum">      56 </span>            :    
+<span class="lineNum">      57 </span><span class="lineCov">         41 :    return old_time_manager;</span>
+<a name="58"><span class="lineNum">      58 </span>            : }</a>
+<span class="lineNum">      59 </span>            : 
+<span class="lineNum">      60 </span><span class="lineNoCov">          0 : PPG_Time_Manager ppg_global_get_time_manager(void)</span>
+<span class="lineNum">      61 </span>            : {
+<span class="lineNum">      62 </span><span class="lineNoCov">          0 :    return ppg_context-&gt;time_manager;</span>
+<span class="lineNum">      63 </span>            : }
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.10</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

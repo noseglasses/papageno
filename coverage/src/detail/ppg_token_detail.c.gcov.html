@@ -1,0 +1,508 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info.cleaned - src/detail/ppg_token_detail.c</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../index.html">top level</a> - <a href="index.html">src/detail</a> - ppg_token_detail.c<span style="font-size: 80%;"> (source / <a href="ppg_token_detail.c.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info.cleaned</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">147</td>
+            <td class="headerCovTableEntry">168</td>
+            <td class="headerCovTableEntryMed">87.5 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-01-08</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">27</td>
+            <td class="headerCovTableEntry">32</td>
+            <td class="headerCovTableEntryMed">84.4 %</td>
+          </tr>
+          <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /* Copyright 2017 noseglasses &lt;shinynoseglasses@gmail.com&gt;</a>
+<span class="lineNum">       2 </span>            :  *
+<span class="lineNum">       3 </span>            :  * This program is free software: you can redistribute it and/or modify
+<span class="lineNum">       4 </span>            :  * it under the terms of the GNU Lesser General Public License as published by
+<span class="lineNum">       5 </span>            :  * the Free Software Foundation, either version 3 of the License, or
+<span class="lineNum">       6 </span>            :  * (at your option) any later version.
+<span class="lineNum">       7 </span>            :  *
+<span class="lineNum">       8 </span>            :  * This program is distributed in the hope that it will be useful,
+<span class="lineNum">       9 </span>            :  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<span class="lineNum">      10 </span>            :  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<span class="lineNum">      11 </span>            :  * GNU Lesser General Public License for more details.
+<span class="lineNum">      12 </span>            :  *
+<span class="lineNum">      13 </span>            :  * You should have received a copy of the GNU Lesser General Public License
+<span class="lineNum">      14 </span>            :  * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+<span class="lineNum">      15 </span>            :  */
+<span class="lineNum">      16 </span>            : 
+<span class="lineNum">      17 </span>            : #include &quot;detail/ppg_token_detail.h&quot;
+<span class="lineNum">      18 </span>            : #include &quot;ppg_global.h&quot;
+<span class="lineNum">      19 </span>            : #include &quot;ppg_debug.h&quot;
+<span class="lineNum">      20 </span>            : #include &quot;ppg_action.h&quot;
+<span class="lineNum">      21 </span>            : #include &quot;ppg_action_flags.h&quot;
+<span class="lineNum">      22 </span>            : #include &quot;ppg_signals.h&quot;
+<span class="lineNum">      23 </span>            : #include &quot;detail/ppg_context_detail.h&quot;
+<span class="lineNum">      24 </span>            : #include &quot;ppg_input.h&quot;
+<span class="lineNum">      25 </span>            : #include &quot;detail/ppg_event_buffer_detail.h&quot;
+<span class="lineNum">      26 </span>            : #include &quot;detail/ppg_malloc_detail.h&quot;
+<span class="lineNum">      27 </span>            : 
+<span class="lineNum">      28 </span>            : #include &lt;stdlib.h&gt;
+<a name="29"><span class="lineNum">      29 </span>            : #include &lt;string.h&gt;</a>
+<span class="lineNum">      30 </span>            : 
+<span class="lineNum">      31 </span><span class="lineCov">        832 : void ppg_token_store_action(PPG_Token__ *token, </span>
+<span class="lineNum">      32 </span>            :                                    PPG_Action action)
+<span class="lineNum">      33 </span>            : {
+<span class="lineNum">      34 </span><span class="lineCov">        832 :    token-&gt;action = action; </span>
+<span class="lineNum">      35 </span>            :    
+<span class="lineNum">      36 </span><span class="lineCov">        832 :    PPG_LOG(&quot;A tk 0x%&quot; PRIXPTR &quot;: 0x%&quot; PRIXPTR &quot;\n&quot;,</span>
+<span class="lineNum">      37 </span>            :               (uintptr_t)token, (uintptr_t)token-&gt;action.callback.user_data);
+<a name="38"><span class="lineNum">      38 </span><span class="lineCov">        832 : }</span></a>
+<span class="lineNum">      39 </span>            : 
+<span class="lineNum">      40 </span><span class="lineCov">       1430 : void ppg_token_reset_control_state(PPG_Token__ *token)</span>
+<span class="lineNum">      41 </span>            : {
+<span class="lineNum">      42 </span><span class="lineCov">       1430 :    PPG_LOG(&quot;Resetting tk 0x%&quot; PRIXPTR &quot;\n&quot;, (uintptr_t)token);</span>
+<span class="lineNum">      43 </span>            :    
+<span class="lineNum">      44 </span><span class="lineCov">       1430 :    token-&gt;misc.state = PPG_Token_Initialized;</span>
+<span class="lineNum">      45 </span><span class="lineCov">       1430 :    token-&gt;misc.action_state = PPG_Action_Disabled;</span>
+<a name="46"><span class="lineNum">      46 </span><span class="lineCov">       1430 : }</span></a>
+<span class="lineNum">      47 </span>            : 
+<span class="lineNum">      48 </span><span class="lineCov">         41 : PPG_Token__ *ppg_token_alloc(void) </span>
+<span class="lineNum">      49 </span>            : {
+<span class="lineNum">      50 </span><span class="lineCov">         41 :     return (PPG_Token__*)PPG_MALLOC(sizeof(PPG_Token__));</span>
+<a name="51"><span class="lineNum">      51 </span>            : }</a>
+<span class="lineNum">      52 </span>            : 
+<span class="lineNum">      53 </span><span class="lineCov">       1013 : static void ppg_token_allocate_children(PPG_Token__ *token, PPG_Count n_children) {</span>
+<span class="lineNum">      54 </span>            : 
+<span class="lineNum">      55 </span>            :     token-&gt;children 
+<span class="lineNum">      56 </span><span class="lineCov">       1013 :       = (struct PPG_TokenStruct **)PPG_MALLOC(n_children*sizeof(struct PPG_TokenStruct*));</span>
+<span class="lineNum">      57 </span><span class="lineCov">       1013 :     token-&gt;n_allocated_children = n_children;</span>
+<a name="58"><span class="lineNum">      58 </span><span class="lineCov">       1013 : }</span></a>
+<span class="lineNum">      59 </span>            : 
+<span class="lineNum">      60 </span><span class="lineCov">       1013 : static void ppg_token_grow_children(PPG_Token__ *token) {</span>
+<span class="lineNum">      61 </span>            : 
+<span class="lineNum">      62 </span><span class="lineCov">       1013 :    if(token-&gt;n_allocated_children == 0) {</span>
+<span class="lineNum">      63 </span>            :       
+<span class="lineNum">      64 </span><span class="lineCov">        452 :       ppg_token_allocate_children(token, 1);</span>
+<span class="lineNum">      65 </span>            :    }
+<span class="lineNum">      66 </span>            :    else {
+<span class="lineNum">      67 </span><span class="lineCov">        561 :       PPG_Token__ **oldSucessors = token-&gt;children;</span>
+<span class="lineNum">      68 </span>            :       
+<span class="lineNum">      69 </span><span class="lineCov">        561 :       ppg_token_allocate_children(token, 2*token-&gt;n_allocated_children);</span>
+<span class="lineNum">      70 </span>            :          
+<span class="lineNum">      71 </span><span class="lineCov">       1419 :       for(PPG_Count i = 0; i &lt; token-&gt;n_children; ++i) {</span>
+<span class="lineNum">      72 </span><span class="lineCov">        858 :          token-&gt;children[i] = oldSucessors[i];</span>
+<span class="lineNum">      73 </span>            :       }
+<span class="lineNum">      74 </span>            :       
+<span class="lineNum">      75 </span><span class="lineCov">        561 :       free(oldSucessors); </span>
+<span class="lineNum">      76 </span>            :    }
+<a name="77"><span class="lineNum">      77 </span><span class="lineCov">       1013 : }</span></a>
+<span class="lineNum">      78 </span>            : 
+<span class="lineNum">      79 </span><span class="lineCov">       1286 : void ppg_token_add_child(PPG_Token__ *token, PPG_Token__ *child) {</span>
+<span class="lineNum">      80 </span>            :    
+<span class="lineNum">      81 </span><span class="lineCov">       1286 :    if(token-&gt;n_allocated_children == token-&gt;n_children) {</span>
+<span class="lineNum">      82 </span><span class="lineCov">       1013 :       ppg_token_grow_children(token);</span>
+<span class="lineNum">      83 </span>            :    }
+<span class="lineNum">      84 </span>            :    
+<span class="lineNum">      85 </span><span class="lineCov">       1286 :    token-&gt;children[token-&gt;n_children] = child;</span>
+<span class="lineNum">      86 </span>            :    
+<span class="lineNum">      87 </span><span class="lineCov">       1286 :    child-&gt;parent = token;</span>
+<span class="lineNum">      88 </span>            :    
+<span class="lineNum">      89 </span><span class="lineCov">       1286 :    ++token-&gt;n_children;</span>
+<a name="90"><span class="lineNum">      90 </span><span class="lineCov">       1286 : }</span></a>
+<span class="lineNum">      91 </span>            : 
+<span class="lineNum">      92 </span><span class="lineCov">       1363 : void ppg_token_free_children(PPG_Token__ *token)</span>
+<span class="lineNum">      93 </span>            : {
+<span class="lineNum">      94 </span><span class="lineCov">       1363 :    if(!token-&gt;children) { return; }</span>
+<span class="lineNum">      95 </span>            :    
+<span class="lineNum">      96 </span>            : //    printf(&quot;Token %p frees %d children\n&quot;, token, token-&gt;n_children);
+<span class="lineNum">      97 </span>            :    
+<span class="lineNum">      98 </span><span class="lineCov">       1738 :    for(PPG_Count i = 0; i &lt; token-&gt;n_children; ++i) {</span>
+<span class="lineNum">      99 </span>            :       
+<span class="lineNum">     100 </span>            : //       printf(&quot;Child %d of %p\n&quot;, i, token);
+<span class="lineNum">     101 </span><span class="lineCov">       1286 :       ppg_token_free(token-&gt;children[i]);</span>
+<span class="lineNum">     102 </span>            :    }
+<span class="lineNum">     103 </span>            :    
+<span class="lineNum">     104 </span><span class="lineCov">        452 :    free(token-&gt;children);</span>
+<span class="lineNum">     105 </span>            :    
+<span class="lineNum">     106 </span><span class="lineCov">        452 :    token-&gt;children = NULL;</span>
+<span class="lineNum">     107 </span><span class="lineCov">        452 :    token-&gt;n_allocated_children = 0;</span>
+<a name="108"><span class="lineNum">     108 </span>            : }</a>
+<span class="lineNum">     109 </span>            : 
+<span class="lineNum">     110 </span><span class="lineCov">       1363 : PPG_Token__* ppg_token_destroy(PPG_Token__ *token) {</span>
+<span class="lineNum">     111 </span>            : 
+<span class="lineNum">     112 </span>            : //    printf(&quot;Destroying token %p\n&quot;, token);
+<span class="lineNum">     113 </span>            :    
+<span class="lineNum">     114 </span><span class="lineCov">       1363 :    ppg_token_free_children(token);</span>
+<span class="lineNum">     115 </span>            :    
+<span class="lineNum">     116 </span><span class="lineCov">       1363 :    return token;</span>
+<a name="117"><span class="lineNum">     117 </span>            : }</a>
+<span class="lineNum">     118 </span>            : 
+<span class="lineNum">     119 </span><span class="lineCov">       6864 : static bool ppg_token_equals(PPG_Token__ *p1, PPG_Token__ *p2) </span>
+<span class="lineNum">     120 </span>            : {
+<span class="lineNum">     121 </span><span class="lineCov">       6864 :    if(p1-&gt;vtable != p2-&gt;vtable) { return false; }</span>
+<span class="lineNum">     122 </span>            :    
+<span class="lineNum">     123 </span><span class="lineCov">       6777 :    return p1-&gt;vtable-&gt;equals(p1, p2);</span>
+<a name="124"><span class="lineNum">     124 </span>            : }</a>
+<span class="lineNum">     125 </span>            : 
+<span class="lineNum">     126 </span><span class="lineCov">       1322 : void ppg_token_free(PPG_Token__ *token) {</span>
+<span class="lineNum">     127 </span>            :    
+<span class="lineNum">     128 </span><span class="lineCov">       1322 :    PPG_CALL_VIRT_METHOD(token, destroy);</span>
+<span class="lineNum">     129 </span>            : 
+<span class="lineNum">     130 </span><span class="lineCov">       1322 :    free(token);</span>
+<a name="131"><span class="lineNum">     131 </span><span class="lineCov">       1322 : }</span></a>
+<span class="lineNum">     132 </span>            : 
+<span class="lineNum">     133 </span><span class="lineCov">       3374 : PPG_Token__* ppg_token_get_equivalent_child(</span>
+<span class="lineNum">     134 </span>            :                                           PPG_Token__ *parent_token,
+<span class="lineNum">     135 </span>            :                                           PPG_Token__ *sample) 
+<span class="lineNum">     136 </span>            : {
+<span class="lineNum">     137 </span><span class="lineCov">       3374 :    if(parent_token-&gt;n_children == 0) { return NULL; }</span>
+<span class="lineNum">     138 </span>            :    
+<span class="lineNum">     139 </span><span class="lineCov">       7692 :    for(PPG_Count i = 0; i &lt; parent_token-&gt;n_children; ++i) {</span>
+<span class="lineNum">     140 </span><span class="lineCov">       6864 :       if(ppg_token_equals(</span>
+<span class="lineNum">     141 </span><span class="lineCov">       6864 :                                  parent_token-&gt;children[i], </span>
+<span class="lineNum">     142 </span>            :                                  sample)
+<span class="lineNum">     143 </span>            :         ) {
+<span class="lineNum">     144 </span><span class="lineCov">       2094 :          return parent_token-&gt;children[i];</span>
+<span class="lineNum">     145 </span>            :       }
+<span class="lineNum">     146 </span>            :    }
+<span class="lineNum">     147 </span>            :    
+<span class="lineNum">     148 </span><span class="lineCov">        828 :    return NULL;</span>
+<a name="149"><span class="lineNum">     149 </span>            : }</a>
+<span class="lineNum">     150 </span>            : 
+<span class="lineNum">     151 </span><span class="lineCov">        868 : size_t ppg_token_dynamic_member_size(PPG_Token__ *token)</span>
+<span class="lineNum">     152 </span>            : {
+<span class="lineNum">     153 </span><span class="lineCov">        868 :    return token-&gt;n_children*sizeof(PPG_Token__ *);</span>
+<a name="154"><span class="lineNum">     154 </span>            : }</a>
+<span class="lineNum">     155 </span>            : 
+<span class="lineNum">     156 </span><span class="lineCov">         18 : size_t ppg_token_dynamic_size(PPG_Token__ *token)</span>
+<span class="lineNum">     157 </span>            : {
+<span class="lineNum">     158 </span><span class="lineCov">         18 :    return   sizeof(PPG_Token__) </span>
+<span class="lineNum">     159 </span><span class="lineCov">         18 :          +  ppg_token_dynamic_member_size(token);</span>
+<a name="160"><span class="lineNum">     160 </span>            : }</a>
+<span class="lineNum">     161 </span>            : 
+<span class="lineNum">     162 </span><span class="lineCov">        868 : char *ppg_token_copy_dynamic_members(PPG_Token__ *token, char *buffer)</span>
+<span class="lineNum">     163 </span>            : {
+<span class="lineNum">     164 </span><span class="lineCov">        868 :    size_t n_bytes = token-&gt;n_children*sizeof(PPG_Token__ *);</span>
+<span class="lineNum">     165 </span>            :    
+<span class="lineNum">     166 </span><span class="lineCov">        868 :    memcpy((void*)buffer, (void*)token-&gt;children, n_bytes);</span>
+<span class="lineNum">     167 </span>            :    
+<span class="lineNum">     168 </span><span class="lineCov">        868 :    return buffer + n_bytes;</span>
+<a name="169"><span class="lineNum">     169 </span>            : }</a>
+<span class="lineNum">     170 </span>            : 
+<span class="lineNum">     171 </span><span class="lineCov">         18 : char *ppg_token_placement_clone(PPG_Token__ *token, char *buffer)</span>
+<span class="lineNum">     172 </span>            : {
+<span class="lineNum">     173 </span><span class="lineCov">         18 :    *((PPG_Token__ *)buffer) = *token;</span>
+<span class="lineNum">     174 </span>            :    
+<span class="lineNum">     175 </span><span class="lineCov">         18 :    PPG_Token__ *clone = (PPG_Token__ *)buffer;</span>
+<span class="lineNum">     176 </span>            :    
+<span class="lineNum">     177 </span>            : //    printf(&quot;Replacing children pointer %p with %p\n&quot;, clone-&gt;children, (PPG_Token__ **)(buffer + sizeof(PPG_Token__)));
+<span class="lineNum">     178 </span>            :    
+<span class="lineNum">     179 </span><span class="lineCov">         18 :    clone-&gt;children = (PPG_Token__ **)(buffer + sizeof(PPG_Token__));</span>
+<span class="lineNum">     180 </span>            :    
+<span class="lineNum">     181 </span><span class="lineCov">         18 :    return ppg_token_copy_dynamic_members(token, buffer + sizeof(PPG_Token__));</span>
+<span class="lineNum">     182 </span>            : }
+<a name="183"><span class="lineNum">     183 </span>            : </a>
+<span class="lineNum">     184 </span>            : 
+<span class="lineNum">     185 </span><span class="lineCov">        868 : void ppg_token_register_pointers_for_compression(</span>
+<span class="lineNum">     186 </span>            :                                              PPG_Token__ *token,
+<span class="lineNum">     187 </span>            :                                              PPG_Compression_Context__ *ccontext)
+<span class="lineNum">     188 </span>            : {
+<span class="lineNum">     189 </span>            : //    ppg_compression_context_register_vptr((void**)&amp;token-&gt;vtable, ccontext);
+<span class="lineNum">     190 </span><span class="lineCov">        868 :    PPG_LOG(&quot;\tcb.: 0x%&quot; PRIXPTR &quot;\n&quot;, (uintptr_t)token-&gt;action.callback.func);</span>
+<span class="lineNum">     191 </span><span class="lineCov">        868 :    ppg_compression_context_register_symbol((void**)&amp;token-&gt;action.callback.func, ccontext);</span>
+<span class="lineNum">     192 </span>            :    
+<span class="lineNum">     193 </span><span class="lineCov">        868 :    if(token-&gt;action.callback.user_data) {</span>
+<span class="lineNum">     194 </span><span class="lineCov">        638 :       PPG_LOG(&quot;\tu.d.: 0x%&quot; PRIXPTR &quot;\n&quot;, (uintptr_t)token-&gt;action.callback.user_data);</span>
+<span class="lineNum">     195 </span><span class="lineCov">        638 :       ppg_compression_context_register_symbol((void**)&amp;token-&gt;action.callback.user_data, ccontext);</span>
+<span class="lineNum">     196 </span>            :    }
+<span class="lineNum">     197 </span><span class="lineCov">        868 : }</span>
+<span class="lineNum">     198 </span>            : 
+<a name="199"><span class="lineNum">     199 </span>            : #if PPG_PRINT_SELF_ENABLED</a>
+<span class="lineNum">     200 </span>            : 
+<span class="lineNum">     201 </span><span class="lineCov">       2154 : void ppg_token_print_self_start(PPG_Token__ *p, PPG_Count indent)</span>
+<span class="lineNum">     202 </span>            : {
+<span class="lineNum">     203 </span><span class="lineCov">       2154 :    PPG_I PPG_LOG(&quot;\tprnt: 0x%&quot; PRIXPTR &quot;\n&quot;, (uintptr_t)p-&gt;parent);</span>
+<span class="lineNum">     204 </span><span class="lineCov">       2154 :    PPG_I PPG_LOG(&quot;\tst: %d\n&quot;, (PPG_Count)p-&gt;misc.state);</span>
+<span class="lineNum">     205 </span><span class="lineCov">       2154 :    PPG_I PPG_LOG(&quot;\tflgs: %d\n&quot;, (PPG_Count)p-&gt;misc.flags);</span>
+<span class="lineNum">     206 </span><span class="lineCov">       2154 :    PPG_I PPG_LOG(&quot;\ta.st: %d\n&quot;, (PPG_Count)p-&gt;misc.action_state);</span>
+<span class="lineNum">     207 </span><span class="lineCov">       2154 :    PPG_I PPG_LOG(&quot;\ta.flgs: %d\n&quot;, (PPG_Count)p-&gt;misc.action_flags);</span>
+<span class="lineNum">     208 </span><span class="lineCov">       2154 :    PPG_I PPG_LOG(&quot;\ta.u_f: 0x%&quot; PRIXPTR &quot;\n&quot;, (uintptr_t)p-&gt;action.callback.func);</span>
+<span class="lineNum">     209 </span><span class="lineCov">       2154 :    PPG_I PPG_LOG(&quot;\ta.u_d: 0x%&quot; PRIXPTR &quot;\n&quot;, (uintptr_t)p-&gt;action.callback.user_data);</span>
+<span class="lineNum">     210 </span><span class="lineCov">       2154 :    PPG_I PPG_LOG(&quot;\tst: %d\n&quot;, (PPG_Count)p-&gt;misc.state);</span>
+<span class="lineNum">     211 </span><span class="lineCov">       2154 :    PPG_I PPG_LOG(&quot;\tlyr: %d\n&quot;, p-&gt;layer);</span>
+<span class="lineNum">     212 </span><span class="lineCov">       2154 :    PPG_I PPG_LOG(&quot;\tcldr: 0x%&quot; PRIXPTR &quot;\n&quot;, (uintptr_t)p-&gt;children);</span>
+<a name="213"><span class="lineNum">     213 </span><span class="lineCov">       2154 : }</span></a>
+<span class="lineNum">     214 </span>            : 
+<span class="lineNum">     215 </span><span class="lineCov">       2154 : void ppg_token_print_self_end(PPG_Token__ *p, PPG_Count indent, bool recurse)</span>
+<span class="lineNum">     216 </span>            : {
+<span class="lineNum">     217 </span>            : //    PPG_I PPG_LOG(&quot;\tchldr: 0x%&quot; PRIXPTR &quot;\n&quot;, (uintptr_t)&amp;p-&gt;children);
+<span class="lineNum">     218 </span><span class="lineCov">       2154 :    PPG_I PPG_LOG(&quot;\tn alloc chld: %d\n&quot;, p-&gt;n_allocated_children);</span>
+<span class="lineNum">     219 </span><span class="lineCov">       2154 :    PPG_I PPG_LOG(&quot;\tn chld: %d\n&quot;, p-&gt;n_children);</span>
+<span class="lineNum">     220 </span>            :    
+<span class="lineNum">     221 </span><span class="lineCov">       2154 :    if(recurse) {</span>
+<span class="lineNum">     222 </span><span class="lineCov">       2754 :       for(PPG_Count i = 0; i &lt; p-&gt;n_children; ++i) {</span>
+<span class="lineNum">     223 </span><span class="lineCov">       1350 :          PPG_I PPG_LOG(&quot;\tchld: %d\n&quot;, i);</span>
+<span class="lineNum">     224 </span><span class="lineCov">       1350 :          PPG_CALL_VIRT_METHOD(p-&gt;children[i], print_self, indent + 1, recurse);</span>
+<span class="lineNum">     225 </span>            :       }
+<span class="lineNum">     226 </span>            :    }
+<a name="227"><span class="lineNum">     227 </span><span class="lineCov">       2154 : }</span></a>
+<span class="lineNum">     228 </span>            : 
+<span class="lineNum">     229 </span><span class="lineCov">         54 : static void ppg_token_print_self(PPG_Token__ *p, PPG_Count indent, bool recurse)</span>
+<span class="lineNum">     230 </span>            : {
+<span class="lineNum">     231 </span><span class="lineCov">         54 :    PPG_I PPG_LOG(&quot;&lt;*** tk (0x%&quot; PRIXPTR &quot;) ***&gt;\n&quot;, (uintptr_t)p);</span>
+<span class="lineNum">     232 </span><span class="lineCov">         54 :    ppg_token_print_self_start(p, indent);</span>
+<span class="lineNum">     233 </span><span class="lineCov">         54 :    ppg_token_print_self_end(p, indent, recurse);</span>
+<span class="lineNum">     234 </span><span class="lineCov">         54 : }</span>
+<span class="lineNum">     235 </span>            : #endif
+<a name="236"><span class="lineNum">     236 </span>            : </a>
+<span class="lineNum">     237 </span>            : #if PPG_HAVE_DEBUGGING
+<span class="lineNum">     238 </span><span class="lineNoCov">          0 : bool ppg_token_check_initialized(PPG_Token__ *token)</span>
+<span class="lineNum">     239 </span>            : {
+<span class="lineNum">     240 </span><span class="lineNoCov">          0 :    bool assertion_failed = false;</span>
+<span class="lineNum">     241 </span>            :    
+<span class="lineNum">     242 </span><span class="lineNoCov">          0 :    PPG_ASSERT_WARN(token-&gt;misc.state == PPG_Token_Initialized);</span>
+<span class="lineNum">     243 </span><span class="lineNoCov">          0 :    PPG_ASSERT_WARN(token-&gt;misc.action_state == PPG_Action_Disabled);</span>
+<span class="lineNum">     244 </span>            : /*   
+<span class="lineNum">     245 </span>            : #if PPG_PRINT_SELF_ENABLED
+<span class="lineNum">     246 </span>            :    if(assertion_failed) {
+<span class="lineNum">     247 </span>            :       PPG_PRINT_TOKEN(token)
+<span class="lineNum">     248 </span>            :    }
+<span class="lineNum">     249 </span>            : #endif*/
+<span class="lineNum">     250 </span>            :    
+<span class="lineNum">     251 </span><span class="lineNoCov">          0 :    return assertion_failed;</span>
+<a name="252"><span class="lineNum">     252 </span>            : }</a>
+<span class="lineNum">     253 </span>            : 
+<span class="lineNum">     254 </span><span class="lineNoCov">          0 : bool ppg_token_recurse_check_initialized(PPG_Token__ *token)</span>
+<span class="lineNum">     255 </span>            : {
+<span class="lineNum">     256 </span><span class="lineNoCov">          0 :    bool assertion_failed = false;</span>
+<span class="lineNum">     257 </span>            :    
+<span class="lineNum">     258 </span>            :    assertion_failed 
+<span class="lineNum">     259 </span><span class="lineNoCov">          0 :          |= PPG_CALL_VIRT_METHOD(token, check_initialized);</span>
+<span class="lineNum">     260 </span>            :    
+<span class="lineNum">     261 </span><span class="lineNoCov">          0 :    for(PPG_Count i = 0; i &lt; token-&gt;n_children; ++i) {</span>
+<span class="lineNum">     262 </span>            :       assertion_failed 
+<span class="lineNum">     263 </span><span class="lineNoCov">          0 :          |= ppg_token_recurse_check_initialized(token-&gt;children[i]);</span>
+<span class="lineNum">     264 </span>            :    }
+<span class="lineNum">     265 </span>            :    
+<span class="lineNum">     266 </span><span class="lineNoCov">          0 :    return assertion_failed;</span>
+<span class="lineNum">     267 </span>            : }
+<span class="lineNum">     268 </span>            : 
+<a name="269"><span class="lineNum">     269 </span>            : #endif</a>
+<span class="lineNum">     270 </span>            : 
+<span class="lineNum">     271 </span><span class="lineCov">       4340 : void ppg_token_traverse_tree(PPG_Token__ *token,</span>
+<span class="lineNum">     272 </span>            :                              PPG_Token_Tree_Visitor pre_children_visitor,
+<span class="lineNum">     273 </span>            :                              PPG_Token_Tree_Visitor post_children_visitor,
+<span class="lineNum">     274 </span>            :                              void *user_data)
+<span class="lineNum">     275 </span>            : {
+<span class="lineNum">     276 </span><span class="lineCov">       4340 :    if(pre_children_visitor) {</span>
+<span class="lineNum">     277 </span><span class="lineCov">       3472 :       pre_children_visitor(token, user_data);</span>
+<span class="lineNum">     278 </span>            :    }
+<span class="lineNum">     279 </span>            :    
+<span class="lineNum">     280 </span><span class="lineCov">       8590 :    for(PPG_Count i = 0; i &lt; token-&gt;n_children; ++i) {</span>
+<span class="lineNum">     281 </span><span class="lineCov">       4250 :       ppg_token_traverse_tree(token-&gt;children[i],</span>
+<span class="lineNum">     282 </span>            :                               pre_children_visitor,
+<span class="lineNum">     283 </span>            :                               post_children_visitor,
+<span class="lineNum">     284 </span>            :                               user_data);
+<span class="lineNum">     285 </span>            :    }
+<span class="lineNum">     286 </span>            :    
+<span class="lineNum">     287 </span><span class="lineCov">       4340 :    if(post_children_visitor) {</span>
+<span class="lineNum">     288 </span><span class="lineCov">        868 :       post_children_visitor(token, user_data);</span>
+<span class="lineNum">     289 </span>            :    }
+<a name="290"><span class="lineNum">     290 </span><span class="lineCov">       4340 : }</span></a>
+<span class="lineNum">     291 </span>            : 
+<span class="lineNum">     292 </span><span class="lineCov">        868 : void ppg_token_addresses_to_relative(  PPG_Token__ *token,</span>
+<span class="lineNum">     293 </span>            :                                        void *begin_of_buffer
+<span class="lineNum">     294 </span>            : ) 
+<span class="lineNum">     295 </span>            : {
+<span class="lineNum">     296 </span><span class="lineCov">       1718 :    for(PPG_Count i = 0; i &lt; token-&gt;n_children; ++i) {</span>
+<span class="lineNum">     297 </span><span class="lineCov">        850 :       token-&gt;children[i] = (PPG_Token__ *)((char*)token-&gt;children[i] - (char*)begin_of_buffer);</span>
+<span class="lineNum">     298 </span>            :    }
+<span class="lineNum">     299 </span>            :    
+<span class="lineNum">     300 </span><span class="lineCov">        868 :    if(token-&gt;children) {</span>
+<span class="lineNum">     301 </span><span class="lineCov">        868 :       token-&gt;children = (PPG_Token__ **)((char*)token-&gt;children - (char*)begin_of_buffer);</span>
+<span class="lineNum">     302 </span>            :    }
+<a name="303"><span class="lineNum">     303 </span><span class="lineCov">        868 : }</span></a>
+<span class="lineNum">     304 </span>            : 
+<span class="lineNum">     305 </span><span class="lineCov">        434 : void ppg_token_addresses_to_absolute(  PPG_Token__ *token,</span>
+<span class="lineNum">     306 </span>            :                                        void *begin_of_buffer
+<span class="lineNum">     307 </span>            : ) 
+<span class="lineNum">     308 </span>            : {
+<span class="lineNum">     309 </span><span class="lineCov">        434 :    token-&gt;children = (PPG_Token__ **)((char*)begin_of_buffer + (uintptr_t)token-&gt;children);</span>
+<span class="lineNum">     310 </span>            :    
+<span class="lineNum">     311 </span><span class="lineCov">        859 :    for(PPG_Count i = 0; i &lt; token-&gt;n_children; ++i) {</span>
+<span class="lineNum">     312 </span><span class="lineCov">        425 :       token-&gt;children[i] = (PPG_Token__ *)((char*)begin_of_buffer + (uintptr_t)token-&gt;children[i]);</span>
+<span class="lineNum">     313 </span>            :    }
+<span class="lineNum">     314 </span><span class="lineCov">        434 : }</span>
+<span class="lineNum">     315 </span>            : 
+<span class="lineNum">     316 </span>            : PPG_Token_Vtable ppg_token_vtable =
+<span class="lineNum">     317 </span>            : {
+<span class="lineNum">     318 </span>            :    .match_event 
+<span class="lineNum">     319 </span>            :       = NULL,
+<span class="lineNum">     320 </span>            :    .reset 
+<span class="lineNum">     321 </span>            :       = (PPG_Token_Reset_Fun) ppg_token_reset_control_state,
+<span class="lineNum">     322 </span>            :    .destroy 
+<span class="lineNum">     323 </span>            :       = (PPG_Token_Destroy_Fun) ppg_token_destroy,
+<span class="lineNum">     324 </span>            :    .equals
+<span class="lineNum">     325 </span>            :       = NULL,
+<span class="lineNum">     326 </span>            :    .dynamic_size
+<span class="lineNum">     327 </span>            :       = (PPG_Token_Dynamic_Size_Requirement_Fun)ppg_token_dynamic_size,
+<span class="lineNum">     328 </span>            :    .placement_clone
+<span class="lineNum">     329 </span>            :       = (PPG_Token_Placement_Clone_Fun)ppg_token_placement_clone,
+<span class="lineNum">     330 </span>            :    .register_ptrs_for_compression
+<span class="lineNum">     331 </span>            :       = (PPG_Token_Register_Pointers_For_Compression)ppg_token_register_pointers_for_compression,
+<span class="lineNum">     332 </span>            :    .addresses_to_relative
+<span class="lineNum">     333 </span>            :       = (PPG_Token_Addresses_To_Relative)ppg_token_addresses_to_relative,
+<span class="lineNum">     334 </span>            :    .addresses_to_absolute
+<span class="lineNum">     335 </span>            :       = (PPG_Token_Addresses_To_Absolute)ppg_token_addresses_to_absolute
+<span class="lineNum">     336 </span>            :    
+<span class="lineNum">     337 </span>            :    #if PPG_PRINT_SELF_ENABLED
+<span class="lineNum">     338 </span>            :    ,
+<span class="lineNum">     339 </span>            :    .print_self
+<span class="lineNum">     340 </span>            :       = (PPG_Token_Print_Self_Fun) ppg_token_print_self
+<span class="lineNum">     341 </span>            :    #endif
+<span class="lineNum">     342 </span>            :       
+<span class="lineNum">     343 </span>            :    #if PPG_HAVE_DEBUGGING
+<span class="lineNum">     344 </span>            :    ,
+<span class="lineNum">     345 </span>            :    .check_initialized
+<span class="lineNum">     346 </span>            :       = (PPG_Token_Check_Initialized_Fun)ppg_token_check_initialized
+<span class="lineNum">     347 </span>            :    #endif
+<a name="348"><span class="lineNum">     348 </span>            : };</a>
+<span class="lineNum">     349 </span>            : 
+<span class="lineNum">     350 </span><span class="lineCov">       1363 : PPG_Token__ *ppg_token_new(PPG_Token__ *token) {</span>
+<span class="lineNum">     351 </span>            :    
+<span class="lineNum">     352 </span><span class="lineCov">       1363 :     token-&gt;vtable = &amp;ppg_token_vtable;</span>
+<span class="lineNum">     353 </span>            :     
+<span class="lineNum">     354 </span><span class="lineCov">       1363 :     token-&gt;misc = (PPG_Misc_Bits) {</span>
+<span class="lineNum">     355 </span>            :        .state = PPG_Token_Initialized,
+<span class="lineNum">     356 </span>            :        .flags = 0,
+<span class="lineNum">     357 </span>            :        .action_state = 0,
+<span class="lineNum">     358 </span>            :        .action_flags = PPG_Action_Default
+<span class="lineNum">     359 </span>            :     };
+<span class="lineNum">     360 </span><span class="lineCov">       1363 :     token-&gt;parent = NULL;</span>
+<span class="lineNum">     361 </span><span class="lineCov">       1363 :     token-&gt;children = NULL;</span>
+<span class="lineNum">     362 </span><span class="lineCov">       1363 :     token-&gt;n_allocated_children = 0;</span>
+<span class="lineNum">     363 </span><span class="lineCov">       1363 :     token-&gt;n_children = 0;</span>
+<span class="lineNum">     364 </span><span class="lineCov">       1363 :     token-&gt;action.callback.func = NULL;</span>
+<span class="lineNum">     365 </span><span class="lineCov">       1363 :     token-&gt;action.callback.user_data = NULL;</span>
+<span class="lineNum">     366 </span><span class="lineCov">       1363 :     token-&gt;layer = 0;</span>
+<span class="lineNum">     367 </span>            :     
+<span class="lineNum">     368 </span><span class="lineCov">       1363 :     return token;</span>
+<a name="369"><span class="lineNum">     369 </span>            : }</a>
+<span class="lineNum">     370 </span>            : 
+<span class="lineNum">     371 </span><span class="lineCov">        799 : PPG_Token ppg_token_set_action(  </span>
+<span class="lineNum">     372 </span>            :                      PPG_Token token,
+<span class="lineNum">     373 </span>            :                      PPG_Action action)
+<span class="lineNum">     374 </span>            : {
+<span class="lineNum">     375 </span><span class="lineCov">        799 :    PPG_Token__ *token__ = (PPG_Token__ *)token;</span>
+<span class="lineNum">     376 </span>            :    
+<span class="lineNum">     377 </span><span class="lineCov">        799 :    ppg_token_store_action(token__, action);</span>
+<span class="lineNum">     378 </span>            :    
+<span class="lineNum">     379 </span><span class="lineCov">        799 :    return token;</span>
+<a name="380"><span class="lineNum">     380 </span>            : }</a>
+<span class="lineNum">     381 </span>            : 
+<span class="lineNum">     382 </span><span class="lineNoCov">          0 : PPG_Action ppg_token_get_action(PPG_Token token)</span>
+<span class="lineNum">     383 </span>            : {
+<span class="lineNum">     384 </span><span class="lineNoCov">          0 :    PPG_Token__ *token__ = (PPG_Token__ *)token;</span>
+<span class="lineNum">     385 </span>            :    
+<span class="lineNum">     386 </span><span class="lineNoCov">          0 :    return token__-&gt;action;</span>
+<a name="387"><span class="lineNum">     387 </span>            : }</a>
+<span class="lineNum">     388 </span>            : 
+<span class="lineNum">     389 </span><span class="lineCov">          2 : PPG_Token ppg_token_set_action_flags(</span>
+<span class="lineNum">     390 </span>            :                            PPG_Token token,
+<span class="lineNum">     391 </span>            :                            PPG_Action_Flags_Type action_flags)
+<span class="lineNum">     392 </span>            : {
+<span class="lineNum">     393 </span><span class="lineCov">          2 :    PPG_Token__ *token__ = (PPG_Token__ *)token;</span>
+<span class="lineNum">     394 </span>            :    
+<span class="lineNum">     395 </span><span class="lineCov">          2 :    token__-&gt;misc.action_flags = action_flags;</span>
+<span class="lineNum">     396 </span>            :    
+<span class="lineNum">     397 </span><span class="lineCov">          2 :    return token;</span>
+<a name="398"><span class="lineNum">     398 </span>            : }</a>
+<span class="lineNum">     399 </span>            : 
+<span class="lineNum">     400 </span><span class="lineNoCov">          0 : PPG_Action_Flags_Type ppg_token_get_action_flags(PPG_Token token)</span>
+<span class="lineNum">     401 </span>            : {
+<span class="lineNum">     402 </span><span class="lineNoCov">          0 :    PPG_Token__ *token__ = (PPG_Token__ *)token;</span>
+<span class="lineNum">     403 </span>            :    
+<span class="lineNum">     404 </span><span class="lineNoCov">          0 :    return token__-&gt;misc.action_flags;</span>
+<a name="405"><span class="lineNum">     405 </span>            : }</a>
+<span class="lineNum">     406 </span>            : 
+<span class="lineNum">     407 </span><span class="lineCov">          3 : PPG_Token ppg_token_set_flags(</span>
+<span class="lineNum">     408 </span>            :                            PPG_Token token,
+<span class="lineNum">     409 </span>            :                            PPG_Count flags)
+<span class="lineNum">     410 </span>            : {
+<span class="lineNum">     411 </span><span class="lineCov">          3 :    PPG_Token__ *token__ = (PPG_Token__ *)token;</span>
+<span class="lineNum">     412 </span>            :    
+<span class="lineNum">     413 </span><span class="lineCov">          3 :    token__-&gt;misc.flags = flags;</span>
+<span class="lineNum">     414 </span>            :    
+<span class="lineNum">     415 </span><span class="lineCov">          3 :    return token;</span>
+<a name="416"><span class="lineNum">     416 </span>            : }</a>
+<span class="lineNum">     417 </span>            : 
+<span class="lineNum">     418 </span><span class="lineNoCov">          0 : PPG_Count ppg_token_get_flags(PPG_Token token)</span>
+<span class="lineNum">     419 </span>            : {
+<span class="lineNum">     420 </span><span class="lineNoCov">          0 :    PPG_Token__ *token__ = (PPG_Token__ *)token;</span>
+<span class="lineNum">     421 </span>            :    
+<span class="lineNum">     422 </span><span class="lineNoCov">          0 :    return token__-&gt;misc.flags;</span>
+<a name="423"><span class="lineNum">     423 </span>            : }</a>
+<span class="lineNum">     424 </span>            : 
+<span class="lineNum">     425 </span><span class="lineCov">        109 : void ppg_token_list_all_active(void)</span>
+<span class="lineNum">     426 </span>            : {
+<span class="lineNum">     427 </span><span class="lineCov">        109 :    PPG_LOG(&quot;T actv:\n&quot;);</span>
+<span class="lineNum">     428 </span>            : 
+<span class="lineNum">     429 </span><span class="lineCov">        109 :    for(PPG_Count i = 0; i &lt; PPG_GAT.n_tokens; ++i) {</span>
+<span class="lineNum">     430 </span><span class="lineNoCov">          0 :       PPG_LOG(&quot;\t0x%&quot; PRIXPTR &quot;\n&quot;, (uintptr_t)PPG_GAT.tokens[i]);</span>
+<span class="lineNum">     431 </span>            :    }
+<span class="lineNum">     432 </span><span class="lineCov">        109 : }</span>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.10</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

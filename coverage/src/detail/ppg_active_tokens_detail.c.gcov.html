@@ -1,0 +1,458 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info.cleaned - src/detail/ppg_active_tokens_detail.c</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../index.html">top level</a> - <a href="index.html">src/detail</a> - ppg_active_tokens_detail.c<span style="font-size: 80%;"> (source / <a href="ppg_active_tokens_detail.c.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info.cleaned</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">106</td>
+            <td class="headerCovTableEntry">123</td>
+            <td class="headerCovTableEntryMed">86.2 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-01-08</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">11</td>
+            <td class="headerCovTableEntry">11</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /* Copyright 2017 noseglasses &lt;shinynoseglasses@gmail.com&gt;</a>
+<span class="lineNum">       2 </span>            :  *
+<span class="lineNum">       3 </span>            :  * This program is free software: you can redistribute it and/or modify
+<span class="lineNum">       4 </span>            :  * it under the terms of the GNU Lesser General Public License as published by
+<span class="lineNum">       5 </span>            :  * the Free Software Foundation, either version 3 of the License, or
+<span class="lineNum">       6 </span>            :  * (at your option) any later version.
+<span class="lineNum">       7 </span>            :  *
+<span class="lineNum">       8 </span>            :  * This program is distributed in the hope that it will be useful,
+<span class="lineNum">       9 </span>            :  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<span class="lineNum">      10 </span>            :  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<span class="lineNum">      11 </span>            :  * GNU Lesser General Public License for more details.
+<span class="lineNum">      12 </span>            :  *
+<span class="lineNum">      13 </span>            :  * You should have received a copy of the GNU Lesser General Public License
+<span class="lineNum">      14 </span>            :  * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+<span class="lineNum">      15 </span>            :  */
+<span class="lineNum">      16 </span>            : 
+<span class="lineNum">      17 </span>            : #include &quot;detail/ppg_active_tokens_detail.h&quot;
+<span class="lineNum">      18 </span>            : #include &quot;detail/ppg_token_detail.h&quot;
+<span class="lineNum">      19 </span>            : #include &quot;detail/ppg_context_detail.h&quot;
+<span class="lineNum">      20 </span>            : #include &quot;detail/ppg_malloc_detail.h&quot;
+<span class="lineNum">      21 </span>            : 
+<span class="lineNum">      22 </span>            : #include &quot;ppg_debug.h&quot;
+<span class="lineNum">      23 </span>            : 
+<span class="lineNum">      24 </span>            : #include &lt;assert.h&gt;
+<a name="25"><span class="lineNum">      25 </span>            : #include &lt;string.h&gt;</a>
+<span class="lineNum">      26 </span>            : 
+<span class="lineNum">      27 </span><span class="lineCov">         50 : void ppg_active_tokens_resize(PPG_Active_Tokens *active_tokens,</span>
+<span class="lineNum">      28 </span>            :                               PPG_Count new_size)
+<span class="lineNum">      29 </span>            : {
+<span class="lineNum">      30 </span><span class="lineCov">         50 :    PPG_ASSERT(active_tokens);</span>
+<span class="lineNum">      31 </span>            :    
+<span class="lineNum">      32 </span><span class="lineCov">         50 :    if(new_size &lt;= active_tokens-&gt;max_tokens) { return; }</span>
+<span class="lineNum">      33 </span>            :    
+<span class="lineNum">      34 </span><span class="lineCov">         50 :    PPG_Token__ **new_tokens</span>
+<span class="lineNum">      35 </span><span class="lineCov">         50 :       = (PPG_Token__**)PPG_MALLOC(sizeof(PPG_Token__*)*new_size);</span>
+<span class="lineNum">      36 </span>            :       
+<span class="lineNum">      37 </span><span class="lineCov">         50 :    active_tokens-&gt;max_tokens = new_size;</span>
+<span class="lineNum">      38 </span>            :    
+<span class="lineNum">      39 </span><span class="lineCov">         50 :    if(active_tokens-&gt;tokens &amp;&amp; (active_tokens-&gt;n_tokens &gt; 0)) {</span>
+<span class="lineNum">      40 </span><span class="lineNoCov">          0 :       memcpy(new_tokens, active_tokens-&gt;tokens, </span>
+<span class="lineNum">      41 </span><span class="lineNoCov">          0 :              sizeof(PPG_Token__ *)*active_tokens-&gt;n_tokens);</span>
+<span class="lineNum">      42 </span>            :    }
+<span class="lineNum">      43 </span>            :    
+<span class="lineNum">      44 </span><span class="lineCov">         50 :    active_tokens-&gt;tokens = new_tokens;</span>
+<a name="45"><span class="lineNum">      45 </span>            : }</a>
+<span class="lineNum">      46 </span>            : 
+<span class="lineNum">      47 </span><span class="lineCov">         41 : void ppg_active_tokens_init(PPG_Active_Tokens *active_tokens)</span>
+<span class="lineNum">      48 </span>            : {
+<span class="lineNum">      49 </span><span class="lineCov">         41 :    active_tokens-&gt;tokens = NULL;</span>
+<span class="lineNum">      50 </span><span class="lineCov">         41 :    active_tokens-&gt;n_tokens = 0;</span>
+<span class="lineNum">      51 </span><span class="lineCov">         41 :    active_tokens-&gt;max_tokens = 0;</span>
+<span class="lineNum">      52 </span>            :    
+<span class="lineNum">      53 </span><span class="lineCov">         41 :    ppg_active_tokens_resize(active_tokens, PPG_MAX_ACTIVE_TOKENS);</span>
+<span class="lineNum">      54 </span>            :    
+<span class="lineNum">      55 </span><span class="lineCov">      10496 :    for(size_t i = 0; i &lt; PPG_MAX_ACTIVE_TOKENS; ++i) {</span>
+<span class="lineNum">      56 </span><span class="lineCov">      10455 :       active_tokens-&gt;tokens[i] = NULL;</span>
+<span class="lineNum">      57 </span>            :    }
+<a name="58"><span class="lineNum">      58 </span><span class="lineCov">         41 : }</span></a>
+<span class="lineNum">      59 </span>            : 
+<span class="lineNum">      60 </span><span class="lineCov">          9 : void ppg_active_tokens_restore(PPG_Active_Tokens *active_tokens)</span>
+<span class="lineNum">      61 </span>            : {
+<span class="lineNum">      62 </span><span class="lineCov">          9 :    PPG_Count saved_size = active_tokens-&gt;max_tokens;</span>
+<span class="lineNum">      63 </span>            :    
+<span class="lineNum">      64 </span><span class="lineCov">          9 :    active_tokens-&gt;tokens = NULL;</span>
+<span class="lineNum">      65 </span><span class="lineCov">          9 :    active_tokens-&gt;max_tokens = 0; // This forces resize </span>
+<span class="lineNum">      66 </span>            :    
+<span class="lineNum">      67 </span><span class="lineCov">          9 :    ppg_active_tokens_resize(active_tokens, saved_size);</span>
+<a name="68"><span class="lineNum">      68 </span><span class="lineCov">          9 : }</span></a>
+<span class="lineNum">      69 </span>            : 
+<span class="lineNum">      70 </span><span class="lineCov">         41 : void ppg_active_tokens_free(PPG_Active_Tokens *active_tokens)</span>
+<span class="lineNum">      71 </span>            : {
+<span class="lineNum">      72 </span><span class="lineCov">         41 :    if(!active_tokens-&gt;tokens) { return; }</span>
+<span class="lineNum">      73 </span>            :    
+<span class="lineNum">      74 </span><span class="lineCov">         41 :    free(active_tokens-&gt;tokens);</span>
+<span class="lineNum">      75 </span>            :    
+<span class="lineNum">      76 </span><span class="lineCov">         41 :    active_tokens-&gt;tokens = NULL;</span>
+<a name="77"><span class="lineNum">      77 </span>            : }</a>
+<span class="lineNum">      78 </span>            : 
+<span class="lineNum">      79 </span><span class="lineCov">        235 : static void ppg_active_tokens_add(PPG_Token__ *token)</span>
+<span class="lineNum">      80 </span>            : {
+<span class="lineNum">      81 </span><span class="lineCov">        235 :    PPG_GAT.tokens[PPG_GAT.n_tokens] = token;</span>
+<span class="lineNum">      82 </span>            :    
+<span class="lineNum">      83 </span><span class="lineCov">        235 :    PPG_ASSERT(PPG_GAT.n_tokens &lt; PPG_MAX_ACTIVE_TOKENS);</span>
+<span class="lineNum">      84 </span>            : 
+<span class="lineNum">      85 </span><span class="lineCov">        235 :    ++PPG_GAT.n_tokens;</span>
+<a name="86"><span class="lineNum">      86 </span><span class="lineCov">        235 : }</span></a>
+<span class="lineNum">      87 </span>            : 
+<span class="lineNum">      88 </span><span class="lineCov">        235 : static void ppg_active_tokens_remove(PPG_Count id)</span>
+<span class="lineNum">      89 </span>            : {
+<span class="lineNum">      90 </span><span class="lineCov">        565 :    for(PPG_Count i = id; i &lt; PPG_GAT.n_tokens - 1; ++i) {</span>
+<span class="lineNum">      91 </span><span class="lineCov">        330 :       PPG_GAT.tokens[i] = PPG_GAT.tokens[i + 1];</span>
+<span class="lineNum">      92 </span>            :    }
+<span class="lineNum">      93 </span>            :    
+<span class="lineNum">      94 </span><span class="lineCov">        235 :    --PPG_GAT.n_tokens;</span>
+<a name="95"><span class="lineNum">      95 </span><span class="lineCov">        235 : }</span></a>
+<span class="lineNum">      96 </span>            : 
+<span class="lineNum">      97 </span><span class="lineCov">        241 : static void ppg_active_tokens_search_remove(PPG_Token__ *token)</span>
+<span class="lineNum">      98 </span>            : {
+<span class="lineNum">      99 </span><span class="lineCov">        253 :    for(PPG_Count i = 0; i &lt; PPG_GAT.n_tokens; ++i) {</span>
+<span class="lineNum">     100 </span><span class="lineCov">        247 :       if(token == PPG_GAT.tokens[i]) {</span>
+<span class="lineNum">     101 </span><span class="lineCov">        235 :          ppg_active_tokens_remove(i);</span>
+<span class="lineNum">     102 </span><span class="lineCov">        235 :          break;</span>
+<span class="lineNum">     103 </span>            :       }
+<span class="lineNum">     104 </span>            :    }
+<a name="105"><span class="lineNum">     105 </span><span class="lineCov">        241 : }</span></a>
+<span class="lineNum">     106 </span>            : 
+<span class="lineNum">     107 </span><span class="lineCov">        337 : static void ppg_active_tokens_on_deactivation(PPG_Token__ *consumer,</span>
+<span class="lineNum">     108 </span>            :                                               PPG_Count state,
+<span class="lineNum">     109 </span>            :                                               bool changed
+<span class="lineNum">     110 </span>            :                                              )
+<span class="lineNum">     111 </span>            : {
+<span class="lineNum">     112 </span>            :    // The event deactivates an input
+<span class="lineNum">     113 </span>            : 
+<span class="lineNum">     114 </span><span class="lineCov">        337 :    if(consumer) {</span>
+<span class="lineNum">     115 </span>            :       
+<span class="lineNum">     116 </span><span class="lineCov">        337 :       if(consumer-&gt;misc.flags &amp; PPG_Token_Flags_Pedantic) {</span>
+<span class="lineNum">     117 </span>            :          
+<span class="lineNum">     118 </span><span class="lineNoCov">          0 :          if(   (state </span>
+<span class="lineNum">     119 </span>            :                         == PPG_Token_Matches) 
+<span class="lineNum">     120 </span><span class="lineNoCov">          0 :             &amp;&amp; (changed)) {</span>
+<span class="lineNum">     121 </span>            :                
+<span class="lineNum">     122 </span>            : //             PPG_LOG(&quot;   Cs act &amp; deact\n&quot;);
+<span class="lineNum">     123 </span>            :          
+<span class="lineNum">     124 </span><span class="lineNoCov">          0 :             if(consumer-&gt;misc.action_state == PPG_Action_Enabled) {</span>
+<span class="lineNum">     125 </span>            :                      
+<span class="lineNum">     126 </span>            : //                PPG_LOG(&quot;      T.a.a.\n&quot;);
+<span class="lineNum">     127 </span>            :                      
+<span class="lineNum">     128 </span><span class="lineNoCov">          0 :                consumer-&gt;action.callback.func(true /* signal deactivation */,</span>
+<span class="lineNum">     129 </span>            :                         consumer-&gt;action.callback.user_data);
+<span class="lineNum">     130 </span>            :                
+<span class="lineNum">     131 </span><span class="lineNoCov">          0 :                consumer-&gt;misc.action_state = PPG_Action_Activation_Triggered;</span>
+<span class="lineNum">     132 </span>            :                      
+<span class="lineNum">     133 </span><span class="lineNoCov">          0 :                consumer-&gt;action.callback.func(false /* signal deactivation */,</span>
+<span class="lineNum">     134 </span>            :                         consumer-&gt;action.callback.user_data);
+<span class="lineNum">     135 </span>            :                      
+<span class="lineNum">     136 </span><span class="lineNoCov">          0 :                consumer-&gt;misc.action_state = PPG_Action_Deactivation_Triggered;</span>
+<span class="lineNum">     137 </span>            :             }
+<span class="lineNum">     138 </span>            :             
+<span class="lineNum">     139 </span><span class="lineNoCov">          0 :             ppg_active_tokens_search_remove(consumer);</span>
+<span class="lineNum">     140 </span>            :          }
+<span class="lineNum">     141 </span>            :          
+<span class="lineNum">     142 </span><span class="lineNoCov">          0 :          return;</span>
+<span class="lineNum">     143 </span>            :       }
+<span class="lineNum">     144 </span>            :       
+<span class="lineNum">     145 </span>            :       // It there is a consumer listed, this means that the event was
+<span class="lineNum">     146 </span>            :       // consumed by one of the tokens of the matching branch
+<span class="lineNum">     147 </span>            :       
+<span class="lineNum">     148 </span><span class="lineCov">        337 :       if(changed) {</span>
+<span class="lineNum">     149 </span>            :          
+<span class="lineNum">     150 </span>            :          // Token state just changed...
+<span class="lineNum">     151 </span>            :          
+<span class="lineNum">     152 </span><span class="lineCov">        260 :          if(state </span>
+<span class="lineNum">     153 </span>            :                      == PPG_Token_Deactivation_In_Progress) {
+<span class="lineNum">     154 </span>            :             
+<span class="lineNum">     155 </span>            : //             PPG_LOG(&quot;   C. d.\n&quot;);
+<span class="lineNum">     156 </span>            :          
+<span class="lineNum">     157 </span>            :             // It turned from state &quot;matching&quot; to state
+<span class="lineNum">     158 </span>            :             // &quot;deactivation in progress&quot;
+<span class="lineNum">     159 </span>            :             
+<span class="lineNum">     160 </span><span class="lineCov">         25 :             if(consumer-&gt;misc.action_flags &amp; PPG_Action_Deactivate_On_Token_Unmatch) {</span>
+<span class="lineNum">     161 </span>            : 
+<span class="lineNum">     162 </span><span class="lineNoCov">          0 :                if(consumer-&gt;misc.action_state == PPG_Action_Enabled) {</span>
+<span class="lineNum">     163 </span>            :                   
+<span class="lineNum">     164 </span>            : //                   PPG_LOG(&quot;      T.e.a.\n&quot;);
+<span class="lineNum">     165 </span><span class="lineNoCov">          0 :                   consumer-&gt;action.callback.func(false /* signal deactivation */,</span>
+<span class="lineNum">     166 </span>            :                      consumer-&gt;action.callback.user_data);
+<span class="lineNum">     167 </span>            :                   
+<span class="lineNum">     168 </span><span class="lineNoCov">          0 :                   consumer-&gt;misc.action_state = PPG_Action_Deactivation_Triggered;</span>
+<span class="lineNum">     169 </span>            :                }
+<span class="lineNum">     170 </span>            :             }
+<span class="lineNum">     171 </span>            :          }
+<span class="lineNum">     172 </span><span class="lineCov">        235 :          else if(state </span>
+<span class="lineNum">     173 </span>            :                            == PPG_Token_Finalized) {
+<span class="lineNum">     174 </span>            :             
+<span class="lineNum">     175 </span>            : //             PPG_LOG(&quot;   Causes finalization of 0x%&quot; PRIXPTR &quot;\n&quot;, (uintptr_t)consumer);
+<span class="lineNum">     176 </span>            : //             PPG_LOG(&quot;Fin\n&quot;);
+<span class="lineNum">     177 </span>            :             // The token just became initialized, i.e. all related inputs were deactivated
+<span class="lineNum">     178 </span>            :             // again.
+<span class="lineNum">     179 </span>            :             
+<span class="lineNum">     180 </span><span class="lineCov">        235 :             if(   ((consumer-&gt;misc.action_flags &amp; PPG_Action_Deactivate_On_Token_Unmatch) == 0)</span>
+<span class="lineNum">     181 </span><span class="lineNoCov">          0 :                || (consumer-&gt;misc.action_state != PPG_Action_Deactivation_Triggered)) {</span>
+<span class="lineNum">     182 </span>            :                
+<span class="lineNum">     183 </span><span class="lineCov">        235 :                if(consumer-&gt;misc.action_state == PPG_Action_Enabled) {</span>
+<span class="lineNum">     184 </span>            : //                   PPG_LOG(&quot;      T.a.a.\n&quot;);
+<span class="lineNum">     185 </span><span class="lineCov">          2 :                   consumer-&gt;action.callback.func(true /* signal deactivation */,</span>
+<span class="lineNum">     186 </span>            :                      consumer-&gt;action.callback.user_data);
+<span class="lineNum">     187 </span>            :                   
+<span class="lineNum">     188 </span><span class="lineCov">          2 :                   consumer-&gt;misc.action_state = PPG_Action_Activation_Triggered;</span>
+<span class="lineNum">     189 </span>            :                }
+<span class="lineNum">     190 </span>            :                
+<span class="lineNum">     191 </span><span class="lineCov">        235 :                if(consumer-&gt;misc.action_state == PPG_Action_Activation_Triggered) {</span>
+<span class="lineNum">     192 </span>            : //                   PPG_LOG(&quot;      T.d.a.\n&quot;);
+<span class="lineNum">     193 </span><span class="lineCov">         85 :                   consumer-&gt;action.callback.func(false /* signal deactivation */,</span>
+<span class="lineNum">     194 </span>            :                      consumer-&gt;action.callback.user_data);
+<span class="lineNum">     195 </span>            :                   
+<span class="lineNum">     196 </span><span class="lineCov">         85 :                   consumer-&gt;misc.action_state = PPG_Action_Deactivation_Triggered;</span>
+<span class="lineNum">     197 </span>            :                }
+<span class="lineNum">     198 </span>            :             }
+<span class="lineNum">     199 </span>            :             
+<span class="lineNum">     200 </span>            :             // Remove it from the active set as no further events will affect it
+<span class="lineNum">     201 </span>            :             //
+<span class="lineNum">     202 </span><span class="lineCov">        235 :             ppg_active_tokens_search_remove(consumer);</span>
+<span class="lineNum">     203 </span>            :          }
+<span class="lineNum">     204 </span>            :       }
+<span class="lineNum">     205 </span>            :    }
+<a name="206"><span class="lineNum">     206 </span>            : }</a>
+<span class="lineNum">     207 </span>            : 
+<span class="lineNum">     208 </span><span class="lineCov">        890 : bool ppg_active_tokens_check_consumption(</span>
+<span class="lineNum">     209 </span>            :                                     PPG_Event *event)
+<span class="lineNum">     210 </span>            : {
+<span class="lineNum">     211 </span><span class="lineCov">        890 :    if(PPG_GAT.n_tokens == 0) {</span>
+<span class="lineNum">     212 </span><span class="lineCov">        575 :       return false;</span>
+<span class="lineNum">     213 </span>            :    }
+<span class="lineNum">     214 </span>            :    
+<span class="lineNum">     215 </span>            :    // No consumer (token) is listed for the deactivation event. 
+<span class="lineNum">     216 </span>            :    // This means that the input deactivation that
+<span class="lineNum">     217 </span>            :    // is represented by the token is related to an input from the
+<span class="lineNum">     218 </span>            :    // active set that has been registered in one of the previous pattern matching rounds
+<span class="lineNum">     219 </span>            :    // and whose inputs have not all been deactivated yet. 
+<span class="lineNum">     220 </span>            :    
+<span class="lineNum">     221 </span><span class="lineCov">        315 :    PPG_Token__ *consumer = NULL;</span>
+<span class="lineNum">     222 </span><span class="lineCov">        315 :    bool event_consumed = false;</span>
+<span class="lineNum">     223 </span>            :    PPG_Count i;
+<span class="lineNum">     224 </span><span class="lineCov">        315 :    bool state_changed = false;</span>
+<span class="lineNum">     225 </span>            :    PPG_Count new_state;
+<span class="lineNum">     226 </span>            :    
+<span class="lineNum">     227 </span>            :    // Thus, we first have to find it in the active token set.
+<span class="lineNum">     228 </span>            :    //
+<span class="lineNum">     229 </span><span class="lineCov">        654 :    for(i = 0; i &lt; PPG_GAT.n_tokens; ++i) {</span>
+<span class="lineNum">     230 </span>            :       
+<span class="lineNum">     231 </span><span class="lineCov">        327 :       consumer = PPG_GAT.tokens[i];</span>
+<span class="lineNum">     232 </span>            :       
+<span class="lineNum">     233 </span>            : //       PPG_LOG(&quot;   consumer: 0x%&quot; PRIXPTR &quot;\n&quot;, (uintptr_t)consumer);
+<span class="lineNum">     234 </span>            : //       PPG_LOG(&quot;   consumer action state: %d\n&quot;, consumer-&gt;misc.action_state);
+<span class="lineNum">     235 </span>            :       
+<span class="lineNum">     236 </span><span class="lineCov">        327 :       PPG_Count old_state = consumer-&gt;misc.state;</span>
+<span class="lineNum">     237 </span>            :       
+<span class="lineNum">     238 </span><span class="lineCov">        327 :       event_consumed = consumer</span>
+<span class="lineNum">     239 </span><span class="lineCov">        327 :                               -&gt;vtable-&gt;match_event(  </span>
+<span class="lineNum">     240 </span>            :                                        consumer, 
+<span class="lineNum">     241 </span>            :                                        event,
+<span class="lineNum">     242 </span>            :                                        true /*modify only if consuming*/
+<span class="lineNum">     243 </span>            :                                  );
+<span class="lineNum">     244 </span>            :                          
+<span class="lineNum">     245 </span><span class="lineCov">        327 :       PPG_PRINT_TOKEN(consumer)</span>
+<span class="lineNum">     246 </span>            :       
+<span class="lineNum">     247 </span><span class="lineCov">        327 :       if(!event_consumed) {</span>
+<span class="lineNum">     248 </span><span class="lineCov">         12 :          continue;</span>
+<span class="lineNum">     249 </span>            :       }
+<span class="lineNum">     250 </span>            :       
+<span class="lineNum">     251 </span><span class="lineCov">        315 :       new_state = consumer-&gt;misc.state;</span>
+<span class="lineNum">     252 </span>            :       
+<span class="lineNum">     253 </span><span class="lineCov">        315 :       if(old_state != new_state) {</span>
+<span class="lineNum">     254 </span><span class="lineCov">        254 :          state_changed = true;</span>
+<span class="lineNum">     255 </span>            :       }
+<span class="lineNum">     256 </span>            :       
+<span class="lineNum">     257 </span><span class="lineCov">        315 :       break;</span>
+<span class="lineNum">     258 </span>            :    }
+<span class="lineNum">     259 </span>            :    
+<span class="lineNum">     260 </span><span class="lineCov">        315 :    if(!event_consumed) {</span>
+<span class="lineNum">     261 </span><span class="lineNoCov">          0 :       return false;</span>
+<span class="lineNum">     262 </span>            :    }
+<span class="lineNum">     263 </span>            :    
+<span class="lineNum">     264 </span>            : //    PPG_LOG(&quot;   consumed\n&quot;);
+<span class="lineNum">     265 </span>            : //    PPG_LOG(&quot;   new_state: %d\n&quot;, new_state);
+<span class="lineNum">     266 </span>            : //    PPG_LOG(&quot;   state_changed: %d\n&quot;, state_changed);
+<span class="lineNum">     267 </span>            : 
+<span class="lineNum">     268 </span>            :    // The token just became initialized, i.e. all related inputs were deactivated
+<span class="lineNum">     269 </span>            :    // again.
+<span class="lineNum">     270 </span>            :    
+<span class="lineNum">     271 </span><span class="lineCov">        315 :    if((event-&gt;flags &amp; PPG_Event_Active) == 0) {</span>
+<span class="lineNum">     272 </span>            :       
+<span class="lineNum">     273 </span><span class="lineCov">        311 :       ppg_active_tokens_on_deactivation(consumer,</span>
+<span class="lineNum">     274 </span>            :                                         new_state,
+<span class="lineNum">     275 </span>            :                                         state_changed);
+<span class="lineNum">     276 </span>            : 
+<span class="lineNum">     277 </span>            :    }
+<span class="lineNum">     278 </span>            :       
+<span class="lineNum">     279 </span>            :    // One of the tokens from the active set consumed our deactivation event
+<span class="lineNum">     280 </span>            :    
+<span class="lineNum">     281 </span>            :    // Mark it, so the user can recognize it as consumed during event 
+<span class="lineNum">     282 </span>            :    // buffer itearation.
+<span class="lineNum">     283 </span>            :    //
+<span class="lineNum">     284 </span><span class="lineCov">        315 :    event-&gt;flags |= PPG_Event_Considered;</span>
+<span class="lineNum">     285 </span>            :    
+<span class="lineNum">     286 </span><span class="lineCov">        315 :    return true;</span>
+<a name="287"><span class="lineNum">     287 </span>            : }</a>
+<span class="lineNum">     288 </span>            : 
+<span class="lineNum">     289 </span><span class="lineCov">        469 : static void ppg_active_tokens_update_aux(</span>
+<span class="lineNum">     290 </span>            :                                     PPG_Event_Queue_Entry *eqe,
+<span class="lineNum">     291 </span>            :                                     void *user_data)
+<span class="lineNum">     292 </span>            : {
+<span class="lineNum">     293 </span>            :    PPG_UNUSED(user_data);
+<span class="lineNum">     294 </span>            :    
+<span class="lineNum">     295 </span>            : //    PPG_LOG(&quot;Event: Input 0x%d, active: %d\n&quot;,
+<span class="lineNum">     296 </span>            : //            eqe-&gt;event.input,
+<span class="lineNum">     297 </span>            : //            eqe-&gt;event.flags &amp; PPG_Event_Active);
+<span class="lineNum">     298 </span>            :    
+<span class="lineNum">     299 </span>            :    // Check if the event has already been considered 
+<span class="lineNum">     300 </span>            :    // This is the case for deactivation events that
+<span class="lineNum">     301 </span>            :    // have been consumed by unfinished tokens of a previous pattern match.
+<span class="lineNum">     302 </span>            :    //
+<span class="lineNum">     303 </span><span class="lineCov">        469 :    if(eqe-&gt;event.flags &amp; PPG_Event_Considered) {</span>
+<span class="lineNum">     304 </span><span class="lineNoCov">          0 :       return;</span>
+<span class="lineNum">     305 </span>            :    }
+<span class="lineNum">     306 </span>            :       
+<span class="lineNum">     307 </span><span class="lineCov">        469 :    if(eqe-&gt;consumer) {</span>
+<span class="lineNum">     308 </span>            : //       PPG_LOG(&quot;   consumer: 0x%&quot; PRIXPTR &quot;\n&quot;, (uintptr_t)eqe-&gt;consumer);
+<span class="lineNum">     309 </span>            : //       PPG_LOG(&quot;   consumer action state: %d\n&quot;, eqe-&gt;consumer-&gt;misc.action_state);
+<span class="lineNum">     310 </span><span class="lineCov">        359 :       PPG_PRINT_TOKEN(eqe-&gt;consumer)</span>
+<span class="lineNum">     311 </span>            :    }
+<span class="lineNum">     312 </span>            :   
+<span class="lineNum">     313 </span><span class="lineCov">        469 :    if(eqe-&gt;event.flags &amp; PPG_Event_Active) {</span>
+<span class="lineNum">     314 </span>            :       
+<span class="lineNum">     315 </span>            :       // The event activates an input
+<span class="lineNum">     316 </span>            :       
+<span class="lineNum">     317 </span><span class="lineCov">        333 :       if(   (eqe-&gt;token_state.state == PPG_Token_Matches)</span>
+<span class="lineNum">     318 </span><span class="lineCov">        235 :          &amp;&amp; eqe-&gt;token_state.changed</span>
+<span class="lineNum">     319 </span>            :       ) {
+<span class="lineNum">     320 </span>            : //          PPG_LOG(&quot;   Causes token match\n&quot;);
+<span class="lineNum">     321 </span>            :          
+<span class="lineNum">     322 </span>            :          // The last event led to a match
+<span class="lineNum">     323 </span>            :             
+<span class="lineNum">     324 </span>            :          // Add the token to the active set
+<span class="lineNum">     325 </span>            :          //
+<span class="lineNum">     326 </span><span class="lineCov">        235 :          PPG_ASSERT(eqe-&gt;consumer);</span>
+<span class="lineNum">     327 </span><span class="lineCov">        235 :          ppg_active_tokens_add(eqe-&gt;consumer);</span>
+<span class="lineNum">     328 </span>            :           
+<span class="lineNum">     329 </span>            :          // In pedantic tokens mode, tokens can only trigger actions 
+<span class="lineNum">     330 </span>            :          // when all their related inputs became inactive
+<span class="lineNum">     331 </span>            :          //
+<span class="lineNum">     332 </span><span class="lineCov">        235 :          if((eqe-&gt;consumer-&gt;misc.flags &amp; PPG_Token_Flags_Pedantic) == 0) {</span>
+<span class="lineNum">     333 </span>            :             
+<span class="lineNum">     334 </span>            :             // As the token just matched. Lets check if
+<span class="lineNum">     335 </span>            :             // we are allowed to trigger the respective action.
+<span class="lineNum">     336 </span>            :             //
+<span class="lineNum">     337 </span><span class="lineCov">        235 :             if(eqe-&gt;consumer-&gt;misc.action_state == PPG_Action_Enabled) {</span>
+<span class="lineNum">     338 </span>            :                
+<span class="lineNum">     339 </span>            : //                PPG_LOG(&quot;      Triggering activation action\n&quot;);
+<span class="lineNum">     340 </span>            :                
+<span class="lineNum">     341 </span><span class="lineCov">        166 :                eqe-&gt;consumer-&gt;action.callback.func(true /* signal activation */,</span>
+<span class="lineNum">     342 </span><span class="lineCov">         83 :                   eqe-&gt;consumer-&gt;action.callback.user_data);</span>
+<span class="lineNum">     343 </span>            :                
+<span class="lineNum">     344 </span><span class="lineCov">         83 :                eqe-&gt;consumer-&gt;misc.action_state = PPG_Action_Activation_Triggered;</span>
+<span class="lineNum">     345 </span>            :             }
+<span class="lineNum">     346 </span>            :          }
+<span class="lineNum">     347 </span>            :       }
+<span class="lineNum">     348 </span>            :       
+<span class="lineNum">     349 </span><span class="lineCov">        333 :       eqe-&gt;event.flags |= PPG_Event_Considered;</span>
+<span class="lineNum">     350 </span>            :       
+<span class="lineNum">     351 </span><span class="lineCov">        333 :       if(eqe-&gt;consumer-&gt;misc.flags &amp; PPG_Token_Flags_Done) {</span>
+<span class="lineNum">     352 </span><span class="lineCov">          6 :          ppg_active_tokens_search_remove(eqe-&gt;consumer);</span>
+<span class="lineNum">     353 </span>            :       }
+<span class="lineNum">     354 </span>            :    }
+<span class="lineNum">     355 </span>            :    else {
+<span class="lineNum">     356 </span>            :         
+<span class="lineNum">     357 </span>            :       // The event deactivates an input
+<span class="lineNum">     358 </span>            :       
+<span class="lineNum">     359 </span><span class="lineCov">        136 :       if(eqe-&gt;consumer) {</span>
+<span class="lineNum">     360 </span><span class="lineCov">         52 :          ppg_active_tokens_on_deactivation(eqe-&gt;consumer,</span>
+<span class="lineNum">     361 </span><span class="lineCov">         26 :                                         eqe-&gt;token_state.state,</span>
+<span class="lineNum">     362 </span><span class="lineCov">         26 :                                         eqe-&gt;token_state.changed);</span>
+<span class="lineNum">     363 </span>            : 
+<span class="lineNum">     364 </span><span class="lineCov">         26 :          eqe-&gt;event.flags |= PPG_Event_Considered;</span>
+<span class="lineNum">     365 </span>            :       }
+<span class="lineNum">     366 </span>            :       else {
+<span class="lineNum">     367 </span>            :          
+<span class="lineNum">     368 </span>            : //          PPG_LOG(&quot;   Not part of current match branch\n&quot;);
+<span class="lineNum">     369 </span>            :          
+<span class="lineNum">     370 </span><span class="lineCov">        110 :          ppg_active_tokens_check_consumption(&amp;eqe-&gt;event);</span>
+<span class="lineNum">     371 </span>            :       }
+<span class="lineNum">     372 </span>            :    }
+<a name="373"><span class="lineNum">     373 </span>            : }</a>
+<span class="lineNum">     374 </span>            : 
+<span class="lineNum">     375 </span><span class="lineCov">        102 : void ppg_active_tokens_update(void)</span>
+<span class="lineNum">     376 </span>            : {
+<span class="lineNum">     377 </span>            : //    PPG_LOG(&quot;************************\n&quot;)
+<span class="lineNum">     378 </span>            : //    PPG_LOG(&quot;Activating active tokens\n&quot;)
+<span class="lineNum">     379 </span><span class="lineCov">        102 :    ppg_event_buffer_iterate2(</span>
+<span class="lineNum">     380 </span>            :       (PPG_Event_Processor_Visitor)ppg_active_tokens_update_aux, 
+<span class="lineNum">     381 </span>            :       NULL);
+<span class="lineNum">     382 </span><span class="lineCov">        102 : }</span>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.10</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

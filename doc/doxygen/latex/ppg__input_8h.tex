@@ -1,0 +1,54 @@
+\hypertarget{ppg__input_8h}{\section{/home/travis/build/noseglasses/papageno/src/ppg\-\_\-input.h File Reference}
+\label{ppg__input_8h}\index{/home/travis/build/noseglasses/papageno/src/ppg\-\_\-input.\-h@{/home/travis/build/noseglasses/papageno/src/ppg\-\_\-input.\-h}}
+}
+{\ttfamily \#include $<$stdbool.\-h$>$}\\*
+{\ttfamily \#include $<$stdint.\-h$>$}\\*
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{ppg__input_8h_a4f6bfc32c0adab8a54a8bca185ffb519}{P\-P\-G\-\_\-\-I\-N\-P\-U\-T\-S}(...)
+\begin{DoxyCompactList}\small\item\em Auxiliary macro to simplify passing input arrays to functions such as ppg\-\_\-cluster or ppg\-\_\-chord. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef uint8\-\_\-t \hyperlink{ppg__input_8h_a83636f010a52c9de62d0425629f0a158}{P\-P\-G\-\_\-\-Input\-\_\-\-Id}
+\begin{DoxyCompactList}\small\item\em The type used as input identifier. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\hypertarget{ppg__input_8h_a4f6bfc32c0adab8a54a8bca185ffb519}{\index{ppg\-\_\-input.\-h@{ppg\-\_\-input.\-h}!P\-P\-G\-\_\-\-I\-N\-P\-U\-T\-S@{P\-P\-G\-\_\-\-I\-N\-P\-U\-T\-S}}
+\index{P\-P\-G\-\_\-\-I\-N\-P\-U\-T\-S@{P\-P\-G\-\_\-\-I\-N\-P\-U\-T\-S}!ppg_input.h@{ppg\-\_\-input.\-h}}
+\subsubsection[{P\-P\-G\-\_\-\-I\-N\-P\-U\-T\-S}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\-P\-G\-\_\-\-I\-N\-P\-U\-T\-S(
+\begin{DoxyParamCaption}
+\item[{}]{...}
+\end{DoxyParamCaption}
+)}}\label{ppg__input_8h_a4f6bfc32c0adab8a54a8bca185ffb519}
+{\bfseries Value\-:}
+\begin{DoxyCode}
+\textcolor{keyword}{sizeof}((\hyperlink{ppg__input_8h_a83636f010a52c9de62d0425629f0a158}{PPG\_Input\_Id}[])\{ \_\_VA\_ARGS\_\_ \})/\textcolor{keyword}{sizeof}(\hyperlink{ppg__input_8h_a83636f010a52c9de62d0425629f0a158}{PPG\_Input\_Id}), \(\backslash\)
+   \(\backslash\)
+   \textcolor{comment}{/* The following akward construnct serves to silence the compiler warning \(\backslash\)}
+\textcolor{comment}{    * error: taking address of temporary array \(\backslash\)}
+\textcolor{comment}{    */} \(\backslash\)
+   (\hyperlink{ppg__input_8h_a83636f010a52c9de62d0425629f0a158}{PPG\_Input\_Id}*)(\textcolor{keyword}{const} \hyperlink{ppg__input_8h_a83636f010a52c9de62d0425629f0a158}{PPG\_Input\_Id}[])\{ \_\_VA\_ARGS\_\_ \}
+\end{DoxyCode}
+
+
+Auxiliary macro to simplify passing input arrays to functions such as ppg\-\_\-cluster or ppg\-\_\-chord. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em ...} & The array members \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Typedef Documentation}
+\hypertarget{ppg__input_8h_a83636f010a52c9de62d0425629f0a158}{\index{ppg\-\_\-input.\-h@{ppg\-\_\-input.\-h}!P\-P\-G\-\_\-\-Input\-\_\-\-Id@{P\-P\-G\-\_\-\-Input\-\_\-\-Id}}
+\index{P\-P\-G\-\_\-\-Input\-\_\-\-Id@{P\-P\-G\-\_\-\-Input\-\_\-\-Id}!ppg_input.h@{ppg\-\_\-input.\-h}}
+\subsubsection[{P\-P\-G\-\_\-\-Input\-\_\-\-Id}]{\setlength{\rightskip}{0pt plus 5cm}typedef uint8\-\_\-t {\bf P\-P\-G\-\_\-\-Input\-\_\-\-Id}}}\label{ppg__input_8h_a83636f010a52c9de62d0425629f0a158}
+
+
+The type used as input identifier. 
+
+This type is used as an identifier for inputs. Inputs must be numbered contiguously. 

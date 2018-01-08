@@ -1,0 +1,113 @@
+\hypertarget{ppg__action_8h}{\section{/home/travis/build/noseglasses/papageno/src/ppg\-\_\-action.h File Reference}
+\label{ppg__action_8h}\index{/home/travis/build/noseglasses/papageno/src/ppg\-\_\-action.\-h@{/home/travis/build/noseglasses/papageno/src/ppg\-\_\-action.\-h}}
+}
+{\ttfamily \#include \char`\"{}ppg\-\_\-signals.\-h\char`\"{}}\\*
+{\ttfamily \#include $<$stddef.\-h$>$}\\*
+{\ttfamily \#include $<$stdbool.\-h$>$}\\*
+\subsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structPPG__Action__Callback}{P\-P\-G\-\_\-\-Action\-\_\-\-Callback}
+\begin{DoxyCompactList}\small\item\em The \hyperlink{structPPG__Action__Callback}{P\-P\-G\-\_\-\-Action\-\_\-\-Callback} struct groups use callback information in an object oriented fashion (functor). \end{DoxyCompactList}\item 
+struct \hyperlink{structPPG__Action}{P\-P\-G\-\_\-\-Action}
+\begin{DoxyCompactList}\small\item\em Action information. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{ppg__action_8h_af096afef406d710856e8fafbb251efe4}{P\-P\-G\-\_\-\-A\-C\-T\-I\-O\-N\-\_\-\-U\-S\-E\-R\-\_\-\-C\-A\-L\-L\-B\-A\-C\-K}(F\-U\-N\-C, U\-S\-E\-R\-\_\-\-D\-A\-T\-A)
+\begin{DoxyCompactList}\small\item\em Use this macro to simplify specification of action callbacks. \end{DoxyCompactList}\item 
+\#define \hyperlink{ppg__action_8h_a27b6054cbf413f1eb9bb37c2673e4ad2}{P\-P\-G\-\_\-\-A\-C\-T\-I\-O\-N\-\_\-\-N\-O\-O\-P}
+\begin{DoxyCompactList}\small\item\em Use this macro to specify an action that does nothing. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef void($\ast$ \hyperlink{ppg__action_8h_abccce75a464e29a0fc3c53da4d25b6fc}{P\-P\-G\-\_\-\-Action\-\_\-\-Callback\-\_\-\-Fun} )(bool activation, void $\ast$user\-\_\-data)
+\begin{DoxyCompactList}\small\item\em Function type of user callback functions. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{ppg__action_8h_a5dcfa9117f0d91a288ceb31edc0c96c6}{ppg\-\_\-action\-\_\-callback\-\_\-init} (\hyperlink{structPPG__Action__Callback}{P\-P\-G\-\_\-\-Action\-\_\-\-Callback} $\ast$cb)
+\begin{DoxyCompactList}\small\item\em This function initializes an action callback. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\hypertarget{ppg__action_8h_a27b6054cbf413f1eb9bb37c2673e4ad2}{\index{ppg\-\_\-action.\-h@{ppg\-\_\-action.\-h}!P\-P\-G\-\_\-\-A\-C\-T\-I\-O\-N\-\_\-\-N\-O\-O\-P@{P\-P\-G\-\_\-\-A\-C\-T\-I\-O\-N\-\_\-\-N\-O\-O\-P}}
+\index{P\-P\-G\-\_\-\-A\-C\-T\-I\-O\-N\-\_\-\-N\-O\-O\-P@{P\-P\-G\-\_\-\-A\-C\-T\-I\-O\-N\-\_\-\-N\-O\-O\-P}!ppg_action.h@{ppg\-\_\-action.\-h}}
+\subsubsection[{P\-P\-G\-\_\-\-A\-C\-T\-I\-O\-N\-\_\-\-N\-O\-O\-P}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\-P\-G\-\_\-\-A\-C\-T\-I\-O\-N\-\_\-\-N\-O\-O\-P}}\label{ppg__action_8h_a27b6054cbf413f1eb9bb37c2673e4ad2}
+{\bfseries Value\-:}
+\begin{DoxyCode}
+(\hyperlink{structPPG__Action}{PPG\_Action}) \{ \(\backslash\)
+      .callback = (\hyperlink{structPPG__Action__Callback}{PPG\_Action\_Callback}) \{ \(\backslash\)
+         .func = NULL, \(\backslash\)
+         .user\_data = NULL \(\backslash\)
+      \} \(\backslash\)
+   \}
+\end{DoxyCode}
+
+
+Use this macro to specify an action that does nothing. 
+
+\hypertarget{ppg__action_8h_af096afef406d710856e8fafbb251efe4}{\index{ppg\-\_\-action.\-h@{ppg\-\_\-action.\-h}!P\-P\-G\-\_\-\-A\-C\-T\-I\-O\-N\-\_\-\-U\-S\-E\-R\-\_\-\-C\-A\-L\-L\-B\-A\-C\-K@{P\-P\-G\-\_\-\-A\-C\-T\-I\-O\-N\-\_\-\-U\-S\-E\-R\-\_\-\-C\-A\-L\-L\-B\-A\-C\-K}}
+\index{P\-P\-G\-\_\-\-A\-C\-T\-I\-O\-N\-\_\-\-U\-S\-E\-R\-\_\-\-C\-A\-L\-L\-B\-A\-C\-K@{P\-P\-G\-\_\-\-A\-C\-T\-I\-O\-N\-\_\-\-U\-S\-E\-R\-\_\-\-C\-A\-L\-L\-B\-A\-C\-K}!ppg_action.h@{ppg\-\_\-action.\-h}}
+\subsubsection[{P\-P\-G\-\_\-\-A\-C\-T\-I\-O\-N\-\_\-\-U\-S\-E\-R\-\_\-\-C\-A\-L\-L\-B\-A\-C\-K}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\-P\-G\-\_\-\-A\-C\-T\-I\-O\-N\-\_\-\-U\-S\-E\-R\-\_\-\-C\-A\-L\-L\-B\-A\-C\-K(
+\begin{DoxyParamCaption}
+\item[{}]{F\-U\-N\-C, }
+\item[{}]{U\-S\-E\-R\-\_\-\-D\-A\-T\-A}
+\end{DoxyParamCaption}
+)}}\label{ppg__action_8h_af096afef406d710856e8fafbb251efe4}
+{\bfseries Value\-:}
+\begin{DoxyCode}
+(\hyperlink{structPPG__Action}{PPG\_Action}) \{ \(\backslash\)
+      .callback = (\hyperlink{structPPG__Action__Callback}{PPG\_Action\_Callback}) \{ \(\backslash\)
+         .func = (\hyperlink{ppg__action_8h_abccce75a464e29a0fc3c53da4d25b6fc}{PPG\_Action\_Callback\_Fun})FUNC, \(\backslash\)
+         .user\_data = USER\_DATA \(\backslash\)
+      \} \(\backslash\)
+   \}
+\end{DoxyCode}
+
+
+Use this macro to simplify specification of action callbacks. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em F\-U\-N\-C} & The callback function pointer \\
+\hline
+{\em U\-S\-E\-R\-\_\-\-D\-A\-T\-A} & A pointer to user data or N\-U\-L\-L if none is required \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Typedef Documentation}
+\hypertarget{ppg__action_8h_abccce75a464e29a0fc3c53da4d25b6fc}{\index{ppg\-\_\-action.\-h@{ppg\-\_\-action.\-h}!P\-P\-G\-\_\-\-Action\-\_\-\-Callback\-\_\-\-Fun@{P\-P\-G\-\_\-\-Action\-\_\-\-Callback\-\_\-\-Fun}}
+\index{P\-P\-G\-\_\-\-Action\-\_\-\-Callback\-\_\-\-Fun@{P\-P\-G\-\_\-\-Action\-\_\-\-Callback\-\_\-\-Fun}!ppg_action.h@{ppg\-\_\-action.\-h}}
+\subsubsection[{P\-P\-G\-\_\-\-Action\-\_\-\-Callback\-\_\-\-Fun}]{\setlength{\rightskip}{0pt plus 5cm}typedef void($\ast$ P\-P\-G\-\_\-\-Action\-\_\-\-Callback\-\_\-\-Fun)(bool activation, void $\ast$user\-\_\-data)}}\label{ppg__action_8h_abccce75a464e29a0fc3c53da4d25b6fc}
+
+
+Function type of user callback functions. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em activation} & If true, the callback signals the activation (match) of a token, and deactivation otherwise \\
+\hline
+{\em user\-\_\-data} & Optional user data. \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Function Documentation}
+\hypertarget{ppg__action_8h_a5dcfa9117f0d91a288ceb31edc0c96c6}{\index{ppg\-\_\-action.\-h@{ppg\-\_\-action.\-h}!ppg\-\_\-action\-\_\-callback\-\_\-init@{ppg\-\_\-action\-\_\-callback\-\_\-init}}
+\index{ppg\-\_\-action\-\_\-callback\-\_\-init@{ppg\-\_\-action\-\_\-callback\-\_\-init}!ppg_action.h@{ppg\-\_\-action.\-h}}
+\subsubsection[{ppg\-\_\-action\-\_\-callback\-\_\-init}]{\setlength{\rightskip}{0pt plus 5cm}void ppg\-\_\-action\-\_\-callback\-\_\-init (
+\begin{DoxyParamCaption}
+\item[{{\bf P\-P\-G\-\_\-\-Action\-\_\-\-Callback} $\ast$}]{cb}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{ppg__action_8h_a5dcfa9117f0d91a288ceb31edc0c96c6}
+
+
+This function initializes an action callback. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em cb} & A pointer to the callback struct \\
+\hline
+\end{DoxyParams}

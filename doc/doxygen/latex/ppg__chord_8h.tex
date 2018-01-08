@@ -1,0 +1,122 @@
+\hypertarget{ppg__chord_8h}{\section{/home/travis/build/noseglasses/papageno/src/ppg\-\_\-chord.h File Reference}
+\label{ppg__chord_8h}\index{/home/travis/build/noseglasses/papageno/src/ppg\-\_\-chord.\-h@{/home/travis/build/noseglasses/papageno/src/ppg\-\_\-chord.\-h}}
+}
+{\ttfamily \#include \char`\"{}ppg\-\_\-token.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}ppg\-\_\-input.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}ppg\-\_\-layer.\-h\char`\"{}}\\*
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{ppg__chord_8h_af1eaef5901dfdb96969ece26fd667a6e}{P\-P\-G\-\_\-\-C\-H\-O\-R\-D\-\_\-\-C\-R\-E\-A\-T\-E}(...)~\hyperlink{ppg__chord_8h_a41a6f9c35b8d92094aca3300799dae97}{ppg\-\_\-chord\-\_\-create}(\hyperlink{ppg__input_8h_a4f6bfc32c0adab8a54a8bca185ffb519}{P\-P\-G\-\_\-\-I\-N\-P\-U\-T\-S}(\-\_\-\-\_\-\-V\-A\-\_\-\-A\-R\-G\-S\-\_\-\-\_\-))
+\begin{DoxyCompactList}\small\item\em Auxiliary macro to create a chord based on a set of input specifications. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{ppg__chord_8h_aaa3821b92e91fac3e2df133fd6b46154}{P\-P\-G\-\_\-\-Chord\-\_\-\-Flags} \{ \hyperlink{ppg__chord_8h_aaa3821b92e91fac3e2df133fd6b46154ad75543423e523f2225a73901a5563d24}{P\-P\-G\-\_\-\-Chord\-\_\-\-Flags\-\_\-\-Disallow\-\_\-\-Input\-\_\-\-Deactivation} = (1 $<$$<$ 3)
+ \}
+\begin{DoxyCompactList}\small\item\em Flags that configure chord behavior. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{ppg__token_8h_a87940c8d6eedc90a71ca6c4e841304e5}{P\-P\-G\-\_\-\-Token} \hyperlink{ppg__chord_8h_a3957eb89b40c4887e28dc18e05ce0ac3}{ppg\-\_\-chord} (P\-P\-G\-\_\-\-Layer layer, \hyperlink{structPPG__Action}{P\-P\-G\-\_\-\-Action} action, P\-P\-G\-\_\-\-Count n\-\_\-inputs, \hyperlink{ppg__input_8h_a83636f010a52c9de62d0425629f0a158}{P\-P\-G\-\_\-\-Input\-\_\-\-Id} inputs\mbox{[}$\,$\mbox{]})
+\begin{DoxyCompactList}\small\item\em Defines a stand alone magic chord. \end{DoxyCompactList}\item 
+\hyperlink{ppg__token_8h_a87940c8d6eedc90a71ca6c4e841304e5}{P\-P\-G\-\_\-\-Token} \hyperlink{ppg__chord_8h_a41a6f9c35b8d92094aca3300799dae97}{ppg\-\_\-chord\-\_\-create} (P\-P\-G\-\_\-\-Count n\-\_\-inputs, \hyperlink{ppg__input_8h_a83636f010a52c9de62d0425629f0a158}{P\-P\-G\-\_\-\-Input\-\_\-\-Id} inputs\mbox{[}$\,$\mbox{]})
+\begin{DoxyCompactList}\small\item\em Generates a chord token. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\hypertarget{ppg__chord_8h_af1eaef5901dfdb96969ece26fd667a6e}{\index{ppg\-\_\-chord.\-h@{ppg\-\_\-chord.\-h}!P\-P\-G\-\_\-\-C\-H\-O\-R\-D\-\_\-\-C\-R\-E\-A\-T\-E@{P\-P\-G\-\_\-\-C\-H\-O\-R\-D\-\_\-\-C\-R\-E\-A\-T\-E}}
+\index{P\-P\-G\-\_\-\-C\-H\-O\-R\-D\-\_\-\-C\-R\-E\-A\-T\-E@{P\-P\-G\-\_\-\-C\-H\-O\-R\-D\-\_\-\-C\-R\-E\-A\-T\-E}!ppg_chord.h@{ppg\-\_\-chord.\-h}}
+\subsubsection[{P\-P\-G\-\_\-\-C\-H\-O\-R\-D\-\_\-\-C\-R\-E\-A\-T\-E}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\-P\-G\-\_\-\-C\-H\-O\-R\-D\-\_\-\-C\-R\-E\-A\-T\-E(
+\begin{DoxyParamCaption}
+\item[{}]{...}
+\end{DoxyParamCaption}
+)~{\bf ppg\-\_\-chord\-\_\-create}({\bf P\-P\-G\-\_\-\-I\-N\-P\-U\-T\-S}(\-\_\-\-\_\-\-V\-A\-\_\-\-A\-R\-G\-S\-\_\-\-\_\-))}}\label{ppg__chord_8h_af1eaef5901dfdb96969ece26fd667a6e}
+
+
+Auxiliary macro to create a chord based on a set of input specifications. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em ...} & A list of inputs \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Enumeration Type Documentation}
+\hypertarget{ppg__chord_8h_aaa3821b92e91fac3e2df133fd6b46154}{\index{ppg\-\_\-chord.\-h@{ppg\-\_\-chord.\-h}!P\-P\-G\-\_\-\-Chord\-\_\-\-Flags@{P\-P\-G\-\_\-\-Chord\-\_\-\-Flags}}
+\index{P\-P\-G\-\_\-\-Chord\-\_\-\-Flags@{P\-P\-G\-\_\-\-Chord\-\_\-\-Flags}!ppg_chord.h@{ppg\-\_\-chord.\-h}}
+\subsubsection[{P\-P\-G\-\_\-\-Chord\-\_\-\-Flags}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf P\-P\-G\-\_\-\-Chord\-\_\-\-Flags}}}\label{ppg__chord_8h_aaa3821b92e91fac3e2df133fd6b46154}
+
+
+Flags that configure chord behavior. 
+
+Use the functions ppg\-\_\-token\-\_\-set\-\_\-flags and ppg\-\_\-token\-\_\-get\-\_\-flags to manipulated chord flags. \begin{Desc}
+\item[Enumerator]\par
+\begin{description}
+\index{P\-P\-G\-\_\-\-Chord\-\_\-\-Flags\-\_\-\-Disallow\-\_\-\-Input\-\_\-\-Deactivation@{P\-P\-G\-\_\-\-Chord\-\_\-\-Flags\-\_\-\-Disallow\-\_\-\-Input\-\_\-\-Deactivation}!ppg\-\_\-chord.\-h@{ppg\-\_\-chord.\-h}}\index{ppg\-\_\-chord.\-h@{ppg\-\_\-chord.\-h}!P\-P\-G\-\_\-\-Chord\-\_\-\-Flags\-\_\-\-Disallow\-\_\-\-Input\-\_\-\-Deactivation@{P\-P\-G\-\_\-\-Chord\-\_\-\-Flags\-\_\-\-Disallow\-\_\-\-Input\-\_\-\-Deactivation}}\item[{\em 
+\hypertarget{ppg__chord_8h_aaa3821b92e91fac3e2df133fd6b46154ad75543423e523f2225a73901a5563d24}{P\-P\-G\-\_\-\-Chord\-\_\-\-Flags\-\_\-\-Disallow\-\_\-\-Input\-\_\-\-Deactivation}\label{ppg__chord_8h_aaa3821b92e91fac3e2df133fd6b46154ad75543423e523f2225a73901a5563d24}
+}]Set this flag to gain. \end{description}
+\end{Desc}
+
+
+\subsection{Function Documentation}
+\hypertarget{ppg__chord_8h_a3957eb89b40c4887e28dc18e05ce0ac3}{\index{ppg\-\_\-chord.\-h@{ppg\-\_\-chord.\-h}!ppg\-\_\-chord@{ppg\-\_\-chord}}
+\index{ppg\-\_\-chord@{ppg\-\_\-chord}!ppg_chord.h@{ppg\-\_\-chord.\-h}}
+\subsubsection[{ppg\-\_\-chord}]{\setlength{\rightskip}{0pt plus 5cm}{\bf P\-P\-G\-\_\-\-Token} ppg\-\_\-chord (
+\begin{DoxyParamCaption}
+\item[{P\-P\-G\-\_\-\-Layer}]{layer, }
+\item[{{\bf P\-P\-G\-\_\-\-Action}}]{action, }
+\item[{P\-P\-G\-\_\-\-Count}]{n\-\_\-inputs, }
+\item[{{\bf P\-P\-G\-\_\-\-Input\-\_\-\-Id}}]{inputs\mbox{[}$\,$\mbox{]}}
+\end{DoxyParamCaption}
+)}}\label{ppg__chord_8h_a3957eb89b40c4887e28dc18e05ce0ac3}
+
+
+Defines a stand alone magic chord. 
+
+All members must be activated/pressed simultaneously for a chord to be considered as a match.
+
+
+\begin{DoxyParams}{Parameters}
+{\em layer} & The layer the pattern is associated with \\
+\hline
+{\em action} & The action that is supposed to be carried out if the overall pattern matches \\
+\hline
+{\em n\-\_\-inputs} & The number of inputs \\
+\hline
+{\em inputs} & A pointer to an array of input definitions. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The constructed token 
+\end{DoxyReturn}
+\hypertarget{ppg__chord_8h_a41a6f9c35b8d92094aca3300799dae97}{\index{ppg\-\_\-chord.\-h@{ppg\-\_\-chord.\-h}!ppg\-\_\-chord\-\_\-create@{ppg\-\_\-chord\-\_\-create}}
+\index{ppg\-\_\-chord\-\_\-create@{ppg\-\_\-chord\-\_\-create}!ppg_chord.h@{ppg\-\_\-chord.\-h}}
+\subsubsection[{ppg\-\_\-chord\-\_\-create}]{\setlength{\rightskip}{0pt plus 5cm}{\bf P\-P\-G\-\_\-\-Token} ppg\-\_\-chord\-\_\-create (
+\begin{DoxyParamCaption}
+\item[{P\-P\-G\-\_\-\-Count}]{n\-\_\-inputs, }
+\item[{{\bf P\-P\-G\-\_\-\-Input\-\_\-\-Id}}]{inputs\mbox{[}$\,$\mbox{]}}
+\end{DoxyParamCaption}
+)}}\label{ppg__chord_8h_a41a6f9c35b8d92094aca3300799dae97}
+
+
+Generates a chord token. 
+
+Use this function to generate tokens that are be passed to the ppg\-\_\-pattern function to generate complex patterns. All notes of a chord must have been pressed at the same time time for the chord to match.
+
+\begin{DoxyNote}{Note}
+Chords that are generated by this function must be passed to ppg\-\_\-pattern to be effective 
+
+Use setter functions that operate on tokens to change attributes of the generated token
+\end{DoxyNote}
+
+\begin{DoxyParams}{Parameters}
+{\em n\-\_\-inputs} & The number of inputs that are associated with the chord \\
+\hline
+{\em inputs} & An array of inputs that represent the notes of the chord \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The constructed token 
+\end{DoxyReturn}

@@ -1,0 +1,299 @@
+\hypertarget{ppg__global_8h}{\section{/home/travis/build/noseglasses/papageno/src/ppg\-\_\-global.h File Reference}
+\label{ppg__global_8h}\index{/home/travis/build/noseglasses/papageno/src/ppg\-\_\-global.\-h@{/home/travis/build/noseglasses/papageno/src/ppg\-\_\-global.\-h}}
+}
+{\ttfamily \#include \char`\"{}ppg\-\_\-input.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}ppg\-\_\-time.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}ppg\-\_\-event.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}ppg\-\_\-layer.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}ppg\-\_\-signal\-\_\-callback.\-h\char`\"{}}\\*
+{\ttfamily \#include $<$stdbool.\-h$>$}\\*
+{\ttfamily \#include $<$inttypes.\-h$>$}\\*
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{ppg__input_8h_a83636f010a52c9de62d0425629f0a158}{P\-P\-G\-\_\-\-Input\-\_\-\-Id} \hyperlink{ppg__global_8h_a48e867a085be3984f7f3e1c104d011e2}{ppg\-\_\-global\-\_\-set\-\_\-abort\-\_\-trigger} (\hyperlink{ppg__input_8h_a83636f010a52c9de62d0425629f0a158}{P\-P\-G\-\_\-\-Input\-\_\-\-Id} input)
+\begin{DoxyCompactList}\small\item\em Defines an input that aborts current pattern processing. \end{DoxyCompactList}\item 
+\hyperlink{ppg__input_8h_a83636f010a52c9de62d0425629f0a158}{P\-P\-G\-\_\-\-Input\-\_\-\-Id} \hyperlink{ppg__global_8h_a6bca1332254ead6e04fd905fe0e3d0f7}{ppg\-\_\-global\-\_\-get\-\_\-abort\-\_\-trigger} (void)
+\begin{DoxyCompactList}\small\item\em Retreives the current abort input. \end{DoxyCompactList}\item 
+\hypertarget{ppg__global_8h_a56c21b0aa69ffd1e68d65c683e2ce28c}{void \hyperlink{ppg__global_8h_a56c21b0aa69ffd1e68d65c683e2ce28c}{ppg\-\_\-global\-\_\-abort\-\_\-pattern\-\_\-matching} (void)}\label{ppg__global_8h_a56c21b0aa69ffd1e68d65c683e2ce28c}
+
+\begin{DoxyCompactList}\small\item\em Aborts processing of the current pattern. \end{DoxyCompactList}\item 
+P\-P\-G\-\_\-\-Time \hyperlink{ppg__global_8h_a95f231ed0268af843b41358c5a8628c9}{ppg\-\_\-global\-\_\-set\-\_\-timeout} (P\-P\-G\-\_\-\-Time timeout)
+\begin{DoxyCompactList}\small\item\em Set the current timeout for pattern processing. \end{DoxyCompactList}\item 
+P\-P\-G\-\_\-\-Time \hyperlink{ppg__global_8h_ac41524ded86dcde64fa830ada37fd3b6}{ppg\-\_\-global\-\_\-get\-\_\-timeout} (void)
+\begin{DoxyCompactList}\small\item\em Returns the current timeout value. \end{DoxyCompactList}\item 
+\hyperlink{ppg__event_8h_aa248a950a0fe60a91483b50d6ed4dabf}{P\-P\-G\-\_\-\-Event\-\_\-\-Processor\-\_\-\-Fun} \hyperlink{ppg__global_8h_a1d9e13ec56804cabd5387ef626dee795}{ppg\-\_\-global\-\_\-set\-\_\-default\-\_\-event\-\_\-processor} (\hyperlink{ppg__event_8h_aa248a950a0fe60a91483b50d6ed4dabf}{P\-P\-G\-\_\-\-Event\-\_\-\-Processor\-\_\-\-Fun} event\-\_\-processor)
+\begin{DoxyCompactList}\small\item\em Defines the default input processor callback. \end{DoxyCompactList}\item 
+bool \hyperlink{ppg__global_8h_ab707f7fd5b5cc445a71a1c3ee1e6d514}{ppg\-\_\-global\-\_\-set\-\_\-enabled} (bool state)
+\begin{DoxyCompactList}\small\item\em Use this function to temporarily disable/enable pattern processing. \end{DoxyCompactList}\item 
+\hypertarget{ppg__global_8h_a3f4b0e98294cadd864688aea9bc2625e}{void \hyperlink{ppg__global_8h_a3f4b0e98294cadd864688aea9bc2625e}{ppg\-\_\-global\-\_\-init} (void)}\label{ppg__global_8h_a3f4b0e98294cadd864688aea9bc2625e}
+
+\begin{DoxyCompactList}\small\item\em Initialize Papageno. \end{DoxyCompactList}\item 
+\hypertarget{ppg__global_8h_afe096099f70c660d5cde0afa3d0c279a}{void \hyperlink{ppg__global_8h_afe096099f70c660d5cde0afa3d0c279a}{ppg\-\_\-global\-\_\-compile} (void)}\label{ppg__global_8h_afe096099f70c660d5cde0afa3d0c279a}
+
+\begin{DoxyCompactList}\small\item\em Compiles the Papageno pattern tree. \end{DoxyCompactList}\item 
+void \hyperlink{ppg__global_8h_a80b5683d6cd755e3667da85ea2d7cd43}{ppg\-\_\-global\-\_\-finalize} (void)
+\begin{DoxyCompactList}\small\item\em Finalizes Papageno, i.\-e. clears all patterns and frees all allocated memory. \end{DoxyCompactList}\item 
+void \hyperlink{ppg__global_8h_a0c16bb195e2f69876d79cc9c98d97768}{ppg\-\_\-global\-\_\-reset} (void)
+\begin{DoxyCompactList}\small\item\em Resets papageno to initial state. \end{DoxyCompactList}\item 
+bool \hyperlink{ppg__global_8h_acade3a9cfdc2fd00af7933e408bc3aba}{ppg\-\_\-timeout\-\_\-check} (void)
+\begin{DoxyCompactList}\small\item\em The timeout check function. \end{DoxyCompactList}\item 
+bool \hyperlink{ppg__global_8h_ac7c4567bc490d7db5ece79392c86b27c}{ppg\-\_\-global\-\_\-set\-\_\-timeout\-\_\-enabled} (bool state)
+\begin{DoxyCompactList}\small\item\em Toggles global timeout. \end{DoxyCompactList}\item 
+bool \hyperlink{ppg__global_8h_a9a414747cfd417669a06d8bf5b6ceffd}{ppg\-\_\-global\-\_\-get\-\_\-timeout\-\_\-enabled} (void)
+\begin{DoxyCompactList}\small\item\em Determines if global timeout is enabled. \end{DoxyCompactList}\item 
+P\-P\-G\-\_\-\-Layer \hyperlink{ppg__global_8h_ab93127a1112737c0d6375533c420ac97}{ppg\-\_\-global\-\_\-set\-\_\-layer} (P\-P\-G\-\_\-\-Layer layer)
+\begin{DoxyCompactList}\small\item\em Set the current layer. \end{DoxyCompactList}\item 
+P\-P\-G\-\_\-\-Layer \hyperlink{ppg__global_8h_abd58f960960531308c00e7e4fbf6f1af}{ppg\-\_\-global\-\_\-get\-\_\-layer} (void)
+\begin{DoxyCompactList}\small\item\em Retreives the currently active layer. \end{DoxyCompactList}\item 
+\hyperlink{structPPG__Signal__Callback}{P\-P\-G\-\_\-\-Signal\-\_\-\-Callback} \hyperlink{ppg__global_8h_a65769741e3635a75c702a93077102ae3}{ppg\-\_\-global\-\_\-set\-\_\-signal\-\_\-callback} (\hyperlink{structPPG__Signal__Callback}{P\-P\-G\-\_\-\-Signal\-\_\-\-Callback} callback)
+\begin{DoxyCompactList}\small\item\em Set a callback that is used to signal specific events. \end{DoxyCompactList}\item 
+\hyperlink{structPPG__Signal__Callback}{P\-P\-G\-\_\-\-Signal\-\_\-\-Callback} \hyperlink{ppg__global_8h_aceaed8deb00faf3854beb43f5c8b9abb}{ppg\-\_\-global\-\_\-get\-\_\-signal\-\_\-callback} (void)
+\begin{DoxyCompactList}\small\item\em Get the current signal callback. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{ppg__global_8h_a80b5683d6cd755e3667da85ea2d7cd43}{\index{ppg\-\_\-global.\-h@{ppg\-\_\-global.\-h}!ppg\-\_\-global\-\_\-finalize@{ppg\-\_\-global\-\_\-finalize}}
+\index{ppg\-\_\-global\-\_\-finalize@{ppg\-\_\-global\-\_\-finalize}!ppg_global.h@{ppg\-\_\-global.\-h}}
+\subsubsection[{ppg\-\_\-global\-\_\-finalize}]{\setlength{\rightskip}{0pt plus 5cm}void ppg\-\_\-global\-\_\-finalize (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{ppg__global_8h_a80b5683d6cd755e3667da85ea2d7cd43}
+
+
+Finalizes Papageno, i.\-e. clears all patterns and frees all allocated memory. 
+
+Please not that this operation only operates on the current context. It you have created several contexts, set and finalize them in a loop. \hypertarget{ppg__global_8h_a6bca1332254ead6e04fd905fe0e3d0f7}{\index{ppg\-\_\-global.\-h@{ppg\-\_\-global.\-h}!ppg\-\_\-global\-\_\-get\-\_\-abort\-\_\-trigger@{ppg\-\_\-global\-\_\-get\-\_\-abort\-\_\-trigger}}
+\index{ppg\-\_\-global\-\_\-get\-\_\-abort\-\_\-trigger@{ppg\-\_\-global\-\_\-get\-\_\-abort\-\_\-trigger}!ppg_global.h@{ppg\-\_\-global.\-h}}
+\subsubsection[{ppg\-\_\-global\-\_\-get\-\_\-abort\-\_\-trigger}]{\setlength{\rightskip}{0pt plus 5cm}{\bf P\-P\-G\-\_\-\-Input\-\_\-\-Id} ppg\-\_\-global\-\_\-get\-\_\-abort\-\_\-trigger (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{ppg__global_8h_a6bca1332254ead6e04fd905fe0e3d0f7}
+
+
+Retreives the current abort input. 
+
+See ppg\-\_\-global\-\_\-set\-\_\-abort\-\_\-trigger for further information. \hypertarget{ppg__global_8h_abd58f960960531308c00e7e4fbf6f1af}{\index{ppg\-\_\-global.\-h@{ppg\-\_\-global.\-h}!ppg\-\_\-global\-\_\-get\-\_\-layer@{ppg\-\_\-global\-\_\-get\-\_\-layer}}
+\index{ppg\-\_\-global\-\_\-get\-\_\-layer@{ppg\-\_\-global\-\_\-get\-\_\-layer}!ppg_global.h@{ppg\-\_\-global.\-h}}
+\subsubsection[{ppg\-\_\-global\-\_\-get\-\_\-layer}]{\setlength{\rightskip}{0pt plus 5cm}P\-P\-G\-\_\-\-Layer ppg\-\_\-global\-\_\-get\-\_\-layer (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{ppg__global_8h_abd58f960960531308c00e7e4fbf6f1af}
+
+
+Retreives the currently active layer. 
+
+\begin{DoxyReturn}{Returns}
+The currently active layer 
+\end{DoxyReturn}
+\hypertarget{ppg__global_8h_aceaed8deb00faf3854beb43f5c8b9abb}{\index{ppg\-\_\-global.\-h@{ppg\-\_\-global.\-h}!ppg\-\_\-global\-\_\-get\-\_\-signal\-\_\-callback@{ppg\-\_\-global\-\_\-get\-\_\-signal\-\_\-callback}}
+\index{ppg\-\_\-global\-\_\-get\-\_\-signal\-\_\-callback@{ppg\-\_\-global\-\_\-get\-\_\-signal\-\_\-callback}!ppg_global.h@{ppg\-\_\-global.\-h}}
+\subsubsection[{ppg\-\_\-global\-\_\-get\-\_\-signal\-\_\-callback}]{\setlength{\rightskip}{0pt plus 5cm}{\bf P\-P\-G\-\_\-\-Signal\-\_\-\-Callback} ppg\-\_\-global\-\_\-get\-\_\-signal\-\_\-callback (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{ppg__global_8h_aceaed8deb00faf3854beb43f5c8b9abb}
+
+
+Get the current signal callback. 
+
+\begin{DoxyReturn}{Returns}
+The current callback 
+\end{DoxyReturn}
+\hypertarget{ppg__global_8h_ac41524ded86dcde64fa830ada37fd3b6}{\index{ppg\-\_\-global.\-h@{ppg\-\_\-global.\-h}!ppg\-\_\-global\-\_\-get\-\_\-timeout@{ppg\-\_\-global\-\_\-get\-\_\-timeout}}
+\index{ppg\-\_\-global\-\_\-get\-\_\-timeout@{ppg\-\_\-global\-\_\-get\-\_\-timeout}!ppg_global.h@{ppg\-\_\-global.\-h}}
+\subsubsection[{ppg\-\_\-global\-\_\-get\-\_\-timeout}]{\setlength{\rightskip}{0pt plus 5cm}P\-P\-G\-\_\-\-Time ppg\-\_\-global\-\_\-get\-\_\-timeout (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{ppg__global_8h_ac41524ded86dcde64fa830ada37fd3b6}
+
+
+Returns the current timeout value. 
+
+\begin{DoxyReturn}{Returns}
+The current timeout value 
+\end{DoxyReturn}
+\hypertarget{ppg__global_8h_a9a414747cfd417669a06d8bf5b6ceffd}{\index{ppg\-\_\-global.\-h@{ppg\-\_\-global.\-h}!ppg\-\_\-global\-\_\-get\-\_\-timeout\-\_\-enabled@{ppg\-\_\-global\-\_\-get\-\_\-timeout\-\_\-enabled}}
+\index{ppg\-\_\-global\-\_\-get\-\_\-timeout\-\_\-enabled@{ppg\-\_\-global\-\_\-get\-\_\-timeout\-\_\-enabled}!ppg_global.h@{ppg\-\_\-global.\-h}}
+\subsubsection[{ppg\-\_\-global\-\_\-get\-\_\-timeout\-\_\-enabled}]{\setlength{\rightskip}{0pt plus 5cm}bool ppg\-\_\-global\-\_\-get\-\_\-timeout\-\_\-enabled (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{ppg__global_8h_a9a414747cfd417669a06d8bf5b6ceffd}
+
+
+Determines if global timeout is enabled. 
+
+\begin{DoxyReturn}{Returns}
+The current state of global timeout enabled 
+\end{DoxyReturn}
+\hypertarget{ppg__global_8h_a0c16bb195e2f69876d79cc9c98d97768}{\index{ppg\-\_\-global.\-h@{ppg\-\_\-global.\-h}!ppg\-\_\-global\-\_\-reset@{ppg\-\_\-global\-\_\-reset}}
+\index{ppg\-\_\-global\-\_\-reset@{ppg\-\_\-global\-\_\-reset}!ppg_global.h@{ppg\-\_\-global.\-h}}
+\subsubsection[{ppg\-\_\-global\-\_\-reset}]{\setlength{\rightskip}{0pt plus 5cm}void ppg\-\_\-global\-\_\-reset (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{ppg__global_8h_a0c16bb195e2f69876d79cc9c98d97768}
+
+
+Resets papageno to initial state. 
+
+This creates and initializes a new context. Other contexts are not affected. The currently active context is finalized before the reset operation takes place. \hypertarget{ppg__global_8h_a48e867a085be3984f7f3e1c104d011e2}{\index{ppg\-\_\-global.\-h@{ppg\-\_\-global.\-h}!ppg\-\_\-global\-\_\-set\-\_\-abort\-\_\-trigger@{ppg\-\_\-global\-\_\-set\-\_\-abort\-\_\-trigger}}
+\index{ppg\-\_\-global\-\_\-set\-\_\-abort\-\_\-trigger@{ppg\-\_\-global\-\_\-set\-\_\-abort\-\_\-trigger}!ppg_global.h@{ppg\-\_\-global.\-h}}
+\subsubsection[{ppg\-\_\-global\-\_\-set\-\_\-abort\-\_\-trigger}]{\setlength{\rightskip}{0pt plus 5cm}{\bf P\-P\-G\-\_\-\-Input\-\_\-\-Id} ppg\-\_\-global\-\_\-set\-\_\-abort\-\_\-trigger (
+\begin{DoxyParamCaption}
+\item[{{\bf P\-P\-G\-\_\-\-Input\-\_\-\-Id}}]{input}
+\end{DoxyParamCaption}
+)}}\label{ppg__global_8h_a48e867a085be3984f7f3e1c104d011e2}
+
+
+Defines an input that aborts current pattern processing. 
+
+If pattern processing is aborted the actions of tokens that already matched are triggered.
+
+\begin{DoxyNote}{Note}
+By default there is no abort input defined
+\end{DoxyNote}
+
+\begin{DoxyParams}{Parameters}
+{\em input} & The abort input \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The abort input id that was previously set 
+\end{DoxyReturn}
+\hypertarget{ppg__global_8h_a1d9e13ec56804cabd5387ef626dee795}{\index{ppg\-\_\-global.\-h@{ppg\-\_\-global.\-h}!ppg\-\_\-global\-\_\-set\-\_\-default\-\_\-event\-\_\-processor@{ppg\-\_\-global\-\_\-set\-\_\-default\-\_\-event\-\_\-processor}}
+\index{ppg\-\_\-global\-\_\-set\-\_\-default\-\_\-event\-\_\-processor@{ppg\-\_\-global\-\_\-set\-\_\-default\-\_\-event\-\_\-processor}!ppg_global.h@{ppg\-\_\-global.\-h}}
+\subsubsection[{ppg\-\_\-global\-\_\-set\-\_\-default\-\_\-event\-\_\-processor}]{\setlength{\rightskip}{0pt plus 5cm}{\bf P\-P\-G\-\_\-\-Event\-\_\-\-Processor\-\_\-\-Fun} ppg\-\_\-global\-\_\-set\-\_\-default\-\_\-event\-\_\-processor (
+\begin{DoxyParamCaption}
+\item[{{\bf P\-P\-G\-\_\-\-Event\-\_\-\-Processor\-\_\-\-Fun}}]{event\-\_\-processor}
+\end{DoxyParamCaption}
+)}}\label{ppg__global_8h_a1d9e13ec56804cabd5387ef626dee795}
+
+
+Defines the default input processor callback. 
+
+Some functions, e.\-g. ppg\-\_\-event\-\_\-buffer\-\_\-iterate can be supplied with a custom input processor. If non is specified the default one is used if defined.
+
+
+\begin{DoxyParams}{Parameters}
+{\em event\-\_\-processor} & The default input processor callback \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The callback that was active before resetting 
+\end{DoxyReturn}
+\hypertarget{ppg__global_8h_ab707f7fd5b5cc445a71a1c3ee1e6d514}{\index{ppg\-\_\-global.\-h@{ppg\-\_\-global.\-h}!ppg\-\_\-global\-\_\-set\-\_\-enabled@{ppg\-\_\-global\-\_\-set\-\_\-enabled}}
+\index{ppg\-\_\-global\-\_\-set\-\_\-enabled@{ppg\-\_\-global\-\_\-set\-\_\-enabled}!ppg_global.h@{ppg\-\_\-global.\-h}}
+\subsubsection[{ppg\-\_\-global\-\_\-set\-\_\-enabled}]{\setlength{\rightskip}{0pt plus 5cm}bool ppg\-\_\-global\-\_\-set\-\_\-enabled (
+\begin{DoxyParamCaption}
+\item[{bool}]{state}
+\end{DoxyParamCaption}
+)}}\label{ppg__global_8h_ab707f7fd5b5cc445a71a1c3ee1e6d514}
+
+
+Use this function to temporarily disable/enable pattern processing. 
+
+Processing is enabled by default.
+
+
+\begin{DoxyParams}{Parameters}
+{\em state} & The new state. Enables if true, disables if false. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The previous state 
+\end{DoxyReturn}
+\hypertarget{ppg__global_8h_ab93127a1112737c0d6375533c420ac97}{\index{ppg\-\_\-global.\-h@{ppg\-\_\-global.\-h}!ppg\-\_\-global\-\_\-set\-\_\-layer@{ppg\-\_\-global\-\_\-set\-\_\-layer}}
+\index{ppg\-\_\-global\-\_\-set\-\_\-layer@{ppg\-\_\-global\-\_\-set\-\_\-layer}!ppg_global.h@{ppg\-\_\-global.\-h}}
+\subsubsection[{ppg\-\_\-global\-\_\-set\-\_\-layer}]{\setlength{\rightskip}{0pt plus 5cm}P\-P\-G\-\_\-\-Layer ppg\-\_\-global\-\_\-set\-\_\-layer (
+\begin{DoxyParamCaption}
+\item[{P\-P\-G\-\_\-\-Layer}]{layer}
+\end{DoxyParamCaption}
+)}}\label{ppg__global_8h_ab93127a1112737c0d6375533c420ac97}
+
+
+Set the current layer. 
+
+\begin{DoxyReturn}{Returns}
+The previously active layer 
+\end{DoxyReturn}
+\hypertarget{ppg__global_8h_a65769741e3635a75c702a93077102ae3}{\index{ppg\-\_\-global.\-h@{ppg\-\_\-global.\-h}!ppg\-\_\-global\-\_\-set\-\_\-signal\-\_\-callback@{ppg\-\_\-global\-\_\-set\-\_\-signal\-\_\-callback}}
+\index{ppg\-\_\-global\-\_\-set\-\_\-signal\-\_\-callback@{ppg\-\_\-global\-\_\-set\-\_\-signal\-\_\-callback}!ppg_global.h@{ppg\-\_\-global.\-h}}
+\subsubsection[{ppg\-\_\-global\-\_\-set\-\_\-signal\-\_\-callback}]{\setlength{\rightskip}{0pt plus 5cm}{\bf P\-P\-G\-\_\-\-Signal\-\_\-\-Callback} ppg\-\_\-global\-\_\-set\-\_\-signal\-\_\-callback (
+\begin{DoxyParamCaption}
+\item[{{\bf P\-P\-G\-\_\-\-Signal\-\_\-\-Callback}}]{callback}
+\end{DoxyParamCaption}
+)}}\label{ppg__global_8h_a65769741e3635a75c702a93077102ae3}
+
+
+Set a callback that is used to signal specific events. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em callback} & The signal callback \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The previous callback 
+\end{DoxyReturn}
+\hypertarget{ppg__global_8h_a95f231ed0268af843b41358c5a8628c9}{\index{ppg\-\_\-global.\-h@{ppg\-\_\-global.\-h}!ppg\-\_\-global\-\_\-set\-\_\-timeout@{ppg\-\_\-global\-\_\-set\-\_\-timeout}}
+\index{ppg\-\_\-global\-\_\-set\-\_\-timeout@{ppg\-\_\-global\-\_\-set\-\_\-timeout}!ppg_global.h@{ppg\-\_\-global.\-h}}
+\subsubsection[{ppg\-\_\-global\-\_\-set\-\_\-timeout}]{\setlength{\rightskip}{0pt plus 5cm}P\-P\-G\-\_\-\-Time ppg\-\_\-global\-\_\-set\-\_\-timeout (
+\begin{DoxyParamCaption}
+\item[{P\-P\-G\-\_\-\-Time}]{timeout}
+\end{DoxyParamCaption}
+)}}\label{ppg__global_8h_a95f231ed0268af843b41358c5a8628c9}
+
+
+Set the current timeout for pattern processing. 
+
+If no input events are encountered within the timeout interval after the last input event, pattern processing is aborted and actions are processed recursively starting with the last token that matched.
+
+
+\begin{DoxyParams}{Parameters}
+{\em timeout} & The timeout time value \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The previous setting 
+\end{DoxyReturn}
+\hypertarget{ppg__global_8h_ac7c4567bc490d7db5ece79392c86b27c}{\index{ppg\-\_\-global.\-h@{ppg\-\_\-global.\-h}!ppg\-\_\-global\-\_\-set\-\_\-timeout\-\_\-enabled@{ppg\-\_\-global\-\_\-set\-\_\-timeout\-\_\-enabled}}
+\index{ppg\-\_\-global\-\_\-set\-\_\-timeout\-\_\-enabled@{ppg\-\_\-global\-\_\-set\-\_\-timeout\-\_\-enabled}!ppg_global.h@{ppg\-\_\-global.\-h}}
+\subsubsection[{ppg\-\_\-global\-\_\-set\-\_\-timeout\-\_\-enabled}]{\setlength{\rightskip}{0pt plus 5cm}bool ppg\-\_\-global\-\_\-set\-\_\-timeout\-\_\-enabled (
+\begin{DoxyParamCaption}
+\item[{bool}]{state}
+\end{DoxyParamCaption}
+)}}\label{ppg__global_8h_ac7c4567bc490d7db5ece79392c86b27c}
+
+
+Toggles global timeout. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em state} & The current timeout state\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The previous state of global timeout enabled 
+\end{DoxyReturn}
+\hypertarget{ppg__global_8h_acade3a9cfdc2fd00af7933e408bc3aba}{\index{ppg\-\_\-global.\-h@{ppg\-\_\-global.\-h}!ppg\-\_\-timeout\-\_\-check@{ppg\-\_\-timeout\-\_\-check}}
+\index{ppg\-\_\-timeout\-\_\-check@{ppg\-\_\-timeout\-\_\-check}!ppg_global.h@{ppg\-\_\-global.\-h}}
+\subsubsection[{ppg\-\_\-timeout\-\_\-check}]{\setlength{\rightskip}{0pt plus 5cm}bool ppg\-\_\-timeout\-\_\-check (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{ppg__global_8h_acade3a9cfdc2fd00af7933e408bc3aba}
+
+
+The timeout check function. 
+
+This timeout check function should be called frequently in a loop, e.\-g. when polling input presses
+
+\begin{DoxyReturn}{Returns}
+True if timeout happend, i.\-e. the time elapsed since the last inputpress event exceeded the user defined timeout threshold. 
+\end{DoxyReturn}

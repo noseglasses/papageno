@@ -1,0 +1,95 @@
+\hypertarget{ppg__event_8h}{\section{/home/travis/build/noseglasses/papageno/src/ppg\-\_\-event.h File Reference}
+\label{ppg__event_8h}\index{/home/travis/build/noseglasses/papageno/src/ppg\-\_\-event.\-h@{/home/travis/build/noseglasses/papageno/src/ppg\-\_\-event.\-h}}
+}
+{\ttfamily \#include \char`\"{}ppg\-\_\-input.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}ppg\-\_\-signals.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}ppg\-\_\-time.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}ppg\-\_\-layer.\-h\char`\"{}}\\*
+\subsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structPPG__Event}{P\-P\-G\-\_\-\-Event}
+\begin{DoxyCompactList}\small\item\em Specification of an input event. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef void($\ast$ \hyperlink{ppg__event_8h_aa248a950a0fe60a91483b50d6ed4dabf}{P\-P\-G\-\_\-\-Event\-\_\-\-Processor\-\_\-\-Fun} )(\hyperlink{structPPG__Event}{P\-P\-G\-\_\-\-Event} $\ast$event, void $\ast$user\-\_\-data)
+\begin{DoxyCompactList}\small\item\em A callback function that is used during processing of stored input events. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{ppg__event_8h_a9edd6e12036d988a005b80df0c4bcb81}{P\-P\-G\-\_\-\-Event\-\_\-\-Flags} \{ \hyperlink{ppg__event_8h_a9edd6e12036d988a005b80df0c4bcb81a42184bd60bca0b835ebc1e280663773a}{P\-P\-G\-\_\-\-Event\-\_\-\-Flags\-\_\-\-Empty} = 0, 
+\hyperlink{ppg__event_8h_a9edd6e12036d988a005b80df0c4bcb81aacf9b41e97afbdbf3c87834c96964927}{P\-P\-G\-\_\-\-Event\-\_\-\-Active} = (1 $<$$<$ 0), 
+\hyperlink{ppg__event_8h_a9edd6e12036d988a005b80df0c4bcb81a52fe43663e20165beb429782a2da9b60}{P\-P\-G\-\_\-\-Event\-\_\-\-Considered} = (P\-P\-G\-\_\-\-Event\-\_\-\-Active $<$$<$ 1)
+ \}
+\begin{DoxyCompactList}\small\item\em Flags that are used to tag events. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{ppg__event_8h_a2cae6179799bef22866a76597b9b01b3}{ppg\-\_\-event\-\_\-process} (\hyperlink{structPPG__Event}{P\-P\-G\-\_\-\-Event} $\ast$event)
+\begin{DoxyCompactList}\small\item\em This is the main entry function for input event processing. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Typedef Documentation}
+\hypertarget{ppg__event_8h_aa248a950a0fe60a91483b50d6ed4dabf}{\index{ppg\-\_\-event.\-h@{ppg\-\_\-event.\-h}!P\-P\-G\-\_\-\-Event\-\_\-\-Processor\-\_\-\-Fun@{P\-P\-G\-\_\-\-Event\-\_\-\-Processor\-\_\-\-Fun}}
+\index{P\-P\-G\-\_\-\-Event\-\_\-\-Processor\-\_\-\-Fun@{P\-P\-G\-\_\-\-Event\-\_\-\-Processor\-\_\-\-Fun}!ppg_event.h@{ppg\-\_\-event.\-h}}
+\subsubsection[{P\-P\-G\-\_\-\-Event\-\_\-\-Processor\-\_\-\-Fun}]{\setlength{\rightskip}{0pt plus 5cm}typedef void($\ast$ P\-P\-G\-\_\-\-Event\-\_\-\-Processor\-\_\-\-Fun)({\bf P\-P\-G\-\_\-\-Event} $\ast$event, void $\ast$user\-\_\-data)}}\label{ppg__event_8h_aa248a950a0fe60a91483b50d6ed4dabf}
+
+
+A callback function that is used during processing of stored input events. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em event} & A pointer to a \hyperlink{structPPG__Event}{P\-P\-G\-\_\-\-Event} struct that provides information about the input event \\
+\hline
+{\em signal\-\_\-id} & The signal identifier informs about the signal that triggered input event processing \\
+\hline
+{\em user\-\_\-data} & Optional user data \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A boolean value that decides about whether input event processing is continued (true) or aborted (false). 
+\end{DoxyReturn}
+
+
+\subsection{Enumeration Type Documentation}
+\hypertarget{ppg__event_8h_a9edd6e12036d988a005b80df0c4bcb81}{\index{ppg\-\_\-event.\-h@{ppg\-\_\-event.\-h}!P\-P\-G\-\_\-\-Event\-\_\-\-Flags@{P\-P\-G\-\_\-\-Event\-\_\-\-Flags}}
+\index{P\-P\-G\-\_\-\-Event\-\_\-\-Flags@{P\-P\-G\-\_\-\-Event\-\_\-\-Flags}!ppg_event.h@{ppg\-\_\-event.\-h}}
+\subsubsection[{P\-P\-G\-\_\-\-Event\-\_\-\-Flags}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf P\-P\-G\-\_\-\-Event\-\_\-\-Flags}}}\label{ppg__event_8h_a9edd6e12036d988a005b80df0c4bcb81}
+
+
+Flags that are used to tag events. 
+
+Please note that currently only the flag P\-P\-G\-\_\-\-Event\-\_\-\-Active is supposed to be set by user. Read flags by using the binary operator \& to test a flag value against a variable, e.\-g. if(event-\/$>$flags \& P\-P\-G\-\_\-\-Event\-\_\-\-Considered) \{ ... \} \begin{Desc}
+\item[Enumerator]\par
+\begin{description}
+\index{P\-P\-G\-\_\-\-Event\-\_\-\-Flags\-\_\-\-Empty@{P\-P\-G\-\_\-\-Event\-\_\-\-Flags\-\_\-\-Empty}!ppg\-\_\-event.\-h@{ppg\-\_\-event.\-h}}\index{ppg\-\_\-event.\-h@{ppg\-\_\-event.\-h}!P\-P\-G\-\_\-\-Event\-\_\-\-Flags\-\_\-\-Empty@{P\-P\-G\-\_\-\-Event\-\_\-\-Flags\-\_\-\-Empty}}\item[{\em 
+\hypertarget{ppg__event_8h_a9edd6e12036d988a005b80df0c4bcb81a42184bd60bca0b835ebc1e280663773a}{P\-P\-G\-\_\-\-Event\-\_\-\-Flags\-\_\-\-Empty}\label{ppg__event_8h_a9edd6e12036d988a005b80df0c4bcb81a42184bd60bca0b835ebc1e280663773a}
+}]Initial value of the flags variable. \index{P\-P\-G\-\_\-\-Event\-\_\-\-Active@{P\-P\-G\-\_\-\-Event\-\_\-\-Active}!ppg\-\_\-event.\-h@{ppg\-\_\-event.\-h}}\index{ppg\-\_\-event.\-h@{ppg\-\_\-event.\-h}!P\-P\-G\-\_\-\-Event\-\_\-\-Active@{P\-P\-G\-\_\-\-Event\-\_\-\-Active}}\item[{\em 
+\hypertarget{ppg__event_8h_a9edd6e12036d988a005b80df0c4bcb81aacf9b41e97afbdbf3c87834c96964927}{P\-P\-G\-\_\-\-Event\-\_\-\-Active}\label{ppg__event_8h_a9edd6e12036d988a005b80df0c4bcb81aacf9b41e97afbdbf3c87834c96964927}
+}]Set to mark the activation of an input through an event. \index{P\-P\-G\-\_\-\-Event\-\_\-\-Considered@{P\-P\-G\-\_\-\-Event\-\_\-\-Considered}!ppg\-\_\-event.\-h@{ppg\-\_\-event.\-h}}\index{ppg\-\_\-event.\-h@{ppg\-\_\-event.\-h}!P\-P\-G\-\_\-\-Event\-\_\-\-Considered@{P\-P\-G\-\_\-\-Event\-\_\-\-Considered}}\item[{\em 
+\hypertarget{ppg__event_8h_a9edd6e12036d988a005b80df0c4bcb81a52fe43663e20165beb429782a2da9b60}{P\-P\-G\-\_\-\-Event\-\_\-\-Considered}\label{ppg__event_8h_a9edd6e12036d988a005b80df0c4bcb81a52fe43663e20165beb429782a2da9b60}
+}]This flag bit tells if an event has been considered as part of a pattern or as control event (e.\-g. as set by ppg\-\_\-global\-\_\-set\-\_\-abort\-\_\-trigger. \end{description}
+\end{Desc}
+
+
+\subsection{Function Documentation}
+\hypertarget{ppg__event_8h_a2cae6179799bef22866a76597b9b01b3}{\index{ppg\-\_\-event.\-h@{ppg\-\_\-event.\-h}!ppg\-\_\-event\-\_\-process@{ppg\-\_\-event\-\_\-process}}
+\index{ppg\-\_\-event\-\_\-process@{ppg\-\_\-event\-\_\-process}!ppg_event.h@{ppg\-\_\-event.\-h}}
+\subsubsection[{ppg\-\_\-event\-\_\-process}]{\setlength{\rightskip}{0pt plus 5cm}void ppg\-\_\-event\-\_\-process (
+\begin{DoxyParamCaption}
+\item[{{\bf P\-P\-G\-\_\-\-Event} $\ast$}]{event}
+\end{DoxyParamCaption}
+)}}\label{ppg__event_8h_a2cae6179799bef22866a76597b9b01b3}
+
+
+This is the main entry function for input event processing. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em event} & A pointer to an input event to process by papagenop \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+If further input event processing by other input event processors is desired 
+\end{DoxyReturn}

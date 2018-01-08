@@ -1,0 +1,115 @@
+\hypertarget{ppg__time_8h}{\section{/home/travis/build/noseglasses/papageno/src/ppg\-\_\-time.h File Reference}
+\label{ppg__time_8h}\index{/home/travis/build/noseglasses/papageno/src/ppg\-\_\-time.\-h@{/home/travis/build/noseglasses/papageno/src/ppg\-\_\-time.\-h}}
+}
+{\ttfamily \#include \char`\"{}ppg\-\_\-settings.\-h\char`\"{}}\\*
+{\ttfamily \#include $<$stdint.\-h$>$}\\*
+\subsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structPPG__Time__Manager}{P\-P\-G\-\_\-\-Time\-\_\-\-Manager}
+\begin{DoxyCompactList}\small\item\em A collection of functions for time handling. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef void($\ast$ \hyperlink{ppg__time_8h_a8e4f2ba27061e8c93153365f166a0fde}{P\-P\-G\-\_\-\-Time\-\_\-\-Fun} )(P\-P\-G\-\_\-\-Time $\ast$time)
+\begin{DoxyCompactList}\small\item\em Function type of a callback that computes the current time. \end{DoxyCompactList}\item 
+typedef void($\ast$ \hyperlink{ppg__time_8h_a207456c8ce743b89febbfc22e80de160}{P\-P\-G\-\_\-\-Time\-\_\-\-Difference\-\_\-\-Fun} )(P\-P\-G\-\_\-\-Time time1, P\-P\-G\-\_\-\-Time time2, P\-P\-G\-\_\-\-Time $\ast$delta)
+\begin{DoxyCompactList}\small\item\em Function type of a callback that computes differences between time values. \end{DoxyCompactList}\item 
+typedef \\*
+P\-P\-G\-\_\-\-Time\-\_\-\-Comparison\-\_\-\-Result\-\_\-\-Type($\ast$ \hyperlink{ppg__time_8h_abf5350317f101a5f50d9fdac7c37a682}{P\-P\-G\-\_\-\-Time\-\_\-\-Comparison\-\_\-\-Fun} )(P\-P\-G\-\_\-\-Time time1, P\-P\-G\-\_\-\-Time time2)
+\begin{DoxyCompactList}\small\item\em Function type for time comparisons. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{ppg__time_8h_a35ac41b5312945cf7945fb7bf5272f92}{void \hyperlink{ppg__time_8h_a35ac41b5312945cf7945fb7bf5272f92}{ppg\-\_\-time\-\_\-manager\-\_\-init} (\hyperlink{structPPG__Time__Manager}{P\-P\-G\-\_\-\-Time\-\_\-\-Manager} $\ast$time\-\_\-manager)}\label{ppg__time_8h_a35ac41b5312945cf7945fb7bf5272f92}
+
+\begin{DoxyCompactList}\small\item\em Initializes a time manager. \end{DoxyCompactList}\item 
+\hyperlink{structPPG__Time__Manager}{P\-P\-G\-\_\-\-Time\-\_\-\-Manager} \hyperlink{ppg__time_8h_a634eadbb4b2aecf9bfcb53a027004268}{ppg\-\_\-global\-\_\-set\-\_\-time\-\_\-manager} (\hyperlink{structPPG__Time__Manager}{P\-P\-G\-\_\-\-Time\-\_\-\-Manager} time\-\_\-manager)
+\begin{DoxyCompactList}\small\item\em Sets a new global time manager. \end{DoxyCompactList}\item 
+\hyperlink{structPPG__Time__Manager}{P\-P\-G\-\_\-\-Time\-\_\-\-Manager} \hyperlink{ppg__time_8h_a1a03a935e9d63d699bb33dc443941a9d}{ppg\-\_\-global\-\_\-get\-\_\-time\-\_\-manager} (void)
+\begin{DoxyCompactList}\small\item\em Retreives the currently active global time manager. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Typedef Documentation}
+\hypertarget{ppg__time_8h_abf5350317f101a5f50d9fdac7c37a682}{\index{ppg\-\_\-time.\-h@{ppg\-\_\-time.\-h}!P\-P\-G\-\_\-\-Time\-\_\-\-Comparison\-\_\-\-Fun@{P\-P\-G\-\_\-\-Time\-\_\-\-Comparison\-\_\-\-Fun}}
+\index{P\-P\-G\-\_\-\-Time\-\_\-\-Comparison\-\_\-\-Fun@{P\-P\-G\-\_\-\-Time\-\_\-\-Comparison\-\_\-\-Fun}!ppg_time.h@{ppg\-\_\-time.\-h}}
+\subsubsection[{P\-P\-G\-\_\-\-Time\-\_\-\-Comparison\-\_\-\-Fun}]{\setlength{\rightskip}{0pt plus 5cm}typedef P\-P\-G\-\_\-\-Time\-\_\-\-Comparison\-\_\-\-Result\-\_\-\-Type($\ast$ P\-P\-G\-\_\-\-Time\-\_\-\-Comparison\-\_\-\-Fun)(P\-P\-G\-\_\-\-Time time1, P\-P\-G\-\_\-\-Time time2)}}\label{ppg__time_8h_abf5350317f101a5f50d9fdac7c37a682}
+
+
+Function type for time comparisons. 
+
+The function is expected to return a positive value when time1 is greater time2, a negative value it time 1 is less time 2 and zero if both are equal.
+
+
+\begin{DoxyParams}{Parameters}
+{\em time1} & The first time value \\
+\hline
+{\em time2} & The second time value \\
+\hline
+\end{DoxyParams}
+\hypertarget{ppg__time_8h_a207456c8ce743b89febbfc22e80de160}{\index{ppg\-\_\-time.\-h@{ppg\-\_\-time.\-h}!P\-P\-G\-\_\-\-Time\-\_\-\-Difference\-\_\-\-Fun@{P\-P\-G\-\_\-\-Time\-\_\-\-Difference\-\_\-\-Fun}}
+\index{P\-P\-G\-\_\-\-Time\-\_\-\-Difference\-\_\-\-Fun@{P\-P\-G\-\_\-\-Time\-\_\-\-Difference\-\_\-\-Fun}!ppg_time.h@{ppg\-\_\-time.\-h}}
+\subsubsection[{P\-P\-G\-\_\-\-Time\-\_\-\-Difference\-\_\-\-Fun}]{\setlength{\rightskip}{0pt plus 5cm}typedef void($\ast$ P\-P\-G\-\_\-\-Time\-\_\-\-Difference\-\_\-\-Fun)(P\-P\-G\-\_\-\-Time time1, P\-P\-G\-\_\-\-Time time2, P\-P\-G\-\_\-\-Time $\ast$delta)}}\label{ppg__time_8h_a207456c8ce743b89febbfc22e80de160}
+
+
+Function type of a callback that computes differences between time values. 
+
+The result is expected as time2 -\/ time1.
+
+
+\begin{DoxyParams}{Parameters}
+{\em time1} & The first time value \\
+\hline
+{\em time2} & The second time value \\
+\hline
+{\em delta} & Pointer to the result of the difference computation \\
+\hline
+\end{DoxyParams}
+\hypertarget{ppg__time_8h_a8e4f2ba27061e8c93153365f166a0fde}{\index{ppg\-\_\-time.\-h@{ppg\-\_\-time.\-h}!P\-P\-G\-\_\-\-Time\-\_\-\-Fun@{P\-P\-G\-\_\-\-Time\-\_\-\-Fun}}
+\index{P\-P\-G\-\_\-\-Time\-\_\-\-Fun@{P\-P\-G\-\_\-\-Time\-\_\-\-Fun}!ppg_time.h@{ppg\-\_\-time.\-h}}
+\subsubsection[{P\-P\-G\-\_\-\-Time\-\_\-\-Fun}]{\setlength{\rightskip}{0pt plus 5cm}typedef void($\ast$ P\-P\-G\-\_\-\-Time\-\_\-\-Fun)(P\-P\-G\-\_\-\-Time $\ast$time)}}\label{ppg__time_8h_a8e4f2ba27061e8c93153365f166a0fde}
+
+
+Function type of a callback that computes the current time. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em The} & pointer to the time value to receive current time \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Function Documentation}
+\hypertarget{ppg__time_8h_a1a03a935e9d63d699bb33dc443941a9d}{\index{ppg\-\_\-time.\-h@{ppg\-\_\-time.\-h}!ppg\-\_\-global\-\_\-get\-\_\-time\-\_\-manager@{ppg\-\_\-global\-\_\-get\-\_\-time\-\_\-manager}}
+\index{ppg\-\_\-global\-\_\-get\-\_\-time\-\_\-manager@{ppg\-\_\-global\-\_\-get\-\_\-time\-\_\-manager}!ppg_time.h@{ppg\-\_\-time.\-h}}
+\subsubsection[{ppg\-\_\-global\-\_\-get\-\_\-time\-\_\-manager}]{\setlength{\rightskip}{0pt plus 5cm}{\bf P\-P\-G\-\_\-\-Time\-\_\-\-Manager} ppg\-\_\-global\-\_\-get\-\_\-time\-\_\-manager (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{ppg__time_8h_a1a03a935e9d63d699bb33dc443941a9d}
+
+
+Retreives the currently active global time manager. 
+
+\begin{DoxyReturn}{Returns}
+The currently active global time manager 
+\end{DoxyReturn}
+\hypertarget{ppg__time_8h_a634eadbb4b2aecf9bfcb53a027004268}{\index{ppg\-\_\-time.\-h@{ppg\-\_\-time.\-h}!ppg\-\_\-global\-\_\-set\-\_\-time\-\_\-manager@{ppg\-\_\-global\-\_\-set\-\_\-time\-\_\-manager}}
+\index{ppg\-\_\-global\-\_\-set\-\_\-time\-\_\-manager@{ppg\-\_\-global\-\_\-set\-\_\-time\-\_\-manager}!ppg_time.h@{ppg\-\_\-time.\-h}}
+\subsubsection[{ppg\-\_\-global\-\_\-set\-\_\-time\-\_\-manager}]{\setlength{\rightskip}{0pt plus 5cm}{\bf P\-P\-G\-\_\-\-Time\-\_\-\-Manager} ppg\-\_\-global\-\_\-set\-\_\-time\-\_\-manager (
+\begin{DoxyParamCaption}
+\item[{{\bf P\-P\-G\-\_\-\-Time\-\_\-\-Manager}}]{time\-\_\-manager}
+\end{DoxyParamCaption}
+)}}\label{ppg__time_8h_a634eadbb4b2aecf9bfcb53a027004268}
+
+
+Sets a new global time manager. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em time\-\_\-manager} & The new time manager \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The previously used time manager 
+\end{DoxyReturn}

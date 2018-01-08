@@ -1,0 +1,213 @@
+\hypertarget{ppg__token_8h}{\section{/home/travis/build/noseglasses/papageno/src/ppg\-\_\-token.h File Reference}
+\label{ppg__token_8h}\index{/home/travis/build/noseglasses/papageno/src/ppg\-\_\-token.\-h@{/home/travis/build/noseglasses/papageno/src/ppg\-\_\-token.\-h}}
+}
+{\ttfamily \#include \char`\"{}ppg\-\_\-action.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}ppg\-\_\-action\-\_\-flags.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}ppg\-\_\-settings.\-h\char`\"{}}\\*
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{ppg__token_8h_a62611e1ea4f2c8ab2bca4e5e9d276b14}{P\-P\-G\-\_\-\-T\-O\-K\-E\-N\-S}(...)
+\begin{DoxyCompactList}\small\item\em Auxiliary macro to simplify passing tokens to functions such as ppg\-\_\-pattern. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{ppg__token_8h_a87940c8d6eedc90a71ca6c4e841304e5}{typedef void $\ast$ \hyperlink{ppg__token_8h_a87940c8d6eedc90a71ca6c4e841304e5}{P\-P\-G\-\_\-\-Token}}\label{ppg__token_8h_a87940c8d6eedc90a71ca6c4e841304e5}
+
+\begin{DoxyCompactList}\small\item\em The token type. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \{ \hyperlink{ppg__token_8h_a06fc87d81c62e9abb8790b6e5713c55bad5a0e2ac64ae08cb395932c27d31e57a}{P\-P\-G\-\_\-\-Token\-\_\-\-Flags\-\_\-\-Pedantic} = 1 $<$$<$ 1
+ \}
+\begin{DoxyCompactList}\small\item\em Token flags. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{ppg__token_8h_a87940c8d6eedc90a71ca6c4e841304e5}{P\-P\-G\-\_\-\-Token} \hyperlink{ppg__token_8h_aedff3a8c7d950ad1d7add1caf2210753}{ppg\-\_\-token\-\_\-set\-\_\-action} (\hyperlink{ppg__token_8h_a87940c8d6eedc90a71ca6c4e841304e5}{P\-P\-G\-\_\-\-Token} token, \hyperlink{structPPG__Action}{P\-P\-G\-\_\-\-Action} action)
+\begin{DoxyCompactList}\small\item\em Assigns an action to a token. \end{DoxyCompactList}\item 
+\hyperlink{structPPG__Action}{P\-P\-G\-\_\-\-Action} \hyperlink{ppg__token_8h_a14044d7959623ca5c242e86aa9a70580}{ppg\-\_\-token\-\_\-get\-\_\-action} (\hyperlink{ppg__token_8h_a87940c8d6eedc90a71ca6c4e841304e5}{P\-P\-G\-\_\-\-Token} token)
+\begin{DoxyCompactList}\small\item\em Returns the action that is associated with a token. \end{DoxyCompactList}\item 
+\hyperlink{ppg__token_8h_a87940c8d6eedc90a71ca6c4e841304e5}{P\-P\-G\-\_\-\-Token} \hyperlink{ppg__token_8h_a75fbd66384e7bfcb84892433f3b21311}{ppg\-\_\-token\-\_\-set\-\_\-action\-\_\-flags} (\hyperlink{ppg__token_8h_a87940c8d6eedc90a71ca6c4e841304e5}{P\-P\-G\-\_\-\-Token} token, P\-P\-G\-\_\-\-Action\-\_\-\-Flags\-\_\-\-Type action\-\_\-flags)
+\begin{DoxyCompactList}\small\item\em Assigns action flags to a token. \end{DoxyCompactList}\item 
+P\-P\-G\-\_\-\-Action\-\_\-\-Flags\-\_\-\-Type \hyperlink{ppg__token_8h_a5c7296a90e0c5b5a019943d11000e455}{ppg\-\_\-token\-\_\-get\-\_\-action\-\_\-flags} (\hyperlink{ppg__token_8h_a87940c8d6eedc90a71ca6c4e841304e5}{P\-P\-G\-\_\-\-Token} token)
+\begin{DoxyCompactList}\small\item\em Returns the action flags associated with a token. \end{DoxyCompactList}\item 
+\hyperlink{ppg__token_8h_a87940c8d6eedc90a71ca6c4e841304e5}{P\-P\-G\-\_\-\-Token} \hyperlink{ppg__token_8h_aaa5a805f90b5e0af1022a0811ccb26f6}{ppg\-\_\-token\-\_\-set\-\_\-flags} (\hyperlink{ppg__token_8h_a87940c8d6eedc90a71ca6c4e841304e5}{P\-P\-G\-\_\-\-Token} token, P\-P\-G\-\_\-\-Count flags)
+\begin{DoxyCompactList}\small\item\em Assigns flags to a token. \end{DoxyCompactList}\item 
+P\-P\-G\-\_\-\-Count \hyperlink{ppg__token_8h_aed589fe5252db0b6a31968f140f0ce76}{ppg\-\_\-token\-\_\-get\-\_\-flags} (\hyperlink{ppg__token_8h_a87940c8d6eedc90a71ca6c4e841304e5}{P\-P\-G\-\_\-\-Token} token)
+\begin{DoxyCompactList}\small\item\em Returns the flags associated with a token. \end{DoxyCompactList}\item 
+\hypertarget{ppg__token_8h_ab618d2f8af75a9cc1b0c59364dacdd38}{void \hyperlink{ppg__token_8h_ab618d2f8af75a9cc1b0c59364dacdd38}{ppg\-\_\-token\-\_\-list\-\_\-all\-\_\-active} (void)}\label{ppg__token_8h_ab618d2f8af75a9cc1b0c59364dacdd38}
+
+\begin{DoxyCompactList}\small\item\em Lists all active tokens for debugging purposes. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\hypertarget{ppg__token_8h_a62611e1ea4f2c8ab2bca4e5e9d276b14}{\index{ppg\-\_\-token.\-h@{ppg\-\_\-token.\-h}!P\-P\-G\-\_\-\-T\-O\-K\-E\-N\-S@{P\-P\-G\-\_\-\-T\-O\-K\-E\-N\-S}}
+\index{P\-P\-G\-\_\-\-T\-O\-K\-E\-N\-S@{P\-P\-G\-\_\-\-T\-O\-K\-E\-N\-S}!ppg_token.h@{ppg\-\_\-token.\-h}}
+\subsubsection[{P\-P\-G\-\_\-\-T\-O\-K\-E\-N\-S}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\-P\-G\-\_\-\-T\-O\-K\-E\-N\-S(
+\begin{DoxyParamCaption}
+\item[{}]{...}
+\end{DoxyParamCaption}
+)}}\label{ppg__token_8h_a62611e1ea4f2c8ab2bca4e5e9d276b14}
+{\bfseries Value\-:}
+\begin{DoxyCode}
+\textcolor{keyword}{sizeof}((\hyperlink{ppg__token_8h_a87940c8d6eedc90a71ca6c4e841304e5}{PPG\_Token}[]) \{ \_\_VA\_ARGS\_\_ \})/\textcolor{keyword}{sizeof}(\hyperlink{ppg__token_8h_a87940c8d6eedc90a71ca6c4e841304e5}{PPG\_Token}), \(\backslash\)
+   (\hyperlink{ppg__token_8h_a87940c8d6eedc90a71ca6c4e841304e5}{PPG\_Token}[]) \{ \_\_VA\_ARGS\_\_ \}
+\end{DoxyCode}
+
+
+Auxiliary macro to simplify passing tokens to functions such as ppg\-\_\-pattern. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em ...} & The array members \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Enumeration Type Documentation}
+\hypertarget{ppg__token_8h_a06fc87d81c62e9abb8790b6e5713c55b}{\subsubsection[{anonymous enum}]{\setlength{\rightskip}{0pt plus 5cm}anonymous enum}}\label{ppg__token_8h_a06fc87d81c62e9abb8790b6e5713c55b}
+
+
+Token flags. 
+
+\begin{Desc}
+\item[Enumerator]\par
+\begin{description}
+\index{P\-P\-G\-\_\-\-Token\-\_\-\-Flags\-\_\-\-Pedantic@{P\-P\-G\-\_\-\-Token\-\_\-\-Flags\-\_\-\-Pedantic}!ppg\-\_\-token.\-h@{ppg\-\_\-token.\-h}}\index{ppg\-\_\-token.\-h@{ppg\-\_\-token.\-h}!P\-P\-G\-\_\-\-Token\-\_\-\-Flags\-\_\-\-Pedantic@{P\-P\-G\-\_\-\-Token\-\_\-\-Flags\-\_\-\-Pedantic}}\item[{\em 
+\hypertarget{ppg__token_8h_a06fc87d81c62e9abb8790b6e5713c55bad5a0e2ac64ae08cb395932c27d31e57a}{P\-P\-G\-\_\-\-Token\-\_\-\-Flags\-\_\-\-Pedantic}\label{ppg__token_8h_a06fc87d81c62e9abb8790b6e5713c55bad5a0e2ac64ae08cb395932c27d31e57a}
+}]Enables pedantic mode for tokens. \end{description}
+\end{Desc}
+
+
+\subsection{Function Documentation}
+\hypertarget{ppg__token_8h_a14044d7959623ca5c242e86aa9a70580}{\index{ppg\-\_\-token.\-h@{ppg\-\_\-token.\-h}!ppg\-\_\-token\-\_\-get\-\_\-action@{ppg\-\_\-token\-\_\-get\-\_\-action}}
+\index{ppg\-\_\-token\-\_\-get\-\_\-action@{ppg\-\_\-token\-\_\-get\-\_\-action}!ppg_token.h@{ppg\-\_\-token.\-h}}
+\subsubsection[{ppg\-\_\-token\-\_\-get\-\_\-action}]{\setlength{\rightskip}{0pt plus 5cm}{\bf P\-P\-G\-\_\-\-Action} ppg\-\_\-token\-\_\-get\-\_\-action (
+\begin{DoxyParamCaption}
+\item[{{\bf P\-P\-G\-\_\-\-Token}}]{token}
+\end{DoxyParamCaption}
+)}}\label{ppg__token_8h_a14044d7959623ca5c242e86aa9a70580}
+
+
+Returns the action that is associated with a token. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em token} & The token whose action is supposed to be retreived \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The associated action 
+\end{DoxyReturn}
+\hypertarget{ppg__token_8h_a5c7296a90e0c5b5a019943d11000e455}{\index{ppg\-\_\-token.\-h@{ppg\-\_\-token.\-h}!ppg\-\_\-token\-\_\-get\-\_\-action\-\_\-flags@{ppg\-\_\-token\-\_\-get\-\_\-action\-\_\-flags}}
+\index{ppg\-\_\-token\-\_\-get\-\_\-action\-\_\-flags@{ppg\-\_\-token\-\_\-get\-\_\-action\-\_\-flags}!ppg_token.h@{ppg\-\_\-token.\-h}}
+\subsubsection[{ppg\-\_\-token\-\_\-get\-\_\-action\-\_\-flags}]{\setlength{\rightskip}{0pt plus 5cm}P\-P\-G\-\_\-\-Action\-\_\-\-Flags\-\_\-\-Type ppg\-\_\-token\-\_\-get\-\_\-action\-\_\-flags (
+\begin{DoxyParamCaption}
+\item[{{\bf P\-P\-G\-\_\-\-Token}}]{token}
+\end{DoxyParamCaption}
+)}}\label{ppg__token_8h_a5c7296a90e0c5b5a019943d11000e455}
+
+
+Returns the action flags associated with a token. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em token} & The token whose action flags are supposed to be retreived \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The current value of the action flags associated with the token. 
+\end{DoxyReturn}
+\hypertarget{ppg__token_8h_aed589fe5252db0b6a31968f140f0ce76}{\index{ppg\-\_\-token.\-h@{ppg\-\_\-token.\-h}!ppg\-\_\-token\-\_\-get\-\_\-flags@{ppg\-\_\-token\-\_\-get\-\_\-flags}}
+\index{ppg\-\_\-token\-\_\-get\-\_\-flags@{ppg\-\_\-token\-\_\-get\-\_\-flags}!ppg_token.h@{ppg\-\_\-token.\-h}}
+\subsubsection[{ppg\-\_\-token\-\_\-get\-\_\-flags}]{\setlength{\rightskip}{0pt plus 5cm}P\-P\-G\-\_\-\-Count ppg\-\_\-token\-\_\-get\-\_\-flags (
+\begin{DoxyParamCaption}
+\item[{{\bf P\-P\-G\-\_\-\-Token}}]{token}
+\end{DoxyParamCaption}
+)}}\label{ppg__token_8h_aed589fe5252db0b6a31968f140f0ce76}
+
+
+Returns the flags associated with a token. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em token} & The token whose flags are supposed to be retreived \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The current value of the flags associated with the token. 
+\end{DoxyReturn}
+\hypertarget{ppg__token_8h_aedff3a8c7d950ad1d7add1caf2210753}{\index{ppg\-\_\-token.\-h@{ppg\-\_\-token.\-h}!ppg\-\_\-token\-\_\-set\-\_\-action@{ppg\-\_\-token\-\_\-set\-\_\-action}}
+\index{ppg\-\_\-token\-\_\-set\-\_\-action@{ppg\-\_\-token\-\_\-set\-\_\-action}!ppg_token.h@{ppg\-\_\-token.\-h}}
+\subsubsection[{ppg\-\_\-token\-\_\-set\-\_\-action}]{\setlength{\rightskip}{0pt plus 5cm}{\bf P\-P\-G\-\_\-\-Token} ppg\-\_\-token\-\_\-set\-\_\-action (
+\begin{DoxyParamCaption}
+\item[{{\bf P\-P\-G\-\_\-\-Token}}]{token, }
+\item[{{\bf P\-P\-G\-\_\-\-Action}}]{action}
+\end{DoxyParamCaption}
+)}}\label{ppg__token_8h_aedff3a8c7d950ad1d7add1caf2210753}
+
+
+Assigns an action to a token. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em token} & The token to be modified \\
+\hline
+{\em action} & The action definition to associate with the token \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns the value of parameter token to allow for setter-\/chaining 
+\end{DoxyReturn}
+\hypertarget{ppg__token_8h_a75fbd66384e7bfcb84892433f3b21311}{\index{ppg\-\_\-token.\-h@{ppg\-\_\-token.\-h}!ppg\-\_\-token\-\_\-set\-\_\-action\-\_\-flags@{ppg\-\_\-token\-\_\-set\-\_\-action\-\_\-flags}}
+\index{ppg\-\_\-token\-\_\-set\-\_\-action\-\_\-flags@{ppg\-\_\-token\-\_\-set\-\_\-action\-\_\-flags}!ppg_token.h@{ppg\-\_\-token.\-h}}
+\subsubsection[{ppg\-\_\-token\-\_\-set\-\_\-action\-\_\-flags}]{\setlength{\rightskip}{0pt plus 5cm}{\bf P\-P\-G\-\_\-\-Token} ppg\-\_\-token\-\_\-set\-\_\-action\-\_\-flags (
+\begin{DoxyParamCaption}
+\item[{{\bf P\-P\-G\-\_\-\-Token}}]{token, }
+\item[{P\-P\-G\-\_\-\-Action\-\_\-\-Flags\-\_\-\-Type}]{action\-\_\-flags}
+\end{DoxyParamCaption}
+)}}\label{ppg__token_8h_a75fbd66384e7bfcb84892433f3b21311}
+
+
+Assigns action flags to a token. 
+
+To modify the current state of the action flags of a token, use the function ppg\-\_\-token\-\_\-get\-\_\-action\-\_\-flags, modify its return value by means of applying bit wise operations and pass it to ppg\-\_\-token\-\_\-set\-\_\-action\-\_\-flags.
+
+
+\begin{DoxyParams}{Parameters}
+{\em token} & The token to be modified \\
+\hline
+{\em action\-\_\-flags} & The new value of action flags \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns the value of parameter token to allow for setter-\/chaining 
+\end{DoxyReturn}
+\hypertarget{ppg__token_8h_aaa5a805f90b5e0af1022a0811ccb26f6}{\index{ppg\-\_\-token.\-h@{ppg\-\_\-token.\-h}!ppg\-\_\-token\-\_\-set\-\_\-flags@{ppg\-\_\-token\-\_\-set\-\_\-flags}}
+\index{ppg\-\_\-token\-\_\-set\-\_\-flags@{ppg\-\_\-token\-\_\-set\-\_\-flags}!ppg_token.h@{ppg\-\_\-token.\-h}}
+\subsubsection[{ppg\-\_\-token\-\_\-set\-\_\-flags}]{\setlength{\rightskip}{0pt plus 5cm}{\bf P\-P\-G\-\_\-\-Token} ppg\-\_\-token\-\_\-set\-\_\-flags (
+\begin{DoxyParamCaption}
+\item[{{\bf P\-P\-G\-\_\-\-Token}}]{token, }
+\item[{P\-P\-G\-\_\-\-Count}]{flags}
+\end{DoxyParamCaption}
+)}}\label{ppg__token_8h_aaa5a805f90b5e0af1022a0811ccb26f6}
+
+
+Assigns flags to a token. 
+
+To modify the current state of the flags of a token, use the function ppg\-\_\-token\-\_\-get\-\_\-flags, modify its return value by means of applying bit wise operations and pass it to ppg\-\_\-token\-\_\-set\-\_\-flags.
+
+\begin{DoxyNote}{Note}
+Be careful when modifying flags manually as different token types support different types flags. Read the documentation of the respective token type carefully before manipulating its flags.
+\end{DoxyNote}
+
+\begin{DoxyParams}{Parameters}
+{\em token} & The token to be modified \\
+\hline
+{\em flags} & The new value of flags \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns the value of parameter token to allow for setter-\/chaining 
+\end{DoxyReturn}
