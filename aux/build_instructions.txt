@@ -1,0 +1,2 @@
+flex --header-file=lex.yy.h parser.lex && yacc -d parser.yacc  && gcc -std=c99
+-o parser_test lex.yy.c y.tab.c -D_POSIX_C_SOURCE=1 2>&1 | \less
