@@ -1,0 +1,2 @@
+
+#define MAX_ID_LENGTH 256

@@ -1,14 +1,12 @@
 %{
  
+#include "parser.h"
 #include <stdio.h>
-#include "parser.tab.h"
-int c;
+#include "y.tab.h"
 
-extern YylvalType yylval;
 %}
 %%
 " "       ;
-[_[:alnum:]]*   { strncpy(yylval.token, yytext, MAX_TOKEN_LENGTH); return ID; }
-^layer: { return LAYER; }
+[_[:alnum:]]*   { strncpy(yylval.id, yytext, MAX_ID_LENGTH); return ID; }
 
-.* { strncpy(yylval.token, yytext, MAX_TOKEN_LENGTH); return ALIAS; }
+.* { strncpy(yylval.id, yytext, MAX_ID_LENGTH); return ALIAS; }

@@ -1,18 +1,20 @@
 %{
+
+#include "parser.h"
+
 #include <stdio.h>
 #include <search.h>
+#include <string.h>
+#include <stdbool.h>
 
-#define MAX_ID_LENGTH 256
+#include "lex.yy.h"
 
-typedef struct {
-   char id[MAX_ID_LENGTH];
-} YylvalType;
+int yylex();
+void yyerror(const char *s);
 
-#define MAX_LIST_LENGHT 256
-char id_list[MAX_LIST_LENGHT][MAX_ID_LENGTH];
+#define MAX_LIST_LENGTH 256
+char id_list[MAX_LIST_LENGTH][MAX_ID_LENGTH];
 int cur_id = -1;
-
-int cur_token = -1;
 
 #define MAX_TOKENS 256
 int cur_token = -1;
@@ -49,44 +51,70 @@ static void mark_symbol(const char *symbol_id);
 
 %}
 
-%YylvalType
+%start lines
 
-%start list
+%union {
+   char id[MAX_ID_LENGTH]; 
+}
 
-%token ID ALIAS
+%token <id> ID ALIAS
 
 %%                   /* beginning of rules section */
+
+lines:  /*  empty  */
+        |      
+        lines  line
+        ;
+        
+line:
+        pattern '\n'
+        |
+        tap_dance '\n'
+        |
+        layer_def '\n'
+        |
+        alias_def '\n'
+        |
+        symbol_def '\n'
+        |
+        error '\n'
+        {
+          yyerrok;
+        }
+        ;
 
 input_list:
          ID
          {
             ++cur_id;
-            strncpy(id_list[cur_id], $1.id, MAX_ID_LENGTH);
+            strncpy(id_list[cur_id], $1, MAX_ID_LENGTH);
          }
          |
          input_list ',' ID
          {
             ++cur_id;
-            strncpy(id_list[cur_id], $3.id, MAX_TOKEN_LENGTH);
+            strncpy(id_list[cur_id], $3, MAX_ID_LENGTH);
          }
          ;
          
-pattern: token
+pattern_list: token
         |
-        pattern "->" token
+        pattern "->" action_token
         ;
         
-full_pattern:
-        pattern ';'
+pattern:
+        pattern_list ';'
         {
            finish_pattern();
         }
         ;
         
 action_token:
+        token
+        |
         token ':' ID
         {
-           add_action_to_current_token($1.id);
+           add_action_to_current_token($3);
         }
         ;
            
@@ -99,7 +127,7 @@ token:  note
         
 note:   '(' ID ')'
         {
-           generate_note($1.id);
+           generate_note($2);
         }
         ;
         
@@ -120,14 +148,14 @@ chord:
 tap_key:
         '(' ID '*' ID ')'
         {
-           init_tap_dance($2.id, $4.id);
+           init_tap_dance($2, $4);
         }
         ;
         
 tap_action_def:
         ID '=' ID
         {
-           store_tap_action($1.id, $3.id);
+           store_tap_action($1, $3);
         }
         ;
         
@@ -147,21 +175,21 @@ tap_dance:
 layer_def:
         "layer:" ID
         {
-           set_current_layer($2.id);
+           set_current_layer($2);
         }
         ;
         
 alias_def:
         "alias:" ID '=' ALIAS
         {
-           store_alias($1.id, $2.id);
+           store_alias($2, $4);
         }
         ;
         
 symbol_def:
         "symbol:" ID
         {
-           mark_symbol($1.id);
+           mark_symbol($2);
         }
         ;
 %%
@@ -211,6 +239,13 @@ static void finish_pattern(void)
 #define BUFF_REST (BUFF_MAX - (buff_pos - buffer))
 
 #define BUFF_PRINT(...) buff_pos += snprintf(buff_pos, BUFF_REST, __VA_ARGS__)
+
+static char *strdup (const char *s) {
+    char *d = malloc (strlen (s) + 1);   // Space for length plus nul
+    if (d == NULL) return NULL;          // No memory
+    strcpy (d,s);                        // Copy the characters
+    return d;                            // Return the new string
+}
 
 static void add_action_to_current_token(const char *action_id)
 {
@@ -293,10 +328,10 @@ static void finish_tap_dance(void)
          out_file,
 "      PPG_TAP(\n"
 "         %s,\n"
-"         %s\n
-"      )"
+"         %s\n"
+"      )",
          tap_actions[i].count_id,
-         tap_actions[i].tap_key_id
+         tap_actions[i].action_id
       );
       
       if(i < (n_tap_actions - 1)) {
@@ -316,7 +351,7 @@ static void finish_tap_dance(void)
    
    for(int i = 0; i < n_tap_actions; ++i) {
       SAFE_FREE(tap_actions[i].count_id);
-      SAFE_FREE(tap_actions[i].tap_key_id);
+      SAFE_FREE(tap_actions[i].action_id);
    }
    
    n_tap_actions = 0;
@@ -358,6 +393,9 @@ static void mark_symbol(const char *symbol_id)
    );
 }
 
+struct yy_buffer_state;
+typedef struct yy_buffer_state *YY_BUFFER_STATE;
+
 static void process_definitions(const char *line)
 {
    // add the second NULL terminator
@@ -375,8 +413,8 @@ static void process_definitions(const char *line)
 
 #define PPG_START_TOKEN "ppg_start"
 #define PPG_END_TOKEN "ppg_end"
-#define PPG_START_DEFINITIONS_TOKEN "ppg_start_definitions"
-#define PPG_END_DEFINITIONS_TOKEN "ppg_end_definitions"
+#define PPG_START_DEFINITIONS_TOKEN "ppg_definitions_start"
+#define PPG_END_DEFINITIONS_TOKEN "ppg_definitions_end"
 
 void generate(const char *input_filename, const char *output_filename)
 {
@@ -388,25 +426,34 @@ void generate(const char *input_filename, const char *output_filename)
    bool in_ppg = false;
    bool in_definitions = false;
 
+   int line_count = 0;
+   
    while (fgets(line, sizeof(line), in_file)) {
+   
+      ++line_count;
+      
         /* note that fgets don't strip the terminating \n, checking its
            presence would allow to handle lines longer that sizeof(line) */
            
       if(strstr(line, PPG_START_TOKEN) != NULL) {
+         printf("line %d: in ppg\n", line_count);
          in_ppg = true;
          continue;
       }
       
       if(strstr(line, PPG_END_TOKEN) != NULL) {
+         printf("line %d: end of ppg\n", line_count);
          break;
       }
       
       if(strstr(line, PPG_START_DEFINITIONS_TOKEN) != NULL) {
+         printf("line %d: in definitions\n", line_count);
          in_definitions = true;
          continue;
       }
       
-      if(strstr(line, PPG_START_DEFINITIONS_TOKEN) != NULL) {
+      if(strstr(line, PPG_END_DEFINITIONS_TOKEN) != NULL) {
+         printf("line %d: end of definitions\n", line_count);
          in_definitions = false;
          continue;
       }
@@ -416,7 +463,7 @@ void generate(const char *input_filename, const char *output_filename)
       }
       
       if(in_definitions) {
-         process_definitions(line, out_file);
+         process_definitions(line);
       }
       else {
          fprintf(out_file, line);
@@ -441,7 +488,7 @@ int main(int argc, char **argv) {
    return 0;
 }
 
-void yyerror(char *s)
+void yyerror(const char *s)
 {
   fprintf(stderr, "%s\n",s);
 }
