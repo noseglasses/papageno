@@ -6,11 +6,17 @@
 #include <search.h>
 #include <string.h>
 #include <stdbool.h>
+#include <limits.h>
+#include <stdlib.h>
 
 #include "lex.yy.h"
 
+int yydebug=1;
+
 int yylex();
 void yyerror(const char *s);
+
+int cur_line = -1;
 
 #define MAX_LIST_LENGTH 256
 char id_list[MAX_LIST_LENGTH][MAX_ID_LENGTH];
@@ -22,8 +28,7 @@ char *token_definitions[MAX_TOKENS];
 
 FILE *out_file = NULL;
 
-char *tap_key_id = NULL;
-char *max_count_id = NULL;
+int max_count_id = 0;
 
 typedef struct {
    char *count_id;
@@ -34,16 +39,20 @@ typedef struct {
 TapAction tap_actions[MAX_TAP_ACTIONS];
 int n_tap_actions = 0;
 
+int token_start = -1;
+
 static void *alias_tree_root = NULL;
 
 static void finish_pattern(void);
+static void add_action_to_token_n(int token_count, const char *action_id);
+static void add_action_to_token(const char *token_count_id, const char *action_id);
 static void add_action_to_current_token(const char *action_id);
 static void generate_note(const char *input_id);
 static void generate_cluster(void);
 static void generate_chord(void);
-static void init_tap_dance(const char *tap_key_id, const char *max_count_id);
-static void store_tap_action(const char *count_id, const char *action_id);
-static void finish_tap_dance(void);
+static void repeat_token(const char *count_id);
+// static void store_tap_action(const char *count_id, const char *action_id);
+// static void finish_tap_dance(void);
 static void set_current_layer(const char *layer_id);
 static void store_alias(const char *key_id, const char *value);
 static const char *subst_alias(const char *key_id);
@@ -57,19 +66,22 @@ static void mark_symbol(const char *symbol_id);
    char id[MAX_ID_LENGTH]; 
 }
 
-%token <id> ID ALIAS
+%token LAYER SYMBOL ALIAS ARROW
+%token <id> ID QUOTED_STRING
 
 %%                   /* beginning of rules section */
 
 lines:  /*  empty  */
+        |
+        '\n'
+        |
+        line
         |      
-        lines  line
+        lines line
         ;
         
 line:
         pattern '\n'
-        |
-        tap_dance '\n'
         |
         layer_def '\n'
         |
@@ -97,9 +109,10 @@ input_list:
          }
          ;
          
-pattern_list: token
+pattern_list: 
+        action_token
         |
-        pattern "->" action_token
+        pattern_list ARROW action_token
         ;
         
 pattern:
@@ -110,11 +123,17 @@ pattern:
         ;
         
 action_token:
+        rep_token
+        |
+        rep_token ':' action_list
+        ;
+        
+rep_token:
         token
         |
-        token ':' ID
+        token '*' ID
         {
-           add_action_to_current_token($3);
+           repeat_token($3);
         }
         ;
            
@@ -145,51 +164,43 @@ chord:
         }
         ;
         
-tap_key:
-        '(' ID '*' ID ')'
+action_def:
+        ID
         {
-           init_tap_dance($2, $4);
+           add_action_to_token_n(0, $1);
         }
-        ;
-        
-tap_action_def:
+        |
         ID '=' ID
         {
-           store_tap_action($1, $3);
+           add_action_to_token($1, $3);
         }
         ;
         
-tap_action_list:
-        tap_action_def
+action_list:
+        action_def
         |
-        tap_action_list ',' tap_action_def
-        ;
-
-tap_dance:
-        tap_key ':' tap_action_list ';'
-        {
-           finish_tap_dance();
-        }
+        action_list ',' action_def
         ;
         
 layer_def:
-        "layer:" ID
+        LAYER ':' ID
         {
-           set_current_layer($2);
+           printf("Setting layer %s\n", $3);
+           set_current_layer($3);
         }
         ;
         
 alias_def:
-        "alias:" ID '=' ALIAS
+        ALIAS ':' ID '=' QUOTED_STRING
         {
-           store_alias($2, $4);
+           store_alias($3, $5);
         }
         ;
         
 symbol_def:
-        "symbol:" ID
+        SYMBOL ':' ID
         {
-           mark_symbol($2);
+           mark_symbol($3);
         }
         ;
 %%
@@ -227,8 +238,12 @@ static void finish_pattern(void)
    
    fprintf(
       out_file, 
-"   )\n\n"
-   );        
+"   )\n"
+   );     
+   fprintf(
+      out_file,
+");\n\n"
+   );
    
    cur_token = -1;
 }
@@ -240,6 +255,8 @@ static void finish_pattern(void)
 
 #define BUFF_PRINT(...) buff_pos += snprintf(buff_pos, BUFF_REST, __VA_ARGS__)
 
+#define MY_ERROR(FORMAT_STRING, ...) fprintf(stderr, "error: line %d: " FORMAT_STRING, cur_line,##__VA_ARGS__); exit(EXIT_FAILURE);
+
 static char *strdup (const char *s) {
     char *d = malloc (strlen (s) + 1);   // Space for length plus nul
     if (d == NULL) return NULL;          // No memory
@@ -247,21 +264,55 @@ static char *strdup (const char *s) {
     return d;                            // Return the new string
 }
 
-static void add_action_to_current_token(const char *action_id)
+static long my_atol(const char *count)
 {
+   errno = 0;    /* To distinguish success/failure after call */
+   char *dummy = NULL;
+   long val = strtol(count, &dummy, 10);
+
+   /* Check for various possible errors */
+
+   if ((errno == ERANGE && (val == LONG_MAX || val == LONG_MIN))
+            || (errno != 0 && val == 0)) {
+      MY_ERROR("Failed to convert tap count %s to integer\n", count);
+   }
+   
+   return val;
+}
+
+static void add_action_to_token_n(int token_count, const char *action_id)
+{
+   int actual_token_count = token_start + token_count;
+
    char buffer[BUFF_MAX];
    
-   char *old_token = token_definitions[cur_token];
+   char *old_token = token_definitions[actual_token_count];
    
    snprintf(buffer, BUFF_MAX, "ppg_token_set_action(%s, %s)", old_token, subst_alias(action_id));
    
-   token_definitions[cur_token] = strdup(buffer);
+   token_definitions[actual_token_count] = strdup(buffer);
    
    free(old_token);
 }
 
+static void add_action_to_token(const char *token_count_id, const char *action_id)
+{
+   int token_count = my_atol(token_count_id);
+   
+   add_action_to_token_n(token_count - 1, action_id);
+}
+
+static void add_action_to_current_token(const char *action_id)
+{
+   add_action_to_token_n(cur_token, action_id);
+}
+
 static void generate_note(const char *input_id)
 {
+   ++cur_token;
+   
+   token_start = cur_token;
+   
    char buffer[BUFF_MAX];
    
    snprintf(buffer, BUFF_MAX, "ppg_note_create_standard(%s)", subst_alias(input_id));
@@ -271,6 +322,10 @@ static void generate_note(const char *input_id)
 
 static void generate_aggregate(const char *aggr_type)
 {
+   ++cur_token;
+   
+   token_start = cur_token;
+   
    char buffer[BUFF_MAX];
    
    char *buff_pos = buffer;
@@ -301,17 +356,30 @@ static void generate_chord(void)
    generate_aggregate("CHORD");
 }
 
-static void init_tap_dance(const char *tap_key_id__, const char *max_count_id__)
+static void repeat_token(const char *count_id)
 {
-   tap_key_id = strdup(tap_key_id__);
-   max_count_id = strdup(max_count_id__);
-}
+   max_count_id = my_atol(count_id);
 
+   char *start_string = token_definitions[cur_token];
+   for(long i = 1; i < max_count_id; ++i) {
+      ++cur_token;
+      token_definitions[cur_token] = strdup(start_string);
+   }
+}
+/*
 static void store_tap_action(const char *count_id, const char *action_id)
 {
-   tap_actions[n_tap_actions] = (TapAction){ .count_id = strdup(count_id), .action_id = strdup(action_id) };
-}
+   int tap_count = my_atol(count_id);
+   
+   if((tap_count > max_count_id) || (tap_count < 1)) {
+      MY_ERROR("Unable to store tap action %s for count %l. The provided tap count exceeds the range [1, %d]\n.",
+         action_id, tap_count, max_count_id);
+   }
+   
+   add_action_to_token_n(action_id, tap_count - 1);
+}*/
 
+/*
 static void finish_tap_dance(void)
 {
    fprintf(
@@ -356,6 +424,7 @@ static void finish_tap_dance(void)
    
    n_tap_actions = 0;
 }
+*/
 
 static void set_current_layer(const char *layer_id)
 {
@@ -421,39 +490,39 @@ void generate(const char *input_filename, const char *output_filename)
    FILE *in_file = fopen(input_filename, "r");
    out_file = fopen(output_filename, "w");
          
-   char line[256];
+   char line[4096];
    
    bool in_ppg = false;
    bool in_definitions = false;
 
-   int line_count = 0;
+   cur_line = 0;
    
    while (fgets(line, sizeof(line), in_file)) {
    
-      ++line_count;
+      ++cur_line;
       
         /* note that fgets don't strip the terminating \n, checking its
            presence would allow to handle lines longer that sizeof(line) */
            
       if(strstr(line, PPG_START_TOKEN) != NULL) {
-         printf("line %d: in ppg\n", line_count);
+         printf("line %d: in ppg\n", cur_line);
          in_ppg = true;
          continue;
       }
       
       if(strstr(line, PPG_END_TOKEN) != NULL) {
-         printf("line %d: end of ppg\n", line_count);
+         printf("line %d: end of ppg\n", cur_line);
          break;
       }
       
       if(strstr(line, PPG_START_DEFINITIONS_TOKEN) != NULL) {
-         printf("line %d: in definitions\n", line_count);
+         printf("line %d: in definitions\n", cur_line);
          in_definitions = true;
          continue;
       }
       
       if(strstr(line, PPG_END_DEFINITIONS_TOKEN) != NULL) {
-         printf("line %d: end of definitions\n", line_count);
+         printf("line %d: end of definitions\n", cur_line);
          in_definitions = false;
          continue;
       }
@@ -463,10 +532,11 @@ void generate(const char *input_filename, const char *output_filename)
       }
       
       if(in_definitions) {
+         printf("Processing line \'%s\'\n", line);
          process_definitions(line);
       }
       else {
-         fprintf(out_file, line);
+         fprintf(out_file, "%s", line);
       }
    }
    
@@ -479,7 +549,7 @@ void generate(const char *input_filename, const char *output_filename)
 int main(int argc, char **argv) {
    
    if(argc < 3) {
-     fprintf(stderr, "usage: %s <input_file> <output_file>\n");
+     fprintf(stderr, "usage: %s <input_file> <output_file>\n", argv[0]);
      return 1;
    }
    
@@ -490,7 +560,7 @@ int main(int argc, char **argv) {
 
 void yyerror(const char *s)
 {
-  fprintf(stderr, "%s\n",s);
+  MY_ERROR("yacc error: %s\n", s);
 }
 
 int yywrap(void)

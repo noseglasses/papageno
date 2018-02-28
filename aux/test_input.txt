@@ -1,0 +1,25 @@
+some stuff before start
+
+ppg_start
+
+some stuff before definitions
+
+ppg_definitions_start
+
+layer: my_layer
+
+alias: NM = " ois e t+ **  "
+
+symbol: a_symbol
+
+(A) -> {A, B, C} -> [A, B, C];
+
+(A)*3 : 2 = an_action, 3 = another_action -> {B, C, D}*5 : 3 = the_action;
+
+ppg_definitions_end
+
+some_stuff after definitinons 
+
+ppg_end
+
+some stuff at the very end
