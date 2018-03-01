@@ -26,18 +26,29 @@ int cur_id = -1;
 int cur_token = -1;
 char *token_definitions[MAX_TOKENS];
 
+int cur_new_token = -1;
+char *new_token_definitions[MAX_TOKENS];
+
 FILE *out_file = NULL;
 FILE *inputs_file = NULL;
 FILE *actions_file = NULL;
+FILE *symbols_file = NULL;
 
 int max_count_id = 0;
 
 int token_start = -1;
 
+typedef struct {
+   const char *name;
+   char **members;
+   int n_members;
+} Phrase;
+
 enum EnityType {
    EntityTypeNone = 0,
    EntityTypeAction = 1,
-   EntityTypeInput = 2
+   EntityTypeInput = 2,
+   EntityTypePattern = 3
 };
 
 typedef struct {
@@ -49,14 +60,23 @@ typedef struct {
 
 TypedEntity cur_entity = (TypedEntity){ .name = NULL, .tag = NULL, .parameters = NULL, .type = EntityTypeNone };
 
+static void *pattern_tree_root = NULL;
 static void *entity_tree_root = NULL;
 static void *input_tag_tree_root = NULL;
 static void *action_tag_tree_root = NULL;
 
 static void finish_pattern(void);
+static void save_phrase(const char *name);
+static Phrase *lookup_phrase(const char *name);
+static void push_phrase(const char *name);
+static void flush_new_tokens(void);
+static void add_action_to_token_relative(int rel_count, const char *action_id);
 static void add_action_to_token_n(int token_count, const char *action_id);
 static void add_action_to_token(const char *token_count_id, const char *action_id);
-static void generate_note(const char *input_id);
+static void generate_note(const char *input_id, const char *flags);
+static void generate_note_full(const char *input_id);
+static void generate_note_activation(const char *input_id);
+static void generate_note_deactivation(const char *input_id);
 static void generate_cluster(void);
 static void generate_chord(void);
 static void repeat_token(const char *count_id);
@@ -66,6 +86,7 @@ static void store_cur_typed_entity(const char *type_id, const char *id);
 static void store_typed_entity_parameters(const char *quoted_parameters);
 static void store_current_entity(void);
 static TypedEntity *look_up_entity(const char *name);
+static void store_entity(TypedEntity *entity);
 static void flush_inputs(void);
 static void store_input_tag(const char *tag);
 static void store_action_tag(const char *tag);
@@ -80,8 +101,8 @@ static void store_action_tag(const char *tag);
    char id[MAX_ID_LENGTH]; 
 }
 
-%token LAYER_KEYWORD SYMBOL_KEYWORD ARROW ACTION_KEYWORD INPUT_KEYWORD
-%token <id> ID QUOTED_STRING PROPERTIES_STRING
+%token LAYER_KEYWORD SYMBOL_KEYWORD ARROW ACTION_KEYWORD INPUT_KEYWORD PHRASE_KEYWORD
+%token <id> ID RAW_CODE
 
 %%                   /* beginning of rules section */
 
@@ -95,7 +116,15 @@ lines:  /*  empty  */
         ;
         
 line:
-        pattern '\n'
+        phrase '\n'
+        {
+           finish_pattern();
+        }
+        |
+        PHRASE_KEYWORD ':' ID '=' phrase '\n'
+        {
+           save_phrase($3);
+        }
         |
         layer_def '\n'
         |
@@ -131,16 +160,15 @@ input_list:
          }
          ;
          
-pattern_list: 
+phrase: 
         action_token
-        |
-        pattern_list ARROW action_token
-        ;
-        
-pattern:
-        pattern_list ';'
         {
-           finish_pattern();
+           flush_new_tokens();
+        } 
+        |
+        phrase ARROW action_token
+        {
+           flush_new_tokens();
         }
         ;
         
@@ -148,6 +176,11 @@ action_token:
         rep_token
         |
         rep_token ':' action_list
+        |
+        '#' ID
+        {
+           push_phrase($2);
+        }
         ;
         
 rep_token:
@@ -166,9 +199,19 @@ token:  note
         chord
         ;
         
-note:   '(' ID ')'
+note:   '|' ID '|'
         {
-           generate_note($2);
+           generate_note_full($2);
+        }
+        |
+        '|' ID
+        {
+           generate_note_activation($2);
+        }
+        |
+        ID '|'
+        {
+           generate_note_deactivation($1);
         }
         ;
         
@@ -189,7 +232,7 @@ chord:
 action_def:
         ID
         {
-           add_action_to_token_n(cur_token, $1);
+           add_action_to_token_n(cur_new_token, $1);
         }
         |
         ID '=' ID
@@ -252,12 +295,19 @@ typed_id:
 parameters:
         /* possibly empty */
         |
-        '=' QUOTED_STRING
+        RAW_CODE
         {
-           store_typed_entity_parameters($2);
+           store_typed_entity_parameters($1);
         }
         ;
 %%
+
+static char *strdup (const char *s) {
+    char *d = malloc (strlen (s) + 1);   // Space for length plus nul
+    if (d == NULL) return NULL;          // No memory
+    strcpy (d,s);                        // Copy the characters
+    return d;                            // Return the new string
+}
 
 static int lexical_compare(const void *pa, const void *pb)
 {
@@ -268,6 +318,13 @@ static int entity_compare(const void *pa, const void *pb)
 {
    TypedEntity *ea = (TypedEntity*)pa;
    TypedEntity *eb = (TypedEntity*)pb;
+   return strcmp(ea->name, eb->name);
+}
+
+static int pattern_compare(const void *pa, const void *pb)
+{
+   Phrase *ea = (Phrase*)pa;
+   Phrase *eb = (Phrase*)pb;
    return strcmp(ea->name, eb->name);
 }
 
@@ -309,6 +366,64 @@ static void finish_pattern(void)
    cur_token = -1;
 }
 
+static void save_phrase(const char *name) {
+
+   TypedEntity *new_entity = (TypedEntity*)malloc(sizeof(TypedEntity));
+   
+   new_entity->name = strdup(name);
+   new_entity->type = EntityTypePattern;
+   
+   store_entity(new_entity);
+
+   Phrase *new_pattern = (Phrase*)malloc(sizeof(Phrase));
+   
+   new_pattern->members = (char**)malloc(sizeof(char*)*(cur_token + 1));
+   
+   for(int i = 0; i <= cur_token; ++i) {
+      new_pattern->members[i] = token_definitions[i];
+   }
+   
+   new_pattern->n_members = cur_token + 1;
+   new_pattern->name = strdup(name);
+   
+   cur_token = -1;
+   
+   tsearch((void *)new_pattern, &pattern_tree_root, pattern_compare);
+}
+
+static Phrase *lookup_phrase(const char *name) {
+
+   Phrase tmp = { .name = name };
+
+   void *val = tfind((void *)&tmp, &pattern_tree_root, pattern_compare);
+   
+   if(!val) {
+      MY_ERROR("Unable to find phrase \'%s\'\n", name);
+   }
+   
+   return *(Phrase**)val;
+}
+
+static void push_phrase(const char *name) {
+
+   Phrase *phrase = lookup_phrase(name);
+   
+   for(int i = 0; i < phrase->n_members; ++i) {
+      ++cur_token;
+      token_definitions[cur_token] = phrase->members[i];
+   }
+}
+
+static void flush_new_tokens(void)
+{
+   for(int i = 0; i <= cur_new_token; ++i) {
+      ++cur_token;
+      token_definitions[cur_token] = new_token_definitions[i];
+   }
+   
+   cur_new_token = -1;
+}
+
 #define SAFE_FREE(S) free(S); S = NULL;
 
 #define BUFF_MAX 1024
@@ -316,12 +431,6 @@ static void finish_pattern(void)
 
 #define BUFF_PRINT(...) buff_pos += snprintf(buff_pos, BUFF_REST, __VA_ARGS__)
 
-static char *strdup (const char *s) {
-    char *d = malloc (strlen (s) + 1);   // Space for length plus nul
-    if (d == NULL) return NULL;          // No memory
-    strcpy (d,s);                        // Copy the characters
-    return d;                            // Return the new string
-}
 
 static long my_atol(const char *count)
 {
@@ -339,17 +448,20 @@ static long my_atol(const char *count)
    return val;
 }
 
-static void add_action_to_token_n(int token_count, const char *action_id)
+static void add_action_to_token_relative(int rel_count, const char *action_id)
 {
-   int actual_token_count = token_start + token_count;
-   
-   if(actual_token_count > cur_token) {
-      MY_ERROR("Unable to access undefined token %d\n", actual_token_count);
+   add_action_to_token_n(token_start + rel_count, action_id);
+}
+
+static void add_action_to_token_n(int token_pos, const char *action_id)
+{
+   if(token_pos > cur_new_token) {
+      MY_ERROR("Unable to access undefined token %d\n", token_pos);
    }
 
    char buffer[BUFF_MAX];
    
-   char *old_token = token_definitions[actual_token_count];
+   char *old_token = new_token_definitions[token_pos];
    
    TypedEntity *tE = look_up_entity(action_id);
    if(!tE) {
@@ -358,7 +470,7 @@ static void add_action_to_token_n(int token_count, const char *action_id)
    
    snprintf(buffer, BUFF_MAX, "ppg_token_set_action(%s, PPG_ACTION_MAP_%s(%s, %s))", old_token, tE->tag, tE->name, tE->parameters);
    
-   token_definitions[actual_token_count] = strdup(buffer);
+   new_token_definitions[token_pos] = strdup(buffer);
    
    free(old_token);
 }
@@ -367,18 +479,18 @@ static void add_action_to_token(const char *token_count_id, const char *action_i
 {
    int token_count = my_atol(token_count_id);
    
-   add_action_to_token_n(token_count - 1, action_id);
+   add_action_to_token_relative(token_count - 1, action_id);
 }
 
-static void generate_note(const char *input_id)
+static void generate_note(const char *input_id, const char *flags)
 {
-   ++cur_token;
+   ++cur_new_token;
    
-   if(cur_token >= MAX_TOKENS) {
-      MY_ERROR("Maximum number of tokens %d exceeded\n", cur_token);
+   if(cur_new_token >= MAX_TOKENS) {
+      MY_ERROR("Maximum number of tokens %d exceeded\n", cur_new_token);
    }
    
-   token_start = cur_token;
+   token_start = cur_new_token;
    
    char buffer[BUFF_MAX];
    
@@ -387,20 +499,35 @@ static void generate_note(const char *input_id)
       MY_ERROR("Input %s unregistered\n", input_id);
    }
    
-   snprintf(buffer, BUFF_MAX, "ppg_note_create_standard(PPG_INPUT_KEYWORD_MAPPING_%s(%s, %s))", tE->tag, tE->name, tE->parameters);
+   snprintf(buffer, BUFF_MAX, "ppg_note_create(PPG_INPUT_KEYWORD_MAPPING_%s(%s, %s), %s)", tE->tag, tE->name, tE->parameters, flags);
    
-   token_definitions[cur_token] = strdup(buffer);
+   new_token_definitions[cur_new_token] = strdup(buffer);
+}
+
+static void generate_note_activation(const char *input_id)
+{
+   generate_note(input_id, "PPG_Note_Flag_Match_Activation");
+}
+
+static void generate_note_deactivation(const char *input_id)
+{
+   generate_note(input_id, "PPG_Note_Flag_Match_Deactivation");
+}
+
+static void generate_note_full(const char *input_id)
+{
+   generate_note(input_id, "PPG_Note_Flags_A_N_D");
 }
 
 static void generate_aggregate(const char *aggr_type)
 {
-   ++cur_token;
+   ++cur_new_token;
    
-   if(cur_token >= MAX_TOKENS) {
-      MY_ERROR("Maximum number of tokens %d exceeded\n", cur_token);
+   if(cur_new_token >= MAX_TOKENS) {
+      MY_ERROR("Maximum number of tokens %d exceeded\n", cur_new_token);
    }
    
-   token_start = cur_token;
+   token_start = cur_new_token;
    
    char buffer[BUFF_MAX];
    
@@ -423,7 +550,7 @@ static void generate_aggregate(const char *aggr_type)
    
    BUFF_PRINT(")");
    
-   token_definitions[cur_token] = strdup(buffer);
+   new_token_definitions[cur_new_token] = strdup(buffer);
    
    cur_id = -1;
 }
@@ -442,15 +569,15 @@ static void repeat_token(const char *count_id)
 {
    max_count_id = my_atol(count_id);
 
-   char *start_string = token_definitions[cur_token];
+   char *start_string = new_token_definitions[cur_new_token];
    for(long i = 1; i < max_count_id; ++i) {
-      ++cur_token;
+      ++cur_new_token;
          
-      if(cur_token >= MAX_TOKENS) {
-         MY_ERROR("Maximum number of tokens %d exceeded\n", cur_token);
+      if(cur_new_token >= MAX_TOKENS) {
+         MY_ERROR("Maximum number of tokens %d exceeded\n", cur_new_token);
       }
       
-      token_definitions[cur_token] = strdup(start_string);
+      new_token_definitions[cur_new_token] = strdup(start_string);
    }
 }
 
@@ -466,8 +593,8 @@ static void set_current_layer(const char *layer_id)
 static void mark_symbol(const char *symbol_id)
 {
    fprintf(
-      out_file,
-"PPG_COMPRESSION_REGISTER_SYMBOL_KEYWORD(ccontext, %s)\n\n", 
+      symbols_file,
+"   OP(%s) \\\n", 
       symbol_id
    );
 }
@@ -476,15 +603,7 @@ static void store_current_entity(void)
 {
    if(!cur_entity.parameters) {
       cur_entity.parameters = strdup("");
-   }
-   
-   void *val = tfind((void *)&cur_entity, &entity_tree_root, entity_compare);
-   
-   if(val) {
-      MY_ERROR("Entity \'%s\' ambiguously defined\n", cur_entity.name);
-   }
-   
-   val = tsearch((void *) &cur_entity, &entity_tree_root, entity_compare);
+   }   
    
    TypedEntity *entity_copy = (TypedEntity*)malloc(sizeof(TypedEntity));
    *entity_copy = cur_entity;
@@ -493,8 +612,19 @@ static void store_current_entity(void)
    cur_entity.tag = NULL;
    cur_entity.parameters = NULL;
    cur_entity.type = EntityTypeNone;
+   
+   store_entity(entity_copy);
+}
 
-   *((void **)val) = (void*)entity_copy;
+static void store_entity(TypedEntity *entity)
+{
+   void *val = tfind((void *)entity, &entity_tree_root, entity_compare);
+   
+   if(val) {
+      MY_ERROR("Entity \'%s\' ambiguously defined\n", cur_entity.name);
+   }
+   
+   val = tsearch((void *)entity, &entity_tree_root, entity_compare);
 }
 
 static TypedEntity *look_up_entity(const char *name)
@@ -517,18 +647,11 @@ static void store_cur_typed_entity(const char *tag_id, const char *name)
    cur_entity.name = strdup(name);
 }
 
-static void store_typed_entity_parameters(const char *quoted_parameters)
+static void store_typed_entity_parameters(const char *raw_code)
 {
-   // Copy parameters and remove quotes
+   // Copy parameters and remove leading ===
    
-   char *tmp = strdup(quoted_parameters + 1);
-   
-   cur_entity.parameters = tmp;
-   
-   char *c = tmp;
-   for(; *c != '\0'; ++c) {}
-   --c;
-   *c = '\0';
+   cur_entity.parameters = strdup(raw_code + 3);
 }
 
 static void store_input_tag(const char *tag)
@@ -569,7 +692,7 @@ static void input_tag_visitor(const void *node, VISIT visit, int dummy) {
 
    const char *tag = *((const char**)node);
 
-   fprintf(inputs_file, "PPG_INPUTS_%s(\n", tag);
+   fprintf(inputs_file, "#define PPG_INPUTS___%s(OP) \\\n", tag);
    cur_tag = tag;
    
    iter_entity = 0;
@@ -578,14 +701,14 @@ static void input_tag_visitor(const void *node, VISIT visit, int dummy) {
    
    for(int i = 0; i < iter_entity; ++i) {
       const TypedEntity *tE = iter_entities[i];
-      fprintf(inputs_file, "   PPG_INPUT_DEFINITION_%s(%s, %s)", tE->tag, tE->name, tE->parameters);
+      fprintf(inputs_file, "   OP(%s, %s)", tE->name, tE->parameters);
       if(i < iter_entity - 1) {
-         fprintf(inputs_file, ",");
+         fprintf(inputs_file, " \\");
       }
       fprintf(inputs_file, "\n");
    }
    
-   fprintf(inputs_file, ")\n\n");
+   fprintf(inputs_file, "\n");
 }
    
 static void flush_inputs(void)
@@ -609,7 +732,7 @@ static void action_tag_visitor(const void *node, VISIT visit, int dummy) {
    
    const char *tag = *((const char**)node);
    
-   fprintf(actions_file, "PPG_ACTIONS_%s(\n", tag);
+   fprintf(actions_file, "#define PPG_ACTIONS___%s(OP) \\\n", tag);
    cur_tag = tag;
    
    iter_entity = 0;
@@ -618,19 +741,28 @@ static void action_tag_visitor(const void *node, VISIT visit, int dummy) {
       
    for(int i = 0; i < iter_entity; ++i) {
       const TypedEntity *tE = iter_entities[i];
-      fprintf(actions_file, "   PPG_ACTION_DEFINITION_%s(%s, %s)", tE->tag, tE->name, tE->parameters);
+      fprintf(actions_file, "   OP(%s, %s)", tE->name, tE->parameters);
       if(i < iter_entity - 1) {
-         fprintf(actions_file, ",");
+         fprintf(actions_file, " \\");
       }
       fprintf(actions_file, "\n");
    }
    
-   fprintf(actions_file, ")\n\n");
+   fprintf(actions_file, "\n");
 }
    
 static void flush_actions(void)
 {
    twalk(action_tag_tree_root, action_tag_visitor);
+}
+
+static void prepare_symbols_file(void)
+{
+   fprintf(symbols_file, "#define PPG_SYMBOLS___(OP)\n");
+}
+
+static void finish_symbols_file(void)
+{
 }
 
 struct yy_buffer_state;
@@ -675,12 +807,16 @@ static void write_header(FILE *out_file)
 void generate(const char *source_filename, 
               const char *output_filename,
               const char *inputs_filename,
-              const char *actions_filename)
+              const char *actions_filename,
+              const char *symbols_filename)
 {
    FILE *source_file = fopen(source_filename, "r");
    out_file = fopen(output_filename, "w");
    inputs_file = fopen(inputs_filename, "w");
    actions_file = fopen(actions_filename, "w");
+   symbols_file = fopen(symbols_filename, "w");
+   
+   prepare_symbols_file();
    
    write_header(out_file);
          
@@ -752,14 +888,18 @@ void generate(const char *source_filename,
    flush_inputs();
    flush_actions();
    
+   finish_symbols_file();
+   
    fclose(source_file);
    fclose(out_file);
    fclose(inputs_file);
    fclose(actions_file);
+   fclose(symbols_file);
    
    out_file = NULL;
    inputs_file = NULL;
    actions_file = NULL;
+   symbols_file = NULL;
    
    if(!was_in_ppg) {
       fprintf(stderr, "No tag \'" PPG_START_TOKEN "\' encountered\n");
@@ -774,12 +914,12 @@ void generate(const char *source_filename,
 
 int main(int argc, char **argv) {
    
-   if(argc < 5) {
-     fprintf(stderr, "usage: %s <input_file> <output_file> <inputs_file> <actions_file>\n", argv[0]);
+   if(argc < 6) {
+     fprintf(stderr, "usage: %s <input_file> <output_file> <inputs_file> <actions_file> <symbols_file>\n", argv[0]);
      return 1;
    }
    
-   generate(argv[1], argv[2], argv[3], argv[4]);
+   generate(argv[1], argv[2], argv[3], argv[4], argv[5]);
    
    return 0;
 }
