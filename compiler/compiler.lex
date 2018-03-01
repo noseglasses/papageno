@@ -1,8 +1,8 @@
 %{
  
-#include "parser.h"
+#include "compiler.h"
 #include <stdio.h>
-#include "parser.yacc.h"
+#include "compiler.yacc.h"
 
 int c;
 

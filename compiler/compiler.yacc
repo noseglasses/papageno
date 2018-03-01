@@ -1,6 +1,6 @@
 %{
 
-#include "parser.h"
+#include "compiler.h"
 
 #include <stdio.h>
 #include <search.h>
@@ -9,7 +9,7 @@
 #include <limits.h>
 #include <stdlib.h>
 
-#include "parser.lex.h"
+#include "compiler.lex.h"
 
 #include "cmdline.h"
 
@@ -464,6 +464,7 @@ static void add_action_to_token_n(int token_pos, const char *action_id)
    }
 
    char buffer[BUFF_MAX];
+   char *buff_pos = buffer;
    
    char *old_token = new_token_definitions[token_pos];
    
@@ -472,7 +473,12 @@ static void add_action_to_token_n(int token_pos, const char *action_id)
       MY_ERROR("Action %s unregistered\n", action_id);
    }
    
-   snprintf(buffer, BUFF_MAX, "ppg_token_set_action(%s, PPG_ACTION_MAP_%s(%s, %s))", old_token, tE->tag, tE->name, tE->parameters);
+   BUFF_PRINT("ppg_token_set_action(%s, PPG_ACTION_MAP_%s(%s",
+         old_token, tE->tag, tE->name);
+   if(tE->parameters) {
+      BUFF_PRINT(", %s", tE->parameters);
+   }
+   BUFF_PRINT("))");
    
    new_token_definitions[token_pos] = strdup(buffer);
    
@@ -503,7 +509,7 @@ static void generate_note(const char *input_id, const char *flags)
       MY_ERROR("Input %s unregistered\n", input_id);
    }
    
-   snprintf(buffer, BUFF_MAX, "ppg_note_create(PPG_INPUT_KEYWORD_MAPPING_%s(%s, %s), %s)", tE->tag, tE->name, tE->parameters, flags);
+snprintf(buffer, BUFF_MAX, "ppg_note_create(PPG_INPUT_MAP_%s(%s, %s), %s)", tE->tag, tE->name, tE->parameters, flags);
    
    new_token_definitions[cur_new_token] = strdup(buffer);
 }
@@ -546,7 +552,7 @@ static void generate_aggregate(const char *aggr_type)
          MY_ERROR("Input %s unregistered\n", inputs[i]);
       }
    
-      BUFF_PRINT("PPG_INPUT_KEYWORD_MAPPING_%s(%s, %s)", tE->tag, tE->name, tE->parameters);
+      BUFF_PRINT("PPG_INPUT_MAP_%s(%s, %s)", tE->tag, tE->name, tE->parameters);
       if(i < cur_id) {
          BUFF_PRINT(",");
       }
@@ -605,10 +611,6 @@ static void mark_symbol(const char *symbol_id)
 
 static void store_current_entity(void)
 {
-   if(!cur_entity.parameters) {
-      cur_entity.parameters = strdup("");
-   }   
-   
    TypedEntity *entity_copy = (TypedEntity*)malloc(sizeof(TypedEntity));
    *entity_copy = cur_entity;
    
@@ -757,6 +759,17 @@ static void action_tag_visitor(const void *node, VISIT visit, int dummy) {
 "\n"
    );
    
+   fprintf(actions_file, 
+"#ifndef PPG_ACTION_INITIALIZATION_%s\n", tag
+   );
+   fprintf(actions_file,
+"#define PPG_ACTION_INITIALIZATION_%s(...) __VA_ARGS__\n", tag
+   );
+   fprintf(actions_file,
+"#endif\n"
+"\n"
+   );
+   
    fprintf(actions_file, "#define PPG_ACTIONS___%s(OP) \\\n", tag);
    cur_tag = tag;
    
@@ -766,7 +779,11 @@ static void action_tag_visitor(const void *node, VISIT visit, int dummy) {
       
    for(int i = 0; i < iter_entity; ++i) {
       const TypedEntity *tE = iter_entities[i];
-      fprintf(actions_file, "   OP(%s, %s)", tE->name, tE->parameters);
+      fprintf(actions_file, "   OP(%s", tE->name);
+      if(tE->parameters) {
+         fprintf(actions_file, ", %s", tE->parameters);
+      }
+      fprintf(actions_file, ")");
       if(i < iter_entity - 1) {
          fprintf(actions_file, " \\");
       }
@@ -774,6 +791,9 @@ static void action_tag_visitor(const void *node, VISIT visit, int dummy) {
    }
    
    fprintf(actions_file, "\n");
+   
+   fprintf(actions_file, 
+"PPG_ACTIONS___%s(PPG_ACTION_INITIALIZATION_%s)\n\n", tag, tag);
 }
    
 static void flush_actions(void)
@@ -835,8 +855,9 @@ static void generate_output_file(void)
    
    fprintf(output_file,
 "\n"
-"void generate_tree(PPG_Context *context)\n"
+"void generate_tree(void *context)\n"
 "{\n"
+"   int current_layer = 0;\n\n"
    );
    
    append_if_present(ai.init_tree_generation_filename_arg, output_file, "   ");
@@ -856,7 +877,7 @@ static void generate_output_file(void)
 "\n"
 "PPG_FOR_EACH_SYMBOL___(DEFINE_DUMMY_SYMBOL)\n"
 "\n"
-"void compress_tree(PPG_Context *context, const char *output_filename)\n"
+"void compress_tree(void *context, const char *output_filename)\n"
 "{\n"
 "#define REGISTER_DUMMY_SYMBOL(S) \\\n"
 "   PPG_COMPRESSION_REGISTER_SYMBOL(context, S)\n"
@@ -1036,7 +1057,7 @@ void generate()
 
 int main(int argc, char **argv)
 {
-   if(cmdline_parser(argc, argv, &ai) != 0) {
+   if(cmdline_compiler(argc, argv, &ai) != 0) {
       exit(1);
    }
    

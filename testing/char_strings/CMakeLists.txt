@@ -109,7 +109,7 @@ function(ppg_add_compiler_test test_name)
    cmake_parse_arguments(args "${options}" "${one_value_args}"
                      "${multi_value_args}" ${ARGN} )
 
-   set(test_code_file "${CMAKE_CURRENT_SOURCE_DIR}/${test_name}.c")
+   set(test_code_file "${CMAKE_CURRENT_SOURCE_DIR}/${test_name}_run.c")
 
    # Add the normal test executable
    #
@@ -118,9 +118,12 @@ function(ppg_add_compiler_test test_name)
 	set(compile_output_file "${CMAKE_CURRENT_BINARY_DIR}/${run_target_name}_output.c")
    add_custom_command(
       OUTPUT "${compile_output_file}"
-      COMMAND $<TARGET_FILE_NAME:compiler> -i "${test_code_file}" -o "${compile_output_file}"
+      DEPENDS "${test_code_file}" compiler
+      COMMAND $<TARGET_FILE:compiler> -i "${test_code_file}" -o "${compile_output_file}"
    )
-   add_custom_target("${run_target_name}_compile" DEPENDS "${test_code_file}")
+   add_custom_target("${run_target_name}_compile" DEPENDS "${compile_output_file}")
+   
+#    set_source_files_properties("${compile_output_file}" PROPERTIES GENERATED TRUE)
 
 	add_dependencies(
       "${run_target_name}_compile"
@@ -384,6 +387,8 @@ ppg_add_test(test_context_switching)
 ppg_add_test(test_enable_disable)
 ppg_add_test(test_enable_disable_timeout)
 ppg_add_test(test_fallback)
+
+ppg_add_compiler_test(test_compiler)
  
 ppg_add_test_with_compression(test_abort_trigger)
 ppg_add_test_with_compression(test_chords)

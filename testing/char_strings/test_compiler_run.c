@@ -20,10 +20,11 @@
    
 #include "/home/itm/fleissne/Scratch/Projects/papageno/testing/char_strings/default_layers.h"
 
-extern void generate_tree(PPG_Context *context);
-extern void compress_tree(PPG_Context *context, const char *output_filename);
+#define PPG_INPUT_MAP_(NAME, CHAR) PPG_CS_CHAR(CHAR)
+#define PPG_ACTION_MAP_(NAME) PPG_CS_ACTION(NAME)
+#define PPG_ACTION_INITIALIZATION_(NAME) PPG_CS_REGISTER_ACTION(NAME)
 
-#include "test_parser_output.c"
+#include "test_compiler_run_output.c"
 
 PPG_CS_START_TEST
    

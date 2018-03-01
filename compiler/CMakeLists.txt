@@ -1,8 +1,8 @@
 
 if(PAPAGENO_BUILD_COMPILER)
 
-   option(PAPAGENO_DEVELOP_PARSER FALSE)
-   mark_as_advanced(PAPAGENO_DEVELOP_PARSER)
+   option(PAPAGENO_DEVELOP_COMPILER FALSE)
+   mark_as_advanced(PAPAGENO_DEVELOP_COMPILER)
    
    set(compiler_lex "${CMAKE_CURRENT_SOURCE_DIR}/compiler.lex.c")
    set(compiler_lex_h "${CMAKE_CURRENT_SOURCE_DIR}/compiler.lex.h")
@@ -10,7 +10,7 @@ if(PAPAGENO_BUILD_COMPILER)
    set(compiler_yacc "${CMAKE_CURRENT_SOURCE_DIR}/compiler.yacc.c")
    set(compiler_yacc_h "${CMAKE_CURRENT_SOURCE_DIR}/compiler.yacc.h")
    
-   if(PAPAGENO_DEVELOP_PARSER)
+   if(PAPAGENO_DEVELOP_COMPILER)
    
       find_program(GENGETOPT_EXECUTABLE
          NAMES "gengetopt"
