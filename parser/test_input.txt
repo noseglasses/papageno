@@ -1,10 +1,10 @@
 some stuff before start
 
-ppg_start
+papageno_start
 
+inline_start
 some stuff before definitions
-
-ppg_definitions_start
+inline_end
 
 layer: my_layer
 
@@ -32,10 +32,11 @@ phrase: a_pattern = {B, C}*5 : the_action
 
 |D| -> #a_pattern
 
-ppg_definitions_end
+inline_start
 
 some_stuff after definitinons 
+inline_end
 
-ppg_end
+papageno_end
 
 some stuff at the very end

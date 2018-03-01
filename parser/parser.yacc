@@ -11,6 +11,10 @@
 
 #include "parser.lex.h"
 
+#include "cmdline.h"
+
+struct gengetopt_args_info ai;
+
 int yydebug=1;
 
 int yylex();
@@ -29,7 +33,7 @@ char *token_definitions[MAX_TOKENS];
 int cur_new_token = -1;
 char *new_token_definitions[MAX_TOKENS];
 
-FILE *out_file = NULL;
+FILE *definitions_file = NULL;
 FILE *inputs_file = NULL;
 FILE *actions_file = NULL;
 FILE *symbols_file = NULL;
@@ -331,7 +335,7 @@ static int pattern_compare(const void *pa, const void *pb)
 static void finish_pattern(void)
 {
    fprintf(
-      out_file, 
+      definitions_file, 
 "ppg_pattern(\n"
 "   current_layer,\n"
 "   %d, /* number of tokens */\n"
@@ -340,7 +344,7 @@ static void finish_pattern(void)
 
    for(int i = 0; i <= cur_token; ++i) {
       fprintf(
-         out_file,
+         definitions_file,
 "      %s",
          token_definitions[i]
       );
@@ -348,18 +352,18 @@ static void finish_pattern(void)
       free(token_definitions[i]);
       
       if(i < cur_token) {
-         fprintf(out_file, ",");
+         fprintf(definitions_file, ",");
       }
       
-      fprintf(out_file, "\n");
+      fprintf(definitions_file, "\n");
    }
    
    fprintf(
-      out_file, 
+      definitions_file, 
 "   )\n"
    );     
    fprintf(
-      out_file,
+      definitions_file,
 ");\n\n"
    );
    
@@ -584,7 +588,7 @@ static void repeat_token(const char *count_id)
 static void set_current_layer(const char *layer_id)
 {
    fprintf(
-      out_file,
+      definitions_file,
 "current_layer = %s;\n\n",
       layer_id
    );
@@ -691,7 +695,17 @@ static void input_tag_visitor(const void *node, VISIT visit, int dummy) {
    if((visit == preorder) || (visit == postorder)) { return; }
 
    const char *tag = *((const char**)node);
-
+   fprintf(inputs_file, 
+"#ifndef PPG_INPUT_MAP_%s\n", tag
+   );
+   fprintf(inputs_file,
+"#define PPG_INPUT_MAP_%s(...) __VA_ARGS__\n", tag
+   );
+   fprintf(inputs_file,
+"#endif\n"
+"\n"
+   );
+   
    fprintf(inputs_file, "#define PPG_INPUTS___%s(OP) \\\n", tag);
    cur_tag = tag;
    
@@ -732,6 +746,17 @@ static void action_tag_visitor(const void *node, VISIT visit, int dummy) {
    
    const char *tag = *((const char**)node);
    
+   fprintf(actions_file, 
+"#ifndef PPG_ACTION_MAP_%s\n", tag
+   );
+   fprintf(actions_file,
+"#define PPG_ACTION_MAP_%s(...) __VA_ARGS__\n", tag
+   );
+   fprintf(actions_file,
+"#endif\n"
+"\n"
+   );
+   
    fprintf(actions_file, "#define PPG_ACTIONS___%s(OP) \\\n", tag);
    cur_tag = tag;
    
@@ -758,11 +783,123 @@ static void flush_actions(void)
 
 static void prepare_symbols_file(void)
 {
-   fprintf(symbols_file, "#define PPG_SYMBOLS___(OP)\n");
+   fprintf(symbols_file, "#define PPG_FOR_EACH_SYMBOL___(OP) \\\n");
 }
 
 static void finish_symbols_file(void)
 {
+   fprintf(symbols_file, "\n");
+}
+
+static void append_file(FILE *source, FILE *target, const char *indent)
+{
+   rewind(source);
+   
+   char line[4096];
+   
+   while (fgets(line, sizeof(line), source)) {
+      fprintf(target, "%s%s", indent, line);
+   }
+}
+
+static void append_if_present(const char *source_filename, FILE *target, const char *indent) 
+{
+   if(!source_filename) { return; }
+   
+   FILE *source_file = fopen(source_filename, "r");
+   fprintf(target, "// Read from %s\n\n", source_filename);
+   append_file(source_file, target, indent);
+   fprintf(target, "\n");
+   fclose(source_file);
+}
+
+static void generate_output_file(void)
+{
+   FILE  *output_file = fopen(ai.output_filename_arg, "w");
+   
+   append_if_present(ai.preamble_filename_arg, output_file, "");
+   
+   fprintf(output_file,
+"#include \"ppg_note.h\"\n"
+"#include \"ppg_cluster.h\"\n"
+"#include \"ppg_chord.h\"\n"
+"#include \"ppg_pattern.h\"\n"
+"#include \"ppg_action.h\"\n"
+"\n"
+   );
+   append_file(symbols_file, output_file, "");
+   append_file(inputs_file, output_file, "");
+   append_file(actions_file, output_file, "");
+   
+   append_if_present(ai.initialization_filename_arg, output_file, "");
+   
+   fprintf(output_file,
+"\n"
+"void generate_tree(PPG_Context *context)\n"
+"{\n"
+   );
+   
+   append_if_present(ai.init_tree_generation_filename_arg, output_file, "   ");
+   append_file(definitions_file, output_file, "   ");
+   append_if_present(ai.finish_tree_generation_filename_arg, output_file, "   ");
+   
+   fprintf(output_file,
+"\n"
+"   ppg_global_compile();\n"
+"}\n"
+"\n"
+   );
+   
+   fprintf(output_file,
+"#define DEFINE_DUMMY_SYMBOL(S) \\\n"
+"   void S(void) {}\n"
+"\n"
+"PPG_FOR_EACH_SYMBOL___(DEFINE_DUMMY_SYMBOL)\n"
+"\n"
+"void compress_tree(PPG_Context *context, const char *output_filename)\n"
+"{\n"
+"#define REGISTER_DUMMY_SYMBOL(S) \\\n"
+"   PPG_COMPRESSION_REGISTER_SYMBOL(context, S)\n"
+"\n"
+"   PPG_FOR_EACH_SYMBOL___(REGISTER_DUMMY_SYMBOL)\n"
+"\n"
+   );
+   
+   append_if_present(ai.init_compression_filename_arg, output_file, "");
+   
+   fprintf(output_file,
+"   ppg_compression_run(context, \"%s\", output_filename);\n", (ai.project_name_arg) ? ai.project_name_arg : "generic"
+   );
+   fprintf(output_file,
+"   ppg_compression_finalize(context);\n"
+"}\n"
+"\n"
+   );
+
+   fprintf(output_file,
+"#ifdef PAPAGENO_HAVE_MAIN\n"
+"\n"
+"int main(int argc, char **argv)\n"
+"{\n"
+"   if(argc < 2) {\n"
+"      fprintf(stderr, \"Usage: %%s <output_filename>\\n\", argv[0]);\n"
+"      exit(EXIT_FAILURE);\n"
+"   }\n"
+"\n"
+"   void *context = ppg_context_create();\n"
+"   ppg_global_set_current_context(context);\n"
+"\n"
+"   generate_tree(context);\n"
+"\n"
+"   compress_tree(context, argv[1]);\n"
+"\n"
+"   ppg_context_destroy(context);\n"
+"}\n"
+"\n"
+"#endif\n"
+   );
+   
+   fclose(output_file);
 }
 
 struct yy_buffer_state;
@@ -783,49 +920,32 @@ static void process_definitions(const char *line)
    free(temp);
 }
 
-static void write_header(FILE *out_file)
+static void write_header(FILE *definitions_file)
 {
-   fprintf(out_file, 
-"#include \"ppg_note.h\"\n"
-"#include \"ppg_cluster.h\"\n"
-"#include \"ppg_chord.h\"\n"
-"#include \"ppg_pattern.h\"\n"
-"#include \"ppg_action.h\"\n"
-"\n"
-"#ifndef PPG_INPUT_KEYWORD_MAPPING\n"
-"#define PPG_INPUT_KEYWORD_MAPPING(S) S\n"
-"#endif\n"
-"\n"
-   );
 }
 
-#define PPG_START_TOKEN "ppg_start"
-#define PPG_END_TOKEN "ppg_end"
-#define PPG_START_DEFINITIONS_TOKEN "ppg_definitions_start"
-#define PPG_END_DEFINITIONS_TOKEN "ppg_definitions_end"
+#define PPG_START_TOKEN "papageno_start"
+#define PPG_END_TOKEN "papageno_end"
+#define PPG_START_INLINE_TOKEN "inline_start"
+#define PPG_END_INLINE_TOKEN "inline_end"
 
-void generate(const char *source_filename, 
-              const char *output_filename,
-              const char *inputs_filename,
-              const char *actions_filename,
-              const char *symbols_filename)
+void generate()
 {
-   FILE *source_file = fopen(source_filename, "r");
-   out_file = fopen(output_filename, "w");
-   inputs_file = fopen(inputs_filename, "w");
-   actions_file = fopen(actions_filename, "w");
-   symbols_file = fopen(symbols_filename, "w");
+   FILE *source_file = fopen(ai.source_filename_arg, "r");
+   definitions_file = tmpfile(); //fopen(ai.output_filename, "w");
+   inputs_file = tmpfile();//fopen(inputs_filename, "w");
+   actions_file = tmpfile();//fopen(actions_filename, "w");
+   symbols_file = tmpfile();//fopen(symbols_filename, "w");
    
    prepare_symbols_file();
    
-   write_header(out_file);
+   write_header(definitions_file);
          
    char line[4096];
    
    bool in_ppg = false;
    bool was_in_ppg = false;
-   bool in_definitions = false;
-   bool was_in_definitions = false;
+   bool in_inline = false;
 
    cur_line = 0;
    
@@ -843,21 +963,26 @@ void generate(const char *source_filename,
          continue;
       }
       
+      if(!in_ppg) {
+         if(was_in_ppg) { break; }
+         
+         continue;
+      }
+      
       if(strstr(line, PPG_END_TOKEN) != NULL) {
          printf("line %d: end of ppg\n", cur_line);
          break;
       }
       
-      if(strstr(line, PPG_START_DEFINITIONS_TOKEN) != NULL) {
-         printf("line %d: in definitions\n", cur_line);
-         in_definitions = true;
-         was_in_definitions = true;
+      if(strstr(line, PPG_START_INLINE_TOKEN) != NULL) {
+         printf("line %d: in inline\n", cur_line);
+         in_inline = true;
          continue;
       }
       
-      if(strstr(line, PPG_END_DEFINITIONS_TOKEN) != NULL) {
-         printf("line %d: end of definitions\n", cur_line);
-         in_definitions = false;
+      if(strstr(line, PPG_END_INLINE_TOKEN) != NULL) {
+         printf("line %d: end of inline\n", cur_line);
+         in_inline = false;
          continue;
       }
       
@@ -876,12 +1001,12 @@ void generate(const char *source_filename,
          }
       }
       
-      if(in_definitions) {
-         printf("Processing line \'%s\'\n", line);
-         process_definitions(line);
+      if(in_inline) {
+         fprintf(definitions_file, "%s", line);
       }
       else {
-         fprintf(out_file, "%s", line);
+         printf("Processing line \'%s\'\n", line);
+         process_definitions(line);
       }
    }
    
@@ -890,36 +1015,32 @@ void generate(const char *source_filename,
    
    finish_symbols_file();
    
+   generate_output_file();
+   
    fclose(source_file);
-   fclose(out_file);
+   fclose(definitions_file);
    fclose(inputs_file);
    fclose(actions_file);
    fclose(symbols_file);
    
-   out_file = NULL;
+   definitions_file = NULL;
    inputs_file = NULL;
    actions_file = NULL;
    symbols_file = NULL;
    
    if(!was_in_ppg) {
-      fprintf(stderr, "No tag \'" PPG_START_TOKEN "\' encountered\n");
-      exit(EXIT_FAILURE);
-   }
-   
-   if(!was_in_definitions) {
-      fprintf(stderr, "No tag \'" PPG_END_DEFINITIONS_TOKEN "\' encountered\n");
+      fprintf(stderr, "No papageno definitions encountered\n");
       exit(EXIT_FAILURE);
    }
 }
 
-int main(int argc, char **argv) {
-   
-   if(argc < 6) {
-     fprintf(stderr, "usage: %s <input_file> <output_file> <inputs_file> <actions_file> <symbols_file>\n", argv[0]);
-     return 1;
+int main(int argc, char **argv)
+{
+   if(cmdline_parser(argc, argv, &ai) != 0) {
+      exit(1);
    }
    
-   generate(argv[1], argv[2], argv[3], argv[4], argv[5]);
+   generate();
    
    return 0;
 }
@@ -933,4 +1054,3 @@ int yywrap(void)
 {
   return 1;
 }
-

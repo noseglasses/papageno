@@ -96,6 +96,83 @@ function(ppg_add_test test_name)
    endif()
 endfunction()
 
+function(ppg_add_compiler_test test_name)
+
+   if(NOT PAPAGENO_BUILD_COMPILER)
+      return()
+   endif()
+
+   set(multi_value_args "")
+   set(one_value_args "COMPILE_DEFINITIONS;LINK_LIBRARIES")
+   set(options "")
+
+   cmake_parse_arguments(args "${options}" "${one_value_args}"
+                     "${multi_value_args}" ${ARGN} )
+
+   set(test_code_file "${CMAKE_CURRENT_SOURCE_DIR}/${test_name}.c")
+
+   # Add the normal test executable
+   #
+   set(run_target_name "${test_name}_run")
+   
+	set(compile_output_file "${CMAKE_CURRENT_BINARY_DIR}/${run_target_name}_output.c")
+   add_custom_command(
+      OUTPUT "${compile_output_file}"
+      COMMAND $<TARGET_FILE_NAME:compiler> -i "${test_code_file}" -o "${compile_output_file}"
+   )
+   add_custom_target("${run_target_name}_compile" DEPENDS "${test_code_file}")
+
+	add_dependencies(
+      "${run_target_name}_compile"
+      compiler
+   )
+   
+	add_executable(
+		"${run_target_name}"
+		"${test_code_file}"
+	)
+	
+	add_dependencies(
+      "${run_target_name}"
+      "${run_target_name}_compile"
+   )
+   
+   set_target_properties(
+      "${run_target_name}"
+      PROPERTIES COMPILE_FLAGS 
+         "${args_COMPILE_DEFINITIONS}"
+   )
+
+	target_link_libraries(
+		"${run_target_name}"
+		papageno_char_strings
+	)
+
+   if(DEFINED args_LINK_LIBRARIES)
+      target_link_libraries(
+         "${run_target_name}"
+         "${args_LINK_LIBRARIES}"
+      )
+	endif()
+   
+	ppg_generate_test(
+		NAME "${run_target_name}" 
+		EXECUTABLE "${run_target_name}"
+		WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+	)
+	
+   set_tests_properties("${run_target_name}" PROPERTIES DEPENDS "${run_target_name}_compile")
+   
+	if(PAPAGENO_TEST_COVERAGE)
+	      
+      SETUP_TARGET_FOR_JOINT_COVERAGE(
+         NAME "${run_target_name}_coverage"
+         EXECUTABLE "${run_target_name}"
+         DEPENDENCIES "${run_target_name}"
+      )
+   endif()
+endfunction()
+
 macro(ppg_get_test_file_defines
    test_name_
    type_list_

@@ -185,7 +185,11 @@ if(PAPAGENO_DOXYGEN)
 endif()
 
 add_subdirectory(src)
-add_subdirectory(parser)
+
+option(PAPAGENO_BUILD_COMPILER FALSE)
+if(PAPAGENO_BUILD_COMPILER)
+   add_subdirectory(compiler)
+endif()
 
 if(PAPAGENO_TESTING_ENABLED)
 	include(CTest)
