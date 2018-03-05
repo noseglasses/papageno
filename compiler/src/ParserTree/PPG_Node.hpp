@@ -16,11 +16,15 @@
 
 #pragma once
 
+#include "Parser/PPG_Parser.hpp"
+
 #include <memory>
 #include <map>
 #include <string>
+#include <sstream>
+#include <cassert>
 
-#define TO_STRING(...) (std::ostringstream() << __VA_ARGS__).str()
+#define TO_STRING(...) ([&]() -> std::string { std::ostringstream tmp; tmp << __VA_ARGS__; return tmp.str(); }())
 
 #define THROW_ERROR(...) \
    throw TO_STRING(__VA_ARGS__)
@@ -42,11 +46,11 @@ class Node
       {
          this->retreiveSourcePosition();
          
-         Node::storeNode(id);
+         Node::storeNode(id, this);
       }
       
       virtual ~Node() {
-         Node::deleteNode(id);
+         Node::deleteNode(id_);
       }
       
       const std::string &getId() const { 
@@ -57,8 +61,8 @@ class Node
          return id_; 
       }
       
-      void getSourceLine() const { return sourcePos_[0]; }
-      void getSourceColumn() const { return sourcePos_[1]; }
+      int getSourceLine() const { return sourcePos_[0]; }
+      int getSourceColumn() const { return sourcePos_[1]; }
    
       virtual std::string getPropertyDescription() const {
          return TO_STRING("id = " << id_);
@@ -74,12 +78,19 @@ class Node
    protected:
       
       void retreiveSourcePosition() {
-         todo
+         if(!Papageno::Parser::currentLocation) {
+            sourcePos_[0] = -1;
+            sourcePos_[1] = -1;
+            return;
+         }
+         
+         sourcePos_[0] = Papageno::Parser::currentLocation->first_line;
+         sourcePos_[0] = Papageno::Parser::currentLocation->first_column;
       }
       
       static void storeNode(const std::string &id, const Node *node) {
          
-         auto it = ids_.find();
+         auto it = ids_.find(id);
          if(it != ids_.end()) {
             THROW_ERROR("An entity with id \'" << id 
                << "\' has already been defined: " 
@@ -90,24 +101,24 @@ class Node
       }
       
       static void deleteNode(const std::string &id) {
-         auto it = ids_.find();
+         auto it = ids_.find(id);
          
          assert(it != ids_.end());
          
          ids_.erase(it);
       }
       
-      static std::string generateId() {
+      std::string generateId() const {
          ++nextId_;
          return TO_STRING(this->getNodeType() << "_" << nextId_);
       }
          
    protected:
       
-      std::string           id_;
+      mutable std::string   id_;
       int                   sourcePos_[2];
       
-      static std::map<std::string, *Node> ids_;
+      static std::map<std::string, const Node*> ids_;
       
       static int           nextId_;
 };

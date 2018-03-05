@@ -16,15 +16,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "PPG_Parser.lex.h"
+#include "Parser/PPG_Parser.hpp"
+#include "Parser/PPG_Parser.lex.hpp"
 
 #include "ParserTree/PPG_Phrase.hpp"
+
+#include <iostream>
 
 int yydebug=1;
 
 int yylex();
 void yyerror(const char *s);
 
+struct LocationRAII {
+   LocationRAII(YYLTYPE *currentLocation__)
+   {
+      currentLocation = currentLocation__;
+   }
+   ~LocationRAII() {
+      currentLocation = nullptr;
+   }
+};
 %}
 
 %start lines
@@ -61,8 +73,6 @@ line:
         |
         layer_def LINE_END
         |
-        symbol_def LINE_END
-        |
         input_def LINE_END
         |
         action_def LINE_END
@@ -76,12 +86,14 @@ line:
 input_list:
          ID
          {
+            LocationRAII lr(&@1);
             Input::pushNextInput(std::string($1));
          }
          |
          input_list ',' ID
          {
-            Input::pushNextInput(std::string($1));
+            LocationRAII lr(&@3);
+            Input::pushNextInput(std::string($3));
          }
          ;
          
@@ -103,6 +115,7 @@ action_token:
         {
            // Lookup a phrase and copy its tokens to the current pattern
            //
+           LocationRAII lr(&@2);
            Pattern::pushPhrase(std::string($2));
         }
         ;
@@ -112,6 +125,7 @@ rep_token:
         |
         token '*' ID
         {
+           LocationRAII lr(&@3);
            Pattern::repeatLastToken(std::string($3));
         }
         ;
@@ -125,19 +139,22 @@ token:  note
         
 note:   '|' ID '|'
         {
+            LocationRAII lr(&@2);
             Input::pushNextInput(std::string($2));
             Pattern::pushToken(std::make_shared<Papageno::ParserTree::Note>(PPG_Note_Flags_A_N_D));
         }
         |
         '|' ID
         {
+            LocationRAII lr(&@2);
             Input::pushNextInput(std::string($2));
             Pattern::pushToken(std::make_shared<Papageno::ParserTree::Note>(PPG_Note_Flag_Match_Activation));
         }
         |
         ID '|'
         {
-            Input::pushNextInput(std::string($2));
+            LocationRAII lr(&@1);
+            Input::pushNextInput(std::string($1));
             Pattern::pushToken(std::make_shared<Papageno::ParserTree::Note>(PPG_Note_Flag_Match_Deactivation));
         }
         ;
@@ -159,11 +176,13 @@ chord:
 action_def:
         ID
         {
+            LocationRAII lr(&@1);
             Action::pushAction(std::string($1));
         }
         |
         ID '=' ID
         {
+            LocationRAII lr(&@1);
             Action::pushAction(std::string($1, $3);
         }
         ;
@@ -203,11 +222,13 @@ action_def:
 typed_id:
         ID
         {
+            LocationRAII lr(&@1);
             Entity::setNextId(std::string($1));
         }
         |
         ID '<' ID '>'
         {
+            LocationRAII lr(&@1);
             Entity::setNextId(std::string($1));
             Entity::setNextType(std::string($3));
         }
@@ -218,6 +239,7 @@ parameters:
         |
         RAW_CODE
         {
+           LocationRAII lr(&@1);
            Entity::setNextParameters(std::string($1);
         }
         ;
@@ -225,6 +247,8 @@ parameters:
 
 namespace Papageno {
 namespace Parser {
+
+extern YYLTYPE *currentLocation = nullptr;
 
 static void process_definitions(const char *line)
 {

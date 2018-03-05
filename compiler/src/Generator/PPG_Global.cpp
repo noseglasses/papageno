@@ -16,6 +16,13 @@
 
 #include "Generator/PPG_Global.hpp"
 
+#include "ParserTree/PPG_Token.hpp"
+#include "ParserTree/PPG_Action.hpp"
+#include "ParserTree/PPG_Input.hpp"
+#include "ParserTree/PPG_Pattern.hpp"
+
+#include <ostream>
+
 namespace Papageno {
 namespace Generator {
    
@@ -31,7 +38,7 @@ void generateFileHeader(std::ostream &out) {
    
 void generateGlobalActionInformation(std::ostream &out)
 {
-   auto actionsByType = Action::getActionsByType();
+   auto actionsByType = ParserTree::Action::getActionsByType();
    
    for(const auto &abtEntry: actionsByType) {
       const auto &tag = abtEntry.first;
@@ -57,7 +64,7 @@ void generateGlobalActionInformation(std::ostream &out)
 
       for(const auto &actionPtr: abtEntry.second) {
          out <<
-"   OP(" << actionPtr->getId() << ")\\\n"
+"   OP(" << actionPtr->getId() << ")\\\n";
       }
       
       out <<
@@ -68,7 +75,7 @@ void generateGlobalActionInformation(std::ostream &out)
 
 void generateGlobalInputInformation(std::ostream &out)
 {
-   auto inputsByType = Input::getInputsByType();
+   auto inputsByType = ParserTree::Input::getInputsByType();
    
    for(const auto &abtEntry: inputsByType) {
       const auto &tag = abtEntry.first;
@@ -94,7 +101,7 @@ void generateGlobalInputInformation(std::ostream &out)
 
       for(const auto &inputPtr: abtEntry.second) {
          out <<
-"   OP(" << inputPtr->getId() << ")\\\n"
+"   OP(" << inputPtr->getId() << ")\\\n";
       }
       
       out <<
@@ -111,7 +118,7 @@ static void outputInformationOfDefinition(std::ostream &out, const ParserTree::N
 "//\n";
 }
 
-void outputToken(std::ostream &out, const Token &token)
+void outputToken(std::ostream &out, const ParserTree::Token &token)
 {
    for(const auto &childTokenPtr: token.getChildren()) {
       outputToken(out, *childTokenPtr);
@@ -123,7 +130,7 @@ void generateGlobalContext(std::ostream &out)
 {
    // Output all actions
    //
-   for(const auto &actionEntry: Action::getActions()) {
+   for(const auto &actionEntry: ParserTree::Action::getActions()) {
       
       const auto &action = *actionEntry.second;
       
@@ -136,7 +143,7 @@ void generateGlobalContext(std::ostream &out)
    
    // Output all inputs
    //
-   for(const auto &inputEntry: Input::getInputs()) {
+   for(const auto &inputEntry: ParserTree::Input::getInputs()) {
       
       const auto &input = *inputEntry.second;
       
@@ -147,7 +154,7 @@ void generateGlobalContext(std::ostream &out)
    << "(" << input.getParameters() << ");\n\n";
    }
    
-   auto root = Pattern::getTreeRoot();
+   auto root = ParserTree::Pattern::getTreeRoot();
    
    // Recursively output token tree
    //

@@ -17,6 +17,7 @@
 #pragma once
 
 #include "ParserTree/PPG_Node.hpp"
+#include "ParserTree/PPG_Action.hpp"
 
 #include <memory>
 #include <vector>
@@ -38,7 +39,7 @@ class Token : public Node
       }
       
       void addChild(const std::shared_ptr<Token> &token) {
-         children_->push_back(token);
+         children_.push_back(token);
       }
       
       const std::vector<std::shared_ptr<Token>> &getChildren() const {
@@ -56,9 +57,9 @@ class Token : public Node
          curLayer_ = layer;
       }
       
-      void generateCCode(std::ostream &out) {
+      void generateCCode(std::ostream &out) const {
          
-         this->generateDependencyCodeInternal();
+         this->generateDependencyCodeInternal(out);
 
          // Output children
          //
@@ -69,7 +70,7 @@ class Token : public Node
             for(int i = 0; i < children_.size(); ++i) {
                out <<
 "   &" << children_[i]->getId();
-               if(i < children_size() - 1) {
+               if(i < children_.size() - 1) {
                   out << ",";
                }
                out << "\n";
@@ -92,9 +93,9 @@ class Token : public Node
            
    protected:
       
-      virtual void generateDependencyCodeInternal(std::ostream &out) {}
+      virtual void generateDependencyCodeInternal(std::ostream &out) const {}
       
-      virtual void generateCCodeInternal(std::ostream &out) {
+      virtual void generateCCodeInternal(std::ostream &out) const {
          
          out <<
 "   .misc = (PPG_Misc_Bits) {\n"
@@ -120,7 +121,7 @@ class Token : public Node
          if(action_) {
             out <<
 "    .action = PPG_ACTION_INITIALIZATION_" << action_->getType() << "(" 
-            << action_->getParameters() << ")\n"
+            << action_->getParameters() << ")\n";
          }
          else {
             
@@ -138,7 +139,7 @@ class Token : public Node
       std::vector<std::shared_ptr<Token>>   children_;
       
       std::string                           layer_;
-      static std::string                    curLayer_ = 0;
+      static std::string                    curLayer_;
 };
 
 }

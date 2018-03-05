@@ -37,26 +37,26 @@ class Note : public Token
          }
       }
             
-      virtual std::string getPropertyDescription() const {
+      virtual std::string getPropertyDescription() const override {
          return TO_STRING(Node::getPropertyDescription() << ", input = " 
             << input_->getDescription() << ", flags = " << flags_);
       }
       
-      virtual std::string getNodeType() const { return "Note"; }
+      virtual std::string getNodeType() const override { return "Note"; }
       
-      virtual bool isEqual(const Token &other) {
+      virtual bool isEqual(const Token &other) const override {
          auto otherNote = dynamic_cast<const Note *>(&other);
          if(!otherNote) { return false; }
          return otherNote->input_->isEqual(*input_);
       }
       
-      virtual std::shared_ptr<Token> clone() const {
+      virtual std::shared_ptr<Token> clone() const override {
          return std::makeShared<Note>(*this);
       }
       
    protected:
       
-      virtual void generateCCodeInternal(std::ostream &out) {
+      virtual void generateCCodeInternal(std::ostream &out) const override {
          
          out <<
 "PPG_Note " << this->getId() << " (PPG_Note) {\n";

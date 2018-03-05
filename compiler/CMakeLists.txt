@@ -1,6 +1,8 @@
 
 if(PAPAGENO_BUILD_COMPILER)
 
+   set (CMAKE_CXX_STANDARD 11)
+
    option(PAPAGENO_DEVELOP_COMPILER FALSE)
    mark_as_advanced(PAPAGENO_DEVELOP_COMPILER)
    
@@ -60,6 +62,8 @@ if(PAPAGENO_BUILD_COMPILER)
    endif()
    
    set_source_files_properties("${cmdline_c}" PROPERTIES COMPILE_FLAGS -Wno-unused-but-set-variable)
+   
+   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/src")
    
    file(GLOB_RECURSE generator_sources "${CMAKE_CURRENT_SOURCE_DIR}/src/Generator/*.cpp")
    file(GLOB_RECURSE parser_tree_sources "${CMAKE_CURRENT_SOURCE_DIR}/src/ParserTree/*.cpp")

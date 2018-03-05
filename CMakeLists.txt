@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(Papageno C)
+project(Papageno C CXX)
 
 macro(use_c99)
   if (CMAKE_VERSION VERSION_LESS "3.1")

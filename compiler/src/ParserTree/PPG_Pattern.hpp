@@ -17,6 +17,8 @@
 #pragma once
 
 #include "ParserTree/PPG_Token.hpp"
+#include "ParserTree/PPG_Phrase.hpp"
+#include "Misc/PPG_StringHandling.hpp"
 
 #include <vector>
 
@@ -43,7 +45,7 @@ class Pattern
       
       static void repeatLastToken(const std::string &countString) {
          
-         auto count = atol(countString);
+         auto count = Papageno::Misc::atol(countString);
          
          for(int i = 0; i < (count - 1); ++i) {
             
@@ -129,7 +131,7 @@ class Pattern
          tokens_.clear();
       }
       
-      static void insertChildPatterns(std::shared_ptr subtreeRoot, int startPos) {
+      static void insertChildPatterns(std::shared_ptr<Token> subtreeRoot, int startPos) {
          for(int pos = startPos; pos < tokens_.size(); ++pos) {
             subtreeRoot->addChild(tokens_[pos]);
             subtreeRoot = tokens_[pos];
@@ -144,21 +146,7 @@ class Pattern
       
    protected:
       
-      static long atol(const std::string &countString)
-      {
-         errno = 0;    /* To distinguish success/failure after call */
-         char *dummy = NULL;
-         long val = strtol(countString.c_str(), &dummy, 10);
 
-         /* Check for various possible errors */
-
-         if ((errno == ERANGE && (val == LONG_MAX || val == LONG_MIN))
-                  || (errno != 0 && val == 0)) {
-            THROW_ERROR("Failed to convert tap count " << count << " to integer\n");
-         }
-         
-         return val;
-      }
       
    protected:
       
@@ -166,7 +154,7 @@ class Pattern
       
       static std::shared_ptr<Token> root_;
       
-      static int sequenceStart_ = 0;
+      static int sequenceStart_;
       
 };
 } // namespace ParserTree

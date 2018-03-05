@@ -17,6 +17,7 @@
 #pragma once
 
 #include "ParserTree/PPG_Node.hpp"
+#include "Misc/PPG_StringHandling.hpp"
 
 #include <vector>
 #include <string>
@@ -38,34 +39,33 @@ class Action : public Node
             parameters_(parameters)
       {}
       
-            
       static void define(const std::shared_ptr<Action> &action) {
-         actions_[action_->getId()] = action;
+         actions_[action->getId()] = action;
       }
       static void pushNextAction(const std::string &countString,
                              const std::string &id) {
-         auto count = atoi(countString);
+         auto count = Papageno::Misc::atol(countString);
          
-         pushAction(CountToAction(count, id));
+         pushNextAction(CountToAction(count, id));
       }
       
       static void pushNextAction(const std::string &id) {
          
-         pushAction(CountToAction(-1, id));
+         pushNextAction(CountToAction(-1, id));
       }
       
       static void pushNextAction(const CountToAction &cta) {
          nextActions_.push_back(cta);
       }
       
-      static void popNextAction() {
+      static std::shared_ptr<Action> popNextAction() {
          if(nextActions_.empty()) {
             THROW_ERROR("No actions available");
          }
          
          auto tmp = nextActions_.back();
          nextActions_.pop_back();
-         return tmp;
+         return lookupAction(tmp.second);
       }
       
       static std::vector<CountToAction> getNextActions() {
@@ -77,6 +77,9 @@ class Action : public Node
       static bool hasNextActions() {
          return !nextActions_.empty();      
       }
+      
+      const std::string &getType() const { return type_; }
+      const std::string &getParameters() const { return parameters_; }
       
       virtual std::string getPropertyDescription() const {
          return TO_STRING(Node::getPropertyDescription() << ", type = " << type_
@@ -93,7 +96,7 @@ class Action : public Node
          ActionsByType result;
          
          for(const auto &actionsEntry: actions_) {
-            result[actionsEntry->second->type_].push_back(actionsEntry->second);
+            result[actionsEntry.second->type_].push_back(actionsEntry.second);
          }
          
          return result;
@@ -101,6 +104,16 @@ class Action : public Node
       
       static const std::map<std::string, std::shared_ptr<Action>> getActions() {
          return actions_;
+      }
+      
+      static std::shared_ptr<Action> lookupAction(const std::string &id) {
+         auto it = actions_.find(id);
+         
+         if(it == actions_.end()) {
+            THROW_ERROR("Unable to find action \'" << id << "\'");
+         }
+         
+         return it->second;
       }
       
    protected:

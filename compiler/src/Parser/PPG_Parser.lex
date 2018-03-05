@@ -19,6 +19,14 @@
 #include <stdio.h>
 #include "Parser/PPG_Parser.yacc.hpp"
 
+offset_t offset;
+extern YYLTYPE yylloc;
+
+#define YY_USER_ACTION         \
+  offset += yyleng;            \
+  yylloc.last_line = yylineno; \
+  yylloc.last_column = offset;
+  
 int c;
 
 // [^\n]* { strncpy(yylval.id, yytext, MAX_ID_LENGTH); return ALIAS; }
@@ -28,7 +36,6 @@ int c;
 "\t"      |
 "\\\n"    ; // Allow continuation lines by ignoring them
 layer     return LAYER_KEYWORD;
-symbol    return SYMBOL_KEYWORD;
 input     return INPUT_KEYWORD;
 action    return ACTION_KEYWORD;
 phrase    return PHRASE_KEYWORD;

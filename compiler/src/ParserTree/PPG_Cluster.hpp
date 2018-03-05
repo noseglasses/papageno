@@ -25,9 +25,9 @@ class Cluster : public Aggregate
 {
    public:
    
-      virtual std::string getNodeType() const { return "Cluster"; }
+      virtual std::string getNodeType() const override { return "Cluster"; }
       
-      virtual std::shared_ptr<Token> clone() const {
+      virtual std::shared_ptr<Token> clone() const override {
          return std::makeShared<Cluster>(*this);
       }
 };

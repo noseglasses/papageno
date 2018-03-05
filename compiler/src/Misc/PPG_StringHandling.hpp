@@ -16,21 +16,27 @@
 
 #pragma once
 
-#include "ParserTree/PPG_Aggregate.hpp"
+#include <string>
+#include <cstdlib>
+#include <climits>
 
 namespace Papageno {
-namespace ParserTree {
+namespace Misc {
    
-class Chord : public Aggregate
-{
-   public:
-   
-      virtual std::string getNodeType() const override { return "Chord"; }
-      
-      virtual std::shared_ptr<Token> clone() const override {
-         return std::makeShared<Chord>(*this);
-      }
-};
+   static long atol(const std::string &countString)
+   {
+      errno = 0;    /* To distinguish success/failure after call */
+      char *dummy = NULL;
+      long val = strtol(countString.c_str(), &dummy, 10);
 
-} // namespace ParserTree
+      /* Check for various possible errors */
+
+      if ((errno == ERANGE && (val == LONG_MAX || val == LONG_MIN))
+               || (errno != 0 && val == 0)) {
+         THROW_ERROR("Failed to convert tap count " << countString << " to integer\n");
+      }
+      
+      return val;
+   }
+} // namespace Misc
 } // namespace Papageno

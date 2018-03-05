@@ -1,4 +1,4 @@
-/* Copyright 2018 noseglasses <shinynoseglasses@gmail.com>
+ /* Copyright 2018 noseglasses <shinynoseglasses@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -13,24 +13,23 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+ 
 #pragma once
 
-#include "ParserTree/PPG_Aggregate.hpp"
+#define MAX_ID_LENGTH 256
+
+typedef struct YYLTYPE
+{
+  int first_line;
+  int first_column;
+  int last_line;
+  int last_column;
+} YYLTYPE;
 
 namespace Papageno {
-namespace ParserTree {
-   
-class Chord : public Aggregate
-{
-   public:
-   
-      virtual std::string getNodeType() const override { return "Chord"; }
-      
-      virtual std::shared_ptr<Token> clone() const override {
-         return std::makeShared<Chord>(*this);
-      }
-};
+namespace Parser {
 
+extern YYLTYPE *currentLocation;
+   
 } // namespace ParserTree
 } // namespace Papageno

@@ -28,7 +28,7 @@ class Aggregate : public Token
 {
    public:
    
-      virtual std::string getPropertyDescription() const {
+      virtual std::string getPropertyDescription() const override {
          
          std::ostringstream inputDesc;
          for(const auto &input: inputs_) {
@@ -38,7 +38,7 @@ class Aggregate : public Token
             << inputDesc);
       }
       
-      virtual bool isEqual(const Token &other) {
+      virtual bool isEqual(const Token &other) const override {
          if(typeid(*this) != typeid(other)) { return false; }
          
          auto otherAggregate = dynamic_cast<const Aggregate *>(&other);
@@ -48,7 +48,7 @@ class Aggregate : public Token
       
    protected:
       
-      virtual void generateDependencyCodeInternal(std::ostream &out) {
+      virtual void generateDependencyCodeInternal(std::ostream &out) const override {
          
          std::size_t n_bits = children_.size();
          
@@ -82,7 +82,7 @@ class Aggregate : public Token
             
    protected:
       
-      virtual void generateCCodeInternal(std::ostream &out) {
+      virtual void generateCCodeInternal(std::ostream &out) const override {
          
          out <<
 "PPG_" << this->getNodeType() << " " << this->getId() << " (PPG_" << this->getNodeType() << ") {\n";

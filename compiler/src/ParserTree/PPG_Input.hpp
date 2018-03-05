@@ -18,6 +18,7 @@
 
 #include <memory>
 #include <vector>
+#include <set>
 #include <string>
 
 #include "ParserTree/PPG_Node.hpp"
@@ -34,14 +35,14 @@ class Input : public Node
                const std::string &parameters)
          :  Node(id),
             type_(type),
-            parameters_(source)
+            parameters_(parameters)
       {}
       
       static void define(const std::shared_ptr<Input> &input) {
          inputs_[input->getId()] = input;
       }
       
-      static const std::shared_ptr &lookupInput(const std::string &id) {
+      static const std::shared_ptr<Input> &lookupInput(const std::string &id) {
          auto it = inputs_.find(id);
          
          if(it == inputs_.end()) {
@@ -67,7 +68,7 @@ class Input : public Node
          }
          auto tmp = *nextInputs_.begin();
          nextInputs_.clear();
-         return tmp;
+         return lookupInput(tmp);
       }
       
       static void getInputs(std::vector<std::string> &inputs) {
@@ -91,11 +92,19 @@ class Input : public Node
          InputsByType result;
          
          for(const auto &actionsEntry: inputs_) {
-            result[actionsEntry->second->type_].push_back(actionsEntry->second);
+            result[actionsEntry.second->type_].push_back(actionsEntry.second);
          }
          
          return result;
       }
+      
+      static const std::map<std::string, std::shared_ptr<Input>> &getInputs() {
+         return inputs_;
+      }
+      
+      const std::string &getType() const { return type_; }
+      const std::string &getParameters() const { return parameters_; }
+      
    protected:
       
       std::string           type_;
@@ -107,8 +116,7 @@ class Input : public Node
 };
 
 inline bool inputsEqual(std::vector<std::shared_ptr<Input>> i1,
-                        std::vector<std::shared_ptr<Input>> i1
-) {
+                        std::vector<std::shared_ptr<Input>> i2) {
    if(i1.size() != i2.size()) { return false; }
    
    std::set<std::string> ids;
