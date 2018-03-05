@@ -34,7 +34,7 @@ static void ppg_signal_callback_init(PPG_Signal_Callback *cb)
    cb->user_data = NULL;
 }
 
-void ppg_global_initialize_context(PPG_Context *context) {
+void ppg_global_initialize_context_static_tree(PPG_Context *context) {
    
 //    PPG_LOG("Initializing context\n");
    
@@ -63,6 +63,18 @@ void ppg_global_initialize_context(PPG_Context *context) {
    ppg_time_manager_init(&context->time_manager);
    
    ppg_signal_callback_init(&context->signal_callback);
+ 
+   
+   context->current_token = NULL;
+   
+   #if PPG_HAVE_STATISTICS
+   ppg_statistics_clear(&context->statistics);
+   #endif
+};
+
+void ppg_global_initialize_context(PPG_Context *context) {
+  
+   ppg_global_initialize_context_static_tree(context);
    
    context->pattern_root = ppg_token_alloc();
 
@@ -71,13 +83,7 @@ void ppg_global_initialize_context(PPG_Context *context) {
    ppg_token_new(context->pattern_root);
    
    context->pattern_root->misc.state = PPG_Token_Initialized;
-   
-   context->current_token = NULL;
-   
-   #if PPG_HAVE_STATISTICS
-   ppg_statistics_clear(&context->statistics);
-   #endif
-};
+}
 
 size_t ppg_context_get_size_requirements(PPG_Context *context)
 {

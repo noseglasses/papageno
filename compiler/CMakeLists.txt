@@ -4,11 +4,11 @@ if(PAPAGENO_BUILD_COMPILER)
    option(PAPAGENO_DEVELOP_COMPILER FALSE)
    mark_as_advanced(PAPAGENO_DEVELOP_COMPILER)
    
-   set(compiler_lex "${CMAKE_CURRENT_SOURCE_DIR}/compiler.lex.c")
-   set(compiler_lex_h "${CMAKE_CURRENT_SOURCE_DIR}/compiler.lex.h")
+   set(compiler_lex "${CMAKE_CURRENT_SOURCE_DIR}/src/Parser/PPG_Parser.lex.cpp")
+   set(compiler_lex_h "${CMAKE_CURRENT_SOURCE_DIR}/src/Parser/PPG_Parser.lex.hpp")
    
-   set(compiler_yacc "${CMAKE_CURRENT_SOURCE_DIR}/compiler.yacc.c")
-   set(compiler_yacc_h "${CMAKE_CURRENT_SOURCE_DIR}/compiler.yacc.h")
+   set(compiler_yacc "${CMAKE_CURRENT_SOURCE_DIR}/src/Parser/PPG_Parser.yacc.cpp")
+   set(compiler_yacc_h "${CMAKE_CURRENT_SOURCE_DIR}/src/Parser/PPG_Parser.yacc.hpp")
    
    if(PAPAGENO_DEVELOP_COMPILER)
    
@@ -20,9 +20,9 @@ if(PAPAGENO_BUILD_COMPILER)
          message(FATAL_ERROR "Cannot find the gengetopt executable")
       endif()
       
-      set(cmdline_in "${CMAKE_CURRENT_SOURCE_DIR}/compiler.cmdline")
-      set(cmdline_h "${CMAKE_CURRENT_SOURCE_DIR}/cmdline.h")
-      set(cmdline_c "${CMAKE_CURRENT_SOURCE_DIR}/cmdline.c")
+      set(cmdline_in "${CMAKE_CURRENT_SOURCE_DIR}/src/CommandLine/PPG_CommandLine.txt")
+      set(cmdline_h "${CMAKE_CURRENT_SOURCE_DIR}/src/CommandLine/PPG_CommandLine.hpp")
+      set(cmdline_c "${CMAKE_CURRENT_SOURCE_DIR}/src/CommandLine/PPG_CommandLine.cpp")
       set(compiler_cmdline_deps "${cmdline_h}" "${cmdline_c}")
       add_custom_command(
          OUTPUT "${cmdline_h}" "${cmdline_c}"
@@ -41,7 +41,7 @@ if(PAPAGENO_BUILD_COMPILER)
       endif()
       
       flex_target(
-         compiler_lex "${CMAKE_CURRENT_SOURCE_DIR}/compiler.lex" "${compiler_lex}" 
+         compiler_lex "${CMAKE_CURRENT_SOURCE_DIR}/src/Parser/PPG_Parser.lex" "${compiler_lex}" 
          COMPILE_FLAGS "--header-file=${compiler_lex_h} --nounput")
       
       find_package(BISON)
@@ -49,10 +49,10 @@ if(PAPAGENO_BUILD_COMPILER)
       if(NOT BISON_FOUND)
          message(FATAL_ERROR "Unable to find bison")
       endif()
-      set(yacc_verbose_output "${CMAKE_CURRENT_BINARY_DIR}/compiler.yacc.log")
+      set(yacc_verbose_output "${CMAKE_CURRENT_BINARY_DIR}/src/Parser/PPG_Parser.yacc.log")
       
       bison_target(
-         compiler_yacc "${CMAKE_CURRENT_SOURCE_DIR}/compiler.yacc" "${compiler_yacc}" 
+         compiler_yacc "${CMAKE_CURRENT_SOURCE_DIR}/src/Parser/PPG_Parser.yacc" "${compiler_yacc}" 
          VERBOSE "${yacc_verbose_output}"
          COMPILE_FLAGS --debug
       )
@@ -61,9 +61,14 @@ if(PAPAGENO_BUILD_COMPILER)
    
    set_source_files_properties("${cmdline_c}" PROPERTIES COMPILE_FLAGS -Wno-unused-but-set-variable)
    
+   file(GLOB_RECURSE generator_sources "${CMAKE_CURRENT_SOURCE_DIR}/src/Generator/*.cpp")
+   file(GLOB_RECURSE parser_tree_sources "${CMAKE_CURRENT_SOURCE_DIR}/src/ParserTree/*.cpp")
+   
    add_executable(
       compiler
       "${compiler_lex}" "${compiler_yacc}" "${cmdline_c}"
+      ${generator_sources}
+      ${parser_tree_sources}
    )
    set_property(TARGET compiler PROPERTY C_STANDARD 99)
    
