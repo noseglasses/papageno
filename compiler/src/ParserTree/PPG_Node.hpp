@@ -17,17 +17,13 @@
 #pragma once
 
 #include "Parser/PPG_Parser.hpp"
+#include "Misc/PPG_ErrorHandling.hpp"
+#include "Misc/PPG_StringHandling.hpp"
 
 #include <memory>
 #include <map>
-#include <string>
-#include <sstream>
+#include "Parser/PPG_ParserToken.hpp"
 #include <cassert>
-
-#define TO_STRING(...) ([&]() -> std::string { std::ostringstream tmp; tmp << __VA_ARGS__; return tmp.str(); }())
-
-#define THROW_ERROR(...) \
-   throw TO_STRING(__VA_ARGS__)
 
 namespace Papageno {
 namespace ParserTree {
@@ -41,7 +37,7 @@ class Node
       {}
       
       
-      Node(    const std::string &id)
+      Node(    const Parser::Token &id)
          :  id_(id)
       {
          this->retreiveSourcePosition();
@@ -53,9 +49,9 @@ class Node
          Node::deleteNode(id_);
       }
       
-      const std::string &getId() const { 
-         if(id_.empty()) {
-            id_ = generateId();
+      const Parser::Token &getId() const { 
+         if(id_.getText().empty()) {
+            id_.setText(generateId());
          }
          
          return id_; 
@@ -88,20 +84,20 @@ class Node
          sourcePos_[0] = Papageno::Parser::currentLocation->first_column;
       }
       
-      static void storeNode(const std::string &id, const Node *node) {
+      static void storeNode(const Parser::Token &id, const Node *node) {
          
-         auto it = ids_.find(id);
+         auto it = ids_.find(id.getText());
          if(it != ids_.end()) {
-            THROW_ERROR("An entity with id \'" << id 
+            THROW_TOKEN_ERROR(id, "An entity with id \'" << id 
                << "\' has already been defined: " 
                << it->second->getPropertyDescription());
          }
          
-         ids_[id] = node;
+         ids_[id.getText()] = node;
       }
       
-      static void deleteNode(const std::string &id) {
-         auto it = ids_.find(id);
+      static void deleteNode(const Parser::Token &id) {
+         auto it = ids_.find(id.getText());
          
          assert(it != ids_.end());
          
@@ -115,7 +111,7 @@ class Node
          
    protected:
       
-      mutable std::string   id_;
+      mutable Parser::Token id_;
       int                   sourcePos_[2];
       
       static std::map<std::string, const Node*> ids_;

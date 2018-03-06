@@ -27,10 +27,10 @@ if(PAPAGENO_BUILD_COMPILER)
       set(cmdline_c "${CMAKE_CURRENT_SOURCE_DIR}/src/CommandLine/PPG_CommandLine.cpp")
       set(compiler_cmdline_deps "${cmdline_h}" "${cmdline_c}")
       add_custom_command(
-         OUTPUT "${cmdline_h}" "${cmdline_c}"
+         OUTPUT ${compiler_cmdline_deps}
          DEPENDS "${cmdline_in}"
-         COMMAND "${GENGETOPT_EXECUTABLE}" "--input=${cmdline_in}" --include-getopt
-         WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+         COMMAND "${GENGETOPT_EXECUTABLE}" "--input=${cmdline_in}" --file-name=PPG_CommandLine --header-extension=hpp --c-extension=cpp --include-getopt
+         WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/CommandLine"
          COMMENT "Generating compiler command line sepecification"
       )
       

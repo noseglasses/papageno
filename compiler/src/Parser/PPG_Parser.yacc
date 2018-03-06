@@ -20,10 +20,16 @@
 #include "Parser/PPG_Parser.lex.hpp"
 
 #include "ParserTree/PPG_Phrase.hpp"
+#include "ParserTree/PPG_Pattern.hpp"
+#include "ParserTree/PPG_Input.hpp"
+#include "ParserTree/PPG_Token.hpp"
+#include "ParserTree/PPG_Note.hpp"
+#include "ParserTree/PPG_Chord.hpp"
+#include "ParserTree/PPG_Cluster.hpp"
+#include "ParserTree/PPG_Entity.hpp"
 
 #include <iostream>
-
-int yydebug=1;
+#include <string>
 
 int yylex();
 void yyerror(const char *s);
@@ -31,12 +37,23 @@ void yyerror(const char *s);
 struct LocationRAII {
    LocationRAII(YYLTYPE *currentLocation__)
    {
-      currentLocation = currentLocation__;
+      Papageno::Parser::currentLocation = currentLocation__;
    }
    ~LocationRAII() {
-      currentLocation = nullptr;
+      Papageno::Parser::currentLocation = nullptr;
    }
 };
+
+extern int yydebug;
+
+typedef Papageno::Parser::Token ParserToken;
+
+using namespace Papageno::ParserTree;
+
+extern "C" {
+   int yywrap (void );
+}
+
 %}
 
 %start lines
@@ -47,7 +64,7 @@ struct LocationRAII {
 
 %token LAYER_KEYWORD SYMBOL_KEYWORD ARROW ACTION_KEYWORD INPUT_KEYWORD PHRASE_KEYWORD
 %token LINE_END
-%token <id> ID RAW_CODE
+%token<id> ID RAW_CODE
 
 %%                   /* beginning of rules section */
 
@@ -63,12 +80,12 @@ lines:  /*  empty  */
 line:
         phrase LINE_END
         {
-           finish_pattern();
+           Pattern::finishPattern();
         }
         |
         PHRASE_KEYWORD ':' ID '=' phrase LINE_END
         {
-           Phrase::storePhrase(std::string($3));
+           Phrase::storePhrase(ParserToken($3, @3));
         }
         |
         layer_def LINE_END
@@ -87,13 +104,13 @@ input_list:
          ID
          {
             LocationRAII lr(&@1);
-            Input::pushNextInput(std::string($1));
+            Input::pushNextInput(ParserToken($1, @1));
          }
          |
          input_list ',' ID
          {
             LocationRAII lr(&@3);
-            Input::pushNextInput(std::string($3));
+            Input::pushNextInput(ParserToken($3, @3));
          }
          ;
          
@@ -116,21 +133,29 @@ action_token:
            // Lookup a phrase and copy its tokens to the current pattern
            //
            LocationRAII lr(&@2);
-           Pattern::pushPhrase(std::string($2));
+           Pattern::pushPhrase(ParserToken($2, @2));
         }
         ;
         
 rep_token:
         token
+        {
+           (@1);
+         }
         |
         token '*' ID
         {
            LocationRAII lr(&@3);
-           Pattern::repeatLastToken(std::string($3));
+           Pattern::repeatLastToken(ParserToken($3, @3));
         }
         ;
+       
+token:  token__
+        {
+           Pattern::getMostRecentToken()->setLocation(@1);
+        }
            
-token:  note
+token__:  note
         |
         cluster
         |
@@ -140,36 +165,36 @@ token:  note
 note:   '|' ID '|'
         {
             LocationRAII lr(&@2);
-            Input::pushNextInput(std::string($2));
-            Pattern::pushToken(std::make_shared<Papageno::ParserTree::Note>(PPG_Note_Flags_A_N_D));
+            Input::pushNextInput(ParserToken($2, @2));
+            Pattern::pushToken(std::make_shared<Note>("PPG_Note_Flags_A_N_D"));
         }
         |
         '|' ID
         {
             LocationRAII lr(&@2);
-            Input::pushNextInput(std::string($2));
-            Pattern::pushToken(std::make_shared<Papageno::ParserTree::Note>(PPG_Note_Flag_Match_Activation));
+            Input::pushNextInput(ParserToken($2, @2));
+            Pattern::pushToken(std::make_shared<Note>("PPG_Note_Flag_Match_Activation"));
         }
         |
         ID '|'
         {
             LocationRAII lr(&@1);
-            Input::pushNextInput(std::string($1));
-            Pattern::pushToken(std::make_shared<Papageno::ParserTree::Note>(PPG_Note_Flag_Match_Deactivation));
+            Input::pushNextInput(ParserToken($1, @1));
+            Pattern::pushToken(std::make_shared<Note>("PPG_Note_Flag_Match_Deactivation"));
         }
         ;
         
 cluster:
         '{' input_list '}'
         {
-            Pattern::pushToken(std::make_shared<Papageno::ParserTree::Cluster>());
+            Pattern::pushToken(std::make_shared<Cluster>());
         }
         ;
         
 chord:
         '[' input_list ']'
         {
-            Pattern::pushToken(std::make_shared<Papageno::ParserTree::Chord>());
+            Pattern::pushToken(std::make_shared<Chord>());
         }
         ;
         
@@ -177,13 +202,13 @@ action_def:
         ID
         {
             LocationRAII lr(&@1);
-            Action::pushAction(std::string($1));
+            Action::pushNextAction(ParserToken($1, @1));
         }
         |
-        ID '=' ID
+        ID '@' ID
         {
             LocationRAII lr(&@1);
-            Action::pushAction(std::string($1, $3);
+            Action::pushNextAction(ParserToken($3, @3), ParserToken($1, @1));
         }
         ;
         
@@ -196,26 +221,33 @@ action_list:
 layer_def:
         LAYER_KEYWORD ':' ID
         {
-           printf("Setting layer %s\n", $3);
-           Token::setCurrentLayer(std::strint($3));
+           Token::setCurrentLayer(ParserToken($3, @3));
         }
         ;
         
 input_def:
         INPUT_KEYWORD ':' typed_id parameters
         {
-           Input::define(std::make_shared<Input>(Entity::getNextId(),
-                                                Entity::getNextType(),
-                                                Entity::getNextParameters());
+           Input::define(
+               std::make_shared<Input>(
+                  Entity::getNextId(),
+                  Entity::getNextType(),
+                  Entity::getNextParameters()
+               )
+           );
         }
         ;
         
 action_def:
         ACTION_KEYWORD ':' typed_id parameters
         {
-           Action::define(std::make_shared<Action>(Entity::getNextId(),
-                                                Entity::getNextType(),
-                                                Entity::getNextParameters());
+            Action::define(
+               std::make_shared<Action>(
+                  Entity::getNextId(),
+                  Entity::getNextType(),
+                  Entity::getNextParameters()
+               )
+            );
         }
         ;
         
@@ -223,14 +255,14 @@ typed_id:
         ID
         {
             LocationRAII lr(&@1);
-            Entity::setNextId(std::string($1));
+            Entity::setNextId(ParserToken($1, @1));
         }
         |
         ID '<' ID '>'
         {
             LocationRAII lr(&@1);
-            Entity::setNextId(std::string($1));
-            Entity::setNextType(std::string($3));
+            Entity::setNextId(ParserToken($1, @1));
+            Entity::setNextType(ParserToken($3, @3));
         }
         ;
         
@@ -240,7 +272,7 @@ parameters:
         RAW_CODE
         {
            LocationRAII lr(&@1);
-           Entity::setNextParameters(std::string($1);
+           Entity::setNextParameters(ParserToken($1, @1));
         }
         ;
 %%
@@ -248,7 +280,9 @@ parameters:
 namespace Papageno {
 namespace Parser {
 
-extern YYLTYPE *currentLocation = nullptr;
+YYLTYPE *currentLocation = nullptr;
+
+int lineOffset = 0;
 
 static void process_definitions(const char *line)
 {
@@ -268,19 +302,22 @@ static void process_definitions(const char *line)
 #define PPG_START_TOKEN "papageno_start"
 #define PPG_END_TOKEN "papageno_end"
 
-void generateTree(const std::istream &input) {
- 
-   std::ifstream inFile(inputFile);
+void generateTree(std::istream &input) 
+{
+   yydebug = 1;
    
    #define LINE_SIZE 4096
    
    std::string line;
    
-   int startLine = 0;
-   
    std::ostringstream buffer;
    
-   while(std::getline(ifFile, line) {
+   long curLine = 0;
+   
+   bool inPPG = false;
+   bool wasInPPG = false;
+   
+   while(std::getline(input, line)) {
    
       ++curLine;
       
@@ -289,14 +326,14 @@ void generateTree(const std::istream &input) {
            
       if(line.find(PPG_START_TOKEN) != std::string::npos) {
          std::cout << "line " << curLine << " in ppg\n";
-         in_ppg = true;
-         was_in_ppg = true;
-         startLine = curLine + 1;
+         inPPG = true;
+         wasInPPG = true;
+         lineOffset = curLine + 1;
          continue;
       }
       
-      if(!in_ppg) {
-         if(was_in_ppg) { break; }
+      if(!inPPG) {
+         if(wasInPPG) { break; }
          
          continue;
       }
@@ -306,7 +343,7 @@ void generateTree(const std::istream &input) {
          break;
       }
       
-      if(!in_ppg) {
+      if(!inPPG) {
          continue;
       }
       
@@ -314,7 +351,7 @@ void generateTree(const std::istream &input) {
       //
       for(auto it = line.begin(); *it != '\0'; ++it) {
          if(*it == '%') {
-            *it = LINE_END;
+            *it = '\n';
             ++it;
             *it = '\0';
             break;
@@ -325,7 +362,7 @@ void generateTree(const std::istream &input) {
       buffer << line;
    }   
    
-   if(!was_in_ppg) {
+   if(!wasInPPG) {
       std::cerr << "No papageno definitions encountered\n";
       exit(EXIT_FAILURE);
    }

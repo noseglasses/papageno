@@ -27,15 +27,33 @@ namespace ParserTree {
    
 class Token : public Node
 {
-   public:
+   public:  
       
-      Token(const std::string &id)
-         :  Node(id),
-            layer_(curLayer_)
+      Token()
+         :  layer_(curLayer_),
+            location_{(YYLTYPE){ .first_line = -1, .first_column = -1, .last_line = -1, .last_column = -1 }}
       {}
+      
+      Token(const Parser::Token &id)
+         :  Node(id),
+            layer_(curLayer_),
+            location_{(YYLTYPE){ .first_line = -1, .first_column = -1, .last_line = -1, .last_column = -1 }}
+      {}
+      
+      void setLocation(YYLTYPE location) {
+         location_ = location;
+      }
+      
+      const YYLTYPE &getLocation() const {
+         return location_;
+      }
       
       void setAction(const std::shared_ptr<Action> &action) {
          action_ = action;
+      }
+      
+      const std::shared_ptr<Action> &getAction() const {
+         return action_;
       }
       
       void addChild(const std::shared_ptr<Token> &token) {
@@ -48,12 +66,12 @@ class Token : public Node
       
       bool hasChildren() const { return !children_.empty(); }
       
-      virtual bool isEqual(const Token &other) = 0;
+      virtual bool isEqual(const Token &other) const { return false; }
       
-      virtual std::shared_ptr<Token> clone() const = 0;
+      virtual std::shared_ptr<Token> clone() const { return std::shared_ptr<Token>(); }
 
       
-      static void setCurrentLayer(const std::string &layer) { 
+      static void setCurrentLayer(const Parser::Token &layer) { 
          curLayer_ = layer;
       }
       
@@ -100,7 +118,7 @@ class Token : public Node
          out <<
 "   .misc = (PPG_Misc_Bits) {\n"
 "       .state = PPG_Token_Initialized,\n"
-"       .flags = 0,\n"
+"       .flags = " << this->getFlags() << ",\n"
 "       .action_state = 0,\n"
 "       .action_flags = PPG_Action_Default\n"
 "    },\n";
@@ -133,13 +151,17 @@ class Token : public Node
 "    .layer = " << this->layer_ << "\n";
       }
       
+      virtual std::string getFlags() const { return "0"; }
+      
    protected:
       
       std::shared_ptr<Action>               action_;
       std::vector<std::shared_ptr<Token>>   children_;
       
-      std::string                           layer_;
-      static std::string                    curLayer_;
+      Parser::Token                         layer_;
+      static Parser::Token                  curLayer_;
+      
+      YYLTYPE                               location_;
 };
 
 }

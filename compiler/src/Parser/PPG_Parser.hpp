@@ -16,7 +16,11 @@
  
 #pragma once
 
+#include <istream>
+
 #define MAX_ID_LENGTH 256
+
+#define YYLTYPE_IS_DECLARED
 
 typedef struct YYLTYPE
 {
@@ -30,6 +34,10 @@ namespace Papageno {
 namespace Parser {
 
 extern YYLTYPE *currentLocation;
-   
+
+extern int lineOffset;
+
+void generateTree(std::istream &input);
+
 } // namespace ParserTree
 } // namespace Papageno

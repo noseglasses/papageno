@@ -19,7 +19,7 @@
 namespace Papageno {
 namespace ParserTree {
    
-std::string                    Token::curLayer_ = 0;
+std::string                    curLayer_ = "0";
 
 }
 }

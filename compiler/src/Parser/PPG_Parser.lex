@@ -19,7 +19,7 @@
 #include <stdio.h>
 #include "Parser/PPG_Parser.yacc.hpp"
 
-offset_t offset;
+long int offset;
 extern YYLTYPE yylloc;
 
 #define YY_USER_ACTION         \
@@ -40,7 +40,7 @@ input     return INPUT_KEYWORD;
 action    return ACTION_KEYWORD;
 phrase    return PHRASE_KEYWORD;
 "->"      return ARROW;
-[\|\:;,\*=\(\){}\[\]<>#]       { c = yytext[0]; return c; }
+[\|\:;,\*=\(\){}\[\]<>#@]       { c = yytext[0]; return c; }
 [^\\]\n   return LINE_END;
 [_[:alnum:]]*   { printf("Reading ID=%s\n", yytext); strncpy(yylval.id, yytext, MAX_ID_LENGTH); return ID; }
-===[^\n]* { printf("Reading ID=%s\n", yytext); strncpy(yylval.id, yytext, MAX_ID_LENGTH); return RAW_CODE; }
+:=[^\n]* { printf("Reading ID=%s\n", yytext); strncpy(yylval.id, yytext, MAX_ID_LENGTH); return RAW_CODE; }

@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include <string>
+#include "Parser/PPG_ParserToken.hpp"
 
 namespace Papageno {
 namespace ParserTree {
@@ -25,42 +25,42 @@ class Entity
 {
    public:
       
-      static void setNextParameters(const std::string &parameters) {
+      static void setNextParameters(const Parser::Token &parameters) {
          parameters_ = parameters;
       }
       
-      static std::string getNextParameters() {
-         std::string tmp;
-         tmp.swap(parameters_);
+      static Parser::Token getNextParameters() {
+         Parser::Token tmp = parameters_;
+         parameters_ = Parser::Token();
          return tmp;
       }
       
-      static void setNextType(const std::string &nextType) {
+      static void setNextType(const Parser::Token &nextType) {
          nextType_ = nextType;
       }
       
-      static std::string getNextType() {
-         std::string tmp;
-         tmp.swap(nextType_);
+      static Parser::Token getNextType() {
+         Parser::Token tmp = nextType_;
+         nextType_ = Parser::Token();
          return tmp;
       }
       
-      static void setNextId(const std::string &nextId) {
+      static void setNextId(const Parser::Token &nextId) {
          nextId_ = nextId;
       }
       
-      static std::string getNextId() {
-         std::string tmp;
-         tmp.swap(nextId_);
+      static Parser::Token getNextId() {
+         Parser::Token tmp = nextId_;
+         nextId_ = Parser::Token();
          return tmp;
       }
    
    protected:
       
-      static std::string   parameters_;
+      static Parser::Token   parameters_;
       
-      static std::string   nextType_;
-      static std::string   nextId_;
+      static Parser::Token   nextType_;
+      static Parser::Token   nextId_;
 };
 
       

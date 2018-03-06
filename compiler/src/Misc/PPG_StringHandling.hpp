@@ -16,27 +16,38 @@
 
 #pragma once
 
-#include <string>
+#include "Parser/PPG_ParserToken.hpp"
+#include "Misc/PPG_ErrorHandling.hpp"
+
 #include <cstdlib>
 #include <climits>
+#include <sstream>
+
+#define TO_STRING(...) ([&]() -> std::string { \
+      std::ostringstream tmp; \
+      tmp << __VA_ARGS__; \
+      return tmp.str(); \
+   }() \
+)
 
 namespace Papageno {
 namespace Misc {
    
-   static long atol(const std::string &countString)
-   {
-      errno = 0;    /* To distinguish success/failure after call */
-      char *dummy = NULL;
-      long val = strtol(countString.c_str(), &dummy, 10);
+inline long atol(const Parser::Token &token)
+{
+   errno = 0;    /* To distinguish success/failure after call */
+   char *dummy = NULL;
+   long val = strtol(token.getText().c_str(), &dummy, 10);
 
-      /* Check for various possible errors */
+   /* Check for various possible errors */
 
-      if ((errno == ERANGE && (val == LONG_MAX || val == LONG_MIN))
-               || (errno != 0 && val == 0)) {
-         THROW_ERROR("Failed to convert tap count " << countString << " to integer\n");
-      }
-      
-      return val;
+   if ((errno == ERANGE && (val == LONG_MAX || val == LONG_MIN))
+            || (errno != 0 && val == 0)) {
+      THROW_TOKEN_ERROR(token, "Failed to convert tap count to integer\n");
    }
+   
+   return val;
+}
+
 } // namespace Misc
 } // namespace Papageno

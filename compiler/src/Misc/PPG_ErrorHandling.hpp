@@ -16,21 +16,18 @@
 
 #pragma once
 
-#include "ParserTree/PPG_Aggregate.hpp"
+#include <sstream>
 
-namespace Papageno {
-namespace ParserTree {
-   
-class Chord : public Aggregate
-{
-   public:
-   
-      virtual std::string getNodeType() const override { return "Chord"; }
-      
-      virtual std::shared_ptr<Token> clone() const override {
-         return std::make_shared<Chord>(*this);
-      }
-};
+#define TO_STRING_WITH_LOCATION(...) ([&]() -> std::string { \
+      std::ostringstream tmp; \
+      if(Papageno::Parser::currentLocation) { \
+         tmp << REPORT_LOCATION((*Papageno::Parser::currentLocation)) << ": "; \
+      } \
+      tmp << __VA_ARGS__; \
+      return tmp.str(); \
+   }() \
+)
 
-} // namespace ParserTree
-} // namespace Papageno
+#define THROW_ERROR(...) \
+   throw TO_STRING_WITH_LOCATION(__VA_ARGS__)
+   

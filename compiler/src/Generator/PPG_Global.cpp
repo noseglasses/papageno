@@ -22,6 +22,7 @@
 #include "ParserTree/PPG_Pattern.hpp"
 
 #include <ostream>
+#include <fstream>
 
 namespace Papageno {
 namespace Generator {
@@ -158,7 +159,7 @@ void generateGlobalContext(std::ostream &out)
    
    // Recursively output token tree
    //
-   outputToken(*root);
+   outputToken(out, *root);
    
    out <<
 "PPG_Context context = (PPG_Context) {\n"
@@ -177,9 +178,9 @@ void generateInitializationFunction(std::ostream &out)
 "}\n\n";
 }
 
-void generateGlobal(const std::string &outputFile)
+void generateGlobal(const std::string &outputFilename)
 {
-   std::ofstream out(outputFile);
+   std::ofstream outputFile(outputFilename);
    
    generateFileHeader(outputFile);
    

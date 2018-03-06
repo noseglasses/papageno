@@ -19,7 +19,7 @@
 #include <memory>
 #include <vector>
 #include <set>
-#include <string>
+#include "Parser/PPG_ParserToken.hpp"
 
 #include "ParserTree/PPG_Node.hpp"
 
@@ -30,107 +30,54 @@ class Input : public Node
 {
    public:
       
-      Input(  const std::string &id,
-               const std::string &type, 
-               const std::string &parameters)
-         :  Node(id),
-            type_(type),
-            parameters_(parameters)
-      {}
+      Input(  const Parser::Token &id,
+               const Parser::Token &type, 
+               const Parser::Token &parameters);
       
-      static void define(const std::shared_ptr<Input> &input) {
-         inputs_[input->getId()] = input;
-      }
+      static void define(const std::shared_ptr<Input> &input);
       
-      static const std::shared_ptr<Input> &lookupInput(const std::string &id) {
-         auto it = inputs_.find(id);
-         
-         if(it == inputs_.end()) {
-            THROW_ERROR("Unable to retreive undefined input \'" << id << "\'");
-         }
-         
-         return it->second;
-      }
+      static const std::shared_ptr<Input> &lookupInput(const std::string &id);
       
-      static void pushNextInput(const std::string &id) {
-         if(nextInputs_.find(id) != nextInputs_.end()) {
-            THROW_ERROR("Redundant input \'" << id << "\' added");
-         }
-         nextInputs_.insert(id);
-      }
+      static void pushNextInput(const Parser::Token &id);
       
-      static std::shared_ptr<Input> popNextInput() {
-         if(nextInputs_.empty()) {
-            THROW_ERROR("No inputs available");
-         }
-         if(nextInputs_.size() > 1) {
-            THROW_ERROR("Ambiguous inputs specified");
-         }
-         auto tmp = *nextInputs_.begin();
-         nextInputs_.clear();
-         return lookupInput(tmp);
-      }
+      static std::shared_ptr<Input> popNextInput();
       
-      static void getInputs(std::vector<std::string> &inputs) {
-         inputs.clear();
-         std::copy(nextInputs_.begin(), nextInputs_.end(), std::back_inserter(inputs));
-         nextInputs_.clear();
-      }
+      static void getInputs(std::vector<Parser::Token> &inputs);
       
-      virtual std::string getPropertyDescription() const {
-         return TO_STRING(Node::getPropertyDescription() << ", type = " << type_
-            << ", parameters = \'" << parameters_ << "\'");
-      }
+      virtual std::string getPropertyDescription() const;
       
-      virtual std::string getNodeType() const { return "Input"; }
+      virtual std::string getNodeType() const;
             
       typedef std::vector<std::shared_ptr<Input>> InputCollection;
       typedef std::map<std::string, InputCollection> InputsByType;
       
-      static InputsByType getInputsByType() {
-         
-         InputsByType result;
-         
-         for(const auto &actionsEntry: inputs_) {
-            result[actionsEntry.second->type_].push_back(actionsEntry.second);
-         }
-         
-         return result;
-      }
+      static InputsByType getInputsByType();
       
-      static const std::map<std::string, std::shared_ptr<Input>> &getInputs() {
-         return inputs_;
-      }
+      static const std::map<std::string, std::shared_ptr<Input>> &getInputs();
       
-      const std::string &getType() const { return type_; }
-      const std::string &getParameters() const { return parameters_; }
+      const Parser::Token &getType() const;
+      const Parser::Token &getParameters() const;
       
    protected:
       
-      std::string           type_;
-      std::string           parameters_;
+      Parser::Token           type_;
+      Parser::Token           parameters_;
+      
+      static std::set<Parser::Token, Parser::TokenCompare> nextInputs_;
       
       static std::map<std::string, std::shared_ptr<Input>> inputs_;
-      
-      static std::set<std::string> nextInputs_;
+      static std::map<std::string, YYLTYPE> locationsOfDefinition_;
 };
 
-inline bool inputsEqual(std::vector<std::shared_ptr<Input>> i1,
-                        std::vector<std::shared_ptr<Input>> i2) {
-   if(i1.size() != i2.size()) { return false; }
-   
-   std::set<std::string> ids;
-   
-   for(const auto &input: i1) {
-      ids.insert(input->getId());
-   }
-   
-   for(const auto &input: i2) {
-      if(ids.find(input->getId()) == ids.end()) { return false; }
-   }
-   
-   return true;
+bool inputsEqual(std::vector<Parser::Token> i1,
+                 std::vector<Parser::Token> i2);
+
+inline
+bool operator==(const Input &i1, const Input &i2) 
+{
+   return i1.getId().getText() == i2.getId().getText();
 }
 
 } // namespace ParserTree
 } // namespace Papageno
+

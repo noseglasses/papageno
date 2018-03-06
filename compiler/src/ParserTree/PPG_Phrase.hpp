@@ -16,56 +16,40 @@
 
 #pragma once
 
-#include "ParserTree/PPG_Token.hpp"
+#include "ParserTree/PPG_Node.hpp"
 
 #include <map>
-#include <string>
+#include "Parser/PPG_ParserToken.hpp"
+#include <vector>
 #include <memory>
 
 namespace Papageno {
 namespace ParserTree {
+   
+class Token;
 
 class Phrase : public Node
 {
    public:
       
-      Phrase(const std::string &id) 
-         :  Node(id)
-      {
-         Pattern::getTokens(tokens_);
-      }
+      Phrase(const Parser::Token &id);
       
-      virtual std::string getNodeType() const { return "Phrase"; }
+      virtual std::string getNodeType() const;
       
-      const std::vector<std::shared_ptr<Token>> &getTokens() { return tokens_; }
+      const std::vector<std::shared_ptr<Token>> &getTokens() const;
       
-      static std::shared_ptr<Phrase> lookupPhrase(const std::string &id)
-      {
-         auto it = phrases_.find(id);
-         
-         if(it == phrases_.end()) {
-            THROW_ERROR("Unable to find phrase " << id)
-         }
-         
-         return it->second;
-      }
+      static std::shared_ptr<Phrase> lookupPhrase(const std::string &id);
       
-      static void storePhrase(const std::string &id) {
-         
-         auto newPhrase = std::makeShared<Phrase>(id);
-         Pattern::getTokens(newPhrase->phraseRoot_);
-         phrases_[newPhrase->getId()] = newPhrase;
-      }
+      static void storePhrase(const Parser::Token &id);
       
-      static void storePhrase(const std::shared_ptr<Phrase> &phrase) {
-         phrases_[phrase->getId()] = phrase;
-      }
+      static void storePhrase(const std::shared_ptr<Phrase> &phrase);
       
    protected:
       
       std::vector<std::shared_ptr<Token>>                tokens_;
       
       static std::map<std::string, std::shared_ptr<Phrase>>  phrases_;
+      static std::map<std::string, YYLTYPE>              locationsOfDefinition_;
 };
       
 } // namespace ParserTree

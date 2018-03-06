@@ -16,138 +16,38 @@
 
 #pragma once
 
-#include "ParserTree/PPG_Token.hpp"
-#include "ParserTree/PPG_Phrase.hpp"
-#include "Misc/PPG_StringHandling.hpp"
+#include "Parser/PPG_ParserToken.hpp"
 
 #include <vector>
+#include <memory>
 
 namespace Papageno {
 namespace ParserTree {
+   
+class Token;
      
 class Pattern
 {
    public:
       
-      static void pushToken(const std::shared_ptr<Token> &token) {
-         tokens_.push_back(token);
-         sequenceStart_ = tokens_.size() - 1;
-      }
+      static const std::shared_ptr<Token> &getMostRecentToken();
       
-      static void pushPhrase(const std::string &id) {
-         
-         auto phrasePtr = Phrase::lookupPhrase(id);
-         
-         const auto &tokens = phrasePtr->getTokens();
-         
-         std::copy(tokens.begin(), tokens.end(), std::back_inserter(tokens_));
-      }
+      static void pushToken(const std::shared_ptr<Token> &token);
       
-      static void repeatLastToken(const std::string &countString) {
-         
-         auto count = Papageno::Misc::atol(countString);
-         
-         for(int i = 0; i < (count - 1); ++i) {
+      static void pushPhrase(const Parser::Token &id);
+      
+      static void repeatLastToken(const Parser::Token &countString);
+      
+      static void applyActions();
             
-            tokens_.push_back(tokens_.back()->clone());
-         }
-      }
+      static void getTokens(std::vector<std::shared_ptr<Token>> &tokens);
       
-      static void applyActions() {
-         
-         std::vector<CountToAction> actions = Actions::getNextActions();
-         
-         for(const auto &cta: actions) {
-            
-            int targetTokenPos = 0;
-            
-            assert(cta.first != 0);
-            
-            if(cta.first > 0) {
-               targetTokenPos = sequenceStart_ + cta.first - 1;
-            }
-            else {
-               targetTokenPos = tokens_.size() + cta.first;
-            }
-               
-            if(targetTokenPos >= tokens_.size()) {
-               THROW_ERROR("Unable to apply action to token " << cta.first
-                  << " of sequence");
-            }
-         }
-      }
-            
-      static void getTokens(std::vector<std::shared_ptr<Token>> &tokens) {
-         tokens.clear();
-         tokens.swap(tokens_);
-      }
+      static void finishPattern();
       
-      static void finishPattern() {
-         
-         if(!root_) {
-            root_ = std::make_shared<Token>("");
-         }
-         
-         std::shared_ptr<Token> curToken = root_;
-         int pos = 0;
-         bool redundantTokenFound = false;
-         
-         while(curToken_->hasChildren()) {
-            
-            if(pos >= tokens_.size()) { break; }
-         
-            // Check all children of the current token
-            //
-            const auto &children = curToken->getChildren();
-         
-            for(const auto &childToken: children) {
-               
-               // If a child is equal to the token in the new pattern
-               // at the current position, we continue with
-               // the next tokens children
-               //
-               if(childToken->isEqual(tokens_[pos])) {
-                  checkTokenActionConflict(*childToken, tokens_[pos]);
-                  redundantTokenFound = true;
-                  curToken = childToken;
-                  ++pos;
-                  break;
-               }
-            }
-            
-            if(!redundantTokenFound) { 
-               break;
-            }
-         }
-            
-         if(pos >= tokens_.size()) { 
-            // The current pattern is a complete and already defined subpattern
-            // of the pattern tree
-            return;
-         }
-         
-         insertChildPatterns(curToken, pos);
-         
-         tokens_.clear();
-      }
+      static void insertChildPatterns(std::shared_ptr<Token> subtreeRoot, int startPos);
       
-      static void insertChildPatterns(std::shared_ptr<Token> subtreeRoot, int startPos) {
-         for(int pos = startPos; pos < tokens_.size(); ++pos) {
-            subtreeRoot->addChild(tokens_[pos]);
-            subtreeRoot = tokens_[pos];
-         }
-      }
-      
-      static void checkTokenActionConflict(const Token &t1, const Token &t2) {
-         todo
-      }
-      
-      static std::shared_ptr<Token> getTreeRoot() { return root_; }
-      
-   protected:
-      
+      static std::shared_ptr<Token> getTreeRoot();
 
-      
    protected:
       
       static std::vector<std::shared_ptr<Token>> tokens_;

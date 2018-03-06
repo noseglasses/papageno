@@ -27,10 +27,10 @@ class Note : public Token
 {
    public:
       
-      Note(int flags = PPG_Note_Flags_A_N_D)
+      Note(std::string flags = "PPG_Note_Flags_A_N_D")
          :  flags_(flags)
       {
-         input_ = Input::popInput();
+         input_ = Input::popNextInput();
        
          if(Action::hasNextActions()) {
             this->setAction(Action::popNextAction());
@@ -47,11 +47,11 @@ class Note : public Token
       virtual bool isEqual(const Token &other) const override {
          auto otherNote = dynamic_cast<const Note *>(&other);
          if(!otherNote) { return false; }
-         return otherNote->input_->isEqual(*input_);
+         return *otherNote->input_ == *input_;
       }
       
       virtual std::shared_ptr<Token> clone() const override {
-         return std::makeShared<Note>(*this);
+         return std::make_shared<Note>(*this);
       }
       
    protected:
@@ -64,18 +64,20 @@ class Note : public Token
 "   {\n";
          this->Token::generateCCode(out);
          out <<
-"   },
+"   },\n"
 "   .input = PPG_INPUT_INITIALIZATION_" << input_->getType()
-   << "(" << input->getParameters() << ")\n";
+   << "(" << input_->getParameters() << ")\n";
          out <<
 "};\n\n";
       }
+      
+      virtual std::string getFlags() const { return flags_; }
       
    protected:
       
       std::shared_ptr<Input> input_;
       
-      int flags_;
+      std::string flags_;
 };
 
 } // namespace ParserTree
