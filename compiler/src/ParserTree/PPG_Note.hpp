@@ -59,16 +59,13 @@ class Note : public Token
       virtual void generateCCodeInternal(std::ostream &out) const override {
          
          out <<
-"PPG_Note " << this->getId() << " (PPG_Note) {\n";
 "   .super = \n"
 "   {\n";
-         this->Token::generateCCode(out);
+         this->Token::generateCCodeInternal(out);
          out <<
 "   },\n"
-"   .input = PPG_INPUT_INITIALIZATION_" << input_->getType()
-   << "(" << input_->getParameters() << ")\n";
-         out <<
-"};\n\n";
+"   .input = PPG_INPUT_INITIALIZATION_" << input_->getType().getText()
+   << "(" << input_->getParameters().getText() << ")\n";
       }
       
       virtual std::string getFlags() const { return flags_; }

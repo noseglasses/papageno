@@ -20,46 +20,52 @@
 
 #include <string>
 #include <ostream>
-
-#define REPORT_LOCATION(LOCATION) \
-                   '(' \
-                   << (Papageno::Parser::lineOffset + (LOCATION).first_line) << ':' \
-                   << (LOCATION).first_column << ")" \
-                      "...(" \
-                   << (Papageno::Parser::lineOffset + (LOCATION).last_line) << ':' \
-                   << (LOCATION).last_column << ")"
                    
 #define REPORT_TOKEN(PARSER_TOKEN) \
-   REPORT_LOCATION((PARSER_TOKEN).getLocation()) << " \'" << (PARSER_TOKEN).getText() << '\''
+   (PARSER_TOKEN).getLOD() << " \'" << (PARSER_TOKEN).getText() << '\''
    
 #define THROW_TOKEN_ERROR(PARSER_TOKEN, ...) \
    THROW_ERROR(REPORT_TOKEN(PARSER_TOKEN) << ": " << __VA_ARGS__)
    
 namespace Papageno {
 namespace Parser {
-
-class Token {
    
+struct LocationOfDefinition
+{
+   LocationOfDefinition(YYLTYPE location = (YYLTYPE){ .first_line = -1, .first_column = -1, .last_line = -1, .last_column = -1 },
+                        const char *file = Papageno::Parser::currentFileParsed)
+      :  file_(file),
+         location_(location)
+   {}
+   
+   operator bool() const {
+      return location_.first_line != -1;
+   }
+   
+   const char* file_;
+   YYLTYPE location_;
+};
+
+class Token
+{   
    public:
       
       Token() 
-         :  text_(nullptr),
-            location_{(YYLTYPE){ .first_line = -1, .first_column = -1, .last_line = -1, .last_column = -1 }}
       {}
       
-      Token(const char *text, YYLTYPE location)
+      Token(const std::string &text, YYLTYPE location = (YYLTYPE){ .first_line = -1, .first_column = -1, .last_line = -1, .last_column = -1 })
          :  text_(text),
-            location_(location)
+            lod_(location)
       {}
       
       void setText(const std::string &text) { text_ = text; }
       const std::string &getText() const { return text_; }
-      const YYLTYPE &getLocation() const { return location_; }
+      const LocationOfDefinition &getLOD() const { return lod_; }
       
    private:
    
-      std::string text_;
-      YYLTYPE location_;
+      std::string             text_;
+      LocationOfDefinition    lod_;
 };
 
 struct TokenCompare : public std::binary_function<const Token &, const Token &, bool>
@@ -73,14 +79,47 @@ struct TokenCompare : public std::binary_function<const Token &, const Token &, 
 } // namespace Parser
 } // namespace Papageno
 
+inline 
+std::ostream &operator<<(std::ostream &out, const YYLTYPE &location)
+{
+   if(location.first_line == -1) { return out; }
+   
+   if(location.first_line != location.last_line) {   
+      out   << '('
+            << ((location).first_line) << ':'
+            << (location).first_column 
+            << " - "
+            << ((location).last_line) << ':'
+            << (location).last_column << ')';
+   }
+   else {      
+      out   << '('
+            << ((location).first_line) << ':'
+            << (location).first_column 
+            << "-"
+            << (location).last_column << ')';
+   }
+         
+   return out;
+}
+
+inline
+std::ostream &operator<<(std::ostream &out, const Papageno::Parser::LocationOfDefinition &lod)
+{
+   if(lod.file_) {
+      out << lod.file_ << ": ";
+   }
+   
+   out << lod.location_;
+   
+   return out;
+}
+
 inline
 std::ostream &operator<<(std::ostream &out, const Papageno::Parser::Token &token)
 {
-   if(token.getLocation().first_line >= 0) {
-       out << REPORT_LOCATION(token.getLocation()) << " ";
-   }
-   
    out << '\'' << token.getText() << '\'';
+   out << token.getLOD();
    
    return out;
 }

@@ -28,7 +28,7 @@ namespace ParserTree {
 std::set<Parser::Token, Parser::TokenCompare> Input::nextInputs_;
 
 std::map<std::string, std::shared_ptr<Input>> Input::inputs_;
-std::map<std::string, YYLTYPE> Input::locationsOfDefinition_;
+std::map<std::string, Parser::LocationOfDefinition> Input::locationsOfDefinition_;
       
    Input
       ::Input(  const Parser::Token &id,
@@ -50,11 +50,11 @@ void
       auto lodIt = locationsOfDefinition_.find(id);
       THROW_TOKEN_ERROR(input->getId(), 
          "Action multiply defined. First definition here: " 
-         << REPORT_LOCATION(lodIt->second));
+         << lodIt->second);
    }
    
    inputs_[id] = input;
-   locationsOfDefinition_[id] = input->getId().getLocation();
+   locationsOfDefinition_[id] = input->getId().getLOD();
 }
 
 const std::shared_ptr<Input> & 
@@ -76,7 +76,7 @@ void
 {
    auto it = nextInputs_.find(id);
    if(it != nextInputs_.end()) {
-      THROW_TOKEN_ERROR(id, "Redundant input added. Previous definition: " << REPORT_LOCATION(it->getLocation()));
+      THROW_TOKEN_ERROR(id, "Redundant input added. Previous definition: " << it->getLOD());
    }
    nextInputs_.insert(id);
 }

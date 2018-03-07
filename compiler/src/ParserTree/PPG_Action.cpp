@@ -19,6 +19,10 @@
 namespace Papageno {
 namespace ParserTree {
       
+std::vector<Action::CountToAction>    Action::nextActions_;
+std::map<std::string, std::shared_ptr<Action>> Action::actions_;
+std::map<std::string, Parser::LocationOfDefinition> Action::locationsOfDefinition_;
+      
    Action
       ::Action(const Parser::Token &id,
                const Parser::Token &type, 
@@ -39,11 +43,11 @@ void
       auto lodIt = locationsOfDefinition_.find(id);
       THROW_TOKEN_ERROR(action->getId(), 
          "Action multiply defined. First definition here: " 
-         << REPORT_LOCATION(lodIt->second));
+         << lodIt->second);
    }
    
    actions_[id] = action;
-   locationsOfDefinition_[id] = action->getId().getLocation();
+   locationsOfDefinition_[id] = action->getId().getLOD();
 }
 
 void 

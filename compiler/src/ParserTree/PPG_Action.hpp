@@ -74,8 +74,7 @@ class Action : public Node
       static std::vector<CountToAction>    nextActions_;
       
       static std::map<std::string, std::shared_ptr<Action>> actions_;
-      static std::map<std::string, YYLTYPE> locationsOfDefinition_;
-      
+      static std::map<std::string, Parser::LocationOfDefinition> locationsOfDefinition_;
 };
 
 inline

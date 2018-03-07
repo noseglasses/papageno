@@ -66,7 +66,7 @@ class Input : public Node
       static std::set<Parser::Token, Parser::TokenCompare> nextInputs_;
       
       static std::map<std::string, std::shared_ptr<Input>> inputs_;
-      static std::map<std::string, YYLTYPE> locationsOfDefinition_;
+      static std::map<std::string, Parser::LocationOfDefinition> locationsOfDefinition_;
 };
 
 bool inputsEqual(std::vector<Parser::Token> i1,

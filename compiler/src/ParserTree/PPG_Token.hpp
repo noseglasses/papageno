@@ -30,23 +30,13 @@ class Token : public Node
    public:  
       
       Token()
-         :  layer_(curLayer_),
-            location_{(YYLTYPE){ .first_line = -1, .first_column = -1, .last_line = -1, .last_column = -1 }}
+         :  layer_(curLayer_)
       {}
       
       Token(const Parser::Token &id)
          :  Node(id),
-            layer_(curLayer_),
-            location_{(YYLTYPE){ .first_line = -1, .first_column = -1, .last_line = -1, .last_column = -1 }}
+            layer_(curLayer_)
       {}
-      
-      void setLocation(YYLTYPE location) {
-         location_ = location;
-      }
-      
-      const YYLTYPE &getLocation() const {
-         return location_;
-      }
       
       void setAction(const std::shared_ptr<Action> &action) {
          action_ = action;
@@ -69,7 +59,6 @@ class Token : public Node
       virtual bool isEqual(const Token &other) const { return false; }
       
       virtual std::shared_ptr<Token> clone() const { return std::shared_ptr<Token>(); }
-
       
       static void setCurrentLayer(const Parser::Token &layer) { 
          curLayer_ = layer;
@@ -83,11 +72,11 @@ class Token : public Node
          //
          if(!children_.empty()) {
             out << 
-"PPG_Token " << this->getId() << "_children[] = {\n";
+"PPG_Token *" << this->getId().getText() << "_children[" << children_.size() << "] = {\n";
 
             for(int i = 0; i < children_.size(); ++i) {
                out <<
-"   &" << children_[i]->getId();
+"   &" << children_[i]->getId().getText();
                if(i < children_.size() - 1) {
                   out << ",";
                }
@@ -96,9 +85,9 @@ class Token : public Node
             out <<
 "};\n\n";
          }
-                  
+          
          out <<
-"PPG_" << this->getNodeType() << " " << this->getId() << " = (PPG_" << this->getNodeType() << ") {\n";
+"PPG_" << this->getNodeType() << " " << this->getId().getText() << " = (PPG_" << this->getNodeType() << ") {\n";
 
          this->generateCCodeInternal(out);
          
@@ -108,6 +97,8 @@ class Token : public Node
 
          // TODO: Howto set parent ptrs?
       }
+      
+      virtual std::string getNodeType() const override { return "Token"; }
            
    protected:
       
@@ -125,9 +116,9 @@ class Token : public Node
          
          if(!children_.empty()) {
             out <<
-"    .children = " << this->getId() << "_children,\n" <<
-"    .n_allocated_children = sizeof(" << this->getId() << "_children),\n" <<
-"    .n_children = sizeof(" << this->getId() << "_children),\n";
+"    .children = " << this->getId().getText() << "_children,\n" <<
+"    .n_allocated_children = sizeof(" << this->getId().getText() << "_children),\n" <<
+"    .n_children = sizeof(" << this->getId().getText() << "_children),\n";
          }
          else {
             out <<
@@ -138,17 +129,22 @@ class Token : public Node
          
          if(action_) {
             out <<
-"    .action = PPG_ACTION_INITIALIZATION_" << action_->getType() << "(" 
-            << action_->getParameters() << ")\n";
+"    .action = PPG_ACTION_INITIALIZATION_" << action_->getType().getText() << "(" 
+            << action_->getParameters().getText() << "), // " 
+               << action_->getId().getText() << ": " << action_->getLOD() << "\n";
          }
          else {
             
             out <<
-"    .action =.callback.func = NULL,\n"
-"    .action.callback.user_data = NULL,\n";
+"    .action = (PPG_Action) { \n"
+"       .callback = (PPG_Action_Callback) {\n"
+"          .func = NULL,\n"
+"          .user_data = NULL\n"
+"       }\n"
+"    },\n";
          }
          out <<
-"    .layer = " << this->layer_ << "\n";
+"    .layer = " << this->layer_.getText() << "\n";
       }
       
       virtual std::string getFlags() const { return "0"; }
@@ -157,11 +153,9 @@ class Token : public Node
       
       std::shared_ptr<Action>               action_;
       std::vector<std::shared_ptr<Token>>   children_;
-      
       Parser::Token                         layer_;
-      static Parser::Token                  curLayer_;
       
-      YYLTYPE                               location_;
+      static Parser::Token                  curLayer_;
 };
 
 }

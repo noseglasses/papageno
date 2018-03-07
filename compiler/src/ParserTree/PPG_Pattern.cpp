@@ -23,6 +23,10 @@
 namespace Papageno {
 namespace ParserTree {
    
+std::vector<std::shared_ptr<Token>> Pattern::tokens_;
+      
+std::shared_ptr<Token> Pattern::root_;
+      
 int Pattern::sequenceStart_ = 0;
       
 const std::shared_ptr<Token> &
@@ -87,6 +91,8 @@ void
          THROW_ERROR("Unable to apply action to token " << cta.first
             << " of sequence");
       }
+      
+      tokens_[targetTokenPos]->setAction(Action::lookupAction(cta.second.getText()));
    }
 }
       
@@ -127,7 +133,7 @@ void
          if(childToken->isEqual(*tokens_[pos])) {
             if(*childToken->getAction() != *tokens_[pos]->getAction()) {
                THROW_ERROR("Unable to insert pattern. Conflict between tokens " 
-                  << REPORT_LOCATION(childToken->getLocation()) << " and " << REPORT_LOCATION(tokens_[pos]->getLocation()) << ".");
+                  << childToken->getLOD() << " and " << tokens_[pos]->getLOD() << ".");
             }
             redundantTokenFound = true;
             curToken = childToken;

@@ -53,30 +53,23 @@ void
    Aggregate
       ::generateDependencyCodeInternal(std::ostream &out) const
 {   
-   std::size_t n_bits = children_.size();
+   std::size_t n_bits = inputs_.size();
    
    out <<
-"#define NUM_BITS_LEFT(N_BITS) \\\n"
-"   (N_BITS%%(8*sizeof(PPG_Bitfield_Storage_Type)))\n\n";
-      
-   out << 
-"#define NUM_BYTES(N_BITS) \\\n"
-"   (N_BITS/(8*sizeof(PPG_Bitfield_Storage_Type)))\n\n";
+"PPG_Bitfield_Storage_Type " << this->getId().getText() << "_bitarray[(NUM_BITS_LEFT(" << n_bits << ") != 0) ? (NUM_BYTES(" << n_bits << ") + 1 : NUM_BYTES(" << n_bits << ")]\n"
+"   = { 0 };\n\n";
 
    out <<
-"PPG_Bitfield_Storage_Type " << this->getId() << "_bitarray[(NUM_BITS_LEFT(" << n_bits << ") != 0) ? (NUM_BYTES(" << n_bits << ") + 1 : NUM_BYTES(" << n_bits << "\n"
-"   ] = { 0 };\n\n";
-
-   out <<
-"PPG_Input_Id " << this->getId() << "_inputs[" << inputs_.size() << "] = {\n";
+"PPG_Input_Id " << this->getId().getText() << "_inputs[" << inputs_.size() << "] = {\n";
 
    for(int i = 0; i < inputs_.size(); ++i) {
       
       const auto &inputPtr = Input::lookupInput(inputs_[i].getText());
       
       out <<
-"   PPG_ACTION_INITIALIZATION_" << inputPtr->getType() << "(" 
-      << inputPtr->getParameters() << ")";
+"   PPG_INPUT_INITIALIZATION_" << inputPtr->getType().getText() << "(" 
+      << inputPtr->getParameters().getText() << ") // " 
+         << inputPtr->getId().getText() << ": " << inputPtr->getLOD();
       if(i < (inputs_.size() - 1)) {
          out << ",";
       }
@@ -91,20 +84,18 @@ void
       ::generateCCodeInternal(std::ostream &out) const
 {   
    out <<
-"PPG_" << this->getNodeType() << " " << this->getId() << " (PPG_" << this->getNodeType() << ") {\n";
 "   .super = (PPG_Token__)\n"
 "   {\n";
-   this->Token::generateCCode(out);
+   this->Token::generateCCodeInternal(out);
    out <<
 "   },\n"
-"   .n_members = " << inputs_.size() << "\n" <<
-"   .inputs_ = " << this->getId() << "_inputs,\n" <<
+"   .n_members = " << inputs_.size() << ",\n" <<
+"   .inputs_ = " << this->getId().getText() << "_inputs,\n" <<
 "   .member_active = (PPG_Bitfield) {\n"
 "      .n_bits = " << this->children_.size() << "\n" <<
-"      .bitarray = " << this->getId() << "_bitarray\n" <<
+"      .bitarray = " << this->getId().getText() << "_bitarray\n" <<
 "   },\n"
-"   .n_inputs_active = 0\n"
-"};\n\n";
+"   .n_inputs_active = 0\n";
 }
 
 } // namespace ParserTree

@@ -2,25 +2,19 @@ some stuff before start
 
 papageno_start
 
-inline_start
-some stuff before definitions
-inline_end
-
 layer: my_layer
 
-input: A <KEYPOS> === 1, 5
-input: B <KEYPOS> === 2, 3
-input: C <KEYPOS> === n, 5
-input: D <KEYPOS> === 19, 5
-input: E <KEYPOS> === 1rr, 5
+input: A <KEYPOS> := 1, 5
+input: B <KEYPOS> := 2, 3
+input: C <KEYPOS> := n, 5
+input: D <KEYPOS> := 19, 5
+input: E <KEYPOS> := 1rr, 5
 
-input: F <KEYCODE> === setinse
+input: F <KEYCODE> := setinse
 
-action: an_action <action_type> === bla blubb
-action: another_action <another_action_type> === something
-action: the_action <the_action_type> === bosee
-
-symbol: a_symbol
+action: an_action <action_type> := bla blubb
+action: another_action <another_action_type> := something
+action: the_action <the_action_type> := bosee
 
 phrase: a_pattern = {B, C}*5 : the_action
 
@@ -28,14 +22,9 @@ phrase: a_pattern = {B, C}*5 : the_action
 
 |C -> D| : an_action
 
-|E|*3 : 2 = an_action, 3 = another_action -> {B, C, D}*5 : 3 = the_action
+|E|*3 : an_action@2, another_action@3 -> {B, C, D}*5 : the_action@3
 
 |D| -> #a_pattern
-
-inline_start
-
-some_stuff after definitinons 
-inline_end
 
 papageno_end
 

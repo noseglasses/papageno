@@ -22,14 +22,18 @@ if(PAPAGENO_BUILD_COMPILER)
          message(FATAL_ERROR "Cannot find the gengetopt executable")
       endif()
       
-      set(cmdline_in "${CMAKE_CURRENT_SOURCE_DIR}/src/CommandLine/PPG_CommandLine.txt")
+      set(cmdline_txt_in "${CMAKE_CURRENT_SOURCE_DIR}/src/CommandLine/PPG_CommandLine.txt.in")
+      set(cmdline_txt "${CMAKE_CURRENT_BINARY_DIR}/src/CommandLine/PPG_CommandLine.txt")
       set(cmdline_h "${CMAKE_CURRENT_SOURCE_DIR}/src/CommandLine/PPG_CommandLine.hpp")
       set(cmdline_c "${CMAKE_CURRENT_SOURCE_DIR}/src/CommandLine/PPG_CommandLine.cpp")
       set(compiler_cmdline_deps "${cmdline_h}" "${cmdline_c}")
+      
+      configure_file("${cmdline_txt_in}" "${cmdline_txt}")
+      
       add_custom_command(
          OUTPUT ${compiler_cmdline_deps}
-         DEPENDS "${cmdline_in}"
-         COMMAND "${GENGETOPT_EXECUTABLE}" "--input=${cmdline_in}" --file-name=PPG_CommandLine --header-extension=hpp --c-extension=cpp --include-getopt
+         DEPENDS "${cmdline_txt}"
+         COMMAND "${GENGETOPT_EXECUTABLE}" "--input=${cmdline_txt}" --file-name=PPG_CommandLine --header-extension=hpp --c-extension=cpp --include-getopt
          WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/CommandLine"
          COMMENT "Generating compiler command line sepecification"
       )
@@ -64,15 +68,22 @@ if(PAPAGENO_BUILD_COMPILER)
    set_source_files_properties("${cmdline_c}" PROPERTIES COMPILE_FLAGS -Wno-unused-but-set-variable)
    
    include_directories("${CMAKE_CURRENT_SOURCE_DIR}/src")
+   include_directories("${CMAKE_CURRENT_BINARY_DIR}")
    
    file(GLOB_RECURSE generator_sources "${CMAKE_CURRENT_SOURCE_DIR}/src/Generator/*.cpp")
    file(GLOB_RECURSE parser_tree_sources "${CMAKE_CURRENT_SOURCE_DIR}/src/ParserTree/*.cpp")
+   
+   set(compiler_hpp_in "${CMAKE_CURRENT_SOURCE_DIR}/PPG_Compiler.hpp.in")
+   set(compiler_hpp "${CMAKE_CURRENT_BINARY_DIR}/PPG_Compiler.hpp")
+   
+   configure_file("${compiler_hpp_in}" "${compiler_hpp}")
    
    add_executable(
       compiler
       "${compiler_lex}" "${compiler_yacc}" "${cmdline_c}"
       ${generator_sources}
       ${parser_tree_sources}
+      "${CMAKE_CURRENT_SOURCE_DIR}/PPG_Compiler.cpp"
    )
    set_property(TARGET compiler PROPERTY C_STANDARD 99)
    

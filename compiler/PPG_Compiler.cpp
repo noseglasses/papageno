@@ -14,18 +14,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "Parser/PPG_Parser.hpp"
 #include "Parser/PPG_Parser.yacc.hpp"
-#include "CommandLine/PPG_Commandline.hpp"
+#include "CommandLine/PPG_CommandLine.hpp"
+#include "Generator/PPG_Global.hpp"
+
+#include <iostream>
+#include <stdexcept>
+
+struct gengetopt_args_info ai;
 
 int main(int argc, char **argv)
 {
-   if(cmdline_compiler(argc, argv, &ai) != 0) {
+   if(cmdline_parser(argc, argv, &ai) != 0) {
       exit(1);
    }
    
-   Papageno::Parser::generateTree(ai.source_filename_arg);
-   
-   Papageno::Generator::generateGlobal(ai.output_filename_arg);
+   try {
+      for(int i = 0; i < ai.source_filename_given; ++i) {
+         Papageno::Parser::generateTree(ai.source_filename_arg[i]);
+      }
+      
+      Papageno::Generator::generateGlobal(ai.output_filename_arg);
+   }
+   catch(const std::runtime_error &e) {
+      std::cerr << e.what() <<std::endl;
+      return 1;
+   }
    
    return 0;
 }

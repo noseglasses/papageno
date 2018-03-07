@@ -21,6 +21,7 @@
 #define MAX_ID_LENGTH 256
 
 #define YYLTYPE_IS_DECLARED
+#define YYLTYPE_IS_TRIVIAL 1
 
 typedef struct YYLTYPE
 {
@@ -30,14 +31,17 @@ typedef struct YYLTYPE
   int last_column;
 } YYLTYPE;
 
+#define YYSTYPE std::string
+
 namespace Papageno {
 namespace Parser {
+   
+class LocationOfDefinition;
 
-extern YYLTYPE *currentLocation;
+extern LocationOfDefinition currentLocation;
+extern const char *currentFileParsed;
 
-extern int lineOffset;
-
-void generateTree(std::istream &input);
+void generateTree(const char *inputFile);
 
 } // namespace ParserTree
 } // namespace Papageno

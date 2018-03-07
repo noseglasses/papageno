@@ -49,7 +49,7 @@ class Phrase : public Node
       std::vector<std::shared_ptr<Token>>                tokens_;
       
       static std::map<std::string, std::shared_ptr<Phrase>>  phrases_;
-      static std::map<std::string, YYLTYPE>              locationsOfDefinition_;
+      static std::map<std::string, Parser::LocationOfDefinition>              locationsOfDefinition_;
 };
       
 } // namespace ParserTree

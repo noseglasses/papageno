@@ -30,6 +30,7 @@
 
 #include <iostream>
 #include <string>
+#include <fstream>
 
 int yylex();
 void yyerror(const char *s);
@@ -37,47 +38,48 @@ void yyerror(const char *s);
 struct LocationRAII {
    LocationRAII(YYLTYPE *currentLocation__)
    {
-      Papageno::Parser::currentLocation = currentLocation__;
+      lastLOD_ = Papageno::Parser::currentLocation;
+      Papageno::Parser::currentLocation 
+         = Papageno::Parser::LocationOfDefinition(*currentLocation__);
    }
    ~LocationRAII() {
-      Papageno::Parser::currentLocation = nullptr;
+      Papageno::Parser::currentLocation = lastLOD_;
    }
+   Papageno::Parser::LocationOfDefinition lastLOD_;
 };
 
 extern int yydebug;
+extern int yylineno;
+extern YYLTYPE yylloc;
 
 typedef Papageno::Parser::Token ParserToken;
 
 using namespace Papageno::ParserTree;
 
-extern "C" {
-   int yywrap (void );
-}
-
 %}
 
 %start lines
 
-%union {
-   char id[MAX_ID_LENGTH]; 
-}
+/*%union {
+   std::string id;
+}*/
 
 %token LAYER_KEYWORD SYMBOL_KEYWORD ARROW ACTION_KEYWORD INPUT_KEYWORD PHRASE_KEYWORD
-%token LINE_END
-%token<id> ID RAW_CODE
+%token LINE_END ID RAW_CODE
+
+%locations
 
 %%                   /* beginning of rules section */
 
 lines:  /*  empty  */
-        |
-        LINE_END
         |
         line
         |      
         lines line
         ;
         
-line:
+line:   LINE_END
+        |
         phrase LINE_END
         {
            Pattern::finishPattern();
@@ -152,8 +154,9 @@ rep_token:
        
 token:  token__
         {
-           Pattern::getMostRecentToken()->setLocation(@1);
+           Pattern::getMostRecentToken()->setLOD(@1);
         }
+        ;
            
 token__:  note
         |
@@ -198,7 +201,7 @@ chord:
         }
         ;
         
-action_def:
+action_list_entry:
         ID
         {
             LocationRAII lr(&@1);
@@ -213,9 +216,9 @@ action_def:
         ;
         
 action_list:
-        action_def
+        action_list_entry
         |
-        action_list ',' action_def
+        action_list ',' action_list_entry
         ;
         
 layer_def:
@@ -228,6 +231,7 @@ layer_def:
 input_def:
         INPUT_KEYWORD ':' typed_id parameters
         {
+           LocationRAII lr(&@$);
            Input::define(
                std::make_shared<Input>(
                   Entity::getNextId(),
@@ -241,6 +245,7 @@ input_def:
 action_def:
         ACTION_KEYWORD ':' typed_id parameters
         {
+            LocationRAII lr(&@$);
             Action::define(
                std::make_shared<Action>(
                   Entity::getNextId(),
@@ -272,17 +277,23 @@ parameters:
         RAW_CODE
         {
            LocationRAII lr(&@1);
-           Entity::setNextParameters(ParserToken($1, @1));
+           Entity::setNextParameters(ParserToken($1.c_str() + 2, @1));
         }
         ;
 %%
 
+void yyerror(const char *s)
+{
+  THROW_ERROR("Parser error: " << s);
+}
+
 namespace Papageno {
 namespace Parser {
 
-YYLTYPE *currentLocation = nullptr;
+LocationOfDefinition currentLocation;
 
-int lineOffset = 0;
+static std::vector<std::string> filesParsed;
+const char *currentFileParsed = nullptr;
 
 static void process_definitions(const char *line)
 {
@@ -302,7 +313,7 @@ static void process_definitions(const char *line)
 #define PPG_START_TOKEN "papageno_start"
 #define PPG_END_TOKEN "papageno_end"
 
-void generateTree(std::istream &input) 
+static void generateTree(std::istream &input) 
 {
    yydebug = 1;
    
@@ -328,7 +339,7 @@ void generateTree(std::istream &input)
          std::cout << "line " << curLine << " in ppg\n";
          inPPG = true;
          wasInPPG = true;
-         lineOffset = curLine + 1;
+         yylineno = curLine + 1;
          continue;
       }
       
@@ -359,7 +370,7 @@ void generateTree(std::istream &input)
       }
       
       std::cout << "Processing line \'" << line << "\'\n";
-      buffer << line;
+      buffer << line << "\n";
    }   
    
    if(!wasInPPG) {
@@ -370,5 +381,15 @@ void generateTree(std::istream &input)
    process_definitions(buffer.str().c_str());
 }
    
+void generateTree(const char *inputFilename)
+{
+   filesParsed.push_back(inputFilename);
+   currentFileParsed = filesParsed.back().c_str();
+   
+   std::ifstream inFile(inputFilename);
+   
+   generateTree(inFile);
+}
+
 } // namespace ParserTree
 } // namespace Papageno

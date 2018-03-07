@@ -14,6 +14,25 @@ endmacro(use_c99)
 
 use_c99()
 
+# Determine the current project version
+#
+find_program(GIT_EXECUTABLE
+   NAMES git
+)
+
+if("${GIT_EXECUTABLE}" STREQUAL "GIT_EXECUTABLE-NOTFOUND")
+   message(FATAL_ERROR "Papageno requires git to retrieve versioning info. Please set the variable GIT_EXECUTABLE accordingly.")
+endif()
+
+execute_process(
+   COMMAND ${GIT_EXECUTABLE} rev-parse HEAD
+   WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+   OUTPUT_VARIABLE version
+   OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+set(PAPAGENO_VERSION "${version}" CACHE INTERNAL "The program version" FORCE)
+
 set(default_platform "generic")
 
 set(papageno_platform_description "Set the platform to build for. Currently supported: generic, atmega32u4, atmega1280")

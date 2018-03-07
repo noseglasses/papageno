@@ -45,9 +45,17 @@ class Node
          Node::storeNode(id, this);
       }
       
-      virtual ~Node() {
-         Node::deleteNode(id_);
+      void setLOD(const Parser::LocationOfDefinition &lod) {
+         lod_ = lod;
       }
+      
+      const Parser::LocationOfDefinition &getLOD() const {
+         return lod_;
+      }
+      
+//       virtual ~Node() {
+//          Node::deleteNode(id_);
+//       }
       
       const Parser::Token &getId() const { 
          if(id_.getText().empty()) {
@@ -56,9 +64,6 @@ class Node
          
          return id_; 
       }
-      
-      int getSourceLine() const { return sourcePos_[0]; }
-      int getSourceColumn() const { return sourcePos_[1]; }
    
       virtual std::string getPropertyDescription() const {
          return TO_STRING("id = " << id_);
@@ -74,14 +79,10 @@ class Node
    protected:
       
       void retreiveSourcePosition() {
-         if(!Papageno::Parser::currentLocation) {
-            sourcePos_[0] = -1;
-            sourcePos_[1] = -1;
+         if(Papageno::Parser::currentLocation) {
+            lod_ = Papageno::Parser::currentLocation;
             return;
          }
-         
-         sourcePos_[0] = Papageno::Parser::currentLocation->first_line;
-         sourcePos_[0] = Papageno::Parser::currentLocation->first_column;
       }
       
       static void storeNode(const Parser::Token &id, const Node *node) {
@@ -96,13 +97,13 @@ class Node
          ids_[id.getText()] = node;
       }
       
-      static void deleteNode(const Parser::Token &id) {
-         auto it = ids_.find(id.getText());
-         
-         assert(it != ids_.end());
-         
-         ids_.erase(it);
-      }
+//       static void deleteNode(const Parser::Token &id) {
+//          auto it = ids_.find(id.getText());
+//          
+//          assert(it != ids_.end());
+//          
+//          ids_.erase(it);
+//       }
       
       std::string generateId() const {
          ++nextId_;
@@ -112,7 +113,7 @@ class Node
    protected:
       
       mutable Parser::Token id_;
-      int                   sourcePos_[2];
+      Parser::LocationOfDefinition          lod_;
       
       static std::map<std::string, const Node*> ids_;
       

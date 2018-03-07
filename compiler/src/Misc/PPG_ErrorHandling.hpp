@@ -16,12 +16,23 @@
 
 #pragma once
 
+#include "Parser/PPG_Parser.hpp"
+
 #include <sstream>
+#include <stdexcept>
+
+extern YYLTYPE yylloc;
 
 #define TO_STRING_WITH_LOCATION(...) ([&]() -> std::string { \
       std::ostringstream tmp; \
+      if(Papageno::Parser::currentFileParsed) { \
+         tmp << Papageno::Parser::currentFileParsed << ": "; \
+      } \
       if(Papageno::Parser::currentLocation) { \
-         tmp << REPORT_LOCATION((*Papageno::Parser::currentLocation)) << ": "; \
+         tmp << Papageno::Parser::currentLocation << ": "; \
+      } \
+      else { \
+         tmp << yylloc << ": "; \
       } \
       tmp << __VA_ARGS__; \
       return tmp.str(); \
@@ -29,5 +40,5 @@
 )
 
 #define THROW_ERROR(...) \
-   throw TO_STRING_WITH_LOCATION(__VA_ARGS__)
+   throw std::runtime_error(TO_STRING_WITH_LOCATION(__VA_ARGS__))
    
