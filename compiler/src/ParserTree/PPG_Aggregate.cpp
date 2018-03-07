@@ -90,7 +90,7 @@ void
    out <<
 "   },\n"
 "   .n_members = " << inputs_.size() << ",\n" <<
-"   .inputs_ = " << this->getId().getText() << "_inputs,\n" <<
+"   .inputs = " << this->getId().getText() << "_inputs,\n" <<
 "   .member_active = (PPG_Bitfield) {\n"
 "      .n_bits = " << this->children_.size() << "\n" <<
 "      .bitarray = " << this->getId().getText() << "_bitarray\n" <<
