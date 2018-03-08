@@ -30,7 +30,79 @@ extern struct gengetopt_args_info ai;
 
 namespace Papageno {
 namespace Generator {
+   
+// Add a flag to enable local initialization for 
+// all input classes.
+//
+#ifdef PPG_ENABLE_INPUT_LOCAL_INITIALIZATION_ALL
+// For all classes
+#   ifndef PPG_ENABLE_INPUT_LOCAL_INITIALIZATION___<TAG>
+#      define PPG_ENABLE_INPUT_LOCAL_INITIALIZATION___<TAG>
+#   endif
+// End for all classes
+#endif
+   
+// Enable the same type of initialization for all 
+// classes.
+//
+#ifndef PPG_INPUT_INITIALIZE
+#   define PPG_INPUT_INITIALIZE(ID, ...) __VA_ARGS__
+#endif
+   
+// Distinguish between global and local
+// initialization by class.
+//
+// For all classes
+//
+// If no class wise initialization is desired 
+// we use the common initialization 
+// method
+//
+#ifndef PPG_INPUT_INITIALIZE___<TAG>
+#   define PPG_INPUT_INITIALIZE___<TAG>(ID, ...) \
+      PPG_INPUT_INITIALIZE(ID, __VA_ARGS__)
+#endif
+   
+#ifdef PPG_ENABLE_INPUT_LOCAL_INITIALIZATION___<TAG>
+#   ifndef PPG_INPUT_INITIALIZE_LOCAL___<TAG>
+#      define PPG_INPUT_INITIALIZE_LOCAL___<TAG>(ID, PATH, ...) \
+            PATH = PPG_INPUT_INITIALIZE___<TAG>(ID, __VA_ARGS__)
+#   endif
+#   ifndef PPG_INPUT_INITIALIZE_GLOBAL___<TAG>
+#      define PPG_INPUT_INITIALIZE_GLOBAL___<TAG>(ID, ...) 0
+#   endif
+#else
+#   ifndef PPG_INPUT_INITIALIZE_LOCAL___<TAG>
+#      define PPG_INPUT_INITIALIZE_LOCAL___<TAG>(ID, PATH, ...)
+#   endif
+#   ifndef PPG_INPUT_INITIALIZE_GLOBAL___<TAG>
+#      define PPG_INPUT_INITIALIZE_GLOBAL___<TAG>(ID, ...) \
+            PPG_INPUT_INITIALIZE___<TAG>(ID, __VA_ARGS__)
+#   endif
+#endif
+            
+// End for all classes
+
+// Define a common entry point by class type for
+// local initialization
+//
+// For all classes
+// Automatisch generieren waehrend der Baum erzeugt wird
+#define PPG_INPUT_INITIALIZE_LOCAL_ALL___<TAG> \
+   /* For all input assignments */ \
+   PPG_INPUT_INITIALIZE_LOCAL___<TAG>(the_id, the_path, the_args) \
+   /* End for all input assignments */
+// End for all classes
       
+// Define a common entry point for local initialization
+//
+#define PPG_INPUT_INITIALIZE_LOCAL_ALL \
+  /* For all classes */ \
+  PPG_INPUT_INITIALIZE_LOCAL_ALL___<TAG> \
+  /* End for all classes */
+  
+// Das gleiche fuer all actions
+   
 void caption(std::ostream &out, const std::string &title)
 {
    out <<
