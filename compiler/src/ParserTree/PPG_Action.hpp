@@ -33,7 +33,9 @@ class Action : public Node
       
       Action(  const Parser::Token &id,
                const Parser::Token &type, 
-               const Parser::Token &parameters);
+               const Parser::Token &parameters,
+               bool parametersDefined
+            );
       
       static void define(const std::shared_ptr<Action> &action);
       
@@ -52,6 +54,7 @@ class Action : public Node
       
       const Parser::Token &getType() const;
       const Parser::Token &getParameters() const;
+      bool getParametersDefined() const;
       
       virtual std::string getPropertyDescription() const;
       
@@ -70,6 +73,7 @@ class Action : public Node
       
       Parser::Token           type_;
       Parser::Token           parameters_;
+      bool                    parametersDefined_;
       
       static std::vector<CountToAction>    nextActions_;
       

@@ -26,15 +26,16 @@ extern YYLTYPE yylloc;
 #define TO_STRING_WITH_LOCATION(...) ([&]() -> std::string { \
       std::ostringstream tmp; \
       if(Papageno::Parser::currentFileParsed) { \
-         tmp << Papageno::Parser::currentFileParsed << ": "; \
+         tmp << Papageno::Parser::currentFileParsed << ":"; \
       } \
       if(Papageno::Parser::currentLocation) { \
-         tmp << Papageno::Parser::currentLocation << ": "; \
+         tmp << Papageno::Parser::currentLocation.location_.first_line << ":" \
+            << Papageno::Parser::currentLocation.location_.first_column; \
       } \
       else { \
-         tmp << yylloc << ": "; \
+         tmp << yylloc.first_line << ":" << yylloc.first_column; \
       } \
-      tmp << __VA_ARGS__; \
+      tmp << ": error: " << __VA_ARGS__; \
       return tmp.str(); \
    }() \
 )

@@ -18,6 +18,7 @@
 
 #include "Parser/PPG_Parser.hpp"
 #include "Parser/PPG_Parser.lex.hpp"
+#include "PPG_Compiler.hpp"
 
 #include "ParserTree/PPG_Phrase.hpp"
 #include "ParserTree/PPG_Pattern.hpp"
@@ -236,24 +237,32 @@ input_def:
                std::make_shared<Input>(
                   Entity::getNextId(),
                   Entity::getNextType(),
-                  Entity::getNextParameters()
+                  Entity::getNextParameters(),
+                  Entity::getNextParametersDefined()
                )
            );
         }
         ;
         
 action_def:
-        ACTION_KEYWORD ':' typed_id parameters
+        ACTION_KEYWORD ':' typed_id action_parameters
         {
             LocationRAII lr(&@$);
             Action::define(
                std::make_shared<Action>(
                   Entity::getNextId(),
                   Entity::getNextType(),
-                  Entity::getNextParameters()
+                  Entity::getNextParameters(),
+                  Entity::getNextParametersDefined()
                )
             );
         }
+        ;
+        
+action_parameters:
+        // Allow empty
+        |
+        parameters
         ;
         
 typed_id:
@@ -272,8 +281,6 @@ typed_id:
         ;
         
 parameters:
-        /* possibly empty */
-        |
         RAW_CODE
         {
            LocationRAII lr(&@1);
@@ -292,7 +299,9 @@ namespace Parser {
 
 LocationOfDefinition currentLocation;
 
-static std::vector<std::string> filesParsed;
+std::vector<std::string> filesParsed;
+std::vector<std::string> codeParsed;
+
 const char *currentFileParsed = nullptr;
 
 static void process_definitions(const char *line)
@@ -313,9 +322,16 @@ static void process_definitions(const char *line)
 #define PPG_START_TOKEN "papageno_start"
 #define PPG_END_TOKEN "papageno_end"
 
+#define DEBUG_OUTPUT(...) \
+   if(ai.debug_flag) { \
+      std::cout << __VA_ARGS__; \
+   }
+
 static void generateTree(std::istream &input) 
 {
-   yydebug = 1;
+   if(ai.debug_flag) {
+      yydebug = 1;
+   }
    
    #define LINE_SIZE 4096
    
@@ -336,7 +352,7 @@ static void generateTree(std::istream &input)
            presence would allow to handle lines longer that sizeof(line) */
            
       if(line.find(PPG_START_TOKEN) != std::string::npos) {
-         std::cout << "line " << curLine << " in ppg\n";
+         DEBUG_OUTPUT("Start tag \'" PPG_START_TOKEN "\' detected in line " << curLine << "\n")
          inPPG = true;
          wasInPPG = true;
          yylineno = curLine + 1;
@@ -350,7 +366,7 @@ static void generateTree(std::istream &input)
       }
       
       if(line.find(PPG_END_TOKEN) != std::string::npos) {
-         std::cout << "line " << curLine << ": end of ppg\n";
+         DEBUG_OUTPUT("End tag \'" PPG_END_TOKEN "\' detected in line " << curLine << "\n")
          break;
       }
       
@@ -369,7 +385,7 @@ static void generateTree(std::istream &input)
          }
       }
       
-      std::cout << "Processing line \'" << line << "\'\n";
+      DEBUG_OUTPUT("Processing line \'" << line << "\'\n")
       buffer << line << "\n";
    }   
    
@@ -378,7 +394,9 @@ static void generateTree(std::istream &input)
       exit(EXIT_FAILURE);
    }
    
-   process_definitions(buffer.str().c_str());
+   codeParsed.push_back(buffer.str());
+   
+   process_definitions(codeParsed.back().c_str());
 }
    
 void generateTree(const char *inputFilename)

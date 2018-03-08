@@ -32,7 +32,9 @@ class Input : public Node
       
       Input(  const Parser::Token &id,
                const Parser::Token &type, 
-               const Parser::Token &parameters);
+               const Parser::Token &parameters,
+               bool parametersDefined
+           );
       
       static void define(const std::shared_ptr<Input> &input);
       
@@ -57,11 +59,13 @@ class Input : public Node
       
       const Parser::Token &getType() const;
       const Parser::Token &getParameters() const;
+      bool getParametersDefined() const;
       
    protected:
       
       Parser::Token           type_;
       Parser::Token           parameters_;
+      bool                    parametersDefined_;
       
       static std::set<Parser::Token, Parser::TokenCompare> nextInputs_;
       

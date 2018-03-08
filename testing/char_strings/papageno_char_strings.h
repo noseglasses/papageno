@@ -385,5 +385,16 @@ __NL__}
    
 #define PPG_CS_N_D(CHAR) \
    ppg_note_create(PPG_CS_CHAR(CHAR), PPG_Note_Flag_Match_Deactivation)
+   
+// Definitions for the compiler interface
+//
+#define PPG_INPUT_INITIALIZATION___(ID, CHAR) \
+   PPG_CS_CHAR(CHAR)
+   
+#define PPG_ACTION_INITIALIZATION___(ID) \
+   PPG_CS_ACTION(ID)
+   
+#define PPG_CONFIGURE_ACTIONS_GLOBAL_PRE_INIT___(ID) \
+   PPG_CS_REGISTER_ACTION(ID)
 
 #endif

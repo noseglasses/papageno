@@ -30,6 +30,11 @@ class Chord : public Aggregate
       virtual std::shared_ptr<Token> clone() const override {
          return std::make_shared<Chord>(*this);
       }
+      
+   protected:
+      
+      virtual std::string getVTableId() const override { return "&ppg_chord_vtable"; }
+      virtual std::string getTokenType() const override { return "PPG_Chord"; }
 };
 
 } // namespace ParserTree

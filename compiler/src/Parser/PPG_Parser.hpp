@@ -17,6 +17,7 @@
 #pragma once
 
 #include <istream>
+#include <vector>
 
 #define MAX_ID_LENGTH 256
 
@@ -37,6 +38,9 @@ namespace Papageno {
 namespace Parser {
    
 class LocationOfDefinition;
+
+extern std::vector<std::string> filesParsed;
+extern std::vector<std::string> codeParsed;
 
 extern LocationOfDefinition currentLocation;
 extern const char *currentFileParsed;

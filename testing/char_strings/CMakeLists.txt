@@ -118,8 +118,8 @@ function(ppg_add_compiler_test test_name)
 	set(compile_output_file "${CMAKE_CURRENT_BINARY_DIR}/${run_target_name}_output.c")
    add_custom_command(
       OUTPUT "${compile_output_file}"
-      DEPENDS "${test_code_file}" compiler
-      COMMAND $<TARGET_FILE:compiler> -i "${test_code_file}" -o "${compile_output_file}"
+      DEPENDS "${test_code_file}" glockenspiel
+      COMMAND $<TARGET_FILE:glockenspiel> -i "${test_code_file}" -o "${compile_output_file}"
    )
    add_custom_target("${run_target_name}_compile" DEPENDS "${compile_output_file}")
    
@@ -127,7 +127,7 @@ function(ppg_add_compiler_test test_name)
 
 	add_dependencies(
       "${run_target_name}_compile"
-      compiler
+      glockenspiel
    )
    
 	add_executable(

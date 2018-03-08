@@ -34,18 +34,23 @@ PPG_CS_START_TEST
    action: C1
    action: C2
    
-   input: a === 'a'
-   input: b === 'b'
-   input: c === 'c'
-   input: d === 'd'
+   input: a := 'a'
+   input: b := 'b'
+   input: c := 'c'
+   input: d := 'd'
    
    {a, b, c} : C1
    {a, b, d} : C2
    
    papageno_end
    */
-      
-   generate_tree(ccontext);
-   compress_tree(ccontext);
+   
+   papageno_initialize_context();
+   
+   #ifndef PPG_CS_SUPPRESS_TESTS
+   
+   #include "/home/itm/fleissne/Scratch/Projects/papageno/testing/char_strings/test_clusters_tests.h"
+   
+   #endif // ifndef PPG_CS_SUPPRESS_TESTS
    
 PPG_CS_END_TEST

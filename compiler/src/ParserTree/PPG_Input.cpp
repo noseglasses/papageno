@@ -33,10 +33,13 @@ std::map<std::string, Parser::LocationOfDefinition> Input::locationsOfDefinition
    Input
       ::Input(  const Parser::Token &id,
                const Parser::Token &type, 
-               const Parser::Token &parameters)
+               const Parser::Token &parameters,
+               bool parametersDefined
+             )
    :  Node(id),
       type_(type),
-      parameters_(parameters)
+      parameters_(parameters),
+      parametersDefined_(parametersDefined)
 {}
 
 void 
@@ -152,6 +155,13 @@ const Parser::Token &
       ::getParameters() const
 {
    return parameters_; 
+}
+
+bool
+   Input
+      ::getParametersDefined() const
+{
+   return parametersDefined_;
 }
 
 bool inputsEqual( std::vector<Parser::Token> i1,

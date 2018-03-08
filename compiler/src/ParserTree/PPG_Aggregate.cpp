@@ -56,7 +56,7 @@ void
    std::size_t n_bits = inputs_.size();
    
    out <<
-"PPG_Bitfield_Storage_Type " << this->getId().getText() << "_bitarray[(NUM_BITS_LEFT(" << n_bits << ") != 0) ? (NUM_BYTES(" << n_bits << ") + 1 : NUM_BYTES(" << n_bits << ")]\n"
+"PPG_Bitfield_Storage_Type " << this->getId().getText() << "_bitarray[(PPG_NUM_BITS_LEFT(" << n_bits << ") != 0) ? (PPG_NUM_BYTES(" << n_bits << ") + 1) : PPG_NUM_BYTES(" << n_bits << ")]\n"
 "   = { 0 };\n\n";
 
    out <<
@@ -67,12 +67,14 @@ void
       const auto &inputPtr = Input::lookupInput(inputs_[i].getText());
       
       out <<
-"   PPG_INPUT_INITIALIZATION_" << inputPtr->getType().getText() << "(" 
-      << inputPtr->getParameters().getText() << ") // " 
-         << inputPtr->getId().getText() << ": " << inputPtr->getLOD();
+"   PPG_INPUT_INITIALIZATION___" << inputPtr->getType().getText() << "(" 
+      << inputPtr->getId().getText() << ", "
+      << inputPtr->getParameters().getText() << ")";
       if(i < (inputs_.size() - 1)) {
          out << ",";
       }
+      out << " // " 
+         << inputPtr->getId().getText() << ": " << inputPtr->getLOD();
       out << "\n";
    }
    out <<
@@ -84,15 +86,14 @@ void
       ::generateCCodeInternal(std::ostream &out) const
 {   
    out <<
-"   .super = (PPG_Token__)\n"
-"   {\n";
+"   .super = (PPG_Token__) {\n";
    this->Token::generateCCodeInternal(out);
    out <<
 "   },\n"
 "   .n_members = " << inputs_.size() << ",\n" <<
 "   .inputs = " << this->getId().getText() << "_inputs,\n" <<
 "   .member_active = (PPG_Bitfield) {\n"
-"      .n_bits = " << this->children_.size() << "\n" <<
+"      .n_bits = " << this->children_.size() << ",\n" <<
 "      .bitarray = " << this->getId().getText() << "_bitarray\n" <<
 "   },\n"
 "   .n_inputs_active = 0\n";

@@ -18,6 +18,9 @@
 #define PPG_CLUSTER_DETAIL_H
 
 #include "detail/ppg_token_detail.h"
+#include "detail/ppg_aggregate_detail.h"
+
+typedef PPG_Aggregate PPG_Cluster;
 
 extern PPG_Token_Vtable ppg_cluster_vtable;
 

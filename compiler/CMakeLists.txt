@@ -6,11 +6,11 @@ if(PAPAGENO_BUILD_COMPILER)
    option(PAPAGENO_DEVELOP_COMPILER FALSE)
    mark_as_advanced(PAPAGENO_DEVELOP_COMPILER)
    
-   set(compiler_lex "${CMAKE_CURRENT_SOURCE_DIR}/src/Parser/PPG_Parser.lex.cpp")
-   set(compiler_lex_h "${CMAKE_CURRENT_SOURCE_DIR}/src/Parser/PPG_Parser.lex.hpp")
+   set(glockenspiel_lex "${CMAKE_CURRENT_SOURCE_DIR}/src/Parser/PPG_Parser.lex.cpp")
+   set(glockenspiel_lex_h "${CMAKE_CURRENT_SOURCE_DIR}/src/Parser/PPG_Parser.lex.hpp")
    
-   set(compiler_yacc "${CMAKE_CURRENT_SOURCE_DIR}/src/Parser/PPG_Parser.yacc.cpp")
-   set(compiler_yacc_h "${CMAKE_CURRENT_SOURCE_DIR}/src/Parser/PPG_Parser.yacc.hpp")
+   set(glockenspiel_yacc "${CMAKE_CURRENT_SOURCE_DIR}/src/Parser/PPG_Parser.yacc.cpp")
+   set(glockenspiel_yacc_h "${CMAKE_CURRENT_SOURCE_DIR}/src/Parser/PPG_Parser.yacc.hpp")
    
    if(PAPAGENO_DEVELOP_COMPILER)
    
@@ -26,19 +26,19 @@ if(PAPAGENO_BUILD_COMPILER)
       set(cmdline_txt "${CMAKE_CURRENT_BINARY_DIR}/src/CommandLine/PPG_CommandLine.txt")
       set(cmdline_h "${CMAKE_CURRENT_SOURCE_DIR}/src/CommandLine/PPG_CommandLine.hpp")
       set(cmdline_c "${CMAKE_CURRENT_SOURCE_DIR}/src/CommandLine/PPG_CommandLine.cpp")
-      set(compiler_cmdline_deps "${cmdline_h}" "${cmdline_c}")
+      set(glockenspiel_cmdline_deps "${cmdline_h}" "${cmdline_c}")
       
       configure_file("${cmdline_txt_in}" "${cmdline_txt}")
       
       add_custom_command(
-         OUTPUT ${compiler_cmdline_deps}
+         OUTPUT ${glockenspiel_cmdline_deps}
          DEPENDS "${cmdline_txt}"
          COMMAND "${GENGETOPT_EXECUTABLE}" "--input=${cmdline_txt}" --file-name=PPG_CommandLine --header-extension=hpp --c-extension=cpp --include-getopt
          WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/CommandLine"
-         COMMENT "Generating compiler command line sepecification"
+         COMMENT "Generating glockenspiel command line sepecification"
       )
       
-      add_custom_target(compiler_cmdline DEPENDS ${compiler_cmdline_deps})
+      add_custom_target(glockenspiel_cmdline DEPENDS ${glockenspiel_cmdline_deps})
       
       find_package(FLEX)
       
@@ -47,8 +47,8 @@ if(PAPAGENO_BUILD_COMPILER)
       endif()
       
       flex_target(
-         compiler_lex "${CMAKE_CURRENT_SOURCE_DIR}/src/Parser/PPG_Parser.lex" "${compiler_lex}" 
-         COMPILE_FLAGS "--header-file=${compiler_lex_h} --nounput")
+         glockenspiel_lex "${CMAKE_CURRENT_SOURCE_DIR}/src/Parser/PPG_Parser.lex" "${glockenspiel_lex}" 
+         COMPILE_FLAGS "--header-file=${glockenspiel_lex_h} --nounput")
       
       find_package(BISON)
       
@@ -58,7 +58,7 @@ if(PAPAGENO_BUILD_COMPILER)
       set(yacc_verbose_output "${CMAKE_CURRENT_BINARY_DIR}/src/Parser/PPG_Parser.yacc.log")
       
       bison_target(
-         compiler_yacc "${CMAKE_CURRENT_SOURCE_DIR}/src/Parser/PPG_Parser.yacc" "${compiler_yacc}" 
+         glockenspiel_yacc "${CMAKE_CURRENT_SOURCE_DIR}/src/Parser/PPG_Parser.yacc" "${glockenspiel_yacc}" 
          VERBOSE "${yacc_verbose_output}"
          COMPILE_FLAGS --debug
       )
@@ -73,31 +73,31 @@ if(PAPAGENO_BUILD_COMPILER)
    file(GLOB_RECURSE generator_sources "${CMAKE_CURRENT_SOURCE_DIR}/src/Generator/*.cpp")
    file(GLOB_RECURSE parser_tree_sources "${CMAKE_CURRENT_SOURCE_DIR}/src/ParserTree/*.cpp")
    
-   set(compiler_hpp_in "${CMAKE_CURRENT_SOURCE_DIR}/PPG_Compiler.hpp.in")
-   set(compiler_hpp "${CMAKE_CURRENT_BINARY_DIR}/PPG_Compiler.hpp")
+   set(glockenspiel_hpp_in "${CMAKE_CURRENT_SOURCE_DIR}/PPG_Compiler.hpp.in")
+   set(glockenspiel_hpp "${CMAKE_CURRENT_BINARY_DIR}/PPG_Compiler.hpp")
    
-   configure_file("${compiler_hpp_in}" "${compiler_hpp}")
+   configure_file("${glockenspiel_hpp_in}" "${glockenspiel_hpp}")
    
    add_executable(
-      compiler
-      "${compiler_lex}" "${compiler_yacc}" "${cmdline_c}"
+      glockenspiel
+      "${glockenspiel_lex}" "${glockenspiel_yacc}" "${cmdline_c}"
       ${generator_sources}
       ${parser_tree_sources}
       "${CMAKE_CURRENT_SOURCE_DIR}/PPG_Compiler.cpp"
    )
-   set_property(TARGET compiler PROPERTY C_STANDARD 99)
+   set_property(TARGET glockenspiel PROPERTY C_STANDARD 99)
    
-   target_compile_definitions(compiler PUBLIC "-D_POSIX_C_SOURCE=1" "-DYY_NO_INPUT")
+   target_compile_definitions(glockenspiel PUBLIC "-D_POSIX_C_SOURCE=1" "-DYY_NO_INPUT")
    
-   if(TARGET compiler_cmdline)
-      add_dependencies(compiler compiler_cmdline)
+   if(TARGET glockenspiel_cmdline)
+      add_dependencies(glockenspiel glockenspiel_cmdline)
    endif()
    
-   if(TARGET compiler_yacc)
-      add_dependencies(compiler compiler_yacc)
+   if(TARGET glockenspiel_yacc)
+      add_dependencies(glockenspiel glockenspiel_yacc)
    endif()
    
-   if(TARGET compiler_lex)
-      add_dependencies(compiler compiler_lex)
+   if(TARGET glockenspiel_lex)
+      add_dependencies(glockenspiel glockenspiel_lex)
    endif()
 endif()

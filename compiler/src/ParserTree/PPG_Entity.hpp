@@ -27,12 +27,18 @@ class Entity
       
       static void setNextParameters(const Parser::Token &parameters) {
          parameters_ = parameters;
+         parametersDefined_ = true;
       }
       
       static Parser::Token getNextParameters() {
          Parser::Token tmp = parameters_;
          parameters_ = Parser::Token();
+         parametersDefined_ = false;
          return tmp;
+      }
+      
+      static bool getNextParametersDefined() {
+         return parametersDefined_;
       }
       
       static void setNextType(const Parser::Token &nextType) {
@@ -58,9 +64,9 @@ class Entity
    protected:
       
       static Parser::Token   parameters_;
-      
       static Parser::Token   nextType_;
       static Parser::Token   nextId_;
+      static bool            parametersDefined_;
 };
 
       

@@ -30,6 +30,11 @@ class Cluster : public Aggregate
       virtual std::shared_ptr<Token> clone() const override {
          return std::make_shared<Cluster>(*this);
       }
+      
+   protected:
+      
+      virtual std::string getVTableId() const override { return "&ppg_cluster_vtable"; }
+      virtual std::string getTokenType() const override { return "PPG_Cluster"; }
 };
 
 } // namespace ParserTree

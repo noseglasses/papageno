@@ -1,9 +1,11 @@
 version "@PAPAGENO_VERSION@"
-package "Papageno"
-purpose " An Advanced Pattern Matching Library."
+package "glockenspiel"
+purpose "A compiler for Papageno's description language."
+description "Generates C code of a statically allocated pattern matching tree from a description in Papageno's own language."
 
 # Options
 option "source_filename" i "Source filename" string required multiple
 option "output_filename" o "Output filename" string required
 option "preamble_filename" p "Preamble filename" string optional
 option "project_name" n "The name of the project to generate Papageno code for" string optional
+option "debug" d "Generate debug output during the compile" flag off

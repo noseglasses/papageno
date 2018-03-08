@@ -49,7 +49,7 @@ int c;
 " "      ;
 \t       ;
 \\\n     { 
-            std::cout << "Continuation line detected\n";
+/*             std::cout << "Continuation line detected\n"; */
             // yylineno was already updated before YY_USER_ACTION was called
             CORRECT_LINE 
             offset = 1; 
@@ -63,19 +63,19 @@ phrase   return PHRASE_KEYWORD;
             return yytext[0]; 
          }
 \n       { 
-            std::cout << "Standard line end detected\n"; 
+/*             std::cout << "Standard line end detected\n";  */
             // yylineno was already updated before YY_USER_ACTION was called
             CORRECT_LINE
             offset = 1; 
             return LINE_END;
          }
 [_[:alnum:]]* { 
-            std::cout << "Reading ID=" << yytext << std::endl; 
+/*             std::cout << "Reading ID=" << yytext << std::endl;  */
             yylval = yytext; 
             return ID; 
          }
 :=[^\n]* { 
-            std::cout << "Reading RAW_CODE=" << yytext << std::endl; 
+/*             std::cout << "Reading RAW_CODE=" << yytext << std::endl;  */
             yylval = yytext;
             return RAW_CODE; 
          }

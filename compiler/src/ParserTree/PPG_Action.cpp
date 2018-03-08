@@ -26,10 +26,13 @@ std::map<std::string, Parser::LocationOfDefinition> Action::locationsOfDefinitio
    Action
       ::Action(const Parser::Token &id,
                const Parser::Token &type, 
-               const Parser::Token &parameters)
+               const Parser::Token &parameters,
+               bool parametersDefined
+              )
    :  Node(id),
       type_(type),
-      parameters_(parameters)
+      parameters_(parameters),
+      parametersDefined_(parametersDefined)
 {}
 
 void
@@ -115,6 +118,13 @@ const Parser::Token &
       ::getParameters() const 
 { 
    return parameters_; 
+}
+
+bool
+   Action
+      ::getParametersDefined() const
+{
+   return parametersDefined_;
 }
 
 std::string

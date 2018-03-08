@@ -77,8 +77,7 @@ class Token : public Node
       }
       
       void outputCTokenDeclaration(std::ostream &out) const {
-         out <<
-"PPG_" << this->getNodeType() << " " << this->getId().getText();
+         out << this->getTokenType() << " " << this->getId().getText();
       }
       
       void generateCCode(std::ostream &out) const {
@@ -89,11 +88,11 @@ class Token : public Node
          //
          if(!children_.empty()) {
             out << 
-"PPG_Token *" << this->getId().getText() << "_children[" << children_.size() << "] = {\n";
+"PPG_Token__ *" << this->getId().getText() << "_children[" << children_.size() << "] = {\n";
 
             for(int i = 0; i < children_.size(); ++i) {
                out <<
-"   &" << children_[i]->getId().getText();
+"   (PPG_Token__*)&" << children_[i]->getId().getText();
                if(i < children_.size() - 1) {
                   out << ",";
                }
@@ -105,7 +104,7 @@ class Token : public Node
           
          this->outputCTokenDeclaration(out);
          
-         out << " = (PPG_" << this->getNodeType() << ") {\n";
+         out << " = (" << this->getTokenType() << ") {\n";
 
          this->generateCCodeInternal(out);
          
@@ -123,58 +122,64 @@ class Token : public Node
       virtual void generateDependencyCodeInternal(std::ostream &out) const {}
       
       virtual void generateCCodeInternal(std::ostream &out) const {
-         
+
          out <<
-"   .misc = (PPG_Misc_Bits) {\n"
-"       .state = PPG_Token_Initialized,\n"
-"       .flags = " << this->getFlags() << ",\n"
-"       .action_state = 0,\n"
-"       .action_flags = PPG_Action_Default\n"
-"    },\n";
+"      .vtable = " << this->getVTableId() << ",\n";
 
          if(parent_) {
             out <<
-"    .parent = &" << parent_->getId().getText() << ",\n";
+"      .parent = &" << parent_->getId().getText() << ",\n";
          }
          else {
             out <<
-"    .parent = NULL,\n";
+"      .parent = NULL,\n";
          }
          
          if(!children_.empty()) {
             out <<
-"    .children = " << this->getId().getText() << "_children,\n" <<
-"    .n_allocated_children = sizeof(" << this->getId().getText() << "_children),\n" <<
-"    .n_children = sizeof(" << this->getId().getText() << "_children),\n";
+"      .children = " << this->getId().getText() << "_children,\n" <<
+"      .n_allocated_children = sizeof(" << this->getId().getText() << "_children),\n" <<
+"      .n_children = sizeof(" << this->getId().getText() << "_children),\n";
          }
          else {
             out <<
-"    .children = nullptr,\n"
-"    .n_allocated_children = 0,\n"
-"    .n_children = 0\n";
+"      .children = NULL,\n"
+"      .n_allocated_children = 0,\n"
+"      .n_children = 0,\n";
          }
          
          if(action_) {
             out <<
-"    .action = PPG_ACTION_INITIALIZATION_" << action_->getType().getText() << "(" 
+"      .action = PPG_ACTION_INITIALIZATION___" << action_->getType().getText() << "("
+            << action_->getId().getText() << ", "
             << action_->getParameters().getText() << "), // " 
                << action_->getId().getText() << ": " << action_->getLOD() << "\n";
          }
          else {
             
             out <<
-"    .action = (PPG_Action) { \n"
-"       .callback = (PPG_Action_Callback) {\n"
-"          .func = NULL,\n"
-"          .user_data = NULL\n"
-"       }\n"
-"    },\n";
-         }
+"      .action = (PPG_Action) { \n"
+"         .callback = (PPG_Action_Callback) {\n"
+"            .func = NULL,\n"
+"            .user_data = NULL\n"
+"         }\n"
+"      },\n";
+         }         
          out <<
-"    .layer = " << this->layer_.getText() << "\n";
+"      .misc = (PPG_Misc_Bits) {\n"
+"         .state = PPG_Token_Initialized,\n"
+"         .flags = " << this->getFlags() << ",\n"
+"         .action_state = 0,\n"
+"         .action_flags = PPG_Action_Default\n"
+"      },\n";
+         out <<
+"      .layer = " << this->layer_.getText() << "\n";
       }
       
       virtual std::string getFlags() const { return "0"; }
+      
+      virtual std::string getTokenType() const { return "PPG_Token__"; }
+      virtual std::string getVTableId() const { return "NULL"; }
       
    protected:
       

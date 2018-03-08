@@ -21,6 +21,7 @@ namespace ParserTree {
 Parser::Token   Entity::parameters_;
 Parser::Token   Entity::nextType_;
 Parser::Token   Entity::nextId_;
+bool            Entity::parametersDefined_ = false;
 
 } // namespace ParserTree
 } // namespace Papageno
