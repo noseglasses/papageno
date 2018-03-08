@@ -33,6 +33,14 @@ extern struct gengetopt_args_info ai;
 namespace Papageno {
 namespace Generator {
    
+void outputInfoAboutSpecificOverride(std::ostream &out)
+{
+   out <<
+"// The following macro can be defined in a preamble header to customize \n"
+"// Papagenos input-action behavior.\n"
+"//\n";
+}
+   
 void generateFileHeader(std::ostream &out) {
    
    out <<
@@ -84,19 +92,12 @@ void generateGlobalActionInformation(std::ostream &out)
 
    for(const auto &abtEntry: actionsByType) {
       const auto &tag = abtEntry.first;
-      
-      out << 
-"#ifndef PPG_ACTION_MAP_" << tag << "\n";
-      out <<
-"#define PPG_ACTION_MAP_" << tag << "(...) __VA_ARGS__\n";
-      out <<
-"#endif\n"
-"\n";
    
+      outputInfoAboutSpecificOverride(out);
       out <<
-"#ifndef PPG_ACTION_INITIALIZATION_" << tag << "\n";
+"#ifndef PPG_ACTION_INITIALIZATION___" << tag << "\n";
       out << 
-"#define PPG_ACTION_INITIALIZATION_" << tag << "(...) __VA_ARGS__\n";
+"#define PPG_ACTION_INITIALIZATION___" << tag << "(...) __VA_ARGS__\n";
       out <<
 "#endif\n"
 "\n";
@@ -111,6 +112,26 @@ void generateGlobalActionInformation(std::ostream &out)
       
       out <<
 "\n";
+      outputInfoAboutSpecificOverride(out);
+      out <<
+   "#ifndef PPG_CONFIGURE_ACTIONS_GLOBAL_PRE_INIT___" << tag << "\n"
+   "#define PPG_CONFIGURE_ACTIONS_GLOBAL_PRE_INIT___" << tag << "(ACTION) \\\n"
+   "   PPG_CONFIGURE_ACTIONS_GLOBAL_PRE_INIT(ACTION)\n"
+   "#endif\n\n";
+      
+      outputInfoAboutSpecificOverride(out);
+      out <<
+   "#ifndef PPG_CONFIGURE_ACTIONS_GLOBAL_POST_INIT___" << tag << "\n"
+   "#define PPG_CONFIGURE_ACTIONS_GLOBAL_POST_INIT___" << tag << "(ACTION) \\\n"
+   "   PPG_CONFIGURE_ACTIONS_GLOBAL_POST_INIT(ACTION)\n"
+   "#endif\n\n";
+
+      outputInfoAboutSpecificOverride(out);
+      out <<
+   "#ifndef PPG_CONFIGURE_ACTIONS_LOCAL___" << tag << "\n"
+   "#define PPG_CONFIGURE_ACTIONS_LOCAL___" << tag << "(ACTION) \\\n"
+   "   PPG_CONFIGURE_ACTIONS_LOCAL(ACTION)\n"
+   "#endif\n\n";
    }
    
    out <<
@@ -122,6 +143,54 @@ void generateGlobalActionInformation(std::ostream &out)
 "   PPG_ACTIONS___" << tag << "(OP) \\\n";
    }
    out << "\n";
+   
+   out <<
+"#define PPG_CUSTOM_CONFIGURE_ACTIONS_GLOBAL_PRE_INIT \\\n";
+   for(const auto &abtEntry: actionsByType) {
+      const auto &tag = abtEntry.first;
+      out <<
+"   PPG_ACTIONS___" << tag << "(PPG_CONFIGURE_ACTIONS_GLOBAL_PRE_INIT___" << tag << ") \\\n";
+   }
+   out << 
+"\n";
+
+   out <<
+"#define PPG_CUSTOM_CONFIGURE_ACTIONS_GLOBAL_POST_INIT \\\n";
+   for(const auto &abtEntry: actionsByType) {
+      const auto &tag = abtEntry.first;
+      out <<
+"   PPG_ACTIONS___" << tag << "(PPG_CONFIGURE_ACTIONS_GLOBAL_POST_INIT___" << tag << ") \\\n";
+   }
+   out << 
+"\n";
+
+   out <<
+"#define PPG_CUSTOM_CONFIGURE_ACTIONS_LOCAL \\\n";
+   for(const auto &abtEntry: actionsByType) {
+      const auto &tag = abtEntry.first;
+      out <<
+"   PPG_ACTIONS___" << tag << "(PPG_CONFIGURE_ACTIONS_LOCAL___" << tag << ") \\\n";
+   }
+   out << 
+"\n";
+   
+   outputInfoAboutSpecificOverride(out);
+   out <<
+"#ifndef PPG_CONFIGURE_ACTIONS_GLOBAL_PRE_INIT\n"
+"#define PPG_CONFIGURE_ACTIONS_GLOBAL_PRE_INIT(ACTION)\n"
+"#endif\n\n";
+   
+   outputInfoAboutSpecificOverride(out);
+   out <<
+"#ifndef PPG_CONFIGURE_ACTIONS_GLOBAL_POST_INIT\n"
+"#define PPG_CONFIGURE_ACTIONS_GLOBAL_POST_INIT(ACTION)\n"
+"#endif\n\n";
+
+   outputInfoAboutSpecificOverride(out);
+   out <<
+"#ifndef PPG_CONFIGURE_ACTIONS_LOCAL\n"
+"#define PPG_CONFIGURE_ACTIONS_LOCAL(ACTION)\n"
+"#endif\n\n";
 }
 
 void generateGlobalInputInformation(std::ostream &out)
@@ -132,19 +201,12 @@ void generateGlobalInputInformation(std::ostream &out)
    
    for(const auto &abtEntry: inputsByType) {
       const auto &tag = abtEntry.first;
-      
-      out << 
-"#ifndef PPG_INPUT_MAP_" << tag << "\n";
-      out <<
-"#define PPG_INPUT_MAP_" << tag << "(...) __VA_ARGS__\n";
-      out <<
-"#endif\n"
-"\n";
    
+      outputInfoAboutSpecificOverride(out);
       out <<
-"#ifndef PPG_INPUT_INITIALIZATION_" << tag << "\n";
+"#ifndef PPG_INPUT_INITIALIZATION___" << tag << "\n";
       out << 
-"#define PPG_INPUT_INITIALIZATION_" << tag << "(...) __VA_ARGS__\n";
+"#define PPG_INPUT_INITIALIZATION___" << tag << "(...) __VA_ARGS__\n";
       out <<
 "#endif\n"
 "\n";
@@ -159,6 +221,27 @@ void generateGlobalInputInformation(std::ostream &out)
       
       out <<
 "\n";
+      outputInfoAboutSpecificOverride(out);
+      out <<
+   "#ifndef PPG_CONFIGURE_INPUTS_GLOBAL_PRE_INIT___" << tag << "\n"
+   "#define PPG_CONFIGURE_INPUTS_GLOBAL_PRE_INIT___" << tag << "(ACTION) \\\n"
+   "   PPG_CONFIGURE_INPUTS_GLOBAL_PRE_INIT(ACTION)\n"
+   "#endif\n\n";
+      
+      outputInfoAboutSpecificOverride(out);
+      out <<
+   "#ifndef PPG_CONFIGURE_INPUTS_GLOBAL_POST_INIT___" << tag << "\n"
+   "#define PPG_CONFIGURE_INPUTS_GLOBAL_POST_INIT___" << tag << "(ACTION) \\\n"
+   "   PPG_CONFIGURE_INPUTS_GLOBAL_POST_INIT(ACTION)\n"
+   "#endif\n\n";
+
+      outputInfoAboutSpecificOverride(out);
+      out <<
+   "#ifndef PPG_CONFIGURE_INPUTS_LOCAL___" << tag << "\n"
+   "#define PPG_CONFIGURE_INPUTS_LOCAL___" << tag << "(ACTION) \\\n"
+   "   PPG_CONFIGURE_INPUTS_LOCAL(ACTION)\n"
+   "#endif\n\n";
+   }
 
    out <<
 "#define PPG_INPUTS_ALL(OP) \\\n";
@@ -168,8 +251,55 @@ void generateGlobalInputInformation(std::ostream &out)
       out <<
 "   PPG_INPUTS___" << tag << "(OP) \\\n";
    }
-   out << "\n";
+   out << "\n";   
+   
+   out <<
+"#define PPG_CUSTOM_CONFIGURE_INPUTS_GLOBAL_PRE_INIT \\\n";
+   for(const auto &abtEntry: inputsByType) {
+      const auto &tag = abtEntry.first;
+      out <<
+"   PPG_INPUTS___" << tag << "(PPG_CONFIGURE_INPUTS_GLOBAL_PRE_INIT___" << tag << ") \\\n";
    }
+   out << 
+"\n";
+
+   out <<
+"#define PPG_CUSTOM_CONFIGURE_INPUTS_GLOBAL_POST_INIT \\\n";
+   for(const auto &abtEntry: inputsByType) {
+      const auto &tag = abtEntry.first;
+      out <<
+"   PPG_INPUTS___" << tag << "(PPG_CONFIGURE_INPUTS_GLOBAL_POST_INIT___" << tag << ") \\\n";
+   }
+   out << 
+"\n";
+
+   out <<
+"#define PPG_CUSTOM_CONFIGURE_INPUTS_LOCAL \\\n";
+   for(const auto &abtEntry: inputsByType) {
+      const auto &tag = abtEntry.first;
+      out <<
+"   PPG_INPUTS___" << tag << "(PPG_CONFIGURE_INPUTS_LOCAL___" << tag << ") \\\n";
+   }
+   out << 
+"\n";
+   
+   outputInfoAboutSpecificOverride(out);
+   out <<
+"#ifndef PPG_CONFIGURE_INPUTS_GLOBAL_PRE_INIT\n"
+"#define PPG_CONFIGURE_INPUTS_GLOBAL_PRE_INIT(ACTION)\n"
+"#endif\n\n";
+   
+   outputInfoAboutSpecificOverride(out);
+   out <<
+"#ifndef PPG_CONFIGURE_INPUTS_GLOBAL_POST_INIT\n"
+"#define PPG_CONFIGURE_INPUTS_GLOBAL_POST_INIT(ACTION)\n"
+"#endif\n\n";
+
+   outputInfoAboutSpecificOverride(out);
+   out <<
+"#ifndef PPG_CONFIGURE_INPUTS_LOCAL\n"
+"#define PPG_CONFIGURE_INPUTS_LOCAL(ACTION)\n"
+"#endif\n\n";
 }
 
 static void outputInformationOfDefinition(std::ostream &out, const ParserTree::Node &node)
@@ -187,18 +317,55 @@ static void outputInformationOfDefinition(std::ostream &out, const ParserTree::N
 "//\n";
 }
 
-void outputToken(std::ostream &out, const ParserTree::Token &token)
+void recursivelyOutputToken(std::ostream &out, const ParserTree::Token &token)
 {
    for(const auto &childTokenPtr: token.getChildren()) {
-      outputToken(out, *childTokenPtr);
+      recursivelyOutputToken(out, *childTokenPtr);
    }
    
    outputInformationOfDefinition(out, token);
    token.generateCCode(out);
 }
 
+void recursivelyOutputTokenForwardDeclaration(std::ostream &out, const ParserTree::Token &token)
+{
+   out <<
+"extern ";
+   token.outputCTokenDeclaration(out);
+   out << ";\n";
+
+   for(const auto &childTokenPtr: token.getChildren()) {
+      recursivelyOutputTokenForwardDeclaration(out, *childTokenPtr);
+   }
+}
+
+void recursivelyGetMaxEvents(const ParserTree::Token &token, int curDepth, int &maxDepth, int curInputs, int &maxInputs)
+{
+   curInputs += token.getNumInputs();
+   ++curDepth;
+   
+   if(token.getChildren().empty()) {
+      if(curInputs > maxInputs) {
+         maxInputs = curInputs;
+      }
+      if(curDepth > maxDepth) {
+         maxDepth = curDepth;
+      }
+   }
+   else {
+      for(const auto &childTokenPtr: token.getChildren()) {
+         recursivelyGetMaxEvents(*childTokenPtr, curDepth, maxDepth, curInputs, maxInputs);
+      }
+   }
+}
+
 void generateGlobalContext(std::ostream &out)
 {
+   out <<
+"PPG_CUSTOM_CONFIGURE_ACTIONS_GLOBAL_PRE_INIT\n\n";
+   out <<
+"PPG_CUSTOM_CONFIGURE_INPUTS_GLOBAL_PRE_INIT\n\n";
+   
    // Output all actions
    //
    for(const auto &actionEntry: ParserTree::Action::getActions()) {
@@ -225,18 +392,64 @@ void generateGlobalContext(std::ostream &out)
    << "(" << input.getParameters().getText() << ");\n\n";
    }
    
-   caption(out, "Token tree");
+   out <<
+"PPG_CUSTOM_CONFIGURE_ACTIONS_GLOBAL_POST_INIT\n\n";
+   out <<
+"PPG_CUSTOM_CONFIGURE_INPUTS_GLOBAL_POST_INIT\n\n";
    
    auto root = ParserTree::Pattern::getTreeRoot();
    
+   caption(out, "Token tree forward declarations");
+   
+   recursivelyOutputTokenForwardDeclaration(out, *root);
+   out << "\n";
+   
+   caption(out, "Token tree");
+   
    // Recursively output token tree
    //
-   outputToken(out, *root);
+   recursivelyOutputToken(out, *root);
    
    caption(out, "Context");
    
+   int maxDepth = 0;
+   int maxEvents = 0;
+   recursivelyGetMaxEvents(*root, 0, maxDepth, 0, maxEvents);
+   assert(maxDepth > 0);
+   assert(maxEvents > 0);
+   
+   out <<
+"PPG_Event_Queue_Entry event_buffer[" << maxEvents << "];\n\n";
+
+   out <<
+"PPG_Furcation furcations[" << maxDepth << "];\n\n";
+   
+   out <<
+"PPG_Token__ *tokens[" << maxDepth << "];\n\n";
    out <<
 "PPG_Context context = (PPG_Context) {\n"
+"   .event_buffer = (PPG_Event_Buffer) {\n"
+"      .events = event_buffer,\n"
+"      .start = 0,\n"
+"      .end = 0,\n"
+"      .cur = 0,\n"
+"      .size = 0,\n"
+"      .size_max = " << maxEvents << "\n";
+   out <<
+"   },\n"
+"   .furcation_stack = (PPG_Furcation_Stack) {\n"
+"      .furcations = furcations,\n"
+"      .n_furcations = 0,\n"
+"      .cur_furcation = 0,\n"
+"      .max_furcations = " << maxDepth << "\n";
+   out <<
+"   },\n"
+"   .active_tokens = (PPG_Active_Tokens) {\n"
+"      .tokens = tokens,\n"
+"      .n_tokens = 0,\n"
+"      .max_tokens = " << maxDepth << "\n";
+   out <<
+"   },\n"
 "   .pattern_root = &" << root->getId().getText() << "\n"
 "};\n\n";
 }
@@ -248,6 +461,10 @@ void generateInitializationFunction(std::ostream &out)
    out <<
 "void papageno_initialize_context()\n"
 "{\n";
+   out <<
+"   PPG_CUSTOM_CONFIGURE_ACTIONS_LOCAL\n\n";
+   out <<
+"   PPG_CUSTOM_CONFIGURE_INPUTS_LOCAL\n\n";
    out <<
 "   ppg_global_initialize_context_static_tree(&context);\n"
 "   ppg_context = &context;\n"

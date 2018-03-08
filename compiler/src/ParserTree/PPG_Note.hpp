@@ -54,6 +54,8 @@ class Note : public Token
          return std::make_shared<Note>(*this);
       }
       
+      virtual int getNumInputs() const override { return 1; }
+      
    protected:
       
       virtual void generateCCodeInternal(std::ostream &out) const override {

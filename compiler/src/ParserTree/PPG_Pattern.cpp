@@ -163,6 +163,7 @@ void
       ::insertChildPatterns(std::shared_ptr<Token> subtreeRoot, int startPos)
 {
    for(int pos = startPos; pos < tokens_.size(); ++pos) {
+      tokens_[pos]->setParent(*subtreeRoot);
       subtreeRoot->addChild(tokens_[pos]);
       subtreeRoot = tokens_[pos];
    }

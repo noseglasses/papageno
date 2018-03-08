@@ -117,7 +117,6 @@ void ppg_event_buffer_init(PPG_Event_Buffer *eb)
    ppg_event_buffer_resize(eb, PPG_MAX_EVENTS);
 }
 
-
 void ppg_event_buffer_restore(PPG_Event_Buffer *eb)
 {
    PPG_Count safed_size = eb->max_size;

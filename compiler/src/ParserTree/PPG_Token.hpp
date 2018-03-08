@@ -30,12 +30,14 @@ class Token : public Node
    public:  
       
       Token()
-         :  layer_(curLayer_)
+         :  layer_(curLayer_),
+            parent_(nullptr)
       {}
       
       Token(const Parser::Token &id)
          :  Node(id),
-            layer_(curLayer_)
+            layer_(curLayer_),
+            parent_(nullptr)
       {}
       
       void setAction(const std::shared_ptr<Action> &action) {
@@ -50,11 +52,21 @@ class Token : public Node
          children_.push_back(token);
       }
       
+      void setParent(const Token &parent) {
+         parent_ = &parent;
+      }
+      
+      const Token *getParent() const {
+         return parent_;
+      }
+      
       const std::vector<std::shared_ptr<Token>> &getChildren() const {
          return children_;
       }
       
       bool hasChildren() const { return !children_.empty(); }
+      
+      virtual int getNumInputs() const { return 0; }
       
       virtual bool isEqual(const Token &other) const { return false; }
       
@@ -62,6 +74,11 @@ class Token : public Node
       
       static void setCurrentLayer(const Parser::Token &layer) { 
          curLayer_ = layer;
+      }
+      
+      void outputCTokenDeclaration(std::ostream &out) const {
+         out <<
+"PPG_" << this->getNodeType() << " " << this->getId().getText();
       }
       
       void generateCCode(std::ostream &out) const {
@@ -86,8 +103,9 @@ class Token : public Node
 "};\n\n";
          }
           
-         out <<
-"PPG_" << this->getNodeType() << " " << this->getId().getText() << " = (PPG_" << this->getNodeType() << ") {\n";
+         this->outputCTokenDeclaration(out);
+         
+         out << " = (PPG_" << this->getNodeType() << ") {\n";
 
          this->generateCCodeInternal(out);
          
@@ -113,6 +131,15 @@ class Token : public Node
 "       .action_state = 0,\n"
 "       .action_flags = PPG_Action_Default\n"
 "    },\n";
+
+         if(parent_) {
+            out <<
+"    .parent = &" << parent_->getId().getText() << ",\n";
+         }
+         else {
+            out <<
+"    .parent = NULL,\n";
+         }
          
          if(!children_.empty()) {
             out <<
@@ -153,6 +180,7 @@ class Token : public Node
       
       std::shared_ptr<Action>               action_;
       std::vector<std::shared_ptr<Token>>   children_;
+      const Token                           *parent_;
       Parser::Token                         layer_;
       
       static Parser::Token                  curLayer_;

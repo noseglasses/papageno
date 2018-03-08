@@ -35,6 +35,8 @@ class Aggregate : public Token
       
       virtual bool isEqual(const Token &other) const override;
       
+      virtual int getNumInputs() const override { return inputs_.size(); }
+      
    protected:
       
       virtual void generateDependencyCodeInternal(std::ostream &out) const override;

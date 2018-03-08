@@ -72,7 +72,7 @@ typedef struct PPG_Context_Struct
 
 PPG_Context *ppg_context;
 
-void ppg_global_initialize_context_static_tree(PPG_Context *context);
+void ppg_global_initialize_context_static(PPG_Context *context);
 void ppg_global_initialize_context(PPG_Context *context);
 
 size_t ppg_context_get_size_requirements(PPG_Context *context);

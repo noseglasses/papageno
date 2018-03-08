@@ -34,13 +34,9 @@ static void ppg_signal_callback_init(PPG_Signal_Callback *cb)
    cb->user_data = NULL;
 }
 
-void ppg_global_initialize_context_static_tree(PPG_Context *context) {
+void ppg_global_initialize_context_static(PPG_Context *context) {
    
 //    PPG_LOG("Initializing context\n");
-   
-   ppg_event_buffer_init(&context->event_buffer);
-   ppg_furcation_stack_init(&context->furcation_stack);
-   ppg_active_tokens_init(&context->active_tokens);
    
 //    ppg_bitfield_init(&context->active_inputs);
    
@@ -74,7 +70,11 @@ void ppg_global_initialize_context_static_tree(PPG_Context *context) {
 
 void ppg_global_initialize_context(PPG_Context *context) {
   
-   ppg_global_initialize_context_static_tree(context);
+   ppg_event_buffer_init(&context->event_buffer);
+   ppg_furcation_stack_init(&context->furcation_stack);
+   ppg_active_tokens_init(&context->active_tokens);
+   
+   ppg_global_initialize_context_static(context);
    
    context->pattern_root = ppg_token_alloc();
 
