@@ -35,6 +35,13 @@ class Cluster : public Aggregate
       
       virtual std::string getVTableId() const override { return "&ppg_cluster_vtable"; }
       virtual std::string getTokenType() const override { return "PPG_Cluster"; }
+      
+      virtual std::string getActionPath() const override { return "aggregate.super.action"; }
+      
+      virtual std::string getInputsPath() const override { return "aggregate.inputs"; }
+      
+      virtual void generateCCodeInternal(std::ostream &out) const override;
+      virtual void generateDependencyCodeInternal(std::ostream &out) const override;
 };
 
 } // namespace ParserTree

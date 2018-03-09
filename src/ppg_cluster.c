@@ -17,19 +17,13 @@
 #include "ppg_cluster.h"
 #include "ppg_debug.h"
 #include "detail/ppg_context_detail.h"
-#include "detail/ppg_aggregate_detail.h"
+#include "detail/ppg_cluster_detail.h"
 #include "detail/ppg_pattern_detail.h"
 #include "detail/ppg_token_detail.h"
 #include "detail/ppg_token_precedence_detail.h"
 #include "detail/ppg_malloc_detail.h"
 
 #include <string.h>
-
-typedef struct {
-   PPG_Aggregate aggregate;
-   PPG_Bitfield member_active_lasting;
-   PPG_Count n_lasting;
-} PPG_Cluster;
 
 static bool ppg_cluster_match_event(   
                                  PPG_Cluster *cluster,

@@ -14,15 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#define PPG_CS_NO_COMPRESSION
+#define PPG_CS_NO_AUTOMATIC_CONTEXT_HANDLING
+
 #include "papageno_char_strings.h"
 
-#include "/home/itm/fleissne/Scratch/Projects/papageno/testing/char_strings/default_includes.h"
+#include "default_includes.h"
    
-#include "/home/itm/fleissne/Scratch/Projects/papageno/testing/char_strings/default_layers.h"
-
-#define PPG_INPUT_MAP_(NAME, CHAR) PPG_CS_CHAR(CHAR)
-#define PPG_ACTION_MAP_(NAME) PPG_CS_ACTION(NAME)
-#define PPG_ACTION_INITIALIZATION_(NAME) PPG_CS_REGISTER_ACTION(NAME)
+#include "default_layers.h"
 
 #include "test_compiler_run_output.c"
 
@@ -31,25 +30,29 @@ PPG_CS_START_TEST
    /*
    papageno_start
    
-   action: C1
-   action: C2
+   action: Cluster_1
+   action: Cluster_2
    
    input: a := 'a'
    input: b := 'b'
    input: c := 'c'
    input: d := 'd'
    
-   {a, b, c} : C1
-   {a, b, d} : C2
+   {a, b, c} : Cluster_1
+   {a, b, d} : Cluster_2
    
    papageno_end
    */
    
+   PPG_LOCAL_INITIALIZATION
+   
    papageno_initialize_context();
+   
+   PPG_CS_PREPARE_CONTEXT
    
    #ifndef PPG_CS_SUPPRESS_TESTS
    
-   #include "/home/itm/fleissne/Scratch/Projects/papageno/testing/char_strings/test_clusters_tests.h"
+   #include "test_clusters_tests.h"
    
    #endif // ifndef PPG_CS_SUPPRESS_TESTS
    

@@ -56,6 +56,17 @@ class Note : public Token
       
       virtual int getNumInputs() const override { return 1; }
       
+      virtual void collectInputAssignments(InputAssignmentsByTag &iabt) const override {
+         std::ostringstream path;
+         path << this->getId().getText() << ".input";
+         iabt[input_->getType().getText()].push_back( 
+            (InputAssignment) { 
+               path.str(),
+               input_
+            }
+         );
+      }
+      
    protected:
       
       virtual void generateCCodeInternal(std::ostream &out) const override {
@@ -66,7 +77,7 @@ class Note : public Token
          this->Token::generateCCodeInternal(out);
          out <<
 "   },\n"
-"   .input = PPG_INPUT_INITIALIZATION___" << input_->getType().getText()
+"   .input = PPG_INPUT_INITIALIZE_GLOBAL___" << input_->getType().getText()
    << "(" 
    << input_->getId().getText() << ", "
    << input_->getParameters().getText() << ")\n";

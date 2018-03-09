@@ -80,3 +80,12 @@ void ppg_furcation_stack_free(PPG_Furcation_Stack *stack)
    stack->furcations = NULL;
 }
    
+#ifndef NDEBUG
+PPG_Furcation *ppg_furcation_checked_access(PPG_Count pos)
+{
+   PPG_ASSERT(pos >= 0);
+   PPG_ASSERT(pos < PPG_FB.n_furcations);
+   
+   return &PPG_FB.furcations[pos];
+}
+#endif

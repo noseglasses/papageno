@@ -30,76 +30,7 @@ extern struct gengetopt_args_info ai;
 
 namespace Papageno {
 namespace Generator {
-   
-// Add a flag to enable local initialization for 
-// all input classes.
-//
-#ifdef PPG_ENABLE_INPUT_LOCAL_INITIALIZATION_ALL
-// For all classes
-#   ifndef PPG_ENABLE_INPUT_LOCAL_INITIALIZATION___<TAG>
-#      define PPG_ENABLE_INPUT_LOCAL_INITIALIZATION___<TAG>
-#   endif
-// End for all classes
-#endif
-   
-// Enable the same type of initialization for all 
-// classes.
-//
-#ifndef PPG_INPUT_INITIALIZE
-#   define PPG_INPUT_INITIALIZE(ID, ...) __VA_ARGS__
-#endif
-   
-// Distinguish between global and local
-// initialization by class.
-//
-// For all classes
-//
-// If no class wise initialization is desired 
-// we use the common initialization 
-// method
-//
-#ifndef PPG_INPUT_INITIALIZE___<TAG>
-#   define PPG_INPUT_INITIALIZE___<TAG>(ID, ...) \
-      PPG_INPUT_INITIALIZE(ID, __VA_ARGS__)
-#endif
-   
-#ifdef PPG_ENABLE_INPUT_LOCAL_INITIALIZATION___<TAG>
-#   ifndef PPG_INPUT_INITIALIZE_LOCAL___<TAG>
-#      define PPG_INPUT_INITIALIZE_LOCAL___<TAG>(ID, PATH, ...) \
-            PATH = PPG_INPUT_INITIALIZE___<TAG>(ID, __VA_ARGS__)
-#   endif
-#   ifndef PPG_INPUT_INITIALIZE_GLOBAL___<TAG>
-#      define PPG_INPUT_INITIALIZE_GLOBAL___<TAG>(ID, ...) 0
-#   endif
-#else
-#   ifndef PPG_INPUT_INITIALIZE_LOCAL___<TAG>
-#      define PPG_INPUT_INITIALIZE_LOCAL___<TAG>(ID, PATH, ...)
-#   endif
-#   ifndef PPG_INPUT_INITIALIZE_GLOBAL___<TAG>
-#      define PPG_INPUT_INITIALIZE_GLOBAL___<TAG>(ID, ...) \
-            PPG_INPUT_INITIALIZE___<TAG>(ID, __VA_ARGS__)
-#   endif
-#endif
-            
-// End for all classes
 
-// Define a common entry point by class type for
-// local initialization
-//
-// For all classes
-// Automatisch generieren waehrend der Baum erzeugt wird
-#define PPG_INPUT_INITIALIZE_LOCAL_ALL___<TAG> \
-   /* For all input assignments */ \
-   PPG_INPUT_INITIALIZE_LOCAL___<TAG>(the_id, the_path, the_args) \
-   /* End for all input assignments */
-// End for all classes
-      
-// Define a common entry point for local initialization
-//
-#define PPG_INPUT_INITIALIZE_LOCAL_ALL \
-  /* For all classes */ \
-  PPG_INPUT_INITIALIZE_LOCAL_ALL___<TAG> \
-  /* End for all classes */
   
 // Das gleiche fuer all actions
    
@@ -124,10 +55,14 @@ static void outputInformationOfDefinition(std::ostream &out, const ParserTree::N
 {
    const auto &lod = node.getLOD();
    
-   if(lod) {
-      out <<
-"#line " << lod.location_.first_line << " \"" << lod.file_ << "\"\n";
-   }
+//    if(lod) {
+//       out <<
+// "#line " << lod.location_.first_line << " \"" << lod.file_ << "\"\n";
+//    }
+//    else {
+//       out <<
+// "#line\n";
+//    }
 
    out <<
 "// " << lod << "\n";
@@ -182,7 +117,8 @@ void generateFileHeader(std::ostream &out) {
 "#define PPG_NUM_BYTES(N_BITS) \\\n"
 "   (N_BITS/(8*sizeof(PPG_Bitfield_Storage_Type)))\n\n";
 }
-   
+
+#if 0
 void generateGlobalActionInformation(std::ostream &out)
 {
    auto actionsByType = ParserTree::Action::getActionsByType();
@@ -271,98 +207,253 @@ void generateGlobalActionInformation(std::ostream &out)
    }
    out << 
 "\n";
+}
 
+#endif
+
+template<typename EntitiesByType,
+         typename EntityAssignments>
+void generateEntityInformation(
+            std::ostream &out,
+            const EntitiesByType &entitiesByType,
+            const EntityAssignments &entityAssignments,
+            const std::string &entityType,
+            const std::string &entityTypeUpper,
+            const std::string &entityTypeAllCaps
+     )
+{  
+   caption(out, entityTypeUpper + "s");
+      
+   out <<
+"// Add a flag to enable local initialization for\n"
+"// all input classes.\n"
+"//\n"
+"#ifdef PPG_ENABLE_" << entityTypeAllCaps << "S_LOCAL_INITIALIZATION_ALL\n";
+
+   for(const auto &entityAssignmentsEntry: entityAssignments) {
+      const auto &tag = entityAssignmentsEntry.first;
+      
+      out <<
+"// A flag to toggle specific initialization for tag class \'" << tag << "\'.\n"
+"//\n"
+"#   ifndef PPG_ENABLE_" << entityTypeAllCaps << "S_LOCAL_INITIALIZATION___" << tag << " \n"
+"#      define PPG_ENABLE_" << entityTypeAllCaps << "S_LOCAL_INITIALIZATION___" << tag << " \n"
+"#   endif \n";
+   }
+   out <<
+"#endif\n\n";
+
+   out <<
+"// Enable the same type of initialization for all tag classes\n"
+"//\n"
+"#ifndef PPG_" << entityTypeAllCaps << "_INITIALIZE\n"
+"#   define PPG_" << entityTypeAllCaps << "_INITIALIZE(ID, ...) __VA_ARGS__\n"
+"#endif\n\n";
+   
+   out <<
+"// Distinguish between global and local\n"
+"// initialization by tag class.\n"
+"//\n"
+"// If no class wise initialization is desired\n"
+"// we fall back to the common initialization method\n"
+"//\n";
+   for(const auto &entityAssignmentsEntry: entityAssignments) {
+      const auto &tag = entityAssignmentsEntry.first;
+
+      out <<
+"// Tag class \'" << tag << "\'.\n" <<
+"#ifndef PPG_" << entityTypeAllCaps << "_INITIALIZE___" << tag << "\n"
+"#   define PPG_" << entityTypeAllCaps << "_INITIALIZE___" << tag << "(ID, ...) \\\n" <<
+"      PPG_" << entityTypeAllCaps << "_INITIALIZE(ID, ##__VA_ARGS__)\n"
+"#endif\n"
+"\n"
+"#ifdef PPG_ENABLE_" << entityTypeAllCaps << "S_LOCAL_INITIALIZATION___" << tag << "\n" <<
+"#   ifndef PPG_" << entityTypeAllCaps << "_INITIALIZE_LOCAL___" << tag << "\n" <<
+"#      define PPG_" << entityTypeAllCaps << "_INITIALIZE_LOCAL___" << tag << "(ID, PATH, ...) \\\n" <<
+"            PATH = PPG_" << entityTypeAllCaps << "_INITIALIZE___" << tag << "(ID, ##__VA_ARGS__);\n" <<
+"#   endif\n"
+"#   ifndef PPG_" << entityTypeAllCaps << "_INITIALIZE_GLOBAL___" << tag << "\n" <<
+"#      define PPG_" << entityTypeAllCaps << "_INITIALIZE_GLOBAL___" << tag << "(ID, ...) 0\n" <<
+"#   endif\n"
+"#else\n"
+"#   ifndef PPG_" << entityTypeAllCaps << "_INITIALIZE_LOCAL___" << tag << "\n" <<
+"#      define PPG_" << entityTypeAllCaps << "_INITIALIZE_LOCAL___" << tag << "(ID, PATH, ...)\n"
+"#   endif\n"
+"#   ifndef PPG_" << entityTypeAllCaps << "_INITIALIZE_GLOBAL___" << tag << "\n" <<
+"#      define PPG_" << entityTypeAllCaps << "_INITIALIZE_GLOBAL___" << tag << "(ID, ...) \\\n" <<
+"            PPG_" << entityTypeAllCaps << "_INITIALIZE___" << tag << "(ID, ##__VA_ARGS__)\n" <<
+"#   endif\n"
+"#endif\n"
+"\n"         
+"// Define a common entry for each tag class to be used for\n"
+"// local initialization.\n"
+"//\n"
+"#define PPG_" << entityTypeAllCaps << "S_INITIALIZE_LOCAL_ALL___" << tag << " \\\n";
+      for(const auto &assignment: entityAssignmentsEntry.second) {
+         out <<
+"   PPG_" << entityTypeAllCaps << "_INITIALIZE_LOCAL___" << tag << "(" << assignment.entity_->getId().getText() << ", " << assignment.pathString_;
+         if(assignment.entity_->getParametersDefined()) {
+            out << ", " << assignment.entity_->getParameters().getText();
+         }
+         out << ") \\\n";
+      }
+      out <<
+"\n";
+   }
+   
+   out <<
+"// Define a common entry point for local initialization\n"
+"//\n"
+"#define PPG_" << entityTypeAllCaps << "S_INITIALIZE_LOCAL_ALL \\\n";
+
+   for(const auto &entityAssignmentsEntry: entityAssignments) {
+      const auto &tag = entityAssignmentsEntry.first;
+      
+      out <<
+"   PPG_" << entityTypeAllCaps << "S_INITIALIZE_LOCAL_ALL___" << tag << " \\\n";
+   }
+   out <<
+"\n";
+
+   out <<
+"// This macro can be used to add configuration of " << entityType << "s at global scope.\n"
+"// The default is no configuration at global scope.\n"
+"//\n"
+"#ifndef PPG_"<< entityTypeAllCaps << "_CONFIGURE_GLOBAL\n"
+"#   define PPG_"<< entityTypeAllCaps << "_CONFIGURE_GLOBAL(...)\n"
+"#endif\n"
+"\n";
+
+   out <<
+"// This macro can be used to add configuration of " << entityType << "s at global scope.\n"
+"// The default is no configuration at local scope.\n"
+"//\n"
+"#ifndef PPG_"<< entityTypeAllCaps << "_CONFIGURE_LOCAL\n"
+"#   define PPG_"<< entityTypeAllCaps << "_CONFIGURE_LOCAL(...)\n"
+"#endif\n"
+"\n";
+
+   for(const auto &abtEntry: entitiesByType) {
+      const auto &tag = abtEntry.first;
+      
+      out <<
+"// Implement the following macro to enable specific initialization \n"
+"// at global scope for tag class \'" << tag << "\'.\n" <<
+"//\n"
+"#ifndef PPG_" << entityTypeAllCaps << "_CONFIGURE_GLOBAL___" << tag << "\n"
+"#   define PPG_" << entityTypeAllCaps << "_CONFIGURE_GLOBAL___" << tag << "(...) \\\n"
+"       PPG_" << entityTypeAllCaps << "_CONFIGURE_GLOBAL(__VA_ARGS__)\n"
+"#endif\n"
+"\n"
+"// Implement the following macro to enable specific initialization \n"
+"// at local scope for tag class " << tag << ".\n" <<
+"//\n"
+"#ifndef PPG_" << entityTypeAllCaps << "_CONFIGURE_LOCAL___" << tag << "\n"
+"#   define PPG_" << entityTypeAllCaps << "_CONFIGURE_LOCAL___" << tag << "(...) \\\n"
+"       PPG_" << entityTypeAllCaps << "_CONFIGURE_LOCAL(__VA_ARGS__)\n"
+"#endif\n"
+"\n";
+
+      out <<
+"// Use this macro to perform specific initializations of " << entityType << "s with\n"
+"// tag class \'" << tag << "\'.\n"
+"//\n"
+"#define PPG_" << entityTypeAllCaps << "S___" << tag << "(OP) \\\n";
+
+      for(const auto &entityPtr: abtEntry.second) {
+         out <<
+"   OP(" << entityPtr->getId().getText() << ")\\\n";
+      }
+   }
+   out <<
+"\n";
+
+   out <<
+"#define PPG_" << entityTypeAllCaps << "S_ALL(OP) \\\n";
+
+   for(const auto &abtEntry: entitiesByType) {
+      const auto &tag = abtEntry.first;
+      out <<
+"   PPG_" << entityTypeAllCaps << "S___" << tag << "(OP) \\\n";
+   }
+   out << "\n"; 
+
+   out <<
+"#define PPG_" << entityTypeAllCaps << "S_CONFIGURE_LOCAL_ALL \\\n";
+   for(const auto &abtEntry: entitiesByType) {
+      const auto &tag = abtEntry.first;
+      out <<
+"   PPG_" << entityTypeAllCaps << "S___" << tag << "(PPG_" << entityTypeAllCaps << "_CONFIGURE_LOCAL___" << tag << ") \\\n";
+   }
+   out << 
+"\n";  
+   
+   caption(out, entityTypeUpper + "s global configuration");
+   for(const auto &abtEntry: entitiesByType) {
+      const auto &tag = abtEntry.first;
+      out <<
+"// Tag class \'" << tag << "\'\n"
+"//\n"
+"PPG_" << entityTypeAllCaps << "S___" << tag << "(PPG_" << entityTypeAllCaps << "_CONFIGURE_GLOBAL___" << tag << ")\n";
+   }
+   out << 
+"\n";
+}
+
+void recursivelyCollectInputAssignments(ParserTree::InputAssignmentsByTag &iabt, const ParserTree::Token &token)
+{
+   token.collectInputAssignments(iabt);
+    
+   for(const auto &childTokenPtr: token.getChildren()) {
+      recursivelyCollectInputAssignments(iabt, *childTokenPtr);
+   }
 }
 
 void generateGlobalInputInformation(std::ostream &out)
 {
    auto inputsByType = ParserTree::Input::getInputsByType();
    
-   caption(out, "Inputs");
-      
-   outputInfoAboutSpecificOverride(out);
-   out <<
-"#ifndef PPG_CONFIGURE_INPUTS_GLOBAL\n"
-"#define PPG_CONFIGURE_INPUTS_GLOBAL(...)\n"
-"#endif\n\n";
-
-   outputInfoAboutSpecificOverride(out);
-   out <<
-"#ifndef PPG_CONFIGURE_INPUTS_LOCAL\n"
-"#define PPG_CONFIGURE_INPUTS_LOCAL(...)\n"
-"#endif\n\n";
-
-   for(const auto &abtEntry: inputsByType) {
-      const auto &tag = abtEntry.first;
+   auto root = ParserTree::Pattern::getTreeRoot();
    
-      outputInfoAboutSpecificOverride(out);
-      out <<
-"#ifndef PPG_INPUT_INITIALIZATION___" << tag << "\n";
-      out << 
-"#define PPG_INPUT_INITIALIZATION___" << tag << "(...) __VA_ARGS__\n";
-      out <<
-"#endif\n"
-"\n";
-
-      out <<
-"#define PPG_INPUTS___" << tag << "(OP) \\\n";
-
-      for(const auto &inputPtr: abtEntry.second) {
-         out <<
-"   OP(" << inputPtr->getId().getText() << ")\\\n";
-      }
-      
-      out <<
-"\n";
-         
-      outputInfoAboutSpecificOverride(out);
-      out <<
-   "#ifndef PPG_CONFIGURE_INPUTS_GLOBAL___" << tag << "\n"
-   "#define PPG_CONFIGURE_INPUTS_GLOBAL___" << tag << "(...) \\\n"
-   "   PPG_CONFIGURE_INPUTS_GLOBAL(__VA_ARGS__)\n"
-   "#endif\n\n";
-
-      outputInfoAboutSpecificOverride(out);
-      out <<
-   "#ifndef PPG_CONFIGURE_INPUTS_LOCAL___" << tag << "\n"
-   "#define PPG_CONFIGURE_INPUTS_LOCAL___" << tag << "(...) \\\n"
-   "   PPG_CONFIGURE_INPUTS_LOCAL(__VA_ARGS__)\n"
-   "#endif\n\n";
-   }
-
-   out <<
-"#define PPG_INPUTS_ALL(OP) \\\n";
-
-   for(const auto &abtEntry: inputsByType) {
-      const auto &tag = abtEntry.first;
-      out <<
-"   PPG_INPUTS___" << tag << "(OP) \\\n";
-   }
-   out << "\n";   
+   ParserTree::InputAssignmentsByTag iabt;
+   recursivelyCollectInputAssignments(iabt, *root);
    
-   out <<
-"#define PPG_CUSTOM_CONFIGURE_INPUTS_GLOBAL \\\n";
-   for(const auto &abtEntry: inputsByType) {
-      const auto &tag = abtEntry.first;
-      out <<
-"   PPG_INPUTS___" << tag << "(PPG_CONFIGURE_INPUTS_GLOBAL___" << tag << ") \\\n";
+   generateEntityInformation(
+      out,
+      inputsByType,
+      iabt,
+      "input",
+      "Input",
+      "INPUT"
+   );
+}
+   
+static void recursivelyCollectActionAssignments(ParserTree::ActionAssignmentsByTag &aabt, const ParserTree::Token &token)
+{
+   token.collectActionAssignments(aabt);
+    
+   for(const auto &childTokenPtr: token.getChildren()) {
+      recursivelyCollectActionAssignments(aabt, *childTokenPtr);
    }
-   out << 
-"\n";
+}
 
-   out <<
-"PPG_CUSTOM_CONFIGURE_INPUTS_GLOBAL\n\n";
-
-   out <<
-"#define PPG_CUSTOM_CONFIGURE_INPUTS_LOCAL \\\n";
-   for(const auto &abtEntry: inputsByType) {
-      const auto &tag = abtEntry.first;
-      out <<
-"   PPG_INPUTS___" << tag << "(PPG_CONFIGURE_INPUTS_LOCAL___" << tag << ") \\\n";
-   }
-   out << 
-"\n";
-
+void generateGlobalActionInformation(std::ostream &out)
+{
+   auto actionsByType = ParserTree::Action::getActionsByType();
+   
+   auto root = ParserTree::Pattern::getTreeRoot();
+   
+   ParserTree::ActionAssignmentsByTag aabt;
+   recursivelyCollectActionAssignments(aabt, *root);
+   
+   generateEntityInformation(
+      out,
+      actionsByType,
+      aabt,
+      "action",
+      "Action",
+      "ACTION"
+   );
 }
 
 void recursivelyOutputToken(std::ostream &out, const ParserTree::Token &token)
@@ -431,16 +522,16 @@ void generateGlobalContext(std::ostream &out)
    assert(maxEvents > 0);
    
    out <<
-"PPG_Event_Queue_Entry event_buffer[" << maxEvents << "];\n\n";
+"PPG_Event_Queue_Entry event_buffer[" << maxEvents << "] = { 0 };\n\n";
 
    out <<
-"PPG_Furcation furcations[" << maxDepth << "];\n\n";
+"PPG_Furcation furcations[" << maxDepth << "] = { 0 };\n\n";
    
    out <<
-"PPG_Token__ *tokens[" << maxDepth << "];\n\n";
+"PPG_Token__ *tokens[" << maxDepth << "] = { 0 };\n\n";
    out <<
-"PPG_Context context = (PPG_Context) {\n"
-"   .event_buffer = (PPG_Event_Buffer) {\n"
+"PPG_Context context = {\n"
+"   .event_buffer = {\n"
 "      .events = event_buffer,\n"
 "      .start = 0,\n"
 "      .end = 0,\n"
@@ -449,20 +540,21 @@ void generateGlobalContext(std::ostream &out)
 "      .max_size = " << maxEvents << "\n";
    out <<
 "   },\n"
-"   .furcation_stack = (PPG_Furcation_Stack) {\n"
+"   .furcation_stack = {\n"
 "      .furcations = furcations,\n"
 "      .n_furcations = 0,\n"
 "      .cur_furcation = 0,\n"
 "      .max_furcations = " << maxDepth << "\n";
    out <<
 "   },\n"
-"   .active_tokens = (PPG_Active_Tokens) {\n"
+"   .active_tokens = {\n"
 "      .tokens = tokens,\n"
 "      .n_tokens = 0,\n"
 "      .max_tokens = " << maxDepth << "\n";
    out <<
 "   },\n"
-"   .pattern_root = &" << root->getId().getText() << "\n"
+"   .pattern_root = &" << root->getId().getText() << ",\n"
+"   .tree_depth = " << maxDepth << "\n"
 "};\n\n";
 }
    
@@ -470,14 +562,30 @@ void generateInitializationFunction(std::ostream &out)
 {
    caption(out, "Initialization");
    
-   out <<
+   out << 
+"#define PPG_LOCAL_INITIALIZATION \\\n"
+"    /* Configuration of all actions. \\\n"
+"     */ \\\n"
+"    PPG_ACTIONS_CONFIGURE_LOCAL_ALL \\\n"
+"    \\\n"
+"    /* Configuration of all inputs. \\\n"
+"     */ \\\n"
+"    PPG_INPUTS_CONFIGURE_LOCAL_ALL  \\\n"
+"    \\\n"
+"    /* Local initialization of actions.\n"
+"     */ \\\n"
+"    PPG_ACTIONS_INITIALIZE_LOCAL_ALL \\\n"
+"    \\\n"
+"    /* Local initialization of inputs. \\\n"
+"     */ \\\n"
+"    PPG_INPUTS_INITIALIZE_LOCAL_ALL\n"
+"\n"
 "void papageno_initialize_context()\n"
-"{\n";
-   out <<
-"   PPG_CUSTOM_CONFIGURE_ACTIONS_LOCAL\n\n";
-   out <<
-"   PPG_CUSTOM_CONFIGURE_INPUTS_LOCAL\n\n";
-   out <<
+"{\n"
+"#  ifndef PPG_NO_AUTOMATIC_LOCAL_INITIALIZATION\n"
+"   PPG_LOCAL_INITIALIZATION\n"
+"#  endif\n"
+"\n"
 "   ppg_global_initialize_context_static(&context);\n"
 "   ppg_context = &context;\n"
 "}\n\n";
@@ -497,6 +605,10 @@ void generateGlobal(const std::string &outputFilename)
    generateGlobalContext(outputFile);
    
    generateInitializationFunction(outputFile);
+   
+//    outputFile <<
+// "#line\n"
+// "\n";
 }
 
 } // namespace ParserTree

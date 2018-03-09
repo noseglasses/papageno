@@ -56,7 +56,7 @@ void
    std::size_t n_bits = inputs_.size();
    
    out <<
-"PPG_Bitfield_Storage_Type " << this->getId().getText() << "_bitarray[(PPG_NUM_BITS_LEFT(" << n_bits << ") != 0) ? (PPG_NUM_BYTES(" << n_bits << ") + 1) : PPG_NUM_BYTES(" << n_bits << ")]\n"
+"PPG_Bitfield_Storage_Type " << this->getId().getText() << "_member_active[(PPG_NUM_BITS_LEFT(" << n_bits << ") != 0) ? (PPG_NUM_BYTES(" << n_bits << ") + 1) : PPG_NUM_BYTES(" << n_bits << ")]\n"
 "   = { 0 };\n\n";
 
    out <<
@@ -67,7 +67,7 @@ void
       const auto &inputPtr = Input::lookupInput(inputs_[i].getText());
       
       out <<
-"   PPG_INPUT_INITIALIZATION___" << inputPtr->getType().getText() << "(" 
+"   PPG_INPUT_INITIALIZE_GLOBAL___" << inputPtr->getType().getText() << "(" 
       << inputPtr->getId().getText() << ", "
       << inputPtr->getParameters().getText() << ")";
       if(i < (inputs_.size() - 1)) {
@@ -86,17 +86,38 @@ void
       ::generateCCodeInternal(std::ostream &out) const
 {   
    out <<
-"   .super = (PPG_Token__) {\n";
+"   .super = {\n";
+//    out <<
+// "   .super = (PPG_Token__) {\n";
    this->Token::generateCCodeInternal(out);
    out <<
 "   },\n"
 "   .n_members = " << inputs_.size() << ",\n" <<
 "   .inputs = " << this->getId().getText() << "_inputs,\n" <<
-"   .member_active = (PPG_Bitfield) {\n"
+"   .member_active = {\n"
 "      .n_bits = " << this->children_.size() << ",\n" <<
-"      .bitarray = " << this->getId().getText() << "_bitarray\n" <<
+"      .bitarray = " << this->getId().getText() << "_member_active\n" <<
 "   },\n"
 "   .n_inputs_active = 0\n";
+}      
+
+void  
+   Aggregate
+      ::collectInputAssignments(InputAssignmentsByTag &iabt) const
+{
+   for(int i = 0; i < inputs_.size(); ++i) {
+      
+      const auto &input = Input::lookupInput(inputs_[i].getText());
+      
+      std::ostringstream path;
+      path << this->getId().getText() << "." << this->getInputsPath() << "[" << i << "]";
+      iabt[input->getType().getText()].push_back( 
+         (InputAssignment) { 
+            path.str(),
+            input
+         }
+      );
+   }
 }
 
 } // namespace ParserTree

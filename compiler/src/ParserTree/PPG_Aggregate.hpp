@@ -37,11 +37,15 @@ class Aggregate : public Token
       
       virtual int getNumInputs() const override { return inputs_.size(); }
       
+      virtual void collectInputAssignments(InputAssignmentsByTag &iabt) const override;
+      
    protected:
       
       virtual void generateDependencyCodeInternal(std::ostream &out) const override;
       
       virtual void generateCCodeInternal(std::ostream &out) const override;
+      
+      virtual std::string getInputsPath() const { return "inputs"; }
       
       Aggregate();
       

@@ -306,14 +306,12 @@ void ppg_event_buffer_on_match_success(void)
 void ppg_event_buffer_iterate2(
                         PPG_Event_Processor_Visitor visitor,
                         void *user_data)
-{
-   if(ppg_event_buffer_size() == 0) { return; }
-   
+{   
    if(PPG_EB.size == 0) { return; }
    
    if(PPG_EB.start > PPG_EB.end) {
       
-      for(PPG_Count i = PPG_EB.start; i < PPG_MAX_EVENTS; ++i) {
+      for(PPG_Count i = PPG_EB.start; i < PPG_EB.max_size; ++i) {
       
          visitor(&PPG_EB.events[i], user_data);
       }

@@ -119,14 +119,21 @@ char *ppg_cs_get_action_name(int action_id);
 #define PPG_CS_A(ACTION_NAME) \
       PPG_CS_ACTION_EXPECTATION(ACTION_NAME, true), \
       PPG_CS_ACTION_EXPECTATION(ACTION_NAME, false)
+      
+#ifdef PPG_CS_NO_COMPRESSION
+#define PPG_CS_ADD_COMPRESSION_SYMBOL(SYMBOL)
+#else
+#define PPG_CS_ADD_COMPRESSION_SYMBOL(SYMBOL) \
+__NL__   if(cs_ccontext__) { \
+__NL__      PPG_COMPRESSION_REGISTER_SYMBOL(cs_ccontext__, SYMBOL); \
+__NL__   }   
+#endif
 
 #define PPG_CS_REGISTER_ACTION(ACTION_NAME) \
 __NL__   int PPG_CS_ACTION_VAR(ACTION_NAME) \
 __NL__      = ppg_cs_register_action(#ACTION_NAME); \
 __NL__   \
-__NL__   if(cs_ccontext__) { \
-__NL__      PPG_COMPRESSION_REGISTER_SYMBOL(cs_ccontext__, PPG_CS_ACTION_VAR(ACTION_NAME)); \
-__NL__   }
+__NL__   PPG_CS_ADD_COMPRESSION_SYMBOL(PPG_CS_ACTION_VAR(ACTION_NAME))
       
 #define PPG_CS_REGISTER_ACTION_ANNONYMOUS(ACTION_NAME) \
    ppg_cs_register_action(#ACTION_NAME);
@@ -307,7 +314,21 @@ __NL__   ); \
 __NL__    \
 __NL__   /*ppg_global_set_abort_trigger(PPG_CS_CHAR('z')); */\
 __NL__    \
-__NL__   ppg_cs_set_timeout_ms(PPG_CS_Timeout_MS); \
+__NL__   ppg_cs_set_timeout_ms(PPG_CS_Timeout_MS);
+
+#ifndef PPG_CS_NO_AUTOMATIC_CONTEXT_HANDLING
+#define PPG_CS_INIT_GLOBAL_CONTEXT \
+__NL__   ppg_global_init(); \
+__NL__   \
+__NL__   PPG_CS_PREPARE_CONTEXT
+
+#define PPG_CS_FINALIZE_GLOBAL_CONTEXT \
+__NL__   ppg_global_set_current_context(cs_test_context); \
+__NL__   ppg_global_finalize();
+#else
+#define PPG_CS_INIT_GLOBAL_CONTEXT
+#define PPG_CS_FINALIZE_GLOBAL_CONTEXT
+#endif
 
 #define PPG_CS_INIT \
    \
@@ -319,9 +340,7 @@ __NL__   PPG_CS_REGISTER_ACTION_ANNONYMOUS(Initialized)   \
 __NL__   PPG_CS_REGISTER_ACTION_ANNONYMOUS(Exception_Timeout)   \
 __NL__   PPG_CS_REGISTER_ACTION_ANNONYMOUS(Exception_Aborted) \
 __NL__   \
-__NL__   ppg_global_init(); \
-__NL__   \
-__NL__   PPG_CS_PREPARE_CONTEXT \
+__NL__   PPG_CS_INIT_GLOBAL_CONTEXT \
 __NL__   \
 __NL__   void *cs_test_context = ppg_global_get_current_context(); \
 __NL__   PPG_CS_PREVENT_UNUSED_WARNING(cs_test_context) \
@@ -371,8 +390,7 @@ __NL__   return 0;
    
 #define PPG_CS_END_TEST \
    \
-__NL__   ppg_global_set_current_context(cs_test_context); \
-__NL__   ppg_global_finalize();   \
+__NL__   PPG_CS_FINALIZE_GLOBAL_CONTEXT   \
 __NL__   \
 __NL__   PPG_MAIN_EXIT \
 __NL__}
@@ -386,15 +404,21 @@ __NL__}
 #define PPG_CS_N_D(CHAR) \
    ppg_note_create(PPG_CS_CHAR(CHAR), PPG_Note_Flag_Match_Deactivation)
    
-// Definitions for the compiler interface
+//##############################################################################
+// Definitions for Papagenos glockenspiel compiler interface
+//##############################################################################
 //
-#define PPG_INPUT_INITIALIZATION___(ID, CHAR) \
+#define PPG_ENABLE_ACTIONS_LOCAL_INITIALIZATION_ALL
+#define PPG_ENABLE_INPUTS_LOCAL_INITIALIZATION_ALL
+#define PPG_NO_AUTOMATIC_LOCAL_INITIALIZATION
+   
+#define PPG_INPUT_INITIALIZE___(ID, CHAR) \
    PPG_CS_CHAR(CHAR)
    
-#define PPG_ACTION_INITIALIZATION___(ID) \
+#define PPG_ACTION_INITIALIZE___(ID) \
    PPG_CS_ACTION(ID)
    
-#define PPG_CONFIGURE_ACTIONS_GLOBAL_PRE_INIT___(ID) \
+#define PPG_ACTION_CONFIGURE_LOCAL___(ID) \
    PPG_CS_REGISTER_ACTION(ID)
 
 #endif

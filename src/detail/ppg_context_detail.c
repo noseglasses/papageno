@@ -47,9 +47,8 @@ void ppg_global_initialize_context_static(PPG_Context *context) {
    context->properties.logging_enabled = true;
    #endif
    
-   context->properties.destruction_enabled = true;
+   context->properties.destruction_enabled = false;
    
-   context->tree_depth = 0;
    context->layer = 0;
    ppg_global_init_input(&context->abort_input);
    context->time_last_event = 0;
@@ -60,7 +59,6 @@ void ppg_global_initialize_context_static(PPG_Context *context) {
    
    ppg_signal_callback_init(&context->signal_callback);
  
-   
    context->current_token = NULL;
    
    #if PPG_HAVE_STATISTICS
@@ -76,7 +74,9 @@ void ppg_global_initialize_context(PPG_Context *context) {
    
    ppg_global_initialize_context_static(context);
    
+   context->properties.destruction_enabled = true;
    context->pattern_root = ppg_token_alloc();
+   context->tree_depth = 0;
 
    /* Initialize the pattern root
    */

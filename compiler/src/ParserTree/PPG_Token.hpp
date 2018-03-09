@@ -21,9 +21,26 @@
 
 #include <memory>
 #include <vector>
+#include <map>
 
 namespace Papageno {
 namespace ParserTree {
+   
+class Input;
+   
+struct InputAssignment {
+   std::string             pathString_;
+   std::shared_ptr<Input>  entity_;
+};
+
+typedef std::map<std::string, std::vector<InputAssignment>> InputAssignmentsByTag;
+
+struct ActionAssignment {
+   std::string             pathString_;
+   std::shared_ptr<Action> entity_;
+};
+
+typedef std::map<std::string, std::vector<ActionAssignment>> ActionAssignmentsByTag;
    
 class Token : public Node
 {
@@ -104,7 +121,7 @@ class Token : public Node
           
          this->outputCTokenDeclaration(out);
          
-         out << " = (" << this->getTokenType() << ") {\n";
+         out << " = {\n";
 
          this->generateCCodeInternal(out);
          
@@ -116,6 +133,20 @@ class Token : public Node
       }
       
       virtual std::string getNodeType() const override { return "Token"; }
+      
+      virtual void collectInputAssignments(InputAssignmentsByTag &iabt) const {}
+      
+      void collectActionAssignments(ActionAssignmentsByTag &aabt) const {
+         if(!action_) { return; }
+         std::ostringstream path;
+         path << this->getId().getText() << "." << this->getActionPath();
+         aabt[action_->getType().getText()].push_back( 
+            (ActionAssignment) { 
+               path.str(),
+               action_
+            }
+         );
+      }
            
    protected:
       
@@ -128,7 +159,7 @@ class Token : public Node
 
          if(parent_) {
             out <<
-"      .parent = &" << parent_->getId().getText() << ",\n";
+"      .parent = (PPG_Token__*)&" << parent_->getId().getText() << ",\n";
          }
          else {
             out <<
@@ -138,8 +169,8 @@ class Token : public Node
          if(!children_.empty()) {
             out <<
 "      .children = " << this->getId().getText() << "_children,\n" <<
-"      .n_allocated_children = sizeof(" << this->getId().getText() << "_children),\n" <<
-"      .n_children = sizeof(" << this->getId().getText() << "_children),\n";
+"      .n_allocated_children = sizeof(" << this->getId().getText() << "_children)/sizeof(PPG_Token__*),\n" <<
+"      .n_children = sizeof(" << this->getId().getText() << "_children)/sizeof(PPG_Token__*),\n";
          }
          else {
             out <<
@@ -150,15 +181,18 @@ class Token : public Node
          
          if(action_) {
             out <<
-"      .action = PPG_ACTION_INITIALIZATION___" << action_->getType().getText() << "("
-            << action_->getId().getText() << ", "
-            << action_->getParameters().getText() << "), // " 
+"      .action = PPG_ACTION_INITIALIZE_GLOBAL___" << action_->getType().getText() << "("
+            << action_->getId().getText();
+            if(action_->getParametersDefined()) {
+               out << ", " << action_->getParameters().getText();
+            }
+            out << "), // " 
                << action_->getId().getText() << ": " << action_->getLOD() << "\n";
          }
          else {
             
             out <<
-"      .action = (PPG_Action) { \n"
+"      .action = { \n"
 "         .callback = (PPG_Action_Callback) {\n"
 "            .func = NULL,\n"
 "            .user_data = NULL\n"
@@ -179,7 +213,9 @@ class Token : public Node
       virtual std::string getFlags() const { return "0"; }
       
       virtual std::string getTokenType() const { return "PPG_Token__"; }
-      virtual std::string getVTableId() const { return "NULL"; }
+      virtual std::string getVTableId() const { return "&ppg_token_vtable"; }
+      
+      virtual std::string getActionPath() const { return "super.action"; }
       
    protected:
       
