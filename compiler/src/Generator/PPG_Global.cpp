@@ -522,7 +522,7 @@ void generateGlobalContext(std::ostream &out)
    assert(maxEvents > 0);
    
    out <<
-"PPG_Event_Queue_Entry event_buffer[" << maxEvents << "] = { 0 };\n\n";
+"PPG_Event_Queue_Entry event_buffer[" << 2*maxEvents << "] = { 0 };\n\n";
 
    out <<
 "PPG_Furcation furcations[" << maxDepth << "] = { 0 };\n\n";
@@ -537,7 +537,7 @@ void generateGlobalContext(std::ostream &out)
 "      .end = 0,\n"
 "      .cur = 0,\n"
 "      .size = 0,\n"
-"      .max_size = " << maxEvents << "\n";
+"      .max_size = " << 2*maxEvents << "\n";
    out <<
 "   },\n"
 "   .furcation_stack = {\n"

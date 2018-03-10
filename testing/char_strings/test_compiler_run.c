@@ -44,6 +44,8 @@ PPG_CS_START_TEST
    papageno_end
    */
    
+   // Initialize local variables of actions and inputs.
+   //
    PPG_LOCAL_INITIALIZATION
    
    papageno_initialize_context();
