@@ -38,6 +38,8 @@ class Aggregate : public Token
       virtual int getNumInputs() const override { return inputs_.size(); }
       
       virtual void collectInputAssignments(InputAssignmentsByTag &iabt) const override;
+            
+      virtual void touchActionsAndInputs() override;
       
    protected:
       

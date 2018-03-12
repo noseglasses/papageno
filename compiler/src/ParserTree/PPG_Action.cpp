@@ -32,7 +32,8 @@ std::map<std::string, Parser::LocationOfDefinition> Action::locationsOfDefinitio
    :  Node(id),
       type_(type),
       parameters_(parameters),
-      parametersDefined_(parametersDefined)
+      parametersDefined_(parametersDefined),
+      wasRequested_(false)
 {}
 
 void
@@ -144,11 +145,12 @@ std::string
 
 Action::ActionsByType 
    Action
-      ::getActionsByType()
+      ::getActionsByType(bool onlyRequested)
 {   
    ActionsByType result;
    
    for(const auto &actionsEntry: actions_) {
+      if(onlyRequested && !actionsEntry.second->getWasRequested()) { continue; }
       result[actionsEntry.second->getType().getText()].push_back(actionsEntry.second);
    }
    

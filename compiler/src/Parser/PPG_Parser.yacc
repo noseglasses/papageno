@@ -66,7 +66,7 @@ using namespace Papageno::ParserTree;
 }*/
 
 %token LAYER_KEYWORD SYMBOL_KEYWORD ARROW ACTION_KEYWORD INPUT_KEYWORD PHRASE_KEYWORD
-%token LINE_END ID RAW_CODE
+%token LINE_END ID RAW_CODE QUOTED_STRING
 
 %locations
 
@@ -164,6 +164,8 @@ token__:  note
         cluster
         |
         chord
+        |
+        alpha_seq
         ;
         
 note:   '|' ID '|'
@@ -199,6 +201,15 @@ chord:
         '[' input_list ']'
         {
             Pattern::pushToken(std::make_shared<Chord>());
+        }
+        ;
+
+alpha_seq:
+        QUOTED_STRING
+        {
+            LocationRAII lr(&@1);
+            std::string alphaSeqString($1.substr(1, $1.size() - 2));
+            Pattern::addAlphaSequence(alphaSeqString);
         }
         ;
         

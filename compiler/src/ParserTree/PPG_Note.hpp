@@ -27,10 +27,11 @@ class Note : public Token
 {
    public:
       
-      Note(std::string flags = "PPG_Note_Flags_A_N_D")
+      Note(std::string flags = "PPG_Note_Flags_A_N_D", 
+           const std::shared_ptr<Input> &input = std::shared_ptr<Input>())
          :  flags_(flags)
       {
-         input_ = Input::popNextInput();
+         input_ = (input) ? input : Input::popNextInput();
        
          if(Action::hasNextActions()) {
             this->setAction(Action::popNextAction());
@@ -65,6 +66,11 @@ class Note : public Token
                input_
             }
          );
+      }
+      
+      virtual void touchActionsAndInputs() override {
+         this->Token::touchActionsAndInputs();
+         input_->setWasRequested(true);
       }
       
    protected:

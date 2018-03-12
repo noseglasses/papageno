@@ -39,7 +39,8 @@ std::map<std::string, Parser::LocationOfDefinition> Input::locationsOfDefinition
    :  Node(id),
       type_(type),
       parameters_(parameters),
-      parametersDefined_(parametersDefined)
+      parametersDefined_(parametersDefined),
+      wasRequested_(false)
 {}
 
 void 
@@ -125,11 +126,12 @@ std::string
 
 Input::InputsByType  
    Input
-      ::getInputsByType() 
+      ::getInputsByType(bool onlyRequested) 
 {   
    InputsByType result;
    
    for(const auto &inputsEntry: inputs_) {
+      if(onlyRequested && !inputsEntry.second->getWasRequested()) { continue; }
       result[inputsEntry.second->getType().getText()].push_back(inputsEntry.second);
    }
    

@@ -69,6 +69,8 @@ static void outputInformationOfDefinition(std::ostream &out, const ParserTree::N
    out <<
 "//\n";
 }
+
+void reportUnusedActionsAndInputs(std::ostream &out);
    
 void generateFileHeader(std::ostream &out) {
    
@@ -87,6 +89,8 @@ void generateFileHeader(std::ostream &out) {
 "*/\n"
 "\n";
    }
+   
+   reportUnusedActionsAndInputs(out);
 
    out <<
 "#include \"detail/ppg_context_detail.h\"\n"
@@ -411,7 +415,7 @@ void recursivelyCollectInputAssignments(ParserTree::InputAssignmentsByTag &iabt,
 
 void generateGlobalInputInformation(std::ostream &out)
 {
-   auto inputsByType = ParserTree::Input::getInputsByType();
+   auto inputsByType = ParserTree::Input::getInputsByType(true /* only requested */);
    
    auto root = ParserTree::Pattern::getTreeRoot();
    
@@ -439,7 +443,7 @@ static void recursivelyCollectActionAssignments(ParserTree::ActionAssignmentsByT
 
 void generateGlobalActionInformation(std::ostream &out)
 {
-   auto actionsByType = ParserTree::Action::getActionsByType();
+   auto actionsByType = ParserTree::Action::getActionsByType(true /* only requested */);
    
    auto root = ParserTree::Pattern::getTreeRoot();
    
@@ -454,6 +458,49 @@ void generateGlobalActionInformation(std::ostream &out)
       "Action",
       "ACTION"
    );
+}
+
+template<typename EntitiesByType>
+void reportUnusedEntities(
+            std::ostream &out,
+            const EntitiesByType &entitiesByType,
+            const std::string &entityType)
+{
+   bool anyEntities = false;
+   for(const auto &abtEntry: entitiesByType) {
+      const auto &tag = abtEntry.first;
+      
+      bool anyUnusedOfCurrentType = false;
+     
+      for(const auto &entityPtr: abtEntry.second) {
+         
+         if(entityPtr->getWasRequested()) { continue; }
+         
+         if(!anyUnusedOfCurrentType) {
+            if(!anyEntities) {
+               caption(out, "Unused " + entityType);
+               anyEntities = true;
+            }
+            out <<
+"// Tag class \' " << tag << "\': ";
+            anyUnusedOfCurrentType = true;
+         }
+         out << entityPtr->getId().getText() << ", ";
+      }
+      if(anyUnusedOfCurrentType) { out << "\n"; }
+   }
+   if(anyEntities) {
+      out << "\n";
+   }
+}
+
+void reportUnusedActionsAndInputs(std::ostream &out)
+{
+   auto inputsByType = ParserTree::Input::getInputsByType();
+   auto actionsByType = ParserTree::Action::getActionsByType();
+
+   reportUnusedEntities(out, inputsByType, "Inputs");
+   reportUnusedEntities(out, actionsByType, "Actions");
 }
 
 void recursivelyOutputToken(std::ostream &out, const ParserTree::Token &token)

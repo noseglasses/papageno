@@ -95,7 +95,7 @@ void
 "   .n_members = " << inputs_.size() << ",\n" <<
 "   .inputs = " << this->getId().getText() << "_inputs,\n" <<
 "   .member_active = {\n"
-"      .n_bits = " << this->children_.size() << ",\n" <<
+"      .n_bits = " << this->inputs_.size() << ",\n" <<
 "      .bitarray = " << this->getId().getText() << "_member_active\n" <<
 "   },\n"
 "   .n_inputs_active = 0\n";
@@ -120,5 +120,16 @@ void
    }
 }
 
+void   
+   Aggregate
+      ::touchActionsAndInputs()
+{
+   this->Token::touchActionsAndInputs();
+   for(auto &inputToken: inputs_) {
+      const auto &input = Input::lookupInput(inputToken.getText());
+      input->setWasRequested(true);
+   }
+}
+      
 } // namespace ParserTree
 } // namespace Papageno

@@ -46,6 +46,9 @@ class Input : public Node
       
       static void getInputs(std::vector<Parser::Token> &inputs);
       
+      void setWasRequested(bool state) { wasRequested_ = state; }
+      bool getWasRequested() const { return wasRequested_; }
+      
       virtual std::string getPropertyDescription() const;
       
       virtual std::string getNodeType() const;
@@ -53,7 +56,7 @@ class Input : public Node
       typedef std::vector<std::shared_ptr<Input>> InputCollection;
       typedef std::map<std::string, InputCollection> InputsByType;
       
-      static InputsByType getInputsByType();
+      static InputsByType getInputsByType(bool onlyRequested = false);
       
       static const std::map<std::string, std::shared_ptr<Input>> &getInputs();
       
@@ -66,6 +69,7 @@ class Input : public Node
       Parser::Token           type_;
       Parser::Token           parameters_;
       bool                    parametersDefined_;
+      bool                    wasRequested_;
       
       static std::set<Parser::Token, Parser::TokenCompare> nextInputs_;
       

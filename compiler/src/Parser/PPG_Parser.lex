@@ -69,7 +69,7 @@ phrase   return PHRASE_KEYWORD;
             offset = 1; 
             return LINE_END;
          }
-[_[:alnum:]]* { 
+[_[:alnum:]]+ { 
 /*             std::cout << "Reading ID=" << yytext << std::endl;  */
             yylval = yytext; 
             return ID; 
@@ -78,4 +78,8 @@ phrase   return PHRASE_KEYWORD;
 /*             std::cout << "Reading RAW_CODE=" << yytext << std::endl;  */
             yylval = yytext;
             return RAW_CODE; 
+         }
+\"[^\"]*\" {
+            yylval = yytext;
+            return QUOTED_STRING;
          }

@@ -18,6 +18,8 @@
 
 #include "ParserTree/PPG_Token.hpp"
 #include "ParserTree/PPG_Phrase.hpp"
+#include "ParserTree/PPG_Input.hpp"
+#include "ParserTree/PPG_Note.hpp"
 #include "Misc/PPG_StringHandling.hpp"
 
 namespace Papageno {
@@ -65,6 +67,21 @@ void
    for(int i = 0; i < (count - 1); ++i) {
       
       tokens_.push_back(tokens_.back()->clone());
+   }
+}
+
+void
+   Pattern
+      ::addAlphaSequence(const std::string &alphaSeqString)
+{
+   for(std::size_t i = 0; i < alphaSeqString.size(); ++i) {
+      std::string inputId(alphaSeqString.substr(i, 1));
+      
+      const auto &inputPtr = Input::lookupInput(inputId);
+      
+      auto newNote = std::make_shared<Note>("PPG_Note_Flags_A_N_D", inputPtr);
+       
+      tokens_.push_back(newNote);  
    }
 }
 
@@ -164,6 +181,7 @@ void
 {
    for(int pos = startPos; pos < tokens_.size(); ++pos) {
       tokens_[pos]->setParent(*subtreeRoot);
+      tokens_[pos]->touchActionsAndInputs();
       subtreeRoot->addChild(tokens_[pos]);
       subtreeRoot = tokens_[pos];
    }

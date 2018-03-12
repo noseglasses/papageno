@@ -38,6 +38,8 @@ class Pattern
       
       static void repeatLastToken(const Parser::Token &countString);
       
+      static void addAlphaSequence(const std::string &alphaSeqString);
+      
       static void applyActions();
             
       static void getTokens(std::vector<std::shared_ptr<Token>> &tokens);

@@ -56,6 +56,9 @@ class Action : public Node
       const Parser::Token &getParameters() const;
       bool getParametersDefined() const;
       
+      void setWasRequested(bool state) { wasRequested_ = state; }
+      bool getWasRequested() const { return wasRequested_; }
+      
       virtual std::string getPropertyDescription() const;
       
       virtual std::string getNodeType() const;
@@ -63,7 +66,7 @@ class Action : public Node
       typedef std::vector<std::shared_ptr<Action>> ActionCollection;
       typedef std::map<std::string, ActionCollection> ActionsByType;
       
-      static ActionsByType getActionsByType();
+      static ActionsByType getActionsByType(bool onlyRequested = false);
       
       static const std::map<std::string, std::shared_ptr<Action>> getActions();
       
@@ -74,6 +77,7 @@ class Action : public Node
       Parser::Token           type_;
       Parser::Token           parameters_;
       bool                    parametersDefined_;
+      bool                    wasRequested_;
       
       static std::vector<CountToAction>    nextActions_;
       

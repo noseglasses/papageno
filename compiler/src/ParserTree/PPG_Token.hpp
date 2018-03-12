@@ -148,6 +148,12 @@ class Token : public Node
          );
       }
            
+      virtual void touchActionsAndInputs() {
+         if(action_) {
+            action_->setWasRequested(true);
+         }
+      }
+           
    protected:
       
       virtual void generateDependencyCodeInternal(std::ostream &out) const {}

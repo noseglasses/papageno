@@ -9,16 +9,25 @@ input: B <KEYPOS> := 2, 3
 input: C <KEYPOS> := n, 5
 input: D <KEYPOS> := 19, 5
 input: E <KEYPOS> := 1rr, 5
+input: Unused <KEYPOS> := setse
+
+input: a <LS> := setinse
+input: b <LS> := etni
+input: c <LS> := setyni
 
 input: F <KEYCODE> := setinse
 
 action: an_action <action_type> := bla blubb
 action: another_action <another_action_type> := something
 action: the_action <the_action_type> := bosee
+action: unused_action <action_type> := seetei
 
 phrase: a_pattern = {B, C}*5 : the_action
 
-|A| -> {A, B, C} -> [A, B, C]
+|A| -> \
+{A, B, C} -> \
+[A, B, C] -> \
+"ab"
 
 |C -> D| : an_action
 

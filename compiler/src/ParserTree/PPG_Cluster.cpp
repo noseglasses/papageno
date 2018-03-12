@@ -23,16 +23,16 @@ void
       ::generateCCodeInternal(std::ostream &out) const
 { 
    out <<
-"      .aggregate = {\n";
+"   .aggregate = {\n";
 
    this->Aggregate::generateCCodeInternal(out);
    out <<
-"      },\n"
-"      .member_active_lasting = {\n"
-"         .n_bits = " << this->children_.size() << ",\n" <<
-"         .bitarray = " << this->getId().getText() << "_member_active_lasting\n" <<
-"      },\n"
-"      .n_lasting = 0\n";
+"   },\n"
+"   .member_active_lasting = {\n"
+"      .n_bits = " << this->inputs_.size() << ",\n" <<
+"      .bitarray = " << this->getId().getText() << "_member_active_lasting\n" <<
+"   },\n"
+"   .n_lasting = 0\n";
 }
 
 void 

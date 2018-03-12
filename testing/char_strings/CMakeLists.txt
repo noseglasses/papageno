@@ -42,7 +42,7 @@ function(ppg_generate_test)
 
 endfunction()
 	
-function(ppg_add_test test_name)
+function(ppg_add_test name)
 
    set(multi_value_args "")
    set(one_value_args "COMPILE_DEFINITIONS;LINK_LIBRARIES")
@@ -51,15 +51,15 @@ function(ppg_add_test test_name)
    cmake_parse_arguments(args "${options}" "${one_value_args}"
                      "${multi_value_args}" ${ARGN} )
 
-   set(test_code_file "${CMAKE_CURRENT_SOURCE_DIR}/${test_name}.c")
+   set(code_file "${CMAKE_CURRENT_SOURCE_DIR}/${name}/${name}.c")
 
    # Add the normal test executable
    #
-   set(run_target_name "${test_name}_run")
+   set(run_target_name "${name}_run")
 
 	add_executable(
 		"${run_target_name}"
-		"${test_code_file}"
+		"${code_file}"
 	)
 
    set_target_properties(
@@ -96,7 +96,7 @@ function(ppg_add_test test_name)
    endif()
 endfunction()
 
-function(ppg_add_compiler_test test_name)
+function(ppg_add_compiler_test name)
 
    if(NOT PAPAGENO_BUILD_COMPILER)
       return()
@@ -109,17 +109,26 @@ function(ppg_add_compiler_test test_name)
    cmake_parse_arguments(args "${options}" "${one_value_args}"
                      "${multi_value_args}" ${ARGN} )
 
-   set(test_code_file "${CMAKE_CURRENT_SOURCE_DIR}/${test_name}_run.c")
+   set(ppg_file "${CMAKE_CURRENT_SOURCE_DIR}/${name}/${name}_ppg.h")                     
+   set(code_file "${CMAKE_CURRENT_SOURCE_DIR}/${name}/${name}_run.c")
+	set(compile_output_file "${CMAKE_CURRENT_BINARY_DIR}/${name}/${run_target_name}_output.c")
+   
+   set(PPG_CS_COMPILED_CODE_INCLUDE_FILE "\"${compile_output_file}\"")
+      
+   ppg_get_test_file_defines(
+      "${name}"
+      "actions;tests;token_tree;includes;layers;ppg"
+   )
+   configure_file("${CMAKE_CURRENT_SOURCE_DIR}/test_with_compile.c.in" "${code_file}")
 
    # Add the normal test executable
    #
-   set(run_target_name "${test_name}_run")
+   set(run_target_name "${name}_compile_run")
    
-	set(compile_output_file "${CMAKE_CURRENT_BINARY_DIR}/${run_target_name}_output.c")
    add_custom_command(
       OUTPUT "${compile_output_file}"
-      DEPENDS "${test_code_file}" glockenspiel
-      COMMAND $<TARGET_FILE:glockenspiel> -i "${test_code_file}" -o "${compile_output_file}"
+      DEPENDS "${ppg_file}" glockenspiel
+      COMMAND $<TARGET_FILE:glockenspiel> -i "${ppg_file}" -o "${compile_output_file}"
    )
    add_custom_target("${run_target_name}_compile" DEPENDS "${compile_output_file}")
    
@@ -132,7 +141,7 @@ function(ppg_add_compiler_test test_name)
    
 	add_executable(
 		"${run_target_name}"
-		"${test_code_file}"
+		"${code_file}"
 	)
 	
 	add_dependencies(
@@ -177,12 +186,12 @@ function(ppg_add_compiler_test test_name)
 endfunction()
 
 macro(ppg_get_test_file_defines
-   test_name_
+   name_
    type_list_
 )  
    foreach(type ${type_list_})
 
-      set(include_file "${CMAKE_CURRENT_SOURCE_DIR}/${test_name_}_${type}.h")
+      set(include_file "${CMAKE_CURRENT_SOURCE_DIR}/${name_}_${type}.h")
 
       if(NOT EXISTS "${include_file}")
          set(include_file "${CMAKE_CURRENT_SOURCE_DIR}/default_${type}.h")
@@ -197,7 +206,7 @@ macro(ppg_get_test_file_defines
    endforeach()
 endmacro()
 
-function(ppg_add_test_with_compression test_name)
+function(ppg_add_test_with_compression name)
 
    set(multi_value_args "")
    set(one_value_args "COMPILE_DEFINITIONS;LINK_LIBRARIES")
@@ -206,12 +215,12 @@ function(ppg_add_test_with_compression test_name)
    cmake_parse_arguments(args "${options}" "${one_value_args}"
                      "${multi_value_args}" ${ARGN} )
 
-   set(test_code_file "${CMAKE_CURRENT_SOURCE_DIR}/test_with_compression.c.in")
+   set(code_file "${CMAKE_CURRENT_SOURCE_DIR}/test_with_compression.c.in")
 
 	include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 	
    ppg_get_test_file_defines(
-      "${test_name}"
+      "${name}"
       "actions;tests;token_tree;includes;layers"
    )
 
@@ -219,10 +228,10 @@ function(ppg_add_test_with_compression test_name)
 
    # Add the normal test executable
    #
-   set(run_target_name "${test_name}_run")
+   set(run_target_name "${name}_run")
 
-   set(run_target_name_c "${CMAKE_CURRENT_BINARY_DIR}/${test_name}_run.c")
-   configure_file("${test_code_file}" "${run_target_name_c}")
+   set(run_target_name_c "${CMAKE_CURRENT_BINARY_DIR}/${name}/${name}_run.c")
+   configure_file("${code_file}" "${run_target_name_c}")
 
 	add_executable(
 		"${run_target_name}"
@@ -264,11 +273,11 @@ function(ppg_add_test_with_compression test_name)
 	   
    # Add an executable that compresses the context
    #
-   set(build_compress_executable_target_name "${test_name}_compress_build_executable")
+   set(build_compress_executable_target_name "${name}_compress_build_executable")
 	set(compressed_code_file "${CMAKE_CURRENT_BINARY_DIR}/${build_compress_executable_target_name}_compressed_code.h")
 	
    set(build_compress_executable_target_name_c "${CMAKE_CURRENT_BINARY_DIR}/${build_compress_executable_target_name}.c")
-   configure_file("${test_code_file}" "${build_compress_executable_target_name_c}")
+   configure_file("${code_file}" "${build_compress_executable_target_name_c}")
 
    add_executable(
 		"${build_compress_executable_target_name}"
@@ -302,7 +311,7 @@ function(ppg_add_test_with_compression test_name)
       )
    endif()
 
-   set(compress_target_name "${test_name}_compress_processing")
+   set(compress_target_name "${name}_compress_processing")
    
    # Add a target that issues context compression during build
    #
@@ -324,7 +333,7 @@ function(ppg_add_test_with_compression test_name)
    # we also add it as a test, although it has already been run during the build
    # stage.
    #
-   set(compress_test_target_name "${test_name}_compress")
+   set(compress_test_target_name "${name}_compress")
    ppg_generate_test(
       NAME "${compress_test_target_name}" 
       EXECUTABLE "${CMAKE_CURRENT_BINARY_DIR}/${build_compress_executable_target_name}"
@@ -334,11 +343,11 @@ function(ppg_add_test_with_compression test_name)
 	# Add an executable that extracts the copressed context
 	# and runs tests
 	#
-   set(extract_and_test_target_name "${test_name}_extract_and_test")
+   set(extract_and_test_target_name "${name}_extract_and_test")
 
    set(PPG_CS_COMPRESSED_CODE_FILE "#include \"${compressed_code_file}\"")
    set(extract_and_test_target_name_c "${CMAKE_CURRENT_BINARY_DIR}/${extract_and_test_target_name}.c")
-   configure_file("${test_code_file}" "${extract_and_test_target_name_c}")
+   configure_file("${code_file}" "${extract_and_test_target_name_c}")
    set(PPG_CS_COMPRESSED_CODE_FILE "")
 
    add_executable(
@@ -383,30 +392,32 @@ function(ppg_add_test_with_compression test_name)
 
 endfunction()
 
-ppg_add_test(test_context_switching)
-ppg_add_test(test_enable_disable)
-ppg_add_test(test_enable_disable_timeout)
-ppg_add_test(test_fallback)
+ppg_add_test(context_switching)
+ppg_add_test(enable_disable)
+ppg_add_test(enable_disable_timeout)
+ppg_add_test(fallback)
 
-ppg_add_compiler_test(test_compiler)
+for file in $(ls -1 test_*); do echo $file; wp=${file#test_}; ws=${wp%_actions.h}; echo $ws; if [ "${pw}" != "${ws}" ];then echo diff; fi; done
+
+ppg_add_compiler_test(abort_trigger)
  
-ppg_add_test_with_compression(test_abort_trigger)
-ppg_add_test_with_compression(test_chords)
-ppg_add_test_with_compression(test_clusters)
-ppg_add_test_with_compression(test_layers)
-ppg_add_test_with_compression(test_leader_sequences)
-ppg_add_test_with_compression(test_note_lines)
-ppg_add_test_with_compression(test_strict_notes)
-ppg_add_test_with_compression(test_token_precedence)
+ppg_add_test_with_compression(abort_trigger)
+ppg_add_test_with_compression(chords)
+ppg_add_test_with_compression(clusters)
+ppg_add_test_with_compression(layers)
+ppg_add_test_with_compression(leader_sequences)
+ppg_add_test_with_compression(note_lines)
+ppg_add_test_with_compression(strict_notes)
+ppg_add_test_with_compression(token_precedence)
 
 if(NOT "${PAPAGENO_PLATFORM_ACTUAL}" STREQUAL "avr-gcc")
 
    # The following test is too large for the atmel platform
    #
-   ppg_add_test_with_compression(test_large_systems COMPILE_DEFINITIONS 
+   ppg_add_test_with_compression(large_systems COMPILE_DEFINITIONS 
       "-DPAPAGENO_TEST__TREE_DEPTH=4 -DPAPAGENO_TEST__N_CHARS=4 -DPAPAGENO_TEST__FAIL=1"
       LINK_LIBRARIES "m"
    )
 endif()
 
-# ppg_add_test_with_compression(test_large_systems_2)
+# ppg_add_test_with_compression(large_systems_2)
