@@ -40,6 +40,11 @@ extern YYLTYPE yylloc;
 int c;
 
 // [^\n]* { strncpy(yylval.id, yytext, MAX_ID_LENGTH); return ALIAS; }
+
+// :=[^\n]* { 
+//             yylval = yytext;
+//             return RAW_CODE; 
+//          }
 %}
 
 %option noyywrap
@@ -59,7 +64,7 @@ input    return INPUT_KEYWORD;
 action   return ACTION_KEYWORD;
 phrase   return PHRASE_KEYWORD;
 "->"     return ARROW;
-[\|\:;,\*=\(\){}\[\]<>#@] { 
+[-+\*/%&!\|\(\){}\[\]<>=#\:;,_\@] { 
             return yytext[0]; 
          }
 \n       { 
@@ -74,11 +79,7 @@ phrase   return PHRASE_KEYWORD;
             yylval = yytext; 
             return ID; 
          }
-:=[^\n]* { 
-/*             std::cout << "Reading RAW_CODE=" << yytext << std::endl;  */
-            yylval = yytext;
-            return RAW_CODE; 
-         }
+
 \"[^\"]*\" {
             yylval = yytext;
             return QUOTED_STRING;

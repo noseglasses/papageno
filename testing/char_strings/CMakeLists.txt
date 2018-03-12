@@ -397,7 +397,7 @@ ppg_add_test(enable_disable)
 ppg_add_test(enable_disable_timeout)
 ppg_add_test(fallback)
 
-for file in $(ls -1 test_*); do echo $file; wp=${file#test_}; ws=${wp%_actions.h}; echo $ws; if [ "${pw}" != "${ws}" ];then echo diff; fi; done
+# for file in $(ls -1 test_*); do echo $file; wp=${file#test_}; ws=${wp%_actions.h}; echo $ws; if [ "${pw}" != "${ws}" ];then echo diff; fi; done
 
 ppg_add_compiler_test(abort_trigger)
  

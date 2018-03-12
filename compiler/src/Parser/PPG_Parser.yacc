@@ -57,6 +57,12 @@ typedef Papageno::Parser::Token ParserToken;
 
 using namespace Papageno::ParserTree;
 
+namespace Papageno {
+namespace Parser {
+extern std::ostringstream codeStream;
+}
+}
+
 %}
 
 %start lines
@@ -292,12 +298,40 @@ typed_id:
         ;
         
 parameters:
-        RAW_CODE
+        ":=" cpp_code
         {
            LocationRAII lr(&@1);
-           Entity::setNextParameters(ParserToken($1.c_str() + 2, @1));
+           Entity::setNextParameters(codeStream.str(), @1));
+           codeStream.str("");
         }
         ;
+        
+cpp_token:   '-' { codeStream << $1; }
+   |         '+' { codeStream << $1; }
+   |         '*' { codeStream << $1; }
+   |         '/' { codeStream << $1; }
+   |         '%' { codeStream << $1; }
+   |         '&' { codeStream << $1; }
+   |         '!' { codeStream << $1; }
+   |         '|' { codeStream << $1; }
+   |         '(' { codeStream << $1; }
+   |         ')' { codeStream << $1; }
+   |         '{' { codeStream << $1; }
+   |         '}' { codeStream << $1; }
+   |         '[' { codeStream << $1; }
+   |         ']' { codeStream << $1; }
+   |         '<' { codeStream << $1; }
+   |         '>' { codeStream << $1; }
+   |         '=' { codeStream << $1; }
+   |         '#' { codeStream << $1; }
+   |         ':' { codeStream << $1; }
+   |         ';' { codeStream << $1; }
+   |         ',' { codeStream << $1; }
+   |         ID  { codeStream << $1; }
+   |         QUOTED_STRING { codeStream << $1; }
+   
+cpp_code:    cpp_token
+   |         cpp_code cpp_token
 %%
 
 void yyerror(const char *s)
@@ -307,6 +341,8 @@ void yyerror(const char *s)
 
 namespace Papageno {
 namespace Parser {
+
+std::ostringstream codeStream;
 
 LocationOfDefinition currentLocation;
 
