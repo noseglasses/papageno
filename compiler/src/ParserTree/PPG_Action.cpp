@@ -15,6 +15,7 @@
  */
 
 #include "ParserTree/PPG_Action.hpp"
+#include "ParserTree/PPG_Alias.hpp"
 
 namespace Papageno {
 namespace ParserTree {
@@ -168,10 +169,17 @@ std::shared_ptr<Action>
    Action
       ::lookupAction(const std::string &id) 
 {
-   auto it = actions_.find(id);
+   std::string aliasRepl = Alias::replaceAlias(id);
+   
+   auto it = actions_.find(aliasRepl);
    
    if(it == actions_.end()) {
-      THROW_ERROR("Unable to find action \'" << id << "\'");
+      std::ostringstream out;
+      out << "Unable to retreive undefined action \'" << aliasRepl << "\'";
+      if(id != aliasRepl) {
+         out << " (alias \'" << id << "\')";
+      }
+      THROW_ERROR(out.str());
    }
    
    return it->second;

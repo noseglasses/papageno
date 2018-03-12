@@ -63,6 +63,7 @@ layer    return LAYER_KEYWORD;
 input    return INPUT_KEYWORD;
 action   return ACTION_KEYWORD;
 phrase   return PHRASE_KEYWORD;
+alias    return ALIAS_KEYWORD;
 "->"     return ARROW;
 ":="     return DEFINITION;
 [-+\*/%&!\|\(\){}\[\]<>=#\:;,_\@\$\'] { 

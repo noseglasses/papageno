@@ -15,6 +15,8 @@ input: a <LS> := $setinse$
 input: b <LS> := $etni$
 input: c <LS> := $setyni$
 
+alias: pff := A
+
 input: F <KEYCODE> := $setinse$
 
 action: an_action <action_type> := $bla blubb$
@@ -33,7 +35,7 @@ phrase: a_pattern = {B, C}*5 : the_action
 
 |E|*3 : an_action@2, another_action@3 -> {B, C, D}*5 : the_action@3
 
-|D| -> #a_pattern
+|pff| -> #a_pattern
 
 papageno_end
 

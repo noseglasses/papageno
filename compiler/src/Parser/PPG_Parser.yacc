@@ -28,6 +28,7 @@
 #include "ParserTree/PPG_Chord.hpp"
 #include "ParserTree/PPG_Cluster.hpp"
 #include "ParserTree/PPG_Entity.hpp"
+#include "ParserTree/PPG_Alias.hpp"
 
 #include <iostream>
 #include <string>
@@ -73,7 +74,7 @@ extern Token getCppCode();
 }*/
 
 %token LAYER_KEYWORD SYMBOL_KEYWORD ARROW ACTION_KEYWORD INPUT_KEYWORD PHRASE_KEYWORD
-%token LINE_END ID DEFINITION QUOTED_STRING
+%token ALIAS_KEYWORD LINE_END ID DEFINITION QUOTED_STRING
 
 %locations
 
@@ -103,6 +104,8 @@ line:   LINE_END
         input_def LINE_END
         |
         action_def LINE_END
+        |
+        alias_def LINE_END
         |
         error LINE_END
         {
@@ -292,6 +295,12 @@ action_def:
             );
         }
         ;
+        
+alias_def:
+        ALIAS_KEYWORD ':' ID DEFINITION ID
+        {
+           Papageno::ParserTree::Alias::defineAlias($3, Papageno::Parser::Token($5, @$));
+        }
         
 action_parameters:
         // Allow empty

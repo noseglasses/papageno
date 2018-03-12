@@ -16,11 +16,12 @@
 
 #include "ParserTree/PPG_Input.hpp"
 #include "ParserTree/PPG_Node.hpp"
+#include "ParserTree/PPG_Alias.hpp"
+#include "Parser/PPG_ParserToken.hpp"
 
 #include <memory>
 #include <vector>
 #include <set>
-#include "Parser/PPG_ParserToken.hpp"
 
 namespace Papageno {
 namespace ParserTree {
@@ -65,10 +66,17 @@ const std::shared_ptr<Input> &
    Input
       ::lookupInput(const std::string &id)
 {
-   auto it = inputs_.find(id);
+   std::string aliasRepl = Alias::replaceAlias(id);
+   
+   auto it = inputs_.find(aliasRepl);
    
    if(it == inputs_.end()) {
-      THROW_ERROR("Unable to retreive undefined input \'" << id << "\'");
+      std::ostringstream out;
+      out << "Unable to retreive undefined input \'" << aliasRepl << "\'";
+      if(id != aliasRepl) {
+         out << " (alias \'" << id << "\')";
+      }
+      THROW_ERROR(out.str());
    }
    
    return it->second;
