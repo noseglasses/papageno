@@ -111,7 +111,7 @@ function(ppg_add_compiler_test name)
 
    # Add the normal test executable
    #
-   set(run_target_name "${name}_compile_run")
+   set(run_target_name "${name}_compiled")
    
    set(ppg_file "${CMAKE_CURRENT_SOURCE_DIR}/${name}/${name}_ppg.h")                     
    set(code_file "${CMAKE_CURRENT_SOURCE_DIR}/${name}/${name}_compiler_run.c")
@@ -325,7 +325,7 @@ function(ppg_add_test_with_compression name)
 	add_custom_command(
       OUTPUT "${compressed_code_file}"
       COMMAND ${CMAKE_COMMAND} 
-         "-DPAPAGENO_TEST_EXECUTABLE=${CMAKE_CURRENT_BINARY_DIR}/${name}/${build_compress_executable_target_name}"
+         "-DPAPAGENO_TEST_EXECUTABLE=${CMAKE_CURRENT_BINARY_DIR}/${build_compress_executable_target_name}"
          "-DPAPAGENO_COMPRESSED_CODE_FILE=${compressed_code_file}"
          "-DPAPAGENO_RUN_WRAPPER=\"${PAPAGENO_RUN_WRAPPER}\""
          -P "${CMAKE_CURRENT_SOURCE_DIR}/TestingWithCompression.script.cmake"
@@ -343,7 +343,7 @@ function(ppg_add_test_with_compression name)
    set(compress_test_target_name "${name}_compress")
    ppg_generate_test(
       NAME "${compress_test_target_name}" 
-      EXECUTABLE "${CMAKE_CURRENT_BINARY_DIR}/${name}/${build_compress_executable_target_name}"
+      EXECUTABLE "${CMAKE_CURRENT_BINARY_DIR}/${build_compress_executable_target_name}"
       WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
    )
 
