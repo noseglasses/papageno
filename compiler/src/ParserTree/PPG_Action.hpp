@@ -17,72 +17,98 @@
 #pragma once
 
 #include "ParserTree/PPG_Node.hpp"
-#include "Misc/PPG_StringHandling.hpp"
-
-#include <vector>
 #include "Parser/PPG_ParserToken.hpp"
+#include "ParserTree/PPG_Entity.hpp"
 
 namespace Papageno {
 namespace ParserTree {
-      
-class Action : public Node
+   
+struct CountToAction {
+   CountToAction(int count, const Parser::Token &action) 
+      :  first(count),
+         second(action)
+   {}
+   
+   int first;
+   Parser::Token second;
+   const Parser::Token &getLOD() const { return second; }
+   const std::string &getText() const { return second.getText(); }
+};   
+
+struct CountToActionCompare 
+   : public std::binary_function<const CountToAction &, const CountToAction &, bool>
+{
+    bool operator()(const CountToAction &x, const CountToAction &y) const
+    {   
+        if(x.first == y.first) {
+           return x.second.getText() < y.second.getText();
+        }
+        return x.first < x.first;
+    }
+};
+
+class Action : public Entity<Action, CountToAction, CountToActionCompare>
 {
    public:
       
-      typedef std::pair<int, Parser::Token> CountToAction;
+      typedef Entity<Action, CountToAction, CountToActionCompare> Parent;
       
-      Action(  const Parser::Token &id,
-               const Parser::Token &type, 
-               const Parser::Token &parameters,
-               bool parametersDefined
-            );
+      using Parent::Entity;
       
-      static void define(const std::shared_ptr<Action> &action);
-      
-      static void pushNextAction(const Parser::Token &countString,
+//       typedef std::pair<int, Parser::Token> CountToAction;
+//       
+//       Action(  const Parser::Token &id,
+//                const Parser::Token &type, 
+//                const Parser::Token &parameters,
+//                bool parametersDefined
+//             );
+//       
+//       static void define(const std::shared_ptr<Action> &action);
+//       
+      static void pushNext(const Parser::Token &countString,
                              const Parser::Token &id);
+//       
+      static void pushNext(const Parser::Token &id);
+//       
+//       static void pushNextAction(const CountToAction &cta);
+//       
+//       static std::shared_ptr<Action> popNext();
+//       
+//       static std::vector<CountToAction> getNextActions();
+//          
+//       static bool hasNextEntities();
+//       
+//       const Parser::Token &getType() const;
+//       const Parser::Token &getParameters() const;
+//       bool getParametersDefined() const;
+//       
+//       void setWasRequested(bool state) { wasRequested_ = state; }
+//       bool getWasRequested() const { return wasRequested_; }
+//       
+//       virtual std::string getPropertyDescription() const;
       
-      static void pushNextAction(const Parser::Token &id);
+      virtual std::string getNodeType() const { return "Action"; }
       
-      static void pushNextAction(const CountToAction &cta);
+//       typedef std::vector<std::shared_ptr<Action>> ActionCollection;
+//       typedef std::map<std::string, ActionCollection> ActionsByType;
+//       
+//       static ActionsByType getEntitiesByType(bool onlyRequested = false);
+//       
+//       static const std::map<std::string, std::shared_ptr<Action>> getActions();
+//       
+//       static std::shared_ptr<Action> lookup(const std::string &id);
       
-      static std::shared_ptr<Action> popNextAction();
-      
-      static std::vector<CountToAction> getNextActions();
-         
-      static bool hasNextActions();
-      
-      const Parser::Token &getType() const;
-      const Parser::Token &getParameters() const;
-      bool getParametersDefined() const;
-      
-      void setWasRequested(bool state) { wasRequested_ = state; }
-      bool getWasRequested() const { return wasRequested_; }
-      
-      virtual std::string getPropertyDescription() const;
-      
-      virtual std::string getNodeType() const;
-      
-      typedef std::vector<std::shared_ptr<Action>> ActionCollection;
-      typedef std::map<std::string, ActionCollection> ActionsByType;
-      
-      static ActionsByType getActionsByType(bool onlyRequested = false);
-      
-      static const std::map<std::string, std::shared_ptr<Action>> getActions();
-      
-      static std::shared_ptr<Action> lookupAction(const std::string &id);
-      
-   protected:
-      
-      Parser::Token           type_;
-      Parser::Token           parameters_;
-      bool                    parametersDefined_;
-      bool                    wasRequested_;
-      
-      static std::vector<CountToAction>    nextActions_;
-      
-      static std::map<std::string, std::shared_ptr<Action>> actions_;
-      static std::map<std::string, Parser::LocationOfDefinition> locationsOfDefinition_;
+//    protected:
+//       
+//       Parser::Token           type_;
+//       Parser::Token           parameters_;
+//       bool                    parametersDefined_;
+//       bool                    wasRequested_;
+//       
+//       static std::vector<CountToAction>    nextActions_;
+//       
+//       static std::map<std::string, std::shared_ptr<Action>> actions_;
+//       static std::map<std::string, Parser::LocationOfDefinition> locationsOfDefinition_;
 };
 
 inline

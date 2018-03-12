@@ -13,15 +13,15 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "ParserTree/PPG_Entity.hpp"
+#include "ParserTree/PPG_NextEntity.hpp"
 
 namespace Papageno {
 namespace ParserTree {
       
-Parser::Token   Entity::parameters_;
-Parser::Token   Entity::nextType_;
-Parser::Token   Entity::nextId_;
-bool            Entity::parametersDefined_ = false;
+Parser::Token   NextEntity::parameters_;
+Parser::Token   NextEntity::nextType_;
+Parser::Token   NextEntity::nextId_;
+bool            NextEntity::parametersDefined_ = false;
 
 } // namespace ParserTree
 } // namespace Papageno

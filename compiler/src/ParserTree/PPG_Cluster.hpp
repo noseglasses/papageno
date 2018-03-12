@@ -38,7 +38,7 @@ class Cluster : public Aggregate
       
       virtual std::string getActionPath() const override { return "aggregate.super.action"; }
       
-      virtual std::string getInputsPath() const override { return "aggregate.inputs"; }
+      virtual std::string getEntitiesPath() const override { return "aggregate.inputs"; }
       
       virtual void generateCCodeInternal(std::ostream &out) const override;
       virtual void generateDependencyCodeInternal(std::ostream &out) const override;

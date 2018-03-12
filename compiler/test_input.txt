@@ -2,6 +2,8 @@ some stuff before start
 
 papageno_start
 
+# This is a comment
+
 layer: my_layer
 
 input: A <KEYPOS> := $1, 5, "la la la"$

@@ -23,7 +23,7 @@ namespace ParserTree {
    Aggregate
       ::Aggregate()
 {
-   Input::getInputs(inputs_);
+   Input::getNextEntities(inputs_);
 }
 
 std::string
@@ -64,7 +64,7 @@ void
 
    for(int i = 0; i < inputs_.size(); ++i) {
       
-      const auto &inputPtr = Input::lookupInput(inputs_[i].getText());
+      const auto &inputPtr = Input::lookup(inputs_[i].getText());
       
       out <<
 "   PPG_INPUT_INITIALIZE_GLOBAL___" << inputPtr->getType().getText() << "(" 
@@ -107,10 +107,10 @@ void
 {
    for(int i = 0; i < inputs_.size(); ++i) {
       
-      const auto &input = Input::lookupInput(inputs_[i].getText());
+      const auto &input = Input::lookup(inputs_[i].getText());
       
       std::ostringstream path;
-      path << this->getId().getText() << "." << this->getInputsPath() << "[" << i << "]";
+      path << this->getId().getText() << "." << this->getEntitiesPath() << "[" << i << "]";
       iabt[input->getType().getText()].push_back( 
          (InputAssignment) { 
             path.str(),
@@ -126,7 +126,7 @@ void
 {
    this->Token::touchActionsAndInputs();
    for(auto &inputToken: inputs_) {
-      const auto &input = Input::lookupInput(inputToken.getText());
+      const auto &input = Input::lookup(inputToken.getText());
       input->setWasRequested(true);
    }
 }

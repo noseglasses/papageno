@@ -16,65 +16,21 @@
 
 #pragma once
 
-#include <memory>
-#include <vector>
-#include <set>
 #include "Parser/PPG_ParserToken.hpp"
-
-#include "ParserTree/PPG_Node.hpp"
+#include "ParserTree/PPG_Entity.hpp"
 
 namespace Papageno {
 namespace ParserTree {
    
-class Input : public Node
+class Input : public Entity<Input, Parser::Token, Parser::TokenCompare>
 {
    public:
       
-      Input(  const Parser::Token &id,
-               const Parser::Token &type, 
-               const Parser::Token &parameters,
-               bool parametersDefined
-           );
+      typedef Entity<Input, Parser::Token, Parser::TokenCompare> Parent;
       
-      static void define(const std::shared_ptr<Input> &input);
+      using Parent::Entity;
       
-      static const std::shared_ptr<Input> &lookupInput(const std::string &id);
-      
-      static void pushNextInput(const Parser::Token &id);
-      
-      static std::shared_ptr<Input> popNextInput();
-      
-      static void getInputs(std::vector<Parser::Token> &inputs);
-      
-      void setWasRequested(bool state) { wasRequested_ = state; }
-      bool getWasRequested() const { return wasRequested_; }
-      
-      virtual std::string getPropertyDescription() const;
-      
-      virtual std::string getNodeType() const;
-            
-      typedef std::vector<std::shared_ptr<Input>> InputCollection;
-      typedef std::map<std::string, InputCollection> InputsByType;
-      
-      static InputsByType getInputsByType(bool onlyRequested = false);
-      
-      static const std::map<std::string, std::shared_ptr<Input>> &getInputs();
-      
-      const Parser::Token &getType() const;
-      const Parser::Token &getParameters() const;
-      bool getParametersDefined() const;
-      
-   protected:
-      
-      Parser::Token           type_;
-      Parser::Token           parameters_;
-      bool                    parametersDefined_;
-      bool                    wasRequested_;
-      
-      static std::set<Parser::Token, Parser::TokenCompare> nextInputs_;
-      
-      static std::map<std::string, std::shared_ptr<Input>> inputs_;
-      static std::map<std::string, Parser::LocationOfDefinition> locationsOfDefinition_;
+      virtual std::string getNodeType() const { return "Input"; }
 };
 
 bool inputsEqual(std::vector<Parser::Token> i1,

@@ -29,6 +29,7 @@
 #include "ParserTree/PPG_Cluster.hpp"
 #include "ParserTree/PPG_Entity.hpp"
 #include "ParserTree/PPG_Alias.hpp"
+#include "ParserTree/PPG_NextEntity.hpp"
 
 #include <iostream>
 #include <string>
@@ -117,13 +118,13 @@ input_list:
          ID
          {
             LocationRAII lr(&@1);
-            Input::pushNextInput(ParserToken($1, @1));
+            Input::pushNext(ParserToken($1, @1));
          }
          |
          input_list ',' ID
          {
             LocationRAII lr(&@3);
-            Input::pushNextInput(ParserToken($3, @3));
+            Input::pushNext(ParserToken($3, @3));
          }
          ;
          
@@ -200,12 +201,12 @@ note:   '|' input '|'
         
 input:  ID
         {
-            Input::pushNextInput(ParserToken($1, @1));
+            Input::pushNext(ParserToken($1, @1));
         }
         |
         ID flag_definition
         {
-            Input::pushNextInput(ParserToken($1, @1));
+            Input::pushNext(ParserToken($1, @1));
         }
         
 cluster:
@@ -243,13 +244,13 @@ action_list_entry:
         ID
         {
             LocationRAII lr(&@1);
-            Action::pushNextAction(ParserToken($1, @1));
+            Action::pushNext(ParserToken($1, @1));
         }
         |
         ID '@' ID
         {
             LocationRAII lr(&@1);
-            Action::pushNextAction(ParserToken($3, @3), ParserToken($1, @1));
+            Action::pushNext(ParserToken($3, @3), ParserToken($1, @1));
         }
         ;
         
@@ -272,10 +273,10 @@ input_def:
            LocationRAII lr(&@$);
            Input::define(
                std::make_shared<Input>(
-                  Entity::getNextId(),
-                  Entity::getNextType(),
-                  Entity::getNextParameters(),
-                  Entity::getNextParametersDefined()
+                  NextEntity::getNextId(),
+                  NextEntity::getNextType(),
+                  NextEntity::getNextParameters(),
+                  NextEntity::getNextParametersDefined()
                )
            );
         }
@@ -287,10 +288,10 @@ action_def:
             LocationRAII lr(&@$);
             Action::define(
                std::make_shared<Action>(
-                  Entity::getNextId(),
-                  Entity::getNextType(),
-                  Entity::getNextParameters(),
-                  Entity::getNextParametersDefined()
+                  NextEntity::getNextId(),
+                  NextEntity::getNextType(),
+                  NextEntity::getNextParameters(),
+                  NextEntity::getNextParametersDefined()
                )
             );
         }
@@ -299,7 +300,7 @@ action_def:
 alias_def:
         ALIAS_KEYWORD ':' ID DEFINITION ID
         {
-           Papageno::ParserTree::Alias::defineAlias($3, Papageno::Parser::Token($5, @$));
+           Papageno::ParserTree::Alias::define($3, Papageno::Parser::Token($5, @$));
         }
         
 action_parameters:
@@ -312,14 +313,14 @@ typed_id:
         ID
         {
             LocationRAII lr(&@1);
-            Entity::setNextId(ParserToken($1, @1));
+            NextEntity::setId(ParserToken($1, @1));
         }
         |
         ID '<' ID '>'
         {
             LocationRAII lr(&@1);
-            Entity::setNextId(ParserToken($1, @1));
-            Entity::setNextType(ParserToken($3, @3));
+            NextEntity::setId(ParserToken($1, @1));
+            NextEntity::setType(ParserToken($3, @3));
         }
         ;
         
@@ -327,7 +328,7 @@ parameters:
         DEFINITION cpp_code
         {
            LocationRAII lr(&@1);
-           Entity::setNextParameters(Papageno::Parser::getCppCode());
+           NextEntity::setParameters(Papageno::Parser::getCppCode());
         }
         ;
         

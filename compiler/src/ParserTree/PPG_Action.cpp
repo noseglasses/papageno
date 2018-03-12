@@ -19,11 +19,11 @@
 
 namespace Papageno {
 namespace ParserTree {
-      
-std::vector<Action::CountToAction>    Action::nextActions_;
-std::map<std::string, std::shared_ptr<Action>> Action::actions_;
-std::map<std::string, Parser::LocationOfDefinition> Action::locationsOfDefinition_;
-      
+   
+template<> Action::Parent::NextEntities Action::Parent::nextEntities_;
+template<> Action::Parent::Entities Action::Parent::entities_;
+template<> Action::Parent::LocationsOfDefinition Action::Parent::locationsOfDefinition_;
+/*      
    Action
       ::Action(const Parser::Token &id,
                const Parser::Token &type, 
@@ -55,23 +55,26 @@ void
    locationsOfDefinition_[id] = action->getId().getLOD();
 }
 
+*/
+
 void 
    Action
-      ::pushNextAction(const Parser::Token &countString,
+      ::pushNext(const Parser::Token &countString,
                         const Parser::Token &id)
 {
    auto count = Papageno::Misc::atol(countString);
    
-   pushNextAction(CountToAction(count, id));
+   Parent::pushNext(CountToAction(count, id));
 }
 
 void 
    Action
-      ::pushNextAction(const Parser::Token &id) 
+      ::pushNext(const Parser::Token &id) 
 {   
-   pushNextAction(CountToAction(-1, id));
+   Parent::pushNext(CountToAction(-1, id));
 }
 
+/*
 void 
    Action
       ::pushNextAction(const CountToAction &cta)
@@ -81,7 +84,7 @@ void
 
 std::shared_ptr<Action> 
    Action
-      ::popNextAction()
+      ::popNext()
 {
    if(nextActions_.empty()) {
       THROW_ERROR("No actions available");
@@ -89,7 +92,7 @@ std::shared_ptr<Action>
    
    auto tmp = nextActions_.back();
    nextActions_.pop_back();
-   return lookupAction(tmp.second.getText());
+   return lookup(tmp.second.getText());
 }
 
 std::vector<Action::CountToAction> 
@@ -103,7 +106,7 @@ std::vector<Action::CountToAction>
    
 bool 
    Action
-      ::hasNextActions()
+      ::hasNextEntities()
 {
    return !nextActions_.empty();      
 }
@@ -146,7 +149,7 @@ std::string
 
 Action::ActionsByType 
    Action
-      ::getActionsByType(bool onlyRequested)
+      ::getEntitiesByType(bool onlyRequested)
 {   
    ActionsByType result;
    
@@ -167,9 +170,9 @@ const std::map<std::string, std::shared_ptr<Action>>
 
 std::shared_ptr<Action> 
    Action
-      ::lookupAction(const std::string &id) 
+      ::lookup(const std::string &id) 
 {
-   std::string aliasRepl = Alias::replaceAlias(id);
+   std::string aliasRepl = Alias::replace(id);
    
    auto it = actions_.find(aliasRepl);
    
@@ -183,7 +186,7 @@ std::shared_ptr<Action>
    }
    
    return it->second;
-}
+}*/
 
 } // namespace ParserTree
 } // namespace Papageno

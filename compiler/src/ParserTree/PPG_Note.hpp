@@ -19,6 +19,7 @@
 #include <memory>
 
 #include "ParserTree/PPG_Token.hpp"
+#include "Parser/PPG_ParserToken.hpp"
 
 namespace Papageno {
 namespace ParserTree {
@@ -28,19 +29,23 @@ class Note : public Token
    public:
       
       Note(std::string flags = "PPG_Note_Flags_A_N_D", 
-           const std::shared_ptr<Input> &input = std::shared_ptr<Input>())
+           const Parser::Token &input = Parser::Token())
          :  flags_(flags)
       {
-         input_ = (input) ? input : Input::popNextInput();
+         input_ = (!input.getText().empty()) ? input : Input::popNext();
        
-         if(Action::hasNextActions()) {
-            this->setAction(Action::popNextAction());
+         if(Action::hasNextEntities()) {
+            this->setAction(Action::popNext().second);
          }
+      }
+      
+      const std::shared_ptr<Input> &getInput() const {
+         return Input::lookup(input_.getText());
       }
             
       virtual std::string getPropertyDescription() const override {
          return TO_STRING(Node::getPropertyDescription() << ", input = " 
-            << input_->getDescription() << ", flags = " << flags_);
+            << this->getInput()->getDescription() << ", flags = " << flags_);
       }
       
       virtual std::string getNodeType() const override { return "Note"; }
@@ -48,7 +53,7 @@ class Note : public Token
       virtual bool isEqual(const Token &other) const override {
          auto otherNote = dynamic_cast<const Note *>(&other);
          if(!otherNote) { return false; }
-         return *otherNote->input_ == *input_;
+         return *otherNote->getInput() == *this->getInput();
       }
       
       virtual std::shared_ptr<Token> clone() const override {
@@ -60,33 +65,35 @@ class Note : public Token
       virtual void collectInputAssignments(InputAssignmentsByTag &iabt) const override {
          std::ostringstream path;
          path << this->getId().getText() << ".input";
-         iabt[input_->getType().getText()].push_back( 
+         const auto &input = this->getInput();
+         iabt[input->getType().getText()].push_back( 
             (InputAssignment) { 
                path.str(),
-               input_
+               input
             }
          );
       }
       
       virtual void touchActionsAndInputs() override {
          this->Token::touchActionsAndInputs();
-         input_->setWasRequested(true);
+         this->getInput()->setWasRequested(true);
       }
       
    protected:
       
       virtual void generateCCodeInternal(std::ostream &out) const override {
          
+         const auto &input = this->getInput();
          out <<
 "   .super = {\n";
 
          this->Token::generateCCodeInternal(out);
          out <<
 "   },\n"
-"   .input = PPG_INPUT_INITIALIZE_GLOBAL___" << input_->getType().getText()
+"   .input = PPG_INPUT_INITIALIZE_GLOBAL___" << input->getType().getText()
    << "(" 
-   << input_->getId().getText() << ", "
-   << input_->getParameters().getText() << ")\n";
+   << input->getId().getText() << ", "
+   << input->getParameters().getText() << ")\n";
       }
       
       virtual std::string getFlags() const { return flags_; }
@@ -97,7 +104,7 @@ class Note : public Token
       
    protected:
       
-      std::shared_ptr<Input> input_;
+      Parser::Token input_;
       
       std::string flags_;
 };

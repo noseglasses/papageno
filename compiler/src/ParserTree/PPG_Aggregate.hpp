@@ -47,7 +47,7 @@ class Aggregate : public Token
       
       virtual void generateCCodeInternal(std::ostream &out) const override;
       
-      virtual std::string getInputsPath() const { return "inputs"; }
+      virtual std::string getEntitiesPath() const { return "inputs"; }
       
       Aggregate();
       

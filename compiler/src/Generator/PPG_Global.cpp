@@ -125,7 +125,7 @@ void generateFileHeader(std::ostream &out) {
 #if 0
 void generateGlobalActionInformation(std::ostream &out)
 {
-   auto actionsByType = ParserTree::Action::getActionsByType();
+   auto actionsByType = ParserTree::Action::getEntitiesByType();
    
    caption(out, "Actions");
 
@@ -416,7 +416,7 @@ void recursivelyCollectInputAssignments(ParserTree::InputAssignmentsByTag &iabt,
 
 void generateGlobalInputInformation(std::ostream &out)
 {
-   auto inputsByType = ParserTree::Input::getInputsByType(true /* only requested */);
+   auto inputsByType = ParserTree::Input::getEntitiesByType(true /* only requested */);
    
    auto root = ParserTree::Pattern::getTreeRoot();
    
@@ -444,7 +444,7 @@ static void recursivelyCollectActionAssignments(ParserTree::ActionAssignmentsByT
 
 void generateGlobalActionInformation(std::ostream &out)
 {
-   auto actionsByType = ParserTree::Action::getActionsByType(true /* only requested */);
+   auto actionsByType = ParserTree::Action::getEntitiesByType(true /* only requested */);
    
    auto root = ParserTree::Pattern::getTreeRoot();
    
@@ -497,8 +497,8 @@ void reportUnusedEntities(
 
 void reportUnusedActionsAndInputs(std::ostream &out)
 {
-   auto inputsByType = ParserTree::Input::getInputsByType();
-   auto actionsByType = ParserTree::Action::getActionsByType();
+   auto inputsByType = ParserTree::Input::getEntitiesByType();
+   auto actionsByType = ParserTree::Action::getEntitiesByType();
 
    reportUnusedEntities(out, inputsByType, "Inputs");
    reportUnusedEntities(out, actionsByType, "Actions");

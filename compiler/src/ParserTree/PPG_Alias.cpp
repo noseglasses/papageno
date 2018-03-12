@@ -24,7 +24,7 @@ std::map<std::string, Parser::Token> Alias::aliasMapping_;
       
 void
    Alias
-      ::defineAlias(const std::string &name, const Parser::Token &target)
+      ::define(const std::string &name, const Parser::Token &target)
 {
    auto it = aliasMapping_.find(name);
    
@@ -38,7 +38,7 @@ void
       
 std::string 
    Alias
-      ::replaceAlias(const std::string &name)
+      ::replace(const std::string &name)
 {
    auto it = aliasMapping_.find(name);
    

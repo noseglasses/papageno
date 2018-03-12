@@ -57,11 +57,11 @@ class Token : public Node
             parent_(nullptr)
       {}
       
-      void setAction(const std::shared_ptr<Action> &action) {
+      void setAction(const Parser::Token &action) {
          action_ = action;
       }
       
-      const std::shared_ptr<Action> &getAction() const {
+      const Parser::Token &getAction() const {
          return action_;
       }
       
@@ -149,21 +149,22 @@ class Token : public Node
       virtual void collectInputAssignments(InputAssignmentsByTag &iabt) const {}
       
       void collectActionAssignments(ActionAssignmentsByTag &aabt) const {
-         if(!action_) { return; }
+         if(action_.getText().empty()) { return; }
          std::ostringstream path;
          path << this->getId().getText() << "." << this->getActionPath();
-         aabt[action_->getType().getText()].push_back( 
+         const auto &actionPtr = Action::lookup(action_.getText());
+         aabt[actionPtr->getType().getText()].push_back( 
             (ActionAssignment) { 
                path.str(),
-               action_
+               actionPtr
             }
          );
       }
            
       virtual void touchActionsAndInputs() {
-         if(action_) {
-            action_->setWasRequested(true);
-         }
+         if(action_.getText().empty()) { return; }
+         const auto &actionPtr = Action::lookup(action_.getText());
+         actionPtr->setWasRequested(true);
       }
            
    protected:
@@ -197,15 +198,16 @@ class Token : public Node
 "      .n_children = 0,\n";
          }
          
-         if(action_) {
+         if(!action_.getText().empty()) {
+            const auto &actionPtr = Action::lookup(action_.getText());
             out <<
-"      .action = PPG_ACTION_INITIALIZE_GLOBAL___" << action_->getType().getText() << "("
-            << action_->getId().getText();
-            if(action_->getParametersDefined()) {
-               out << ", " << action_->getParameters().getText();
+"      .action = PPG_ACTION_INITIALIZE_GLOBAL___" << actionPtr->getType().getText() << "("
+            << actionPtr->getId().getText();
+            if(actionPtr->getParametersDefined()) {
+               out << ", " << actionPtr->getParameters().getText();
             }
             out << "), // " 
-               << action_->getId().getText() << ": " << action_->getLOD() << "\n";
+               << actionPtr->getId().getText() << ": " << actionPtr->getLOD() << "\n";
          }
          else {
             
@@ -241,7 +243,7 @@ class Token : public Node
       
    protected:
       
-      std::shared_ptr<Action>               action_;
+      Parser::Token                         action_;
       std::vector<std::shared_ptr<Token>>   children_;
       const Token                           *parent_;
       Parser::Token                         layer_;

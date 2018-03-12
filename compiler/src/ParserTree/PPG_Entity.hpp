@@ -16,59 +16,182 @@
 
 #pragma once
 
-#include "Parser/PPG_ParserToken.hpp"
+#include "ParserTree/PPG_Node.hpp"
+#include "ParserTree/PPG_Alias.hpp"
+
+#include <set>
+#include <map>
 
 namespace Papageno {
 namespace ParserTree {
    
-class Entity
-{
+template<typename EntityType__,
+         typename NextEntityType__,
+         typename NextEntityCompare__>
+class Entity : public Node
+{   
    public:
       
-      static void setNextParameters(const Parser::Token &parameters) {
-         parameters_ = parameters;
-         parametersDefined_ = true;
+      typedef std::set<NextEntityType__, NextEntityCompare__> NextEntities;
+      typedef std::map<std::string, std::shared_ptr<EntityType__>> Entities;
+      typedef std::map<std::string, Parser::LocationOfDefinition> LocationsOfDefinition;
+      
+      Entity(  const Parser::Token &id,
+               const Parser::Token &type, 
+               const Parser::Token &parameters,
+               bool parametersDefined
+           );
+      
+      static void define(const std::shared_ptr<EntityType__> &entity)
+      {
+         const auto &id = entity->getId().getText();
+         
+         auto it = entities_.find(id);
+         if(it != entities_.end()) {
+            auto lodIt = locationsOfDefinition_.find(id);
+            THROW_TOKEN_ERROR(entity->getId(), 
+               "Action multiply defined. First definition here: " 
+               << lodIt->second);
+         }
+         
+         entities_[id] = entity;
+         locationsOfDefinition_[id] = entity->getId().getLOD();
       }
       
-      static Parser::Token getNextParameters() {
-         Parser::Token tmp = parameters_;
-         parameters_ = Parser::Token();
-         parametersDefined_ = false;
+      static const std::shared_ptr<EntityType__> &lookup(const std::string &id)
+      {
+         std::string aliasRepl = Alias::replace(id);
+         
+         auto it = entities_.find(aliasRepl);
+         
+         if(it == entities_.end()) {
+            std::ostringstream out;
+            out << "Unable to retreive undefined entity \'" << aliasRepl << "\'";
+            if(id != aliasRepl) {
+               out << " (alias \'" << id << "\')";
+            }
+            THROW_ERROR(out.str());
+         }
+         
+         return it->second;
+      }
+      
+      static void pushNext(const NextEntityType__ &id)
+      {
+         auto it = nextEntities_.find(id);
+         if(it != nextEntities_.end()) {
+            THROW_TOKEN_ERROR(id, "Redundant entity added. Previous definition: " << it->getLOD());
+         }
+         nextEntities_.insert(id);
+      }
+      
+      static const NextEntityType__ &popNext()
+      {
+         if(nextEntities_.empty()) {
+            THROW_ERROR("No entities available");
+         }
+         if(nextEntities_.size() > 1) {
+            THROW_ERROR("Ambiguous entities specified");
+         }
+         const auto &tmp = *nextEntities_.begin();
+         nextEntities_.clear();
          return tmp;
       }
       
-      static bool getNextParametersDefined() {
+      static bool hasNextEntities() { return !nextEntities_.empty(); }
+      
+      static void getNextEntities(std::vector<NextEntityType__> &entities)
+      {
+         entities.clear();
+         std::copy(nextEntities_.begin(), nextEntities_.end(), std::back_inserter(entities));
+         nextEntities_.clear();
+      }
+      
+      void setWasRequested(bool state) { wasRequested_ = state; }
+      bool getWasRequested() const { return wasRequested_; }
+      
+      virtual std::string getPropertyDescription() const 
+      {
+         return TO_STRING(Node::getPropertyDescription() << ", type = " << type_
+            << ", parameters = \'" << parameters_ << "\'");
+      }
+            
+      typedef std::vector<std::shared_ptr<EntityType__>> EntityCollection;
+      typedef std::map<std::string, EntityCollection> EntitiesByType;
+      
+      static EntitiesByType getEntitiesByType(bool onlyRequested = false) 
+      {   
+         EntitiesByType result;
+         
+         for(const auto &entitiesEntry: entities_) {
+            if(onlyRequested && !entitiesEntry.second->getWasRequested()) { continue; }
+            result[entitiesEntry.second->getType().getText()].push_back(entitiesEntry.second);
+         }
+         
+         return result;
+      }
+      
+      static const std::map<std::string, std::shared_ptr<EntityType__>> &getNextEntities()
+      {
+         return entities_;
+      }
+      
+      const Parser::Token &getType() const 
+      {
+         return type_; 
+      }
+      
+      const Parser::Token &getParameters() const
+      {
+         return parameters_; 
+      }
+      
+      bool getParametersDefined() const
+      {
          return parametersDefined_;
       }
       
-      static void setNextType(const Parser::Token &nextType) {
-         nextType_ = nextType;
+      static void joinDuplicateEntries()
+      {
+         EntitiesByType ibt = getEntitiesByType();
+         
+         entities_.clear();
+         
+         for(const auto &ibtEntry: ibt) {
+            
+            std::map<std::string, std::shared_ptr<Entity>> entitiesByParameters;
+            
+            for(const auto &entityPtr: ibtEntry) {
+               
+               const auto &params = entityPtr->getParameters().getText();
+               
+               // Sort entities by parameters definition
+               //
+               auto it = entitiesByParameters.find(params);
+               
+               if(it != entitiesByParameters.end()) {
+                  
+                  entities_[entityPtr->getId().getText()] = it->second;
+               }
+               else {
+                  entitiesByParameters[params] = entityPtr;
+               }
+            }
+         }
       }
       
-      static Parser::Token getNextType() {
-         Parser::Token tmp = nextType_;
-         nextType_ = Parser::Token();
-         return tmp;
-      }
-      
-      static void setNextId(const Parser::Token &nextId) {
-         nextId_ = nextId;
-      }
-      
-      static Parser::Token getNextId() {
-         Parser::Token tmp = nextId_;
-         nextId_ = Parser::Token();
-         return tmp;
-      }
-   
    protected:
       
-      static Parser::Token   parameters_;
-      static Parser::Token   nextType_;
-      static Parser::Token   nextId_;
-      static bool            parametersDefined_;
+      Parser::Token           type_;
+      Parser::Token           parameters_;
+      bool                    parametersDefined_;
+      bool                    wasRequested_;
+      
+      static NextEntities nextEntities_;
+      static Entities entities_;
+      static LocationsOfDefinition locationsOfDefinition_;
 };
 
-      
 } // namespace ParserTree
 } // namespace Papageno
+

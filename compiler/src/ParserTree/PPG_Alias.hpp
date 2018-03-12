@@ -28,9 +28,9 @@ class Alias
 {
    public:
       
-      static void defineAlias(const std::string &name, const Parser::Token&target);
+      static void define(const std::string &name, const Parser::Token&target);
       
-      static std::string replaceAlias(const std::string &name);
+      static std::string replace(const std::string &name);
       
    private:
       

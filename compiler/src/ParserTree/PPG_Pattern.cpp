@@ -81,9 +81,7 @@ void
    for(std::size_t i = 0; i < alphaSeqLower.size(); ++i) {
       std::string inputId(alphaSeqLower.substr(i, 1));
       
-      const auto &inputPtr = Input::lookupInput(inputId);
-      
-      auto newNote = std::make_shared<Note>("PPG_Note_Flags_A_N_D", inputPtr);
+      auto newNote = std::make_shared<Note>("PPG_Note_Flags_A_N_D", inputId);
        
       tokens_.push_back(newNote);  
    }
@@ -93,7 +91,8 @@ void
    Pattern
       ::applyActions()
 {   
-   std::vector<Action::CountToAction> actions = Action::getNextActions();
+   std::vector<CountToAction> actions;
+   Action::getNextEntities(actions);
    
    for(const auto &cta: actions) {
       
@@ -113,7 +112,7 @@ void
             << " of sequence");
       }
       
-      tokens_[targetTokenPos]->setAction(Action::lookupAction(cta.second.getText()));
+      tokens_[targetTokenPos]->setAction(cta.second);
    }
 }
       
@@ -154,15 +153,17 @@ void
          //
          if(childToken->isEqual(*tokens_[pos])) {
             
-            const auto &action1 = childToken->getAction();
-            const auto &action2 = tokens_[pos]->getAction();
+            const auto &action1 = Alias::replace(childToken->getAction().getText());
+            const auto &action2 = Alias::replace(tokens_[pos]->getAction().getText());
             
-            if(action1 || action2) {
-               if(   (!!action1 && !action2)
-                  || (!action1 && !!action2)
-                  || (*action1 != *action2)
+            if(!action1.empty() || !action2.empty()) {
+               if(   (!action1.empty() && action2.empty())
+                  || (action1.empty() && !action2.empty())
+                  || (action1 != action2)
                ) {
                   if(childToken->getLayer().getText() == tokens_[pos]->getLayer().getText()) {
+                     THROW_ERROR("Ambiguous pattern define :" << childToken->getLOD()
+                        << " vs. " << tokens_[pos]->getLOD());
 
                   }
                }
