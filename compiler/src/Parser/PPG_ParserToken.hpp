@@ -60,6 +60,7 @@ class Token
       
       void setText(const std::string &text) { text_ = text; }
       const std::string &getText() const { return text_; }
+      void setLOD(const LocationOfDefinition &lod) { lod_ = lod; }
       const LocationOfDefinition &getLOD() const { return lod_; }
       
    private:

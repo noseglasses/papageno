@@ -64,7 +64,9 @@ input    return INPUT_KEYWORD;
 action   return ACTION_KEYWORD;
 phrase   return PHRASE_KEYWORD;
 "->"     return ARROW;
-[-+\*/%&!\|\(\){}\[\]<>=#\:;,_\@] { 
+":="     return DEFINITION;
+[-+\*/%&!\|\(\){}\[\]<>=#\:;,_\@\$\'] { 
+            yylval = yytext[0];
             return yytext[0]; 
          }
 \n       { 

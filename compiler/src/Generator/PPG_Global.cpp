@@ -398,7 +398,8 @@ void generateEntityInformation(
       out <<
 "// Tag class \'" << tag << "\'\n"
 "//\n"
-"PPG_" << entityTypeAllCaps << "S___" << tag << "(PPG_" << entityTypeAllCaps << "_CONFIGURE_GLOBAL___" << tag << ")\n";
+"PPG_" << entityTypeAllCaps << "S___" << tag << "(PPG_" << entityTypeAllCaps << "_CONFIGURE_GLOBAL___" << tag << ")\n"
+"\n";
    }
    out << 
 "\n";

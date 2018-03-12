@@ -20,6 +20,8 @@
 #include "papageno_char_strings.h"
 
 #include @PPG_CS_COMPILED_CODE_INCLUDE_FILE@
+
+#include @PPG_CS_LAYERS_INCLUDE_FILE@
    
 PPG_CS_START_TEST
    
@@ -31,6 +33,8 @@ PPG_CS_START_TEST
    
    PPG_CS_PREPARE_CONTEXT
    
-   #include @PPG_CS_COMPRESSION_TESTS_INCLUDE_FILE@
+   #include @PPG_CS_CONTEXT_INITIALIZATION_INCLUDE_FILE@
+   
+   #include @PPG_CS_TESTS_INCLUDE_FILE@
    
 PPG_CS_END_TEST

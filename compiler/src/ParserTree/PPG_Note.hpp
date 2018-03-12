@@ -78,7 +78,7 @@ class Note : public Token
       virtual void generateCCodeInternal(std::ostream &out) const override {
          
          out <<
-"   .super = (PPG_Token__) {\n";
+"   .super = {\n";
 
          this->Token::generateCCodeInternal(out);
          out <<

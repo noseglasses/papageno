@@ -107,23 +107,23 @@ function(ppg_add_compiler_test name)
    set(options "")
 
    cmake_parse_arguments(args "${options}" "${one_value_args}"
-                     "${multi_value_args}" ${ARGN} )
+                     "${multi_value_args}" ${ARGN})
 
+   # Add the normal test executable
+   #
+   set(run_target_name "${name}_compile_run")
+   
    set(ppg_file "${CMAKE_CURRENT_SOURCE_DIR}/${name}/${name}_ppg.h")                     
-   set(code_file "${CMAKE_CURRENT_SOURCE_DIR}/${name}/${name}_run.c")
-	set(compile_output_file "${CMAKE_CURRENT_BINARY_DIR}/${name}/${run_target_name}_output.c")
+   set(code_file "${CMAKE_CURRENT_SOURCE_DIR}/${name}/${name}_compiler_run.c")
+	set(compile_output_file "${CMAKE_CURRENT_BINARY_DIR}/${name}/${name}_ppg_compiled.c")
    
    set(PPG_CS_COMPILED_CODE_INCLUDE_FILE "\"${compile_output_file}\"")
       
    ppg_get_test_file_defines(
       "${name}"
-      "actions;tests;token_tree;includes;layers;ppg"
+      "actions;context_initialization;tests;token_tree;includes;layers;ppg"
    )
    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/test_with_compile.c.in" "${code_file}")
-
-   # Add the normal test executable
-   #
-   set(run_target_name "${name}_compile_run")
    
    add_custom_command(
       OUTPUT "${compile_output_file}"
@@ -191,7 +191,7 @@ macro(ppg_get_test_file_defines
 )  
    foreach(type ${type_list_})
 
-      set(include_file "${CMAKE_CURRENT_SOURCE_DIR}/${name_}_${type}.h")
+      set(include_file "${CMAKE_CURRENT_SOURCE_DIR}/${name}/${name_}_${type}.h")
 
       if(NOT EXISTS "${include_file}")
          set(include_file "${CMAKE_CURRENT_SOURCE_DIR}/default_${type}.h")
@@ -199,12 +199,19 @@ macro(ppg_get_test_file_defines
 
       string(TOUPPER "${type}" type_upper)
 
-      set(define_name "PPG_CS_COMPRESSION_${type_upper}_INCLUDE_FILE")
+      set(define_name "PPG_CS_${type_upper}_INCLUDE_FILE")
+      
+      file(RELATIVE_PATH include_file_rel "${CMAKE_CURRENT_SOURCE_DIR}" "${include_file}")
 
-      set(${define_name} "\"${include_file}\"")
+      set(${define_name} "\"${include_file_rel}\"")
 
    endforeach()
 endmacro()
+
+function(ppg_add_test_full name)
+   ppg_add_compiler_test("${name}")
+   ppg_add_test_with_compression("${name}")
+endfunction()
 
 function(ppg_add_test_with_compression name)
 
@@ -221,7 +228,7 @@ function(ppg_add_test_with_compression name)
 	
    ppg_get_test_file_defines(
       "${name}"
-      "actions;tests;token_tree;includes;layers"
+      "actions;context_initialization;tests;token_tree;includes;layers"
    )
 
 #    message("file_defines: ${file_defines}")
@@ -230,7 +237,7 @@ function(ppg_add_test_with_compression name)
    #
    set(run_target_name "${name}_run")
 
-   set(run_target_name_c "${CMAKE_CURRENT_BINARY_DIR}/${name}/${name}_run.c")
+   set(run_target_name_c "${CMAKE_CURRENT_BINARY_DIR}/${name}/${name}_compiler_run.c")
    configure_file("${code_file}" "${run_target_name_c}")
 
 	add_executable(
@@ -274,9 +281,9 @@ function(ppg_add_test_with_compression name)
    # Add an executable that compresses the context
    #
    set(build_compress_executable_target_name "${name}_compress_build_executable")
-	set(compressed_code_file "${CMAKE_CURRENT_BINARY_DIR}/${build_compress_executable_target_name}_compressed_code.h")
+	set(compressed_code_file "${CMAKE_CURRENT_BINARY_DIR}/${name}/${build_compress_executable_target_name}_compressed_code.h")
 	
-   set(build_compress_executable_target_name_c "${CMAKE_CURRENT_BINARY_DIR}/${build_compress_executable_target_name}.c")
+   set(build_compress_executable_target_name_c "${CMAKE_CURRENT_BINARY_DIR}/${name}/${build_compress_executable_target_name}.c")
    configure_file("${code_file}" "${build_compress_executable_target_name_c}")
 
    add_executable(
@@ -318,7 +325,7 @@ function(ppg_add_test_with_compression name)
 	add_custom_command(
       OUTPUT "${compressed_code_file}"
       COMMAND ${CMAKE_COMMAND} 
-         "-DPAPAGENO_TEST_EXECUTABLE=${CMAKE_CURRENT_BINARY_DIR}/${build_compress_executable_target_name}"
+         "-DPAPAGENO_TEST_EXECUTABLE=${CMAKE_CURRENT_BINARY_DIR}/${name}/${build_compress_executable_target_name}"
          "-DPAPAGENO_COMPRESSED_CODE_FILE=${compressed_code_file}"
          "-DPAPAGENO_RUN_WRAPPER=\"${PAPAGENO_RUN_WRAPPER}\""
          -P "${CMAKE_CURRENT_SOURCE_DIR}/TestingWithCompression.script.cmake"
@@ -336,7 +343,7 @@ function(ppg_add_test_with_compression name)
    set(compress_test_target_name "${name}_compress")
    ppg_generate_test(
       NAME "${compress_test_target_name}" 
-      EXECUTABLE "${CMAKE_CURRENT_BINARY_DIR}/${build_compress_executable_target_name}"
+      EXECUTABLE "${CMAKE_CURRENT_BINARY_DIR}/${name}/${build_compress_executable_target_name}"
       WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
    )
 
@@ -346,7 +353,7 @@ function(ppg_add_test_with_compression name)
    set(extract_and_test_target_name "${name}_extract_and_test")
 
    set(PPG_CS_COMPRESSED_CODE_FILE "#include \"${compressed_code_file}\"")
-   set(extract_and_test_target_name_c "${CMAKE_CURRENT_BINARY_DIR}/${extract_and_test_target_name}.c")
+   set(extract_and_test_target_name_c "${CMAKE_CURRENT_BINARY_DIR}/${name}/${extract_and_test_target_name}.c")
    configure_file("${code_file}" "${extract_and_test_target_name_c}")
    set(PPG_CS_COMPRESSED_CODE_FILE "")
 
@@ -397,18 +404,14 @@ ppg_add_test(enable_disable)
 ppg_add_test(enable_disable_timeout)
 ppg_add_test(fallback)
 
-# for file in $(ls -1 test_*); do echo $file; wp=${file#test_}; ws=${wp%_actions.h}; echo $ws; if [ "${pw}" != "${ws}" ];then echo diff; fi; done
-
-ppg_add_compiler_test(abort_trigger)
- 
-ppg_add_test_with_compression(abort_trigger)
-ppg_add_test_with_compression(chords)
-ppg_add_test_with_compression(clusters)
-ppg_add_test_with_compression(layers)
-ppg_add_test_with_compression(leader_sequences)
-ppg_add_test_with_compression(note_lines)
-ppg_add_test_with_compression(strict_notes)
-ppg_add_test_with_compression(token_precedence)
+ppg_add_test_full(abort_trigger)
+ppg_add_test_full(chords)
+ppg_add_test_full(clusters)
+ppg_add_test_full(layers)
+ppg_add_test_full(leader_sequences)
+ppg_add_test_full(note_lines)
+ppg_add_test_full(strict_notes)
+ppg_add_test_full(token_precedence)
 
 if(NOT "${PAPAGENO_PLATFORM_ACTUAL}" STREQUAL "avr-gcc")
 

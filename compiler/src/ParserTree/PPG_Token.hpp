@@ -65,6 +65,18 @@ class Token : public Node
          return action_;
       }
       
+      void setFlagCode(const Parser::Token &flagCode) {
+         flagCode_ = flagCode;
+      }
+      
+      const Parser::Token &getFlagCode() const {
+         return flagCode_;
+      }
+      
+      const Parser::Token &getLayer() const {
+         return layer_;
+      }
+      
       void addChild(const std::shared_ptr<Token> &token) {
          children_.push_back(token);
       }
@@ -208,7 +220,11 @@ class Token : public Node
          out <<
 "      .misc = (PPG_Misc_Bits) {\n"
 "         .state = PPG_Token_Initialized,\n"
-"         .flags = " << this->getFlags() << ",\n"
+"         .flags = ";
+         if(!flagCode_.getText().empty()) {
+            out << flagCode_.getText() << " | ";
+         }
+         out << this->getFlags() << ",\n"
 "         .action_state = 0,\n"
 "         .action_flags = PPG_Action_Default\n"
 "      },\n";
@@ -229,6 +245,7 @@ class Token : public Node
       std::vector<std::shared_ptr<Token>>   children_;
       const Token                           *parent_;
       Parser::Token                         layer_;
+      Parser::Token                         flagCode_;
       
       static Parser::Token                  curLayer_;
 };

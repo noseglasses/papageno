@@ -22,6 +22,8 @@
 #include "ParserTree/PPG_Note.hpp"
 #include "Misc/PPG_StringHandling.hpp"
 
+#include <algorithm>
+
 namespace Papageno {
 namespace ParserTree {
    
@@ -74,8 +76,10 @@ void
    Pattern
       ::addAlphaSequence(const std::string &alphaSeqString)
 {
-   for(std::size_t i = 0; i < alphaSeqString.size(); ++i) {
-      std::string inputId(alphaSeqString.substr(i, 1));
+   std::string alphaSeqLower = alphaSeqString;
+   std::transform(alphaSeqLower.begin(), alphaSeqLower.end(), alphaSeqLower.begin(), ::tolower);
+   for(std::size_t i = 0; i < alphaSeqLower.size(); ++i) {
+      std::string inputId(alphaSeqLower.substr(i, 1));
       
       const auto &inputPtr = Input::lookupInput(inputId);
       
@@ -131,11 +135,12 @@ void
    
    std::shared_ptr<Token> curToken = root_;
    int pos = 0;
-   bool redundantTokenFound = false;
    
    while(curToken->hasChildren()) {
       
       if(pos >= tokens_.size()) { break; }
+   
+      bool redundantTokenFound = false;
    
       // Check all children of the current token
       //
@@ -148,9 +153,19 @@ void
          // the next tokens children
          //
          if(childToken->isEqual(*tokens_[pos])) {
-            if(*childToken->getAction() != *tokens_[pos]->getAction()) {
-               THROW_ERROR("Unable to insert pattern. Conflict between tokens " 
-                  << childToken->getLOD() << " and " << tokens_[pos]->getLOD() << ".");
+            
+            const auto &action1 = childToken->getAction();
+            const auto &action2 = tokens_[pos]->getAction();
+            
+            if(action1 || action2) {
+               if(   (!!action1 && !action2)
+                  || (!action1 && !!action2)
+                  || (*action1 != *action2)
+               ) {
+                  if(childToken->getLayer().getText() == tokens_[pos]->getLayer().getText()) {
+
+                  }
+               }
             }
             redundantTokenFound = true;
             curToken = childToken;

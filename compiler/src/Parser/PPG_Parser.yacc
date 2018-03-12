@@ -60,6 +60,7 @@ using namespace Papageno::ParserTree;
 namespace Papageno {
 namespace Parser {
 extern std::ostringstream codeStream;
+extern Token getCppCode();
 }
 }
 
@@ -72,7 +73,7 @@ extern std::ostringstream codeStream;
 }*/
 
 %token LAYER_KEYWORD SYMBOL_KEYWORD ARROW ACTION_KEYWORD INPUT_KEYWORD PHRASE_KEYWORD
-%token LINE_END ID RAW_CODE QUOTED_STRING
+%token LINE_END ID DEFINITION QUOTED_STRING
 
 %locations
 
@@ -162,6 +163,7 @@ rep_token:
 token:  token__
         {
            Pattern::getMostRecentToken()->setLOD(@1);
+           Pattern::getMostRecentToken()->setFlagCode(Papageno::Parser::getCppCode());
         }
         ;
            
@@ -174,41 +176,56 @@ token__:  note
         alpha_seq
         ;
         
-note:   '|' ID '|'
+note:   '|' input '|'
         {
             LocationRAII lr(&@2);
-            Input::pushNextInput(ParserToken($2, @2));
             Pattern::pushToken(std::make_shared<Note>("PPG_Note_Flags_A_N_D"));
         }
         |
-        '|' ID
+        '|' input
         {
             LocationRAII lr(&@2);
-            Input::pushNextInput(ParserToken($2, @2));
             Pattern::pushToken(std::make_shared<Note>("PPG_Note_Flag_Match_Activation"));
         }
         |
-        ID '|'
+        input '|'
         {
             LocationRAII lr(&@1);
-            Input::pushNextInput(ParserToken($1, @1));
             Pattern::pushToken(std::make_shared<Note>("PPG_Note_Flag_Match_Deactivation"));
         }
         ;
         
+input:  ID
+        {
+            Input::pushNextInput(ParserToken($1, @1));
+        }
+        |
+        ID flag_definition
+        {
+            Input::pushNextInput(ParserToken($1, @1));
+        }
+        
 cluster:
-        '{' input_list '}'
+        '{' aggregate '}'
         {
             Pattern::pushToken(std::make_shared<Cluster>());
         }
         ;
         
 chord:
-        '[' input_list ']'
+        '[' aggregate ']'
         {
             Pattern::pushToken(std::make_shared<Chord>());
         }
         ;
+        
+aggregate:
+        input_list flag_definition
+        ;
+        
+flag_definition: /* allow empty */
+        |
+        ':' cpp_code;
 
 alpha_seq:
         QUOTED_STRING
@@ -298,40 +315,42 @@ typed_id:
         ;
         
 parameters:
-        ":=" cpp_code
+        DEFINITION cpp_code
         {
            LocationRAII lr(&@1);
-           Entity::setNextParameters(codeStream.str(), @1));
-           codeStream.str("");
+           Entity::setNextParameters(Papageno::Parser::getCppCode());
         }
         ;
         
-cpp_token:   '-' { codeStream << $1; }
-   |         '+' { codeStream << $1; }
-   |         '*' { codeStream << $1; }
-   |         '/' { codeStream << $1; }
-   |         '%' { codeStream << $1; }
-   |         '&' { codeStream << $1; }
-   |         '!' { codeStream << $1; }
-   |         '|' { codeStream << $1; }
-   |         '(' { codeStream << $1; }
-   |         ')' { codeStream << $1; }
-   |         '{' { codeStream << $1; }
-   |         '}' { codeStream << $1; }
-   |         '[' { codeStream << $1; }
-   |         ']' { codeStream << $1; }
-   |         '<' { codeStream << $1; }
-   |         '>' { codeStream << $1; }
-   |         '=' { codeStream << $1; }
-   |         '#' { codeStream << $1; }
-   |         ':' { codeStream << $1; }
-   |         ';' { codeStream << $1; }
-   |         ',' { codeStream << $1; }
-   |         ID  { codeStream << $1; }
-   |         QUOTED_STRING { codeStream << $1; }
+cpp_token:   '-' { Papageno::Parser::codeStream << $1; }
+   |         '+' { Papageno::Parser::codeStream << $1; }
+   |         '*' { Papageno::Parser::codeStream << $1; }
+   |         '/' { Papageno::Parser::codeStream << $1; }
+   |         '%' { Papageno::Parser::codeStream << $1; }
+   |         '&' { Papageno::Parser::codeStream << $1; }
+   |         '!' { Papageno::Parser::codeStream << $1; }
+   |         '|' { Papageno::Parser::codeStream << $1; }
+   |         '(' { Papageno::Parser::codeStream << $1; }
+   |         ')' { Papageno::Parser::codeStream << $1; }
+   |         '{' { Papageno::Parser::codeStream << $1; }
+   |         '}' { Papageno::Parser::codeStream << $1; }
+   |         '[' { Papageno::Parser::codeStream << $1; }
+   |         ']' { Papageno::Parser::codeStream << $1; }
+   |         '<' { Papageno::Parser::codeStream << $1; }
+   |         '>' { Papageno::Parser::codeStream << $1; }
+   |         '=' { Papageno::Parser::codeStream << $1; }
+   |         '#' { Papageno::Parser::codeStream << $1; }
+   |         ':' { Papageno::Parser::codeStream << $1; }
+   |         ';' { Papageno::Parser::codeStream << $1; }
+   |         ',' { Papageno::Parser::codeStream << $1; }
+   |         '\'' { Papageno::Parser::codeStream << $1; }
+   |         ID  { Papageno::Parser::codeStream << $1; }
+   |         QUOTED_STRING { Papageno::Parser::codeStream << $1; }
    
-cpp_code:    cpp_token
-   |         cpp_code cpp_token
+cpp_code: '$' cpp_token_seq '$'
+
+cpp_token_seq:    cpp_token
+   |         cpp_token_seq cpp_token
 %%
 
 void yyerror(const char *s)
@@ -351,7 +370,15 @@ std::vector<std::string> codeParsed;
 
 const char *currentFileParsed = nullptr;
 
-static void process_definitions(const char *line)
+Token getCppCode()
+{
+   Token cppCode(codeStream.str());
+   codeStream.clear();
+   codeStream.str("");
+   return cppCode;
+}
+
+static void processDefinitions(const char *line)
 {
    // add the second NULL terminator
    int len = strlen(line);
@@ -443,7 +470,7 @@ static void generateTree(std::istream &input)
    
    codeParsed.push_back(buffer.str());
    
-   process_definitions(codeParsed.back().c_str());
+   processDefinitions(codeParsed.back().c_str());
 }
    
 void generateTree(const char *inputFilename)
