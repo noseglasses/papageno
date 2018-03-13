@@ -49,6 +49,8 @@ class Pattern
       static void insertChildPatterns(std::shared_ptr<Token> subtreeRoot, int startPos);
       
       static std::shared_ptr<Token> getTreeRoot();
+      
+      static void performSequenceReplacement();
 
    protected:
       

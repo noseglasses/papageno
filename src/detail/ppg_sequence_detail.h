@@ -14,19 +14,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PPG_TOKEN_PRECEDENCE_DETAIL_H
-#define PPG_TOKEN_PRECEDENCE_DETAIL_H
+#ifndef PPG_SEQUENCE_DETAIL_H   
+#define PPG_SEQUENCE_DETAIL_H
 
-enum PPG_Token_Precedence {
-   
-   PPG_Token_Precedence_None = 0,
-   
-   PPG_Token_Precedence_Cluster,
-   PPG_Token_Precedence_Note,
-   PPG_Token_Precedence_Explicit_Note,
-      // A note that expects either an activation or deactivation
-   PPG_Token_Precedence_Sequence,
-   PPG_Token_Precedence_Chord
-};
+#include "detail/ppg_token_detail.h"
+#include "detail/ppg_aggregate_detail.h"
+
+typedef struct {
+   PPG_Aggregate aggregate;
+   PPG_Count next_member;
+} PPG_Sequence;
+
+extern PPG_Token_Vtable ppg_sequence_vtable;
 
 #endif

@@ -210,6 +210,13 @@ std::shared_ptr<Token>
    }
    return root_; 
 }
+
+void   
+   Pattern
+      ::performSequenceReplacement()
+{
+   todo
+}
    
 } // namespace ParserTree
 } // namespace Papageno

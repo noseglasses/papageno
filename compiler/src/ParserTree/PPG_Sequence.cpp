@@ -1,4 +1,4 @@
-/* Copyright 2017 noseglasses <shinynoseglasses@gmail.com>
+/* Copyright 2018 noseglasses <shinynoseglasses@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -13,20 +13,23 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include "ParserTree/PPG_Sequence.hpp"
 
-#ifndef PPG_TOKEN_PRECEDENCE_DETAIL_H
-#define PPG_TOKEN_PRECEDENCE_DETAIL_H
-
-enum PPG_Token_Precedence {
+namespace Papageno {
+namespace ParserTree {
    
-   PPG_Token_Precedence_None = 0,
-   
-   PPG_Token_Precedence_Cluster,
-   PPG_Token_Precedence_Note,
-   PPG_Token_Precedence_Explicit_Note,
-      // A note that expects either an activation or deactivation
-   PPG_Token_Precedence_Sequence,
-   PPG_Token_Precedence_Chord
-};
+void 
+   Sequence
+      ::generateCCodeInternal(std::ostream &out) const
+{ 
+   out <<
+"   .aggregate = {\n";
 
-#endif
+   this->Aggregate::generateCCodeInternal(out);
+   out <<
+"   },\n"
+"   .next_member = 0\n";
+}
+
+} // namespace ParserTree
+} // namespace Papageno
