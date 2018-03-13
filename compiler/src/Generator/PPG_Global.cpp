@@ -98,6 +98,7 @@ void generateFileHeader(std::ostream &out) {
 "#include \"detail/ppg_note_detail.h\"\n"
 "#include \"detail/ppg_chord_detail.h\"\n"
 "#include \"detail/ppg_cluster_detail.h\"\n"
+"#include \"detail/ppg_time_detail.h\"\n"
 "#include \"ppg_input.h\"\n"
 "\n";
 
@@ -115,11 +116,27 @@ void generateFileHeader(std::ostream &out) {
    
   out <<
 "#define PPG_NUM_BITS_LEFT(N_BITS) \\\n"
-"   (N_BITS%(8*sizeof(PPG_Bitfield_Storage_Type)))\n\n";
-      
-   out << 
+"   (N_BITS%(8*sizeof(PPG_Bitfield_Storage_Type)))\n"
+"\n"
 "#define PPG_NUM_BYTES(N_BITS) \\\n"
-"   (N_BITS/(8*sizeof(PPG_Bitfield_Storage_Type)))\n\n";
+"   (N_BITS/(8*sizeof(PPG_Bitfield_Storage_Type)))\n"
+"\n"
+"#ifndef PPG_DEFAULT_LAYER\n"
+"#define PPG_DEFAULT_LAYER 0\n"
+"#endif\n"
+"\n"
+"#ifndef PPG_DEFAULT_TIME_FUNCTION\n"
+"#define PPG_DEFAULT_TIME_FUNCTION ppg_default_time\n"
+"#endif\n"
+"\n"
+"#ifndef PPG_DEFAULT_TIME_DIFFERENCE_FUNCTION\n"
+"#define PPG_DEFAULT_TIME_DIFFERENCE_FUNCTION ppg_default_time_difference\n"
+"#endif\n"
+"\n"
+"#ifndef PPG_DEFAULT_TIME_COMPARISON_FUNCTION\n"
+"#define PPG_DEFAULT_TIME_COMPARISON_FUNCTION ppg_default_time_comparison\n"
+"#endif\n"
+"\n";
 }
 
 #if 0
@@ -638,9 +655,47 @@ void generateGlobalContext(std::ostream &out)
    out <<
 "   },\n"
 "   .pattern_root = &" << root->getId().getText() << ",\n"
-"   .tree_depth = " << maxDepth << "\n"
-"};\n\n";
+"   .current_token = NULL,\n"
+"   .properties = {\n"
+"      .timeout_enabled = true,\n"
+"      .papageno_enabled = true,\n"
+"#     if PPG_HAVE_LOGGING\n"
+"      .logging_enabled = true,\n"
+"#     endif\n"
+"      .destuction_enabled = false\n"
+"    },\n"
+"   .tree_depth = " << maxDepth << ",\n"
+"   .layer = PPG_DEFAULT_LAYER,\n"
+"   .abort_input = (PPG_Input_Id)((uintptr_t)-1),\n"
+"   .time_last_event = 0,\n"
+"   .event_timeout = 0,\n"
+"   .event_processor = NULL,\n"
+"   .time_manager = {\n"
+"      .time = &PPG_DEFAULT_TIME_FUNCTION,\n"
+"      .time_difference = &PPG_DEFAULT_TIME_DIFFERENCE_FUNCTION,\n"
+"      .compare_times = &PPG_DEFAULT_TIME_COMPARISON_FUNCTION\n"
+"   },\n"
+"   .signal_callback = {\n"
+"      .func = NULL,\n"
+"      .user_data = NULL\n"
+"   }\n"
+"#  if PPG_HAVE_STATISTICS\n"
+"   ,\n"
+"   .statistics = {\n"
+"      .n_nodes_visited = 0,\n"
+"      .n_token_checks = 0,\n"
+"      .n_furcations = 0,\n"
+"      .n_reversions = 0\n"
+"   }\n"
+"#  endif\n"
+"};\n"
+"\n";
 }
+
+   
+   #if PPG_HAVE_STATISTICS
+   ppg_statistics_clear(&context->statistics);
+   #endif
    
 void generateInitializationFunction(std::ostream &out)
 {
@@ -670,7 +725,6 @@ void generateInitializationFunction(std::ostream &out)
 "   PPG_LOCAL_INITIALIZATION\n"
 "#  endif\n"
 "\n"
-"   ppg_global_initialize_context_static(&context);\n"
 "   ppg_context = &context;\n"
 "}\n\n";
 }
