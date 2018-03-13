@@ -59,7 +59,7 @@ if(PAPAGENO_BUILD_COMPILER)
       
       bison_target(
          glockenspiel_yacc "${CMAKE_CURRENT_SOURCE_DIR}/src/Parser/PPG_Parser.yacc" "${glockenspiel_yacc}" 
-         VERBOSE "${yacc_verbose_output}"
+         VERBOSE REPORT_FILE "${yacc_verbose_output}"
          COMPILE_FLAGS --debug
       )
    

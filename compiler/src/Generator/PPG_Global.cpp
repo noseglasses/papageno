@@ -70,7 +70,7 @@ static void outputInformationOfDefinition(std::ostream &out, const ParserTree::N
 "//\n";
 }
 
-void reportUnusedActionsAndInputs(std::ostream &out);
+void reportActionsAndInputs(std::ostream &out);
    
 void generateFileHeader(std::ostream &out) {
    
@@ -79,7 +79,7 @@ void generateFileHeader(std::ostream &out) {
    out <<
 "\n";
 
-   caption(out, "File content");
+   caption(out, "Files parsed");
    
    for(std::size_t i = 0; i < Papageno::Parser::filesParsed.size(); ++i) {
       out << 
@@ -90,7 +90,7 @@ void generateFileHeader(std::ostream &out) {
 "\n";
    }
    
-   reportUnusedActionsAndInputs(out);
+   reportActionsAndInputs(out);
 
    out <<
 "#include \"detail/ppg_context_detail.h\"\n"
@@ -483,7 +483,7 @@ void reportUnusedEntities(
                anyEntities = true;
             }
             out <<
-"// Tag class \' " << tag << "\': ";
+"// Tag class \'" << tag << "\': ";
             anyUnusedOfCurrentType = true;
          }
          out << entityPtr->getId().getText() << ", ";
@@ -495,13 +495,49 @@ void reportUnusedEntities(
    }
 }
 
-void reportUnusedActionsAndInputs(std::ostream &out)
+template<typename JoinedEntities>
+void reportJoinedEntities(
+            std::ostream &out,
+            const JoinedEntities &joinedEntities,
+            const std::string &entityType)
+{
+   bool anyEntities = false;
+   for(const auto &abtEntry: joinedEntities) {
+      const auto &tag = abtEntry.first;
+      
+      bool anyUnusedOfCurrentType = false;
+     
+      for(const auto &entityPair: abtEntry.second) {
+         
+         if(!entityPair.first->getWasRequested()) { continue; }
+         
+         if(!anyUnusedOfCurrentType) {
+            if(!anyEntities) {
+               caption(out, "Joined " + entityType);
+               anyEntities = true;
+            }
+            out <<
+"// Tag class \'" << tag << "\': ";
+            anyUnusedOfCurrentType = true;
+         }
+         out << entityPair.first->getId().getText() << "->" << entityPair.second->getId().getText() << ", ";
+      }
+      if(anyUnusedOfCurrentType) { out << "\n"; }
+   }
+   if(anyEntities) {
+      out << "\n";
+   }
+}
+
+void reportActionsAndInputs(std::ostream &out)
 {
    auto inputsByType = ParserTree::Input::getEntitiesByType();
    auto actionsByType = ParserTree::Action::getEntitiesByType();
 
-   reportUnusedEntities(out, inputsByType, "Inputs");
-   reportUnusedEntities(out, actionsByType, "Actions");
+   reportUnusedEntities(out, ParserTree::Input::getEntitiesByType(), "Inputs");
+   reportJoinedEntities(out, ParserTree::Input::getJoinedEntities(), "Inputs");
+   reportUnusedEntities(out, ParserTree::Action::getEntitiesByType(), "Actions");
+   reportJoinedEntities(out, ParserTree::Action::getJoinedEntities(), "Actions");
 }
 
 void recursivelyOutputToken(std::ostream &out, const ParserTree::Token &token)

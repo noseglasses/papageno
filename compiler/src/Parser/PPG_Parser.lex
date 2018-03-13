@@ -24,15 +24,15 @@ long int offset = 1;
 extern YYLTYPE yylloc;
 
 #define YY_USER_ACTION         \
-  yylloc.first_column = offset; \
+  yylloc->first_column = offset; \
   offset += yyleng;            \
-  yylloc.first_line = yylineno; \
-  yylloc.last_line = yylineno; \
-  yylloc.last_column = offset;
+  yylloc->first_line = yylineno; \
+  yylloc->last_line = yylineno; \
+  yylloc->last_column = offset;
   
 #define CORRECT_LINE \
-  --yylloc.first_line; \
-  --yylloc.last_line; \
+  --yylloc->first_line; \
+  --yylloc->last_line; \
   
 // #define YY_USER_ACTION \
 //    yylloc.first_line = yylloc.last_line = yylineno;
@@ -47,9 +47,9 @@ int c;
 //          }
 %}
 
-%option noyywrap
 %option yylineno
-
+%option 8bit reentrant bison-bridge
+%option warn noyywrap nodefault
 %%
 " "      ;
 \t       ;
@@ -64,10 +64,11 @@ input    return INPUT_KEYWORD;
 action   return ACTION_KEYWORD;
 phrase   return PHRASE_KEYWORD;
 alias    return ALIAS_KEYWORD;
+include  return INCLUDE_KEYWORD;
 "->"     return ARROW;
 ":="     return DEFINITION;
 [-+\*/%&!\|\(\){}\[\]<>=#\:;,_\@\$\'] { 
-            yylval = yytext[0];
+            *yylval = yytext[0];//std::string(1, yytext[0]);
             return yytext[0]; 
          }
 \n       { 
@@ -79,11 +80,11 @@ alias    return ALIAS_KEYWORD;
          }
 [_[:alnum:]]+ { 
 /*             std::cout << "Reading ID=" << yytext << std::endl;  */
-            yylval = yytext; 
+            *yylval = yytext; 
             return ID; 
          }
 
 \"[^\"]*\" {
-            yylval = yytext;
+            *yylval = yytext;
             return QUOTED_STRING;
          }

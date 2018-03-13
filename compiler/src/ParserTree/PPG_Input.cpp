@@ -26,9 +26,9 @@
 namespace Papageno {
 namespace ParserTree {
    
-template<> Input::Parent::NextEntities Input::Parent::nextEntities_;
-template<> Input::Parent::Entities Input::Parent::entities_;
-template<> Input::Parent::LocationsOfDefinition Input::Parent::locationsOfDefinition_;
+// template<> Input::Parent::NextEntities Input::Parent::nextEntities_;
+// template<> Input::Parent::Entities Input::Parent::entities_;
+// template<> Input::Parent::LocationsOfDefinition Input::Parent::locationsOfDefinition_;
 
 bool inputsEqual( std::vector<Parser::Token> i1,
                   std::vector<Parser::Token> i2)

@@ -36,11 +36,25 @@ class Entity : public Node
       typedef std::map<std::string, std::shared_ptr<EntityType__>> Entities;
       typedef std::map<std::string, Parser::LocationOfDefinition> LocationsOfDefinition;
       
+      typedef std::vector<std::shared_ptr<EntityType__>> EntityCollection;
+      typedef std::map<std::string, EntityCollection> EntitiesByType;
+      
+      typedef std::pair<std::shared_ptr<EntityType__>, std::shared_ptr<EntityType__>> EntityToEntity;
+      typedef std::vector<EntityToEntity> EntityToEntityCollection;
+      typedef std::map<std::string, EntityToEntityCollection> EntitiesToEntitiesByType;
+      
       Entity(  const Parser::Token &id,
                const Parser::Token &type, 
                const Parser::Token &parameters,
                bool parametersDefined
-           );
+           )
+         :  Node(id),
+            type_(type),
+            parameters_(parameters),
+            parametersDefined_(parametersDefined),
+            wasRequested_(false)
+      {
+      }
       
       static void define(const std::shared_ptr<EntityType__> &entity)
       {
@@ -115,9 +129,6 @@ class Entity : public Node
          return TO_STRING(Node::getPropertyDescription() << ", type = " << type_
             << ", parameters = \'" << parameters_ << "\'");
       }
-            
-      typedef std::vector<std::shared_ptr<EntityType__>> EntityCollection;
-      typedef std::map<std::string, EntityCollection> EntitiesByType;
       
       static EntitiesByType getEntitiesByType(bool onlyRequested = false) 
       {   
@@ -159,9 +170,9 @@ class Entity : public Node
          
          for(const auto &ibtEntry: ibt) {
             
-            std::map<std::string, std::shared_ptr<Entity>> entitiesByParameters;
+            std::map<std::string, std::shared_ptr<EntityType__>> entitiesByParameters;
             
-            for(const auto &entityPtr: ibtEntry) {
+            for(const auto &entityPtr: ibtEntry.second) {
                
                const auto &params = entityPtr->getParameters().getText();
                
@@ -172,13 +183,18 @@ class Entity : public Node
                if(it != entitiesByParameters.end()) {
                   
                   entities_[entityPtr->getId().getText()] = it->second;
+                  
+                  joinedEntities_[entityPtr->getType().getText()].push_back(EntityToEntity(entityPtr, it->second));
                }
                else {
                   entitiesByParameters[params] = entityPtr;
+                  entities_[entityPtr->getId().getText()] = entityPtr;
                }
             }
          }
       }
+      
+      static const EntitiesToEntitiesByType &getJoinedEntities() { return joinedEntities_; }
       
    protected:
       
@@ -190,7 +206,32 @@ class Entity : public Node
       static NextEntities nextEntities_;
       static Entities entities_;
       static LocationsOfDefinition locationsOfDefinition_;
+      static EntitiesToEntitiesByType joinedEntities_;
 };
+
+template<typename EntityType__,
+         typename NextEntityType__,
+         typename NextEntityCompare__>
+typename Entity<EntityType__, NextEntityType__, NextEntityCompare__>::NextEntities
+   Entity<EntityType__, NextEntityType__, NextEntityCompare__>::nextEntities_;
+   
+template<typename EntityType__,
+         typename NextEntityType__,
+         typename NextEntityCompare__>
+typename Entity<EntityType__, NextEntityType__, NextEntityCompare__>::Entities
+   Entity<EntityType__, NextEntityType__, NextEntityCompare__>::entities_;
+   
+template<typename EntityType__,
+         typename NextEntityType__,
+         typename NextEntityCompare__>
+typename Entity<EntityType__, NextEntityType__, NextEntityCompare__>::LocationsOfDefinition
+   Entity<EntityType__, NextEntityType__, NextEntityCompare__>::locationsOfDefinition_;
+   
+template<typename EntityType__,
+         typename NextEntityType__,
+         typename NextEntityCompare__>
+typename Entity<EntityType__, NextEntityType__, NextEntityCompare__>::EntitiesToEntitiesByType
+   Entity<EntityType__, NextEntityType__, NextEntityCompare__>::joinedEntities_;
 
 } // namespace ParserTree
 } // namespace Papageno

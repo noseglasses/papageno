@@ -34,6 +34,16 @@ typedef struct YYLTYPE
 
 #define YYSTYPE std::string
 
+/* Same as previous macro, but useful when we know that the buffer stack is not
+ * NULL or when we need an lvalue. For internal use only.
+ */
+#define YY_CURRENT_BUFFER_LVALUE yyg->yy_buffer_stack[yyg->yy_buffer_stack_top]
+
+extern int yylex(YYSTYPE * yylval_param ,YYLTYPE *yylloc, void* yyscanner);
+
+#define YY_DECL int yylex \
+               (YYSTYPE * yylval_param , YYLTYPE *yylloc, yyscan_t yyscanner)
+
 namespace Papageno {
 namespace Parser {
    

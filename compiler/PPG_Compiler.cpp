@@ -18,6 +18,8 @@
 #include "Parser/PPG_Parser.yacc.hpp"
 #include "CommandLine/PPG_CommandLine.hpp"
 #include "Generator/PPG_Global.hpp"
+#include "ParserTree/PPG_Action.hpp"
+#include "ParserTree/PPG_Input.hpp"
 
 #include <iostream>
 #include <stdexcept>
@@ -33,6 +35,14 @@ int main(int argc, char **argv)
    try {
       for(int i = 0; i < ai.source_filename_given; ++i) {
          Papageno::Parser::generateTree(ai.source_filename_arg[i]);
+      }
+      
+      if(ai.join_duplicate_actions_flag || ai.join_duplicate_entities_flag) {
+         Papageno::ParserTree::Action::joinDuplicateEntries();
+      }
+      
+      if(ai.join_duplicate_inputs_flag || ai.join_duplicate_entities_flag) {
+         Papageno::ParserTree::Input::joinDuplicateEntries();
       }
       
       Papageno::Generator::generateGlobal(ai.output_filename_arg);

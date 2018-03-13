@@ -32,9 +32,6 @@ extern YYLTYPE yylloc;
          tmp << Papageno::Parser::currentLocation.location_.first_line << ":" \
             << Papageno::Parser::currentLocation.location_.first_column; \
       } \
-      else { \
-         tmp << yylloc.first_line << ":" << yylloc.first_column; \
-      } \
       tmp << ": error: " << __VA_ARGS__; \
       return tmp.str(); \
    }() \

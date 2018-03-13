@@ -33,7 +33,7 @@ struct CountToAction {
    Parser::Token second;
    const Parser::Token &getLOD() const { return second; }
    const std::string &getText() const { return second.getText(); }
-};   
+};
 
 struct CountToActionCompare 
    : public std::binary_function<const CountToAction &, const CountToAction &, bool>
@@ -43,7 +43,7 @@ struct CountToActionCompare
         if(x.first == y.first) {
            return x.second.getText() < y.second.getText();
         }
-        return x.first < x.first;
+        return x.first < y.first;
     }
 };
 

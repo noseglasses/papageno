@@ -128,11 +128,9 @@ void
    Pattern
       ::finishPattern()
 {   
-   if(!root_) {
-      root_ = std::make_shared<Token>();
-   }
+   auto root = Pattern::getTreeRoot();
    
-   std::shared_ptr<Token> curToken = root_;
+   std::shared_ptr<Token> curToken = root;
    int pos = 0;
    
    while(curToken->hasChildren()) {
@@ -207,6 +205,9 @@ std::shared_ptr<Token>
    Pattern
       ::getTreeRoot()
 { 
+   if(!root_) {
+      root_ = std::make_shared<Token>();
+   }
    return root_; 
 }
    

@@ -19,10 +19,10 @@
 
 namespace Papageno {
 namespace ParserTree {
-   
+/*   
 template<> Action::Parent::NextEntities Action::Parent::nextEntities_;
 template<> Action::Parent::Entities Action::Parent::entities_;
-template<> Action::Parent::LocationsOfDefinition Action::Parent::locationsOfDefinition_;
+template<> Action::Parent::LocationsOfDefinition Action::Parent::locationsOfDefinition_;*/
 /*      
    Action
       ::Action(const Parser::Token &id,

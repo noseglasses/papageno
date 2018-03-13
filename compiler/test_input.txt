@@ -2,11 +2,12 @@ some stuff before start
 
 papageno_start
 
-# This is a comment
+% This is a comment
 
 layer: my_layer
 
 input: A <KEYPOS> := $1, 5, "la la la"$
+input: A_Copy <KEYPOS> := $1, 5, "la la la"$
 input: B <KEYPOS> := $2, 3$
 input: C <KEYPOS> := $n, 5$
 input: D <KEYPOS> := $19, 5$
@@ -29,7 +30,7 @@ action: unused_action <action_type> := $seetei$
 phrase: a_pattern = {B, C}*5 : the_action
 
 |A : $a_flag$| -> \
-{A, B, C} -> \
+{A_Copy, B, C} -> \
 [A, B, C] -> \
 "ab"
 

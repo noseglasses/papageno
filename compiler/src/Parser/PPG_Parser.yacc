@@ -35,8 +35,7 @@
 #include <string>
 #include <fstream>
 
-int yylex();
-void yyerror(const char *s);
+void yyerror(YYLTYPE *yylloc, yyscan_t scanner, const char *s);
 
 struct LocationRAII {
    LocationRAII(YYLTYPE *currentLocation__)
@@ -51,9 +50,8 @@ struct LocationRAII {
    Papageno::Parser::LocationOfDefinition lastLOD_;
 };
 
-extern int yydebug;
-extern int yylineno;
-extern YYLTYPE yylloc;
+// extern int yydebug;
+// extern YYLTYPE yylloc;
 
 typedef Papageno::Parser::Token ParserToken;
 
@@ -63,6 +61,7 @@ namespace Papageno {
 namespace Parser {
 extern std::ostringstream codeStream;
 extern Token getCppCode();
+extern void searchFileGenerateTree(const std::string &quotedInputFilename);
 }
 }
 
@@ -70,12 +69,18 @@ extern Token getCppCode();
 
 %start lines
 
+%define api.value.type {double}
+%define parse.error verbose
+%define api.pure 
+%lex-param {YYLTYPE *yylloc, void *scanner}
+%parse-param {void *scanner}
+
 /*%union {
    std::string id;
 }*/
 
 %token LAYER_KEYWORD SYMBOL_KEYWORD ARROW ACTION_KEYWORD INPUT_KEYWORD PHRASE_KEYWORD
-%token ALIAS_KEYWORD LINE_END ID DEFINITION QUOTED_STRING
+%token ALIAS_KEYWORD INCLUDE_KEYWORD LINE_END ID DEFINITION QUOTED_STRING
 
 %locations
 
@@ -107,6 +112,12 @@ line:   LINE_END
         action_def LINE_END
         |
         alias_def LINE_END
+        |
+        INCLUDE_KEYWORD ':' QUOTED_STRING LINE_END
+        {
+           LocationRAII lr(&@$);
+           Papageno::Parser::searchFileGenerateTree($3);
+        }
         |
         error LINE_END
         {
@@ -363,13 +374,27 @@ cpp_token_seq:    cpp_token
    |         cpp_token_seq cpp_token
 %%
 
-void yyerror(const char *s)
+void yyerror(YYLTYPE *yylloc, yyscan_t scanner, const char *s)
 {
   THROW_ERROR("Parser error: " << s);
 }
 
 namespace Papageno {
 namespace Parser {
+
+struct CurrentFileRAII {
+   CurrentFileRAII(const char *currentFileParsed__)
+   {
+      lastFileParsed_ = Papageno::Parser::currentFileParsed;
+      
+      Papageno::Parser::currentFileParsed 
+         = currentFileParsed__;
+   }
+   ~CurrentFileRAII() {
+      Papageno::Parser::currentFileParsed = lastFileParsed_;
+   }
+   const char *lastFileParsed_;
+};
 
 std::ostringstream codeStream;
 
@@ -388,19 +413,29 @@ Token getCppCode()
    return cppCode;
 }
 
-static void processDefinitions(const char *line)
+static void processDefinitions(const char *line, int startLine)
 {
    // add the second NULL terminator
-   int len = strlen(line);
+/*   int len = strlen(line);
    char *temp = (char*)malloc(len + 2);
    strcpy( temp, line );
-   temp[ len + 1 ] = 0; // The first NULL terminator is added by strcpy
+   temp[ len + 1 ] = 0; // The first NULL terminator is added by strcpy*/
+   
+   yyscan_t scanner;
 
-   YY_BUFFER_STATE my_string_buffer = yy_scan_string(temp); 
-   yy_switch_to_buffer( my_string_buffer ); // switch flex to the buffer we just created
-   yyparse(); 
-   yy_delete_buffer(my_string_buffer );
-   free(temp);
+   yylex_init(&scanner);
+   
+   YY_BUFFER_STATE my_string_buffer = yy_scan_string(line, scanner); 
+   //yy_switch_to_buffer( my_string_buffer ); // switch flex to the buffer we just created
+   
+   yy_switch_to_buffer(my_string_buffer, scanner);
+   my_string_buffer->yy_bs_lineno = startLine;
+   yyparse(scanner); 
+   
+   yy_delete_buffer(my_string_buffer, scanner);
+/*    free(temp); */
+   
+   yylex_destroy(scanner);
 }
 
 #define PPG_START_TOKEN "papageno_start"
@@ -424,7 +459,7 @@ static void generateTree(std::istream &input)
    std::ostringstream buffer;
    
    long curLine = 0;
-   
+   long startLine = 0;
    bool inPPG = false;
    bool wasInPPG = false;
    
@@ -439,7 +474,7 @@ static void generateTree(std::istream &input)
          DEBUG_OUTPUT("Start tag \'" PPG_START_TOKEN "\' detected in line " << curLine << "\n")
          inPPG = true;
          wasInPPG = true;
-         yylineno = curLine + 1;
+         startLine = curLine + 1;
          continue;
       }
       
@@ -460,13 +495,14 @@ static void generateTree(std::istream &input)
       
       // Remove comments
       //
+      std::size_t commentStart = 0;
       for(auto it = line.begin(); *it != '\0'; ++it) {
          if(*it == '%') {
-            *it = '\n';
-            ++it;
-            *it = '\0';
+            line.resize(commentStart + 1);
+            line[commentStart] = '\n';
             break;
          }
+         ++commentStart;
       }
       
       DEBUG_OUTPUT("Processing line \'" << line << "\'\n")
@@ -480,17 +516,53 @@ static void generateTree(std::istream &input)
    
    codeParsed.push_back(buffer.str());
    
-   processDefinitions(codeParsed.back().c_str());
+   processDefinitions(codeParsed.back().c_str(), startLine);
 }
+
+inline bool exists(const std::string& name) {
+    if (FILE *file = fopen(name.c_str(), "r")) {
+        fclose(file);
+        return true;
+    } else {
+        return false;
+    }   
+}
+
    
 void generateTree(const char *inputFilename)
 {
    filesParsed.push_back(inputFilename);
-   currentFileParsed = filesParsed.back().c_str();
+   
+   CurrentFileRAII cfr(filesParsed.back().c_str());
    
    std::ifstream inFile(inputFilename);
    
    generateTree(inFile);
+}
+
+void searchFileGenerateTree(const std::string &quotedInputFilename)
+{
+   std::string inputFilename 
+      = quotedInputFilename.substr(1, quotedInputFilename.size() - 2);
+   
+   // Search in current directory
+   if(exists(inputFilename)) {
+      generateTree(inputFilename.c_str());
+      return;
+   }
+   else {
+      for(int i = 0; i < ai.include_directory_given; ++i) {
+         std::string filenameFull 
+            = std::string(ai.include_directory_arg[i]) + "/" + inputFilename;
+           
+         if(exists(filenameFull)) {
+            generateTree(filenameFull.c_str());
+            return;
+         }
+      }
+   }
+   
+   THROW_ERROR("Unable to include file \'" << inputFilename << "\'");
 }
 
 } // namespace ParserTree
