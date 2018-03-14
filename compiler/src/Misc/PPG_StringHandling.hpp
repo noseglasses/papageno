@@ -30,7 +30,7 @@
    }() \
 )
 
-namespace Papageno {
+namespace Glockenspiel {
 namespace Misc {
    
 inline long atol(const Parser::Token &token)
@@ -50,4 +50,4 @@ inline long atol(const Parser::Token &token)
 }
 
 } // namespace Misc
-} // namespace Papageno
+} // namespace Glockenspiel

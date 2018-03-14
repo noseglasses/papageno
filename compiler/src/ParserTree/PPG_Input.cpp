@@ -23,7 +23,7 @@
 #include <vector>
 #include <set>
 
-namespace Papageno {
+namespace Glockenspiel {
 namespace ParserTree {
    
 // template<> Input::Parent::NextEntities Input::Parent::nextEntities_;
@@ -49,4 +49,4 @@ bool inputsEqual( std::vector<Parser::Token> i1,
 }
 
 } // namespace ParserTree
-} // namespace Papageno
+} // namespace Glockenspiel

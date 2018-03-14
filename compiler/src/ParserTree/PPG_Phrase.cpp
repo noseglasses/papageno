@@ -23,7 +23,7 @@
 #include "Parser/PPG_ParserToken.hpp"
 #include <memory>
 
-namespace Papageno {
+namespace Glockenspiel {
 namespace ParserTree {
    
 std::map<std::string, std::shared_ptr<Phrase>>  Phrase::phrases_;
@@ -91,4 +91,4 @@ void
 }
       
 } // namespace ParserTree
-} // namespace Papageno
+} // namespace Glockenspiel

@@ -30,6 +30,7 @@
 #include "ParserTree/PPG_Entity.hpp"
 #include "ParserTree/PPG_Alias.hpp"
 #include "ParserTree/PPG_NextEntity.hpp"
+#include "Settings/PPG_Settings.hpp"
 
 #include <iostream>
 #include <string>
@@ -40,28 +41,34 @@ void yyerror(YYLTYPE *yylloc, yyscan_t scanner, const char *s);
 struct LocationRAII {
    LocationRAII(YYLTYPE *currentLocation__)
    {
-      lastLOD_ = Papageno::Parser::currentLocation;
-      Papageno::Parser::currentLocation 
-         = Papageno::Parser::LocationOfDefinition(*currentLocation__);
+      lastLOD_ = Glockenspiel::Parser::currentLocation;
+      Glockenspiel::Parser::currentLocation 
+         = Glockenspiel::Parser::LocationOfDefinition(*currentLocation__);
    }
    ~LocationRAII() {
-      Papageno::Parser::currentLocation = lastLOD_;
+      Glockenspiel::Parser::currentLocation = lastLOD_;
    }
-   Papageno::Parser::LocationOfDefinition lastLOD_;
+   Glockenspiel::Parser::LocationOfDefinition lastLOD_;
 };
 
 // extern int yydebug;
 // extern YYLTYPE yylloc;
 
-typedef Papageno::Parser::Token ParserToken;
+typedef Glockenspiel::Parser::Token ParserToken;
 
-using namespace Papageno::ParserTree;
+using namespace Glockenspiel::ParserTree;
 
-namespace Papageno {
+namespace Glockenspiel {
 namespace Parser {
 extern std::ostringstream codeStream;
 extern Token getCppCode();
 extern void searchFileGenerateTree(const std::string &quotedInputFilename);
+
+inline
+std::string unquote(const std::string &s) {
+   return s.substr(1, s.size() - 2);
+}
+
 }
 }
 
@@ -80,7 +87,7 @@ extern void searchFileGenerateTree(const std::string &quotedInputFilename);
 }*/
 
 %token LAYER_KEYWORD SYMBOL_KEYWORD ARROW ACTION_KEYWORD INPUT_KEYWORD PHRASE_KEYWORD
-%token ALIAS_KEYWORD INCLUDE_KEYWORD LINE_END ID DEFINITION QUOTED_STRING
+%token ALIAS_KEYWORD INCLUDE_KEYWORD SETTING_KEYWORD LINE_END ID QUOTED_STRING
 
 %locations
 
@@ -113,10 +120,16 @@ line:   LINE_END
         |
         alias_def LINE_END
         |
-        INCLUDE_KEYWORD ':' QUOTED_STRING LINE_END
+        '@' INCLUDE_KEYWORD ':' QUOTED_STRING LINE_END
         {
            LocationRAII lr(&@$);
-           Papageno::Parser::searchFileGenerateTree($3);
+           Glockenspiel::Parser::searchFileGenerateTree(Glockenspiel::Parser::unquote($4));
+        }
+        |
+        '@' SETTING_KEYWORD ':' ID '=' QUOTED_STRING LINE_END
+        {
+           LocationRAII lr(&@$);
+           Glockenspiel::Settings::set($4, Glockenspiel::Parser::unquote($6));
         }
         |
         error LINE_END
@@ -178,7 +191,7 @@ rep_token:
 token:  token__
         {
            Pattern::getMostRecentToken()->setLOD(@1);
-           Pattern::getMostRecentToken()->setFlagCode(Papageno::Parser::getCppCode());
+           Pattern::getMostRecentToken()->setFlagCode(Glockenspiel::Parser::getCppCode());
         }
         ;
            
@@ -246,8 +259,7 @@ alpha_seq:
         QUOTED_STRING
         {
             LocationRAII lr(&@1);
-            std::string alphaSeqString($1.substr(1, $1.size() - 2));
-            Pattern::addAlphaSequence(alphaSeqString);
+            Pattern::addAlphaSequence(Glockenspiel::Parser::unquote($1));
         }
         ;
         
@@ -309,9 +321,9 @@ action_def:
         ;
         
 alias_def:
-        ALIAS_KEYWORD ':' ID DEFINITION ID
+        ALIAS_KEYWORD ':' ID '=' ID
         {
-           Papageno::ParserTree::Alias::define($3, Papageno::Parser::Token($5, @$));
+           Glockenspiel::ParserTree::Alias::define($3, Glockenspiel::Parser::Token($5, @$));
         }
         
 action_parameters:
@@ -336,37 +348,37 @@ typed_id:
         ;
         
 parameters:
-        DEFINITION cpp_code
+        '=' cpp_code
         {
            LocationRAII lr(&@1);
-           NextEntity::setParameters(Papageno::Parser::getCppCode());
+           NextEntity::setParameters(Glockenspiel::Parser::getCppCode());
         }
         ;
         
-cpp_token:   '-' { Papageno::Parser::codeStream << $1; }
-   |         '+' { Papageno::Parser::codeStream << $1; }
-   |         '*' { Papageno::Parser::codeStream << $1; }
-   |         '/' { Papageno::Parser::codeStream << $1; }
-   |         '%' { Papageno::Parser::codeStream << $1; }
-   |         '&' { Papageno::Parser::codeStream << $1; }
-   |         '!' { Papageno::Parser::codeStream << $1; }
-   |         '|' { Papageno::Parser::codeStream << $1; }
-   |         '(' { Papageno::Parser::codeStream << $1; }
-   |         ')' { Papageno::Parser::codeStream << $1; }
-   |         '{' { Papageno::Parser::codeStream << $1; }
-   |         '}' { Papageno::Parser::codeStream << $1; }
-   |         '[' { Papageno::Parser::codeStream << $1; }
-   |         ']' { Papageno::Parser::codeStream << $1; }
-   |         '<' { Papageno::Parser::codeStream << $1; }
-   |         '>' { Papageno::Parser::codeStream << $1; }
-   |         '=' { Papageno::Parser::codeStream << $1; }
-   |         '#' { Papageno::Parser::codeStream << $1; }
-   |         ':' { Papageno::Parser::codeStream << $1; }
-   |         ';' { Papageno::Parser::codeStream << $1; }
-   |         ',' { Papageno::Parser::codeStream << $1; }
-   |         '\'' { Papageno::Parser::codeStream << $1; }
-   |         ID  { Papageno::Parser::codeStream << $1; }
-   |         QUOTED_STRING { Papageno::Parser::codeStream << $1; }
+cpp_token:   '-' { Glockenspiel::Parser::codeStream << $1; }
+   |         '+' { Glockenspiel::Parser::codeStream << $1; }
+   |         '*' { Glockenspiel::Parser::codeStream << $1; }
+   |         '/' { Glockenspiel::Parser::codeStream << $1; }
+   |         '%' { Glockenspiel::Parser::codeStream << $1; }
+   |         '&' { Glockenspiel::Parser::codeStream << $1; }
+   |         '!' { Glockenspiel::Parser::codeStream << $1; }
+   |         '|' { Glockenspiel::Parser::codeStream << $1; }
+   |         '(' { Glockenspiel::Parser::codeStream << $1; }
+   |         ')' { Glockenspiel::Parser::codeStream << $1; }
+   |         '{' { Glockenspiel::Parser::codeStream << $1; }
+   |         '}' { Glockenspiel::Parser::codeStream << $1; }
+   |         '[' { Glockenspiel::Parser::codeStream << $1; }
+   |         ']' { Glockenspiel::Parser::codeStream << $1; }
+   |         '<' { Glockenspiel::Parser::codeStream << $1; }
+   |         '>' { Glockenspiel::Parser::codeStream << $1; }
+   |         '=' { Glockenspiel::Parser::codeStream << $1; }
+   |         '#' { Glockenspiel::Parser::codeStream << $1; }
+   |         ':' { Glockenspiel::Parser::codeStream << $1; }
+   |         ';' { Glockenspiel::Parser::codeStream << $1; }
+   |         ',' { Glockenspiel::Parser::codeStream << $1; }
+   |         '\'' { Glockenspiel::Parser::codeStream << $1; }
+   |         ID  { Glockenspiel::Parser::codeStream << $1; }
+   |         QUOTED_STRING { Glockenspiel::Parser::codeStream << $1; }
    
 cpp_code: '$' cpp_token_seq '$'
 
@@ -379,19 +391,19 @@ void yyerror(YYLTYPE *yylloc, yyscan_t scanner, const char *s)
   THROW_ERROR("Parser error: " << s);
 }
 
-namespace Papageno {
+namespace Glockenspiel {
 namespace Parser {
 
 struct CurrentFileRAII {
    CurrentFileRAII(const char *currentFileParsed__)
    {
-      lastFileParsed_ = Papageno::Parser::currentFileParsed;
+      lastFileParsed_ = Glockenspiel::Parser::currentFileParsed;
       
-      Papageno::Parser::currentFileParsed 
+      Glockenspiel::Parser::currentFileParsed 
          = currentFileParsed__;
    }
    ~CurrentFileRAII() {
-      Papageno::Parser::currentFileParsed = lastFileParsed_;
+      Glockenspiel::Parser::currentFileParsed = lastFileParsed_;
    }
    const char *lastFileParsed_;
 };
@@ -442,13 +454,13 @@ static void processDefinitions(const char *line, int startLine)
 #define PPG_END_TOKEN "papageno_end"
 
 #define DEBUG_OUTPUT(...) \
-   if(ai.debug_flag) { \
+   if(Glockenspiel::commandLineArgs.debug_flag) { \
       std::cout << __VA_ARGS__; \
    }
 
 static void generateTree(std::istream &input) 
 {
-   if(ai.debug_flag) {
+   if(Glockenspiel::commandLineArgs.debug_flag) {
       yydebug = 1;
    }
    
@@ -540,20 +552,17 @@ void generateTree(const char *inputFilename)
    generateTree(inFile);
 }
 
-void searchFileGenerateTree(const std::string &quotedInputFilename)
-{
-   std::string inputFilename 
-      = quotedInputFilename.substr(1, quotedInputFilename.size() - 2);
-   
+void searchFileGenerateTree(const std::string &inputFilename)
+{   
    // Search in current directory
    if(exists(inputFilename)) {
       generateTree(inputFilename.c_str());
       return;
    }
    else {
-      for(int i = 0; i < ai.include_directory_given; ++i) {
+      for(int i = 0; i < Glockenspiel::commandLineArgs.include_directory_given; ++i) {
          std::string filenameFull 
-            = std::string(ai.include_directory_arg[i]) + "/" + inputFilename;
+            = std::string(Glockenspiel::commandLineArgs.include_directory_arg[i]) + "/" + inputFilename;
            
          if(exists(filenameFull)) {
             generateTree(filenameFull.c_str());
@@ -566,4 +575,4 @@ void searchFileGenerateTree(const std::string &quotedInputFilename)
 }
 
 } // namespace ParserTree
-} // namespace Papageno
+} // namespace Glockenspiel

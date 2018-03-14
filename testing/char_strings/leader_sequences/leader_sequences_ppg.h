@@ -5,7 +5,7 @@ action: Foo
 action: Bar
 action: Klaatubaradan
 
-include: "../alphabetic_inputs_ppg.hpp"
+@include: "../alphabetic_inputs_ppg.hpp"
 
 layer: ppg_cs_layer_0
 

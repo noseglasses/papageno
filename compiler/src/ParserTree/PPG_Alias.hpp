@@ -21,7 +21,7 @@
 #include <map>
 #include <string>
 
-namespace Papageno {
+namespace Glockenspiel {
 namespace ParserTree {
      
 class Alias
@@ -38,4 +38,4 @@ class Alias
 };
 
 } // namespace ParserTree
-} // namespace Papageno
+} // namespace Glockenspiel

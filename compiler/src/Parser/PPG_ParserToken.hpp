@@ -27,13 +27,13 @@
 #define THROW_TOKEN_ERROR(PARSER_TOKEN, ...) \
    THROW_ERROR(REPORT_TOKEN(PARSER_TOKEN) << ": " << __VA_ARGS__)
    
-namespace Papageno {
+namespace Glockenspiel {
 namespace Parser {
    
 struct LocationOfDefinition
 {
    LocationOfDefinition(YYLTYPE location = (YYLTYPE){ .first_line = -1, .first_column = -1, .last_line = -1, .last_column = -1 },
-                        const char *file = Papageno::Parser::currentFileParsed)
+                        const char *file = Glockenspiel::Parser::currentFileParsed)
       :  file_(file),
          location_(location)
    {}
@@ -78,7 +78,7 @@ struct TokenCompare : public std::binary_function<const Token &, const Token &, 
 };
 
 } // namespace Parser
-} // namespace Papageno
+} // namespace Glockenspiel
 
 inline 
 std::ostream &operator<<(std::ostream &out, const YYLTYPE &location)
@@ -105,7 +105,7 @@ std::ostream &operator<<(std::ostream &out, const YYLTYPE &location)
 }
 
 inline
-std::ostream &operator<<(std::ostream &out, const Papageno::Parser::LocationOfDefinition &lod)
+std::ostream &operator<<(std::ostream &out, const Glockenspiel::Parser::LocationOfDefinition &lod)
 {
    if(lod.file_) {
       out << lod.file_ << ": ";
@@ -117,7 +117,7 @@ std::ostream &operator<<(std::ostream &out, const Papageno::Parser::LocationOfDe
 }
 
 inline
-std::ostream &operator<<(std::ostream &out, const Papageno::Parser::Token &token)
+std::ostream &operator<<(std::ostream &out, const Glockenspiel::Parser::Token &token)
 {
    out << '\'' << token.getText() << '\'';
    out << token.getLOD();

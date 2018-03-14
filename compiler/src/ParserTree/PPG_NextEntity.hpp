@@ -18,7 +18,7 @@
 
 #include "Parser/PPG_ParserToken.hpp"
 
-namespace Papageno {
+namespace Glockenspiel {
 namespace ParserTree {
    
 class NextEntity
@@ -71,4 +71,4 @@ class NextEntity
 
       
 } // namespace ParserTree
-} // namespace Papageno
+} // namespace Glockenspiel

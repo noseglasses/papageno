@@ -65,8 +65,8 @@ action   return ACTION_KEYWORD;
 phrase   return PHRASE_KEYWORD;
 alias    return ALIAS_KEYWORD;
 include  return INCLUDE_KEYWORD;
+setting  return SETTING_KEYWORD;
 "->"     return ARROW;
-":="     return DEFINITION;
 [-+\*/%&!\|\(\){}\[\]<>=#\:;,_\@\$\'] { 
             *yylval = yytext[0];//std::string(1, yytext[0]);
             return yytext[0]; 

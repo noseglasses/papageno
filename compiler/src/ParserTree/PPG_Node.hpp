@@ -25,7 +25,7 @@
 #include "Parser/PPG_ParserToken.hpp"
 #include <cassert>
 
-namespace Papageno {
+namespace Glockenspiel {
 namespace ParserTree {
 
 class Node
@@ -79,8 +79,8 @@ class Node
    protected:
       
       void retreiveSourcePosition() {
-         if(Papageno::Parser::currentLocation) {
-            lod_ = Papageno::Parser::currentLocation;
+         if(Glockenspiel::Parser::currentLocation) {
+            lod_ = Glockenspiel::Parser::currentLocation;
             return;
          }
       }
@@ -121,5 +121,5 @@ class Node
 };
       
 } // namespace ParserTree
-} // namespace Papageno
+} // namespace Glockenspiel
 

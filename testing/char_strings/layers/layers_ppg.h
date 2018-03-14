@@ -6,10 +6,10 @@ action: Action_2
 action: Action_3
 action: Action_4
 
-input: a := $'a'$
-input: b := $'b'$
-input: c := $'c'$
-input: d := $'d'$
+input: a = $'a'$
+input: b = $'b'$
+input: c = $'c'$
+input: d = $'d'$
 
 layer: ppg_cs_layer_0
 

@@ -18,7 +18,7 @@
 
 #include "ParserTree/PPG_Aggregate.hpp"
 
-namespace Papageno {
+namespace Glockenspiel {
 namespace ParserTree {
   
 class Cluster : public Aggregate
@@ -45,4 +45,4 @@ class Cluster : public Aggregate
 };
 
 } // namespace ParserTree
-} // namespace Papageno
+} // namespace Glockenspiel

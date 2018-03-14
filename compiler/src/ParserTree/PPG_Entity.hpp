@@ -22,7 +22,7 @@
 #include <set>
 #include <map>
 
-namespace Papageno {
+namespace Glockenspiel {
 namespace ParserTree {
    
 template<typename EntityType__,
@@ -234,5 +234,5 @@ typename Entity<EntityType__, NextEntityType__, NextEntityCompare__>::EntitiesTo
    Entity<EntityType__, NextEntityType__, NextEntityCompare__>::joinedEntities_;
 
 } // namespace ParserTree
-} // namespace Papageno
+} // namespace Glockenspiel
 

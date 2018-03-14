@@ -44,7 +44,7 @@ extern int yylex(YYSTYPE * yylval_param ,YYLTYPE *yylloc, void* yyscanner);
 #define YY_DECL int yylex \
                (YYSTYPE * yylval_param , YYLTYPE *yylloc, yyscan_t yyscanner)
 
-namespace Papageno {
+namespace Glockenspiel {
 namespace Parser {
    
 class LocationOfDefinition;
@@ -58,4 +58,4 @@ extern const char *currentFileParsed;
 void generateTree(const char *inputFile);
 
 } // namespace ParserTree
-} // namespace Papageno
+} // namespace Glockenspiel

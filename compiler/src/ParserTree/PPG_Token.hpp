@@ -23,7 +23,7 @@
 #include <vector>
 #include <map>
 
-namespace Papageno {
+namespace Glockenspiel {
 namespace ParserTree {
    
 class Input;
@@ -81,6 +81,10 @@ class Token : public Node
          children_.push_back(token);
       }
       
+      void setChildren(std::vector<std::shared_ptr<Token>> &children) {
+         children_ = children;
+      }
+      
       void setParent(const Token &parent) {
          parent_ = &parent;
       }
@@ -90,6 +94,10 @@ class Token : public Node
       }
       
       const std::vector<std::shared_ptr<Token>> &getChildren() const {
+         return children_;
+      }
+      
+      std::vector<std::shared_ptr<Token>> &getChildren() {
          return children_;
       }
       

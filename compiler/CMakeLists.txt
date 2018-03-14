@@ -22,10 +22,10 @@ if(PAPAGENO_BUILD_COMPILER)
          message(FATAL_ERROR "Cannot find the gengetopt executable")
       endif()
       
-      set(cmdline_txt_in "${CMAKE_CURRENT_SOURCE_DIR}/src/CommandLine/PPG_CommandLine.txt.in")
-      set(cmdline_txt "${CMAKE_CURRENT_BINARY_DIR}/src/CommandLine/PPG_CommandLine.txt")
-      set(cmdline_h "${CMAKE_CURRENT_SOURCE_DIR}/src/CommandLine/PPG_CommandLine.hpp")
-      set(cmdline_c "${CMAKE_CURRENT_SOURCE_DIR}/src/CommandLine/PPG_CommandLine.cpp")
+      set(cmdline_txt_in "${CMAKE_CURRENT_SOURCE_DIR}/src/CommandLine/PPG_CommandLineGengetopt.txt.in")
+      set(cmdline_txt "${CMAKE_CURRENT_BINARY_DIR}/src/CommandLine/PPG_CommandLineGengetopt.txt")
+      set(cmdline_h "${CMAKE_CURRENT_SOURCE_DIR}/src/CommandLine/PPG_CommandLineGengetopt.hpp")
+      set(cmdline_c "${CMAKE_CURRENT_SOURCE_DIR}/src/CommandLine/PPG_CommandLineGengetopt.cpp")
       set(glockenspiel_cmdline_deps "${cmdline_h}" "${cmdline_c}")
       
       configure_file("${cmdline_txt_in}" "${cmdline_txt}")
@@ -33,7 +33,7 @@ if(PAPAGENO_BUILD_COMPILER)
       add_custom_command(
          OUTPUT ${glockenspiel_cmdline_deps}
          DEPENDS "${cmdline_txt}"
-         COMMAND "${GENGETOPT_EXECUTABLE}" "--input=${cmdline_txt}" --file-name=PPG_CommandLine --header-extension=hpp --c-extension=cpp --include-getopt
+         COMMAND "${GENGETOPT_EXECUTABLE}" "--input=${cmdline_txt}" --file-name=PPG_CommandLineGengetopt --header-extension=hpp --c-extension=cpp --include-getopt
          WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/CommandLine"
          COMMENT "Generating glockenspiel command line sepecification"
       )
@@ -57,9 +57,15 @@ if(PAPAGENO_BUILD_COMPILER)
       endif()
       set(yacc_verbose_output "${CMAKE_CURRENT_BINARY_DIR}/src/Parser/PPG_Parser.yacc.log")
       
+      if(${CMAKE_VERSION} GREATER 3.6.0) 
+         set(bison_report_file_spec VERBOSE REPORT_FILE "${yacc_verbose_output}")
+      else()
+         set(bison_report_file_spec VERBOSE "${yacc_verbose_output}")
+      endif()
+      
       bison_target(
-         glockenspiel_yacc "${CMAKE_CURRENT_SOURCE_DIR}/src/Parser/PPG_Parser.yacc" "${glockenspiel_yacc}" 
-         VERBOSE REPORT_FILE "${yacc_verbose_output}"
+         glockenspiel_yacc "${CMAKE_CURRENT_SOURCE_DIR}/src/Parser/PPG_Parser.yacc" "${glockenspiel_yacc}"
+         ${bison_report_file_spec}
          COMPILE_FLAGS --debug
       )
    
@@ -70,8 +76,20 @@ if(PAPAGENO_BUILD_COMPILER)
    include_directories("${CMAKE_CURRENT_SOURCE_DIR}/src")
    include_directories("${CMAKE_CURRENT_BINARY_DIR}")
    
-   file(GLOB_RECURSE generator_sources "${CMAKE_CURRENT_SOURCE_DIR}/src/Generator/*.cpp")
-   file(GLOB_RECURSE parser_tree_sources "${CMAKE_CURRENT_SOURCE_DIR}/src/ParserTree/*.cpp")
+   set(sources "")
+   function(collect_sources source_list subdir)
+      file(GLOB_RECURSE sources__ "${CMAKE_CURRENT_SOURCE_DIR}/src/${subdir}/*.cpp")
+      set("${source_list}" "${${source_list}};${sources__}" PARENT_SCOPE)
+   endfunction()
+   
+   collect_sources(sources "Generator")
+   collect_sources(sources "ParserTree")
+   collect_sources(sources "Settings")
+   collect_sources(sources "CommandLine")
+   
+#    foreach(source ${sources})
+#       message("${source}")
+#    endforeach()
    
    set(glockenspiel_hpp_in "${CMAKE_CURRENT_SOURCE_DIR}/PPG_Compiler.hpp.in")
    set(glockenspiel_hpp "${CMAKE_CURRENT_BINARY_DIR}/PPG_Compiler.hpp")
@@ -81,8 +99,7 @@ if(PAPAGENO_BUILD_COMPILER)
    add_executable(
       glockenspiel
       "${glockenspiel_lex}" "${glockenspiel_yacc}" "${cmdline_c}"
-      ${generator_sources}
-      ${parser_tree_sources}
+      ${sources}
       "${CMAKE_CURRENT_SOURCE_DIR}/PPG_Compiler.cpp"
    )
    set_property(TARGET glockenspiel PROPERTY C_STANDARD 99)

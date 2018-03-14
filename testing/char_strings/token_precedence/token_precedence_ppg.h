@@ -14,18 +14,18 @@ action: Cluster_3
 action: Single_Note_Line_4
 action: Cluster_4
 
-input: a := $'a'$
-input: b := $'b'$
-input: c := $'c'$
-input: d := $'d'$
-input: e := $'e'$
-input: f := $'f'$
-input: m := $'m'$
-input: n := $'n'$
-input: o := $'o'$
-input: x := $'x'$
-input: y := $'y'$
-input: z := $'z'$
+input: a = $'a'$
+input: b = $'b'$
+input: c = $'c'$
+input: d = $'d'$
+input: e = $'e'$
+input: f = $'f'$
+input: m = $'m'$
+input: n = $'n'$
+input: o = $'o'$
+input: x = $'x'$
+input: y = $'y'$
+input: z = $'z'$
 
 |a| -> |b| -> |c| : Single_Note_Line_1
 [a, b, c] : Chord_1

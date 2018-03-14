@@ -20,11 +20,12 @@
 #include "ParserTree/PPG_Phrase.hpp"
 #include "ParserTree/PPG_Input.hpp"
 #include "ParserTree/PPG_Note.hpp"
+#include "ParserTree/PPG_Sequence.hpp"
 #include "Misc/PPG_StringHandling.hpp"
 
 #include <algorithm>
 
-namespace Papageno {
+namespace Glockenspiel {
 namespace ParserTree {
    
 std::vector<std::shared_ptr<Token>> Pattern::tokens_;
@@ -64,7 +65,7 @@ void
    Pattern
       ::repeatLastToken(const Parser::Token &countString)
 {   
-   auto count = Papageno::Misc::atol(countString);
+   auto count = Glockenspiel::Misc::atol(countString);
    
    for(int i = 0; i < (count - 1); ++i) {
       
@@ -215,9 +216,88 @@ void
    Pattern
       ::performSequenceReplacement()
 {
-   todo
+   for(const auto &childToken: root_->getChildren()) {
+      performSequenceReplacement(childToken, *root_);
+   }
+}
+
+void   
+   Pattern
+      ::performSequenceReplacement(std::shared_ptr<Token> from,
+                                   Token &parent)
+{
+   auto curToken = from;
+   
+   // Walk along a branch until the next token is found that has 
+   // either more or less than one child or has an action or is not a Note.
+   //
+   while(   (std::dynamic_pointer_cast<Note>(curToken))
+         && (curToken->getChildren().size() == 1)
+         && (curToken->getAction().getText().empty())
+   ) {
+      if(!std::dynamic_pointer_cast<Note>(curToken->getChildren()[0])) {
+         break;
+      }
+      curToken = curToken->getChildren()[0];
+   }
+   
+   // If the sequence is longer than one token
+   //
+   if(from.get() != curToken.get()) {
+   
+      auto sequence = replaceNoteRangeBySequence(from, curToken);
+   
+      auto &parentChildren = parent.getChildren();
+      
+      // Replace the "from" token by the new sequence token
+      //
+      for(std::size_t i = 0; i < parentChildren.size(); ++i) {
+         if(parentChildren[i].get() == from.get()) {
+            parentChildren[i] = sequence;
+            sequence->setParent(parent);
+            break;
+         }
+      }
+      
+      from = sequence;
+   }
+   
+   // Traverse all children
+   //
+   for(auto &child: from->getChildren()) {
+      performSequenceReplacement(child, *from);
+   }
+}
+
+std::shared_ptr<Token>
+   Pattern
+      ::replaceNoteRangeBySequence(
+                         const std::shared_ptr<Token> &from,
+                         const std::shared_ptr<Token> &to)
+{
+   auto newSequence = std::make_shared<Sequence>();
+   
+   auto curToken = from;
+   
+   while(curToken.get() != to.get()) {
+      
+      auto notePtr = std::dynamic_pointer_cast<Note>(curToken);
+      assert(notePtr);
+      newSequence->addInput(notePtr->getInput());
+      assert(curToken->getChildren().size() == 1);
+      curToken = curToken->getChildren()[0];
+   }
+   
+   newSequence->setAction(to->getAction());
+   newSequence->setChildren(to->getChildren());
+   
+   for(const auto &token: newSequence->getChildren()) {
+      token->setParent(*newSequence);
+   }
+   
+   return newSequence;
 }
    
 } // namespace ParserTree
-} // namespace Papageno
+} // namespace Glockenspiel
 

@@ -20,7 +20,7 @@
 #include "Parser/PPG_ParserToken.hpp"
 #include "ParserTree/PPG_Entity.hpp"
 
-namespace Papageno {
+namespace Glockenspiel {
 namespace ParserTree {
    
 struct CountToAction {
@@ -54,61 +54,13 @@ class Action : public Entity<Action, CountToAction, CountToActionCompare>
       typedef Entity<Action, CountToAction, CountToActionCompare> Parent;
       
       using Parent::Entity;
-      
-//       typedef std::pair<int, Parser::Token> CountToAction;
-//       
-//       Action(  const Parser::Token &id,
-//                const Parser::Token &type, 
-//                const Parser::Token &parameters,
-//                bool parametersDefined
-//             );
-//       
-//       static void define(const std::shared_ptr<Action> &action);
-//       
+
       static void pushNext(const Parser::Token &countString,
                              const Parser::Token &id);
-//       
+  
       static void pushNext(const Parser::Token &id);
-//       
-//       static void pushNextAction(const CountToAction &cta);
-//       
-//       static std::shared_ptr<Action> popNext();
-//       
-//       static std::vector<CountToAction> getNextActions();
-//          
-//       static bool hasNextEntities();
-//       
-//       const Parser::Token &getType() const;
-//       const Parser::Token &getParameters() const;
-//       bool getParametersDefined() const;
-//       
-//       void setWasRequested(bool state) { wasRequested_ = state; }
-//       bool getWasRequested() const { return wasRequested_; }
-//       
-//       virtual std::string getPropertyDescription() const;
-      
+
       virtual std::string getNodeType() const { return "Action"; }
-      
-//       typedef std::vector<std::shared_ptr<Action>> ActionCollection;
-//       typedef std::map<std::string, ActionCollection> ActionsByType;
-//       
-//       static ActionsByType getEntitiesByType(bool onlyRequested = false);
-//       
-//       static const std::map<std::string, std::shared_ptr<Action>> getActions();
-//       
-//       static std::shared_ptr<Action> lookup(const std::string &id);
-      
-//    protected:
-//       
-//       Parser::Token           type_;
-//       Parser::Token           parameters_;
-//       bool                    parametersDefined_;
-//       bool                    wasRequested_;
-//       
-//       static std::vector<CountToAction>    nextActions_;
-//       
-//       static std::map<std::string, std::shared_ptr<Action>> actions_;
-//       static std::map<std::string, Parser::LocationOfDefinition> locationsOfDefinition_;
 };
 
 inline
@@ -122,4 +74,4 @@ bool operator!=(const Action &a1, const Action &a2) {
 }
 
 } // namespace ParserTree
-} // namespace Papageno
+} // namespace Glockenspiel

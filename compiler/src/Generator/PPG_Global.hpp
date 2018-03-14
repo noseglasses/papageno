@@ -18,10 +18,10 @@
 
 #include <string>
 
-namespace Papageno {
+namespace Glockenspiel {
 namespace Generator {
    
 void generateGlobal(const std::string &outputFile);
 
 } // namespace ParserTree
-} // namespace Papageno
+} // namespace Glockenspiel

@@ -13,3 +13,4 @@ option "debug" d "Generate debug output during the compile" flag off
 option "join_duplicate_entities" - "Join duplicate actions and inputs" flag off
 option "join_duplicate_actions" - "Join duplicate actions" flag off
 option "join_duplicate_inputs" - "Join duplicate inputs" flag off
+option "join_note_sequences" - "Join note sequences" flag off

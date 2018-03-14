@@ -16,27 +16,31 @@
 
 #pragma once
 
-#include "Parser/PPG_Parser.hpp"
+#include <functional>
+#include <string>
+#include <map>
 
-#include <sstream>
-#include <stdexcept>
-
-extern YYLTYPE yylloc;
-
-#define TO_STRING_WITH_LOCATION(...) ([&]() -> std::string { \
-      std::ostringstream tmp; \
-      if(Glockenspiel::Parser::currentFileParsed) { \
-         tmp << Glockenspiel::Parser::currentFileParsed << ":"; \
-      } \
-      if(Glockenspiel::Parser::currentLocation) { \
-         tmp << Glockenspiel::Parser::currentLocation.location_.first_line << ":" \
-            << Glockenspiel::Parser::currentLocation.location_.first_column; \
-      } \
-      tmp << ": error: " << __VA_ARGS__; \
-      return tmp.str(); \
-   }() \
-)
-
-#define THROW_ERROR(...) \
-   throw std::runtime_error(TO_STRING_WITH_LOCATION(__VA_ARGS__))
+namespace Glockenspiel {
    
+class Settings 
+{
+   public:
+         
+      typedef std::function<void(const std::string &)> SetterFunction;
+      typedef std::map<std::string, SetterFunction> NameToSetter;
+      
+      static void set(const std::string &name, const std::string &value);
+      
+      static void init();
+      
+      static bool join_duplicate_entities;
+      static bool join_duplicate_actions;
+      static bool join_duplicate_inputs;
+      static bool join_note_sequences;
+      
+   protected:
+      
+      static NameToSetter setters_;
+};
+
+} // namespace Glockenspiel

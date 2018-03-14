@@ -16,7 +16,7 @@
 
 #include "ParserTree/PPG_Token.hpp"
 
-namespace Papageno {
+namespace Glockenspiel {
 namespace ParserTree {
    
 Parser::Token                    Token::curLayer_("0");

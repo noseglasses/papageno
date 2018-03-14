@@ -19,7 +19,7 @@
 #include "Parser/PPG_ParserToken.hpp"
 #include "ParserTree/PPG_Entity.hpp"
 
-namespace Papageno {
+namespace Glockenspiel {
 namespace ParserTree {
    
 class Input : public Entity<Input, Parser::Token, Parser::TokenCompare>
@@ -43,5 +43,5 @@ bool operator==(const Input &i1, const Input &i2)
 }
 
 } // namespace ParserTree
-} // namespace Papageno
+} // namespace Glockenspiel
 

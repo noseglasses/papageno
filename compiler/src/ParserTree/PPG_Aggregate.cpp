@@ -17,7 +17,7 @@
 #include "ParserTree/PPG_Aggregate.hpp"
 #include "ParserTree/PPG_Input.hpp"
 
-namespace Papageno {
+namespace Glockenspiel {
 namespace ParserTree {
    
    Aggregate
@@ -132,4 +132,4 @@ void
 }
       
 } // namespace ParserTree
-} // namespace Papageno
+} // namespace Glockenspiel

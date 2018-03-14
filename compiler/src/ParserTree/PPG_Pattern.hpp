@@ -21,7 +21,7 @@
 #include <vector>
 #include <memory>
 
-namespace Papageno {
+namespace Glockenspiel {
 namespace ParserTree {
    
 class Token;
@@ -51,7 +51,15 @@ class Pattern
       static std::shared_ptr<Token> getTreeRoot();
       
       static void performSequenceReplacement();
-
+      
+   protected:
+   
+      static void performSequenceReplacement(std::shared_ptr<Token> from,
+                                   Token &parent);
+      static std::shared_ptr<Token> replaceNoteRangeBySequence(
+                         const std::shared_ptr<Token> &from,
+                         const std::shared_ptr<Token> &to);
+                         
    protected:
       
       static std::vector<std::shared_ptr<Token>> tokens_;
@@ -62,4 +70,4 @@ class Pattern
       
 };
 } // namespace ParserTree
-} // namespace Papageno
+} // namespace Glockenspiel

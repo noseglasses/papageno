@@ -835,9 +835,9 @@ static void append_if_present(const char *source_filename, FILE *target, const c
 
 static void generate_output_file(void)
 {
-   FILE  *output_file = fopen(ai.output_filename_arg, "w");
+   FILE  *output_file = fopen(Glockenspiel::commandLineArgs.output_filename_arg, "w");
    
-   append_if_present(ai.preamble_filename_arg, output_file, "");
+   append_if_present(Glockenspiel::commandLineArgs.preamble_filename_arg, output_file, "");
    
    fprintf(output_file,
 "#include \"ppg_note.h\"\n"
@@ -851,7 +851,7 @@ static void generate_output_file(void)
    append_file(inputs_file, output_file, "");
    append_file(actions_file, output_file, "");
    
-   append_if_present(ai.initialization_filename_arg, output_file, "");
+   append_if_present(Glockenspiel::commandLineArgs.initialization_filename_arg, output_file, "");
    
    fprintf(output_file,
 "\n"
@@ -860,9 +860,9 @@ static void generate_output_file(void)
 "   int current_layer = 0;\n\n"
    );
    
-   append_if_present(ai.init_tree_generation_filename_arg, output_file, "   ");
+   append_if_present(Glockenspiel::commandLineArgs.init_tree_generation_filename_arg, output_file, "   ");
    append_file(definitions_file, output_file, "   ");
-   append_if_present(ai.finish_tree_generation_filename_arg, output_file, "   ");
+   append_if_present(Glockenspiel::commandLineArgs.finish_tree_generation_filename_arg, output_file, "   ");
    
    fprintf(output_file,
 "\n"
@@ -886,10 +886,10 @@ static void generate_output_file(void)
 "\n"
    );
    
-   append_if_present(ai.init_compression_filename_arg, output_file, "");
+   append_if_present(Glockenspiel::commandLineArgs.init_compression_filename_arg, output_file, "");
    
    fprintf(output_file,
-"   ppg_compression_run(context, \"%s\", output_filename);\n", (ai.project_name_arg) ? ai.project_name_arg : "generic"
+"   ppg_compression_run(context, \"%s\", output_filename);\n", (Glockenspiel::commandLineArgs.project_name_arg) ? Glockenspiel::commandLineArgs.project_name_arg : "generic"
    );
    fprintf(output_file,
 "   ppg_compression_finalize(context);\n"
@@ -952,8 +952,8 @@ static void write_header(FILE *definitions_file)
 
 void generate()
 {
-   FILE *source_file = fopen(ai.source_filename_arg, "r");
-   definitions_file = tmpfile(); //fopen(ai.output_filename, "w");
+   FILE *source_file = fopen(Glockenspiel::commandLineArgs.source_filename_arg, "r");
+   definitions_file = tmpfile(); //fopen(Glockenspiel::commandLineArgs.output_filename, "w");
    inputs_file = tmpfile();//fopen(inputs_filename, "w");
    actions_file = tmpfile();//fopen(actions_filename, "w");
    symbols_file = tmpfile();//fopen(symbols_filename, "w");

@@ -15,7 +15,7 @@
  */
 #include "ParserTree/PPG_Cluster.hpp"
 
-namespace Papageno {
+namespace Glockenspiel {
 namespace ParserTree {
    
 void 
@@ -50,4 +50,4 @@ void
 }
 
 } // namespace ParserTree
-} // namespace Papageno
+} // namespace Glockenspiel

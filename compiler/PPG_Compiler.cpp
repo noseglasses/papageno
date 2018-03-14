@@ -17,35 +17,43 @@
 #include "Parser/PPG_Parser.hpp"
 #include "Parser/PPG_Parser.yacc.hpp"
 #include "CommandLine/PPG_CommandLine.hpp"
+#include "Settings/PPG_Settings.hpp"
 #include "Generator/PPG_Global.hpp"
 #include "ParserTree/PPG_Action.hpp"
+#include "ParserTree/PPG_Pattern.hpp"
 #include "ParserTree/PPG_Input.hpp"
 
 #include <iostream>
 #include <stdexcept>
 
-struct gengetopt_args_info ai;
-
 int main(int argc, char **argv)
 {
-   if(cmdline_parser(argc, argv, &ai) != 0) {
+   if(cmdline_parser(argc, argv, &Glockenspiel::commandLineArgs) != 0) {
       exit(1);
    }
    
+   using namespace Glockenspiel;
+   
+   Settings::init();
+   
    try {
-      for(int i = 0; i < ai.source_filename_given; ++i) {
-         Papageno::Parser::generateTree(ai.source_filename_arg[i]);
+      for(int i = 0; i < Glockenspiel::commandLineArgs.source_filename_given; ++i) {
+         Parser::generateTree(Glockenspiel::commandLineArgs.source_filename_arg[i]);
       }
       
-      if(ai.join_duplicate_actions_flag || ai.join_duplicate_entities_flag) {
-         Papageno::ParserTree::Action::joinDuplicateEntries();
+      if(Settings::join_duplicate_actions || Settings::join_duplicate_entities) {
+         ParserTree::Action::joinDuplicateEntries();
       }
       
-      if(ai.join_duplicate_inputs_flag || ai.join_duplicate_entities_flag) {
-         Papageno::ParserTree::Input::joinDuplicateEntries();
+      if(Settings::join_duplicate_inputs || Settings::join_duplicate_entities) {
+         ParserTree::Input::joinDuplicateEntries();
       }
       
-      Papageno::Generator::generateGlobal(ai.output_filename_arg);
+      if(Settings::join_note_sequences) {
+         ParserTree::Pattern::performSequenceReplacement();
+      }
+      
+      Generator::generateGlobal(Glockenspiel::commandLineArgs.output_filename_arg);
    }
    catch(const std::runtime_error &e) {
       std::cerr << e.what() <<std::endl;

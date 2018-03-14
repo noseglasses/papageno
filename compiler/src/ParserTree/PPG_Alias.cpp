@@ -17,7 +17,7 @@
 #include "ParserTree/PPG_Alias.hpp"
 #include "Misc/PPG_ErrorHandling.hpp"
 
-namespace Papageno {
+namespace Glockenspiel {
 namespace ParserTree {
 
 std::map<std::string, Parser::Token> Alias::aliasMapping_;
@@ -59,4 +59,4 @@ std::string
 }
 
 } // namespace ParserTree
-} // namespace Papageno
+} // namespace Glockenspiel

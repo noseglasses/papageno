@@ -18,7 +18,7 @@
 
 #include "ParserTree/PPG_Aggregate.hpp"
 
-namespace Papageno {
+namespace Glockenspiel {
 namespace ParserTree {
   
 class Sequence : public Aggregate
@@ -29,6 +29,10 @@ class Sequence : public Aggregate
       
       virtual std::shared_ptr<Token> clone() const override {
          return std::make_shared<Sequence>(*this);
+      }
+      
+      void addInput(const Parser::Token &input) {
+         inputs_.push_back(input);
       }
       
    protected:
@@ -44,4 +48,4 @@ class Sequence : public Aggregate
 };
 
 } // namespace ParserTree
-} // namespace Papageno
+} // namespace Glockenspiel

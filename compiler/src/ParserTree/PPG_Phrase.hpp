@@ -23,7 +23,7 @@
 #include <vector>
 #include <memory>
 
-namespace Papageno {
+namespace Glockenspiel {
 namespace ParserTree {
    
 class Token;
@@ -53,4 +53,4 @@ class Phrase : public Node
 };
       
 } // namespace ParserTree
-} // namespace Papageno
+} // namespace Glockenspiel

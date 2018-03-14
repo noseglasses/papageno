@@ -14,14 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ParserTree/PPG_Node.hpp"
+#include "CommandLine/PPG_CommandLine.hpp"
 
 namespace Glockenspiel {
-namespace ParserTree {
-      
-std::map<std::string, const Node*> Node::ids_;
-      
-int           Node::nextId_ = 0;
-
-}
+struct gengetopt_args_info commandLineArgs;
 }

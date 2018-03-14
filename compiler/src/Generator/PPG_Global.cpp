@@ -15,7 +15,7 @@
  */
 
 #include "Generator/PPG_Global.hpp"
-
+#include "CommandLine/PPG_CommandLine.hpp"
 #include "ParserTree/PPG_Token.hpp"
 #include "ParserTree/PPG_Action.hpp"
 #include "ParserTree/PPG_Input.hpp"
@@ -28,7 +28,7 @@
 
 extern struct gengetopt_args_info ai;
 
-namespace Papageno {
+namespace Glockenspiel {
 namespace Generator {
 
   
@@ -81,11 +81,11 @@ void generateFileHeader(std::ostream &out) {
 
    caption(out, "Files parsed");
    
-   for(std::size_t i = 0; i < Papageno::Parser::filesParsed.size(); ++i) {
+   for(std::size_t i = 0; i < Glockenspiel::Parser::filesParsed.size(); ++i) {
       out << 
-"/* File " << Papageno::Parser::filesParsed[i] << "\n"
+"/* File " << Glockenspiel::Parser::filesParsed[i] << "\n"
 "\n";
-      out << Papageno::Parser::codeParsed[i] << "\n"
+      out << Glockenspiel::Parser::codeParsed[i] << "\n"
 "*/\n"
 "\n";
    }
@@ -102,9 +102,9 @@ void generateFileHeader(std::ostream &out) {
 "#include \"ppg_input.h\"\n"
 "\n";
 
-   if(ai.preamble_filename_arg) {
+   if(Glockenspiel::commandLineArgs.preamble_filename_arg) {
       out <<
-"#include \"" << ai.preamble_filename_arg << "\"\n";
+"#include \"" << Glockenspiel::commandLineArgs.preamble_filename_arg << "\"\n";
       out <<
 "\n";
    }
@@ -750,4 +750,4 @@ void generateGlobal(const std::string &outputFilename)
 }
 
 } // namespace ParserTree
-} // namespace Papageno
+} // namespace Glockenspiel

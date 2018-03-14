@@ -21,7 +21,7 @@
 #include "ParserTree/PPG_Token.hpp"
 #include "Parser/PPG_ParserToken.hpp"
 
-namespace Papageno {
+namespace Glockenspiel {
 namespace ParserTree {
      
 class Note : public Token
@@ -39,13 +39,17 @@ class Note : public Token
          }
       }
       
-      const std::shared_ptr<Input> &getInput() const {
+      const Parser::Token &getInput() const {
+         return input_;
+      }
+      
+      const std::shared_ptr<Input> &getInputPtr() const {
          return Input::lookup(input_.getText());
       }
             
       virtual std::string getPropertyDescription() const override {
          return TO_STRING(Node::getPropertyDescription() << ", input = " 
-            << this->getInput()->getDescription() << ", flags = " << flags_);
+            << this->getInputPtr()->getDescription() << ", flags = " << flags_);
       }
       
       virtual std::string getNodeType() const override { return "Note"; }
@@ -53,7 +57,7 @@ class Note : public Token
       virtual bool isEqual(const Token &other) const override {
          auto otherNote = dynamic_cast<const Note *>(&other);
          if(!otherNote) { return false; }
-         return *otherNote->getInput() == *this->getInput();
+         return *otherNote->getInputPtr() == *this->getInputPtr();
       }
       
       virtual std::shared_ptr<Token> clone() const override {
@@ -65,7 +69,7 @@ class Note : public Token
       virtual void collectInputAssignments(InputAssignmentsByTag &iabt) const override {
          std::ostringstream path;
          path << this->getId().getText() << ".input";
-         const auto &input = this->getInput();
+         const auto &input = this->getInputPtr();
          iabt[input->getType().getText()].push_back( 
             (InputAssignment) { 
                path.str(),
@@ -76,14 +80,14 @@ class Note : public Token
       
       virtual void touchActionsAndInputs() override {
          this->Token::touchActionsAndInputs();
-         this->getInput()->setWasRequested(true);
+         this->getInputPtr()->setWasRequested(true);
       }
       
    protected:
       
       virtual void generateCCodeInternal(std::ostream &out) const override {
          
-         const auto &input = this->getInput();
+         const auto &input = this->getInputPtr();
          out <<
 "   .super = {\n";
 
@@ -110,5 +114,5 @@ class Note : public Token
 };
 
 } // namespace ParserTree
-} // namespace Papageno
+} // namespace Glockenspiel
    

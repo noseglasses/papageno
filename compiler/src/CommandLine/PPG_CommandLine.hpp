@@ -16,27 +16,8 @@
 
 #pragma once
 
-#include "Parser/PPG_Parser.hpp"
+#include "CommandLine/PPG_CommandLineGengetopt.hpp"
 
-#include <sstream>
-#include <stdexcept>
-
-extern YYLTYPE yylloc;
-
-#define TO_STRING_WITH_LOCATION(...) ([&]() -> std::string { \
-      std::ostringstream tmp; \
-      if(Glockenspiel::Parser::currentFileParsed) { \
-         tmp << Glockenspiel::Parser::currentFileParsed << ":"; \
-      } \
-      if(Glockenspiel::Parser::currentLocation) { \
-         tmp << Glockenspiel::Parser::currentLocation.location_.first_line << ":" \
-            << Glockenspiel::Parser::currentLocation.location_.first_column; \
-      } \
-      tmp << ": error: " << __VA_ARGS__; \
-      return tmp.str(); \
-   }() \
-)
-
-#define THROW_ERROR(...) \
-   throw std::runtime_error(TO_STRING_WITH_LOCATION(__VA_ARGS__))
-   
+namespace Glockenspiel {
+extern struct gengetopt_args_info commandLineArgs;
+}

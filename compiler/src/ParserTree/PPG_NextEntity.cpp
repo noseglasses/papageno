@@ -15,7 +15,7 @@
  */
 #include "ParserTree/PPG_NextEntity.hpp"
 
-namespace Papageno {
+namespace Glockenspiel {
 namespace ParserTree {
       
 Parser::Token   NextEntity::parameters_;
@@ -24,4 +24,4 @@ Parser::Token   NextEntity::nextId_;
 bool            NextEntity::parametersDefined_ = false;
 
 } // namespace ParserTree
-} // namespace Papageno
+} // namespace Glockenspiel
