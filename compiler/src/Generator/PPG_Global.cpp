@@ -14,14 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Generator/PPG_Global.hpp"
-#include "CommandLine/PPG_CommandLine.hpp"
-#include "ParserTree/PPG_Token.hpp"
-#include "ParserTree/PPG_Action.hpp"
-#include "ParserTree/PPG_Input.hpp"
-#include "ParserTree/PPG_Pattern.hpp"
+#include "Generator/GLS_Global.hpp"
+#include "CommandLine/GLS_CommandLine.hpp"
+#include "ParserTree/GLS_Token.hpp"
+#include "ParserTree/GLS_Action.hpp"
+#include "ParserTree/GLS_Input.hpp"
+#include "ParserTree/GLS_Pattern.hpp"
 
-#include "PPG_Compiler.hpp"
+#include "GLS_Compiler.hpp"
 
 #include <ostream>
 #include <fstream>
@@ -115,28 +115,31 @@ void generateFileHeader(std::ostream &out) {
 "#endif\n\n";
    
   out <<
-"#define PPG_NUM_BITS_LEFT(N_BITS) \\\n"
-"   (N_BITS%(8*sizeof(PPG_Bitfield_Storage_Type)))\n"
+"#define GLS_NUM_BITS_LEFT(N_BITS) \\\n"
+"   (N_BITS%(8*sizeof(GLS_Bitfield_Storage_Type)))\n"
 "\n"
-"#define PPG_NUM_BYTES(N_BITS) \\\n"
-"   (N_BITS/(8*sizeof(PPG_Bitfield_Storage_Type)))\n"
-"\n"
-"#ifndef PPG_DEFAULT_LAYER\n"
-"#define PPG_DEFAULT_LAYER 0\n"
-"#endif\n"
-"\n"
-"#ifndef PPG_DEFAULT_TIME_FUNCTION\n"
-"#define PPG_DEFAULT_TIME_FUNCTION ppg_default_time\n"
-"#endif\n"
-"\n"
-"#ifndef PPG_DEFAULT_TIME_DIFFERENCE_FUNCTION\n"
-"#define PPG_DEFAULT_TIME_DIFFERENCE_FUNCTION ppg_default_time_difference\n"
-"#endif\n"
-"\n"
-"#ifndef PPG_DEFAULT_TIME_COMPARISON_FUNCTION\n"
-"#define PPG_DEFAULT_TIME_COMPARISON_FUNCTION ppg_default_time_comparison\n"
-"#endif\n"
+"#define GLS_NUM_BYTES(N_BITS) \\\n"
+"   (N_BITS/(8*sizeof(GLS_Bitfield_Storage_Type)))\n"
 "\n";
+
+#define ADD_DEFAULT_VALUE(NAME, INITIAL) \
+   out << \
+"#ifndef GLS_INITIAL_" #NAME "\n" \
+"#define GLS_INITIAL_" #NAME " " #INITIAL "\n" \
+"#endif\n" \
+"\n"
+
+   ADD_DEFAULT_VALUE(LAYER, 0)
+   ADD_DEFAULT_VALUE(TIME_FUNCTION, ppg_default_time)
+   ADD_DEFAULT_VALUE(TIME_DIFFERENCE_FUNCTION, ppg_default_time_difference)
+   ADD_DEFAULT_VALUE(TIME_COMPARISON_FUNCTION, ppg_default_time_comparison)
+   ADD_DEFAULT_VALUE(TIMEOUT_ENABLED, true)
+   ADD_DEFAULT_VALUE(PAPAGENO_ENABLED, true)
+   ADD_DEFAULT_VALUE(LOGGING_ENABLED, true)
+   ADD_DEFAULT_VALUE(ABORT_INPUT, (PPG_Input_Id)((uintptr_t)-1))
+   ADD_DEFAULT_VALUE(EVENT_PROCESSOR, NULL)
+   ADD_DEFAULT_VALUE(SIGNAL_CALLBACK_FUNC, NULL)
+   ADD_DEFAULT_VALUE(SIGNAL_CALLBACK_USER_DATA, NULL)
 }
 
 #if 0
@@ -148,14 +151,14 @@ void generateGlobalActionInformation(std::ostream &out)
 
    outputInfoAboutSpecificOverride(out);
    out <<
-"#ifndef PPG_CONFIGURE_ACTIONS_GLOBAL\n"
-"#define PPG_CONFIGURE_ACTIONS_GLOBAL(...)\n"
+"#ifndef GLS_CONFIGURE_ACTIONS_GLOBAL\n"
+"#define GLS_CONFIGURE_ACTIONS_GLOBAL(...)\n"
 "#endif\n\n";
 
    outputInfoAboutSpecificOverride(out);
    out <<
-"#ifndef PPG_CONFIGURE_ACTIONS_LOCAL\n"
-"#define PPG_CONFIGURE_ACTIONS_LOCAL(...)\n"
+"#ifndef GLS_CONFIGURE_ACTIONS_LOCAL\n"
+"#define GLS_CONFIGURE_ACTIONS_LOCAL(...)\n"
 "#endif\n\n";
 
    for(const auto &abtEntry: actionsByType) {
@@ -163,15 +166,15 @@ void generateGlobalActionInformation(std::ostream &out)
    
       outputInfoAboutSpecificOverride(out);
       out <<
-"#ifndef PPG_ACTION_INITIALIZATION___" << tag << "\n";
+"#ifndef GLS_ACTION_INITIALIZATION___" << tag << "\n";
       out << 
-"#define PPG_ACTION_INITIALIZATION___" << tag << "(...) __VA_ARGS__\n";
+"#define GLS_ACTION_INITIALIZATION___" << tag << "(...) __VA_ARGS__\n";
       out <<
 "#endif\n"
 "\n";
 
       out <<
-"#define PPG_ACTIONS___" << tag << "(OP) \\\n";
+"#define GLS_ACTIONS___" << tag << "(OP) \\\n";
 
       for(const auto &actionPtr: abtEntry.second) {
          out <<
@@ -183,48 +186,48 @@ void generateGlobalActionInformation(std::ostream &out)
          
       outputInfoAboutSpecificOverride(out);
       out <<
-   "#ifndef PPG_CONFIGURE_ACTIONS_GLOBAL___" << tag << "\n"
-   "#define PPG_CONFIGURE_ACTIONS_GLOBAL___" << tag << "(...) \\\n"
-   "   PPG_CONFIGURE_ACTIONS_GLOBAL(__VA_ARGS__)\n"
+   "#ifndef GLS_CONFIGURE_ACTIONS_GLOBAL___" << tag << "\n"
+   "#define GLS_CONFIGURE_ACTIONS_GLOBAL___" << tag << "(...) \\\n"
+   "   GLS_CONFIGURE_ACTIONS_GLOBAL(__VA_ARGS__)\n"
    "#endif\n\n";
 
       outputInfoAboutSpecificOverride(out);
       out <<
-   "#ifndef PPG_CONFIGURE_ACTIONS_LOCAL___" << tag << "\n"
-   "#define PPG_CONFIGURE_ACTIONS_LOCAL___" << tag << "(...) \\\n"
-   "   PPG_CONFIGURE_ACTIONS_LOCAL(__VA_ARGS__)\n"
+   "#ifndef GLS_CONFIGURE_ACTIONS_LOCAL___" << tag << "\n"
+   "#define GLS_CONFIGURE_ACTIONS_LOCAL___" << tag << "(...) \\\n"
+   "   GLS_CONFIGURE_ACTIONS_LOCAL(__VA_ARGS__)\n"
    "#endif\n\n";
    }
    
    out <<
-"#define PPG_ACTIONS_ALL(OP) \\\n";
+"#define GLS_ACTIONS_ALL(OP) \\\n";
 
    for(const auto &abtEntry: actionsByType) {
       const auto &tag = abtEntry.first;
       out <<
-"   PPG_ACTIONS___" << tag << "(OP) \\\n";
+"   GLS_ACTIONS___" << tag << "(OP) \\\n";
    }
    out << "\n";
    
    out <<
-"#define PPG_CUSTOM_CONFIGURE_ACTIONS_GLOBAL \\\n";
+"#define GLS_CUSTOM_CONFIGURE_ACTIONS_GLOBAL \\\n";
    for(const auto &abtEntry: actionsByType) {
       const auto &tag = abtEntry.first;
       out <<
-"   PPG_ACTIONS___" << tag << "(PPG_CONFIGURE_ACTIONS_GLOBAL___" << tag << ") \\\n";
+"   GLS_ACTIONS___" << tag << "(GLS_CONFIGURE_ACTIONS_GLOBAL___" << tag << ") \\\n";
    }
    out << 
 "\n";
 
    out <<
-"PPG_CUSTOM_CONFIGURE_ACTIONS_GLOBAL\n\n";
+"GLS_CUSTOM_CONFIGURE_ACTIONS_GLOBAL\n\n";
 
    out <<
-"#define PPG_CUSTOM_CONFIGURE_ACTIONS_LOCAL \\\n";
+"#define GLS_CUSTOM_CONFIGURE_ACTIONS_LOCAL \\\n";
    for(const auto &abtEntry: actionsByType) {
       const auto &tag = abtEntry.first;
       out <<
-"   PPG_ACTIONS___" << tag << "(PPG_CONFIGURE_ACTIONS_LOCAL___" << tag << ") \\\n";
+"   GLS_ACTIONS___" << tag << "(GLS_CONFIGURE_ACTIONS_LOCAL___" << tag << ") \\\n";
    }
    out << 
 "\n";
@@ -249,7 +252,7 @@ void generateEntityInformation(
 "// Add a flag to enable local initialization for\n"
 "// all input classes.\n"
 "//\n"
-"#ifdef PPG_ENABLE_" << entityTypeAllCaps << "S_LOCAL_INITIALIZATION_ALL\n";
+"#ifdef GLS_ENABLE_" << entityTypeAllCaps << "S_LOCAL_INITIALIZATION_ALL\n";
 
    for(const auto &entityAssignmentsEntry: entityAssignments) {
       const auto &tag = entityAssignmentsEntry.first;
@@ -257,8 +260,8 @@ void generateEntityInformation(
       out <<
 "// A flag to toggle specific initialization for tag class \'" << tag << "\'.\n"
 "//\n"
-"#   ifndef PPG_ENABLE_" << entityTypeAllCaps << "S_LOCAL_INITIALIZATION___" << tag << " \n"
-"#      define PPG_ENABLE_" << entityTypeAllCaps << "S_LOCAL_INITIALIZATION___" << tag << " \n"
+"#   ifndef GLS_ENABLE_" << entityTypeAllCaps << "S_LOCAL_INITIALIZATION___" << tag << " \n"
+"#      define GLS_ENABLE_" << entityTypeAllCaps << "S_LOCAL_INITIALIZATION___" << tag << " \n"
 "#   endif \n";
    }
    out <<
@@ -267,8 +270,8 @@ void generateEntityInformation(
    out <<
 "// Enable the same type of initialization for all tag classes\n"
 "//\n"
-"#ifndef PPG_" << entityTypeAllCaps << "_INITIALIZE\n"
-"#   define PPG_" << entityTypeAllCaps << "_INITIALIZE(ID, ...) __VA_ARGS__\n"
+"#ifndef GLS_" << entityTypeAllCaps << "_INITIALIZE\n"
+"#   define GLS_" << entityTypeAllCaps << "_INITIALIZE(ID, ...) __VA_ARGS__\n"
 "#endif\n\n";
    
    out <<
@@ -283,36 +286,36 @@ void generateEntityInformation(
 
       out <<
 "// Tag class \'" << tag << "\'.\n" <<
-"#ifndef PPG_" << entityTypeAllCaps << "_INITIALIZE___" << tag << "\n"
-"#   define PPG_" << entityTypeAllCaps << "_INITIALIZE___" << tag << "(ID, ...) \\\n" <<
-"      PPG_" << entityTypeAllCaps << "_INITIALIZE(ID, ##__VA_ARGS__)\n"
+"#ifndef GLS_" << entityTypeAllCaps << "_INITIALIZE___" << tag << "\n"
+"#   define GLS_" << entityTypeAllCaps << "_INITIALIZE___" << tag << "(ID, ...) \\\n" <<
+"      GLS_" << entityTypeAllCaps << "_INITIALIZE(ID, ##__VA_ARGS__)\n"
 "#endif\n"
 "\n"
-"#ifdef PPG_ENABLE_" << entityTypeAllCaps << "S_LOCAL_INITIALIZATION___" << tag << "\n" <<
-"#   ifndef PPG_" << entityTypeAllCaps << "_INITIALIZE_LOCAL___" << tag << "\n" <<
-"#      define PPG_" << entityTypeAllCaps << "_INITIALIZE_LOCAL___" << tag << "(ID, PATH, ...) \\\n" <<
-"            PATH = PPG_" << entityTypeAllCaps << "_INITIALIZE___" << tag << "(ID, ##__VA_ARGS__);\n" <<
+"#ifdef GLS_ENABLE_" << entityTypeAllCaps << "S_LOCAL_INITIALIZATION___" << tag << "\n" <<
+"#   ifndef GLS_" << entityTypeAllCaps << "_INITIALIZE_LOCAL___" << tag << "\n" <<
+"#      define GLS_" << entityTypeAllCaps << "_INITIALIZE_LOCAL___" << tag << "(ID, PATH, ...) \\\n" <<
+"            PATH = GLS_" << entityTypeAllCaps << "_INITIALIZE___" << tag << "(ID, ##__VA_ARGS__);\n" <<
 "#   endif\n"
-"#   ifndef PPG_" << entityTypeAllCaps << "_INITIALIZE_GLOBAL___" << tag << "\n" <<
-"#      define PPG_" << entityTypeAllCaps << "_INITIALIZE_GLOBAL___" << tag << "(ID, ...) 0\n" <<
+"#   ifndef GLS_" << entityTypeAllCaps << "_INITIALIZE_GLOBAL___" << tag << "\n" <<
+"#      define GLS_" << entityTypeAllCaps << "_INITIALIZE_GLOBAL___" << tag << "(ID, ...) 0\n" <<
 "#   endif\n"
 "#else\n"
-"#   ifndef PPG_" << entityTypeAllCaps << "_INITIALIZE_LOCAL___" << tag << "\n" <<
-"#      define PPG_" << entityTypeAllCaps << "_INITIALIZE_LOCAL___" << tag << "(ID, PATH, ...)\n"
+"#   ifndef GLS_" << entityTypeAllCaps << "_INITIALIZE_LOCAL___" << tag << "\n" <<
+"#      define GLS_" << entityTypeAllCaps << "_INITIALIZE_LOCAL___" << tag << "(ID, PATH, ...)\n"
 "#   endif\n"
-"#   ifndef PPG_" << entityTypeAllCaps << "_INITIALIZE_GLOBAL___" << tag << "\n" <<
-"#      define PPG_" << entityTypeAllCaps << "_INITIALIZE_GLOBAL___" << tag << "(ID, ...) \\\n" <<
-"            PPG_" << entityTypeAllCaps << "_INITIALIZE___" << tag << "(ID, ##__VA_ARGS__)\n" <<
+"#   ifndef GLS_" << entityTypeAllCaps << "_INITIALIZE_GLOBAL___" << tag << "\n" <<
+"#      define GLS_" << entityTypeAllCaps << "_INITIALIZE_GLOBAL___" << tag << "(ID, ...) \\\n" <<
+"            GLS_" << entityTypeAllCaps << "_INITIALIZE___" << tag << "(ID, ##__VA_ARGS__)\n" <<
 "#   endif\n"
 "#endif\n"
 "\n"         
 "// Define a common entry for each tag class to be used for\n"
 "// local initialization.\n"
 "//\n"
-"#define PPG_" << entityTypeAllCaps << "S_INITIALIZE_LOCAL_ALL___" << tag << " \\\n";
+"#define GLS_" << entityTypeAllCaps << "S_INITIALIZE_LOCAL_ALL___" << tag << " \\\n";
       for(const auto &assignment: entityAssignmentsEntry.second) {
          out <<
-"   PPG_" << entityTypeAllCaps << "_INITIALIZE_LOCAL___" << tag << "(" << assignment.entity_->getId().getText() << ", " << assignment.pathString_;
+"   GLS_" << entityTypeAllCaps << "_INITIALIZE_LOCAL___" << tag << "(" << assignment.entity_->getId().getText() << ", " << assignment.pathString_;
          if(assignment.entity_->getParametersDefined()) {
             out << ", " << assignment.entity_->getParameters().getText();
          }
@@ -325,13 +328,13 @@ void generateEntityInformation(
    out <<
 "// Define a common entry point for local initialization\n"
 "//\n"
-"#define PPG_" << entityTypeAllCaps << "S_INITIALIZE_LOCAL_ALL \\\n";
+"#define GLS_" << entityTypeAllCaps << "S_INITIALIZE_LOCAL_ALL \\\n";
 
    for(const auto &entityAssignmentsEntry: entityAssignments) {
       const auto &tag = entityAssignmentsEntry.first;
       
       out <<
-"   PPG_" << entityTypeAllCaps << "S_INITIALIZE_LOCAL_ALL___" << tag << " \\\n";
+"   GLS_" << entityTypeAllCaps << "S_INITIALIZE_LOCAL_ALL___" << tag << " \\\n";
    }
    out <<
 "\n";
@@ -340,8 +343,8 @@ void generateEntityInformation(
 "// This macro can be used to add configuration of " << entityType << "s at global scope.\n"
 "// The default is no configuration at global scope.\n"
 "//\n"
-"#ifndef PPG_"<< entityTypeAllCaps << "_CONFIGURE_GLOBAL\n"
-"#   define PPG_"<< entityTypeAllCaps << "_CONFIGURE_GLOBAL(...)\n"
+"#ifndef GLS_"<< entityTypeAllCaps << "_CONFIGURE_GLOBAL\n"
+"#   define GLS_"<< entityTypeAllCaps << "_CONFIGURE_GLOBAL(...)\n"
 "#endif\n"
 "\n";
 
@@ -349,8 +352,8 @@ void generateEntityInformation(
 "// This macro can be used to add configuration of " << entityType << "s at global scope.\n"
 "// The default is no configuration at local scope.\n"
 "//\n"
-"#ifndef PPG_"<< entityTypeAllCaps << "_CONFIGURE_LOCAL\n"
-"#   define PPG_"<< entityTypeAllCaps << "_CONFIGURE_LOCAL(...)\n"
+"#ifndef GLS_"<< entityTypeAllCaps << "_CONFIGURE_LOCAL\n"
+"#   define GLS_"<< entityTypeAllCaps << "_CONFIGURE_LOCAL(...)\n"
 "#endif\n"
 "\n";
 
@@ -361,17 +364,17 @@ void generateEntityInformation(
 "// Implement the following macro to enable specific initialization \n"
 "// at global scope for tag class \'" << tag << "\'.\n" <<
 "//\n"
-"#ifndef PPG_" << entityTypeAllCaps << "_CONFIGURE_GLOBAL___" << tag << "\n"
-"#   define PPG_" << entityTypeAllCaps << "_CONFIGURE_GLOBAL___" << tag << "(...) \\\n"
-"       PPG_" << entityTypeAllCaps << "_CONFIGURE_GLOBAL(__VA_ARGS__)\n"
+"#ifndef GLS_" << entityTypeAllCaps << "_CONFIGURE_GLOBAL___" << tag << "\n"
+"#   define GLS_" << entityTypeAllCaps << "_CONFIGURE_GLOBAL___" << tag << "(...) \\\n"
+"       GLS_" << entityTypeAllCaps << "_CONFIGURE_GLOBAL(__VA_ARGS__)\n"
 "#endif\n"
 "\n"
 "// Implement the following macro to enable specific initialization \n"
 "// at local scope for tag class " << tag << ".\n" <<
 "//\n"
-"#ifndef PPG_" << entityTypeAllCaps << "_CONFIGURE_LOCAL___" << tag << "\n"
-"#   define PPG_" << entityTypeAllCaps << "_CONFIGURE_LOCAL___" << tag << "(...) \\\n"
-"       PPG_" << entityTypeAllCaps << "_CONFIGURE_LOCAL(__VA_ARGS__)\n"
+"#ifndef GLS_" << entityTypeAllCaps << "_CONFIGURE_LOCAL___" << tag << "\n"
+"#   define GLS_" << entityTypeAllCaps << "_CONFIGURE_LOCAL___" << tag << "(...) \\\n"
+"       GLS_" << entityTypeAllCaps << "_CONFIGURE_LOCAL(__VA_ARGS__)\n"
 "#endif\n"
 "\n";
 
@@ -379,7 +382,7 @@ void generateEntityInformation(
 "// Use this macro to perform specific initializations of " << entityType << "s with\n"
 "// tag class \'" << tag << "\'.\n"
 "//\n"
-"#define PPG_" << entityTypeAllCaps << "S___" << tag << "(OP) \\\n";
+"#define GLS_" << entityTypeAllCaps << "S___" << tag << "(OP) \\\n";
 
       for(const auto &entityPtr: abtEntry.second) {
          out <<
@@ -390,21 +393,21 @@ void generateEntityInformation(
 "\n";
 
    out <<
-"#define PPG_" << entityTypeAllCaps << "S_ALL(OP) \\\n";
+"#define GLS_" << entityTypeAllCaps << "S_ALL(OP) \\\n";
 
    for(const auto &abtEntry: entitiesByType) {
       const auto &tag = abtEntry.first;
       out <<
-"   PPG_" << entityTypeAllCaps << "S___" << tag << "(OP) \\\n";
+"   GLS_" << entityTypeAllCaps << "S___" << tag << "(OP) \\\n";
    }
    out << "\n"; 
 
    out <<
-"#define PPG_" << entityTypeAllCaps << "S_CONFIGURE_LOCAL_ALL \\\n";
+"#define GLS_" << entityTypeAllCaps << "S_CONFIGURE_LOCAL_ALL \\\n";
    for(const auto &abtEntry: entitiesByType) {
       const auto &tag = abtEntry.first;
       out <<
-"   PPG_" << entityTypeAllCaps << "S___" << tag << "(PPG_" << entityTypeAllCaps << "_CONFIGURE_LOCAL___" << tag << ") \\\n";
+"   GLS_" << entityTypeAllCaps << "S___" << tag << "(GLS_" << entityTypeAllCaps << "_CONFIGURE_LOCAL___" << tag << ") \\\n";
    }
    out << 
 "\n";  
@@ -415,7 +418,7 @@ void generateEntityInformation(
       out <<
 "// Tag class \'" << tag << "\'\n"
 "//\n"
-"PPG_" << entityTypeAllCaps << "S___" << tag << "(PPG_" << entityTypeAllCaps << "_CONFIGURE_GLOBAL___" << tag << ")\n"
+"GLS_" << entityTypeAllCaps << "S___" << tag << "(GLS_" << entityTypeAllCaps << "_CONFIGURE_GLOBAL___" << tag << ")\n"
 "\n";
    }
    out << 
@@ -657,27 +660,27 @@ void generateGlobalContext(std::ostream &out)
 "   .pattern_root = &" << root->getId().getText() << ",\n"
 "   .current_token = NULL,\n"
 "   .properties = {\n"
-"      .timeout_enabled = true,\n"
-"      .papageno_enabled = true,\n"
+"      .timeout_enabled = GLS_INITIAL_TIMEOUT_ENABLED,\n"
+"      .papageno_enabled = GLS_INITIAL_PAPAGENO_ENABLED,\n"
 "#     if PPG_HAVE_LOGGING\n"
-"      .logging_enabled = true,\n"
+"      .logging_enabled = GLS_INITIAL_LOGGING_ENABLED,\n"
 "#     endif\n"
 "      .destuction_enabled = false\n"
 "    },\n"
 "   .tree_depth = " << maxDepth << ",\n"
-"   .layer = PPG_DEFAULT_LAYER,\n"
-"   .abort_input = (PPG_Input_Id)((uintptr_t)-1),\n"
+"   .layer = GLS_INITIAL_LAYER,\n"
+"   .abort_input = GLS_INITIAL_ABORT_INPUT,\n"
 "   .time_last_event = 0,\n"
 "   .event_timeout = 0,\n"
-"   .event_processor = NULL,\n"
+"   .event_processor = GLS_INITIAL_EVENT_PROCESSOR,\n"
 "   .time_manager = {\n"
-"      .time = &PPG_DEFAULT_TIME_FUNCTION,\n"
-"      .time_difference = &PPG_DEFAULT_TIME_DIFFERENCE_FUNCTION,\n"
-"      .compare_times = &PPG_DEFAULT_TIME_COMPARISON_FUNCTION\n"
+"      .time = &GLS_INITIAL_TIME_FUNCTION,\n"
+"      .time_difference = &GLS_INITIAL_TIME_DIFFERENCE_FUNCTION,\n"
+"      .compare_times = &GLS_INITIAL_TIME_COMPARISON_FUNCTION\n"
 "   },\n"
 "   .signal_callback = {\n"
-"      .func = NULL,\n"
-"      .user_data = NULL\n"
+"      .func = SIGNAL_CALLBACK_FUNC,\n"
+"      .user_data = SIGNAL_CALLBACK_USER_DATA\n"
 "   }\n"
 "#  if PPG_HAVE_STATISTICS\n"
 "   ,\n"
@@ -693,7 +696,7 @@ void generateGlobalContext(std::ostream &out)
 }
 
    
-   #if PPG_HAVE_STATISTICS
+   #if GLS_HAVE_STATISTICS
    ppg_statistics_clear(&context->statistics);
    #endif
    
@@ -702,27 +705,27 @@ void generateInitializationFunction(std::ostream &out)
    caption(out, "Initialization");
    
    out << 
-"#define PPG_LOCAL_INITIALIZATION \\\n"
+"#define GLS_LOCAL_INITIALIZATION \\\n"
 "    /* Configuration of all actions. \\\n"
 "     */ \\\n"
-"    PPG_ACTIONS_CONFIGURE_LOCAL_ALL \\\n"
+"    GLS_ACTIONS_CONFIGURE_LOCAL_ALL \\\n"
 "    \\\n"
 "    /* Configuration of all inputs. \\\n"
 "     */ \\\n"
-"    PPG_INPUTS_CONFIGURE_LOCAL_ALL  \\\n"
+"    GLS_INPUTS_CONFIGURE_LOCAL_ALL  \\\n"
 "    \\\n"
 "    /* Local initialization of actions.\n"
 "     */ \\\n"
-"    PPG_ACTIONS_INITIALIZE_LOCAL_ALL \\\n"
+"    GLS_ACTIONS_INITIALIZE_LOCAL_ALL \\\n"
 "    \\\n"
 "    /* Local initialization of inputs. \\\n"
 "     */ \\\n"
-"    PPG_INPUTS_INITIALIZE_LOCAL_ALL\n"
+"    GLS_INPUTS_INITIALIZE_LOCAL_ALL\n"
 "\n"
 "void papageno_initialize_context()\n"
 "{\n"
-"#  ifndef PPG_NO_AUTOMATIC_LOCAL_INITIALIZATION\n"
-"   PPG_LOCAL_INITIALIZATION\n"
+"#  ifndef GLS_NO_AUTOMATIC_LOCAL_INITIALIZATION\n"
+"   GLS_LOCAL_INITIALIZATION\n"
 "#  endif\n"
 "\n"
 "   ppg_context = &context;\n"
