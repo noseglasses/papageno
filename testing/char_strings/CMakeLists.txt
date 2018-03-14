@@ -98,7 +98,7 @@ endfunction()
 
 function(ppg_add_compiler_test name)
 
-   if(NOT PAPAGENO_BUILD_COMPILER)
+   if(NOT PAPAGENO_BUILD_GLOCKENSPIEL)
       return()
    endif()
 

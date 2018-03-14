@@ -205,9 +205,9 @@ endif()
 
 add_subdirectory(src)
 
-option(PAPAGENO_BUILD_COMPILER FALSE)
-if(PAPAGENO_BUILD_COMPILER)
-   add_subdirectory(compiler)
+option(PAPAGENO_BUILD_GLOCKENSPIEL FALSE)
+if(PAPAGENO_BUILD_GLOCKENSPIEL)
+   add_subdirectory(glockenspiel)
 endif()
 
 if(PAPAGENO_TESTING_ENABLED)
