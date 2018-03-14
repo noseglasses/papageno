@@ -1,6 +1,8 @@
 /*
 papageno_start
 
+@setting: join_note_sequences = "true"
+
 action: Foo
 action: Bar
 action: Klaatubaradan

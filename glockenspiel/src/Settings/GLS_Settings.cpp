@@ -48,9 +48,9 @@ void
       NAME = INITIAL_VALUE; \
       setters_[#NAME] = [](const std::string &value) -> void { \
          std::stringstream s; \
-         s.str(value); \
+         s << value; \
          s >> Settings::NAME; \
-         if(!s) { \
+         if(!s.good()) { \
             THROW_ERROR("Failed reading setting \'" << #NAME \
                << "\' from \'" << value << "\'"); \
          } \
