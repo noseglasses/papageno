@@ -73,6 +73,18 @@ class Token : public Node
          return flagCode_;
       }
       
+      void setActionFlagCode(const std::string &actionFlagCode) {
+         actionFlagCode_ = actionFlagCode;
+      }
+      
+      const std::string &getActionFlagCode() const {
+         return actionFlagCode_;
+      }
+      
+      void setLayer(const std::string &layer) {
+         layer_ = Parser::Token(layer);
+      }
+      
       const Parser::Token &getLayer() const {
          return layer_;
       }
@@ -175,6 +187,8 @@ class Token : public Node
          actionPtr->setWasRequested(true);
       }
            
+      virtual std::string getInputs() const { return std::string(); }
+           
    protected:
       
       virtual void generateDependencyCodeInternal(std::ostream &out) const {}
@@ -209,7 +223,7 @@ class Token : public Node
          if(!action_.getText().empty()) {
             const auto &actionPtr = Action::lookup(action_.getText());
             out <<
-"      .action = PPG_ACTION_INITIALIZE_GLOBAL___" << actionPtr->getType().getText() << "("
+"      .action = GLS_ACTION_INITIALIZE_GLOBAL___" << actionPtr->getType().getText() << "("
             << actionPtr->getId().getText();
             if(actionPtr->getParametersDefined()) {
                out << ", " << actionPtr->getParameters().getText();
@@ -234,9 +248,19 @@ class Token : public Node
          if(!flagCode_.getText().empty()) {
             out << flagCode_.getText() << " | ";
          }
+
          out << this->getFlags() << ",\n"
-"         .action_state = 0,\n"
-"         .action_flags = PPG_Action_Default\n"
+"         .action_state = 0,\n";
+
+         out <<
+"         .action_flags = ";
+         if(!this->getActionFlagCode().empty()) {
+            out << this->getActionFlagCode();
+         }
+         else {
+             out << "PPG_Action_Default";
+         }
+         out << "\n"
 "      },\n";
          out <<
 "      .layer = " << this->layer_.getText() << "\n";
@@ -256,6 +280,7 @@ class Token : public Node
       const Token                           *parent_;
       Parser::Token                         layer_;
       Parser::Token                         flagCode_;
+      std::string                           actionFlagCode_;
       
       static Parser::Token                  curLayer_;
 };

@@ -18,7 +18,7 @@
 
 #include "Parser/GLS_Parser.hpp"
 #include "Parser/GLS_Parser.lex.hpp"
-#include "PPG_Compiler.hpp"
+#include "GLS_Compiler.hpp"
 
 #include "ParserTree/GLS_Phrase.hpp"
 #include "ParserTree/GLS_Pattern.hpp"
@@ -51,7 +51,7 @@ struct LocationRAII {
    Glockenspiel::Parser::LocationOfDefinition lastLOD_;
 };
 
-// extern int yydebug;
+extern int yydebug;
 // extern YYLTYPE yylloc;
 
 typedef Glockenspiel::Parser::Token ParserToken;
@@ -564,7 +564,10 @@ void searchFileGenerateTree(const std::string &inputFilename)
          std::string filenameFull 
             = std::string(Glockenspiel::commandLineArgs.include_directory_arg[i]) + "/" + inputFilename;
            
+         std::cout << "Trying \'" << filenameFull << "\'" << std::endl;  
+           
          if(exists(filenameFull)) {
+            std::cout << "Found" << std::endl;
             generateTree(filenameFull.c_str());
             return;
          }

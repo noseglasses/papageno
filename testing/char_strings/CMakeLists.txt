@@ -114,21 +114,21 @@ function(ppg_add_compiler_test name)
    set(run_target_name "${name}_compiled")
    
    set(ppg_file "${CMAKE_CURRENT_SOURCE_DIR}/${name}/${name}_ppg.h")                     
-   set(code_file "${CMAKE_CURRENT_SOURCE_DIR}/${name}/${name}_compiler_run.c")
+   set(code_file "${CMAKE_CURRENT_BINARY_DIR}/${name}/${name}_compiler_run.c")
 	set(compile_output_file "${CMAKE_CURRENT_BINARY_DIR}/${name}/${name}_ppg_compiled.c")
    
    set(PPG_CS_COMPILED_CODE_INCLUDE_FILE "\"${compile_output_file}\"")
       
    ppg_get_test_file_defines(
       "${name}"
-      "actions;context_initialization;tests;token_tree;includes;layers;ppg"
+      "functions;actions;context_initialization;tests;token_tree;includes;layers;ppg"
    )
    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/test_with_compile.c.in" "${code_file}")
    
    add_custom_command(
       OUTPUT "${compile_output_file}"
       DEPENDS "${ppg_file}" glockenspiel
-      COMMAND $<TARGET_FILE:glockenspiel> -i "${ppg_file}" -o "${compile_output_file}"
+      COMMAND $<TARGET_FILE:glockenspiel> -I "${CMAKE_CURRENT_SOURCE_DIR}/${name}" -i "${ppg_file}" -o "${compile_output_file}"
       WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${name}"
    )
    add_custom_target("${run_target_name}_compile" DEPENDS "${compile_output_file}")
@@ -229,7 +229,7 @@ function(ppg_add_test_with_compression name)
 	
    ppg_get_test_file_defines(
       "${name}"
-      "actions;context_initialization;tests;token_tree;includes;layers"
+      "functions;actions;context_initialization;tests;token_tree;includes;layers"
    )
 
 #    message("file_defines: ${file_defines}")
@@ -238,7 +238,7 @@ function(ppg_add_test_with_compression name)
    #
    set(run_target_name "${name}_run")
 
-   set(run_target_name_c "${CMAKE_CURRENT_BINARY_DIR}/${name}/${name}_compiler_run.c")
+   set(run_target_name_c "${CMAKE_CURRENT_BINARY_DIR}/${name}/${name}_compression_run.c")
    configure_file("${code_file}" "${run_target_name_c}")
 
 	add_executable(

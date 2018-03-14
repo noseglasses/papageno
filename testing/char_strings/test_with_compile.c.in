@@ -19,15 +19,15 @@
 
 #include "papageno_char_strings.h"
 
-#include @PPG_CS_COMPILED_CODE_INCLUDE_FILE@
-
 #include @PPG_CS_LAYERS_INCLUDE_FILE@
+
+#include @PPG_CS_COMPILED_CODE_INCLUDE_FILE@
    
 PPG_CS_START_TEST
    
    // Initialize local variables of actions and inputs.
    //
-   PPG_LOCAL_INITIALIZATION
+   GLS_LOCAL_INITIALIZATION
    
    papageno_initialize_context();
    

@@ -41,6 +41,8 @@ class Aggregate : public Token
             
       virtual void touchActionsAndInputs() override;
       
+      virtual std::string getInputs() const override;
+      
    protected:
       
       virtual void generateDependencyCodeInternal(std::ostream &out) const override;

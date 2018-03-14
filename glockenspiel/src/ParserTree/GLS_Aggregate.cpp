@@ -56,7 +56,7 @@ void
    std::size_t n_bits = inputs_.size();
    
    out <<
-"PPG_Bitfield_Storage_Type " << this->getId().getText() << "_member_active[(PPG_NUM_BITS_LEFT(" << n_bits << ") != 0) ? (PPG_NUM_BYTES(" << n_bits << ") + 1) : PPG_NUM_BYTES(" << n_bits << ")]\n"
+"PPG_Bitfield_Storage_Type " << this->getId().getText() << "_member_active[(GLS_NUM_BITS_LEFT(" << n_bits << ") != 0) ? (GLS_NUM_BYTES(" << n_bits << ") + 1) : GLS_NUM_BYTES(" << n_bits << ")]\n"
 "   = { 0 };\n\n";
 
    out <<
@@ -67,7 +67,7 @@ void
       const auto &inputPtr = Input::lookup(inputs_[i].getText());
       
       out <<
-"   PPG_INPUT_INITIALIZE_GLOBAL___" << inputPtr->getType().getText() << "(" 
+"   GLS_INPUT_INITIALIZE_GLOBAL___" << inputPtr->getType().getText() << "(" 
       << inputPtr->getId().getText() << ", "
       << inputPtr->getParameters().getText() << ")";
       if(i < (inputs_.size() - 1)) {
@@ -129,6 +129,18 @@ void
       const auto &input = Input::lookup(inputToken.getText());
       input->setWasRequested(true);
    }
+}
+      
+std::string    
+   Aggregate
+      ::getInputs() const
+{
+   std::ostringstream s;
+   for(auto &inputToken: inputs_) {
+      s << inputToken.getText() << ", ";
+   }
+   
+   return s.str();
 }
       
 } // namespace ParserTree

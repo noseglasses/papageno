@@ -57,17 +57,21 @@ if(PAPAGENO_BUILD_GLOCKENSPIEL)
       endif()
       set(yacc_verbose_output "${CMAKE_CURRENT_BINARY_DIR}/src/Parser/GLS_Parser.yacc.log")
       
-      if(${CMAKE_VERSION} GREATER 3.6.0) 
-         set(bison_report_file_spec VERBOSE REPORT_FILE "${yacc_verbose_output}")
-      else()
-         set(bison_report_file_spec VERBOSE "${yacc_verbose_output}")
-      endif()
+#       if(${CMAKE_VERSION} GREATER 3.6.0) 
+#          set(bison_report_file_spec VERBOSE REPORT_FILE "${yacc_verbose_output}")
+#       else()
+#          set(bison_report_file_spec VERBOSE "${yacc_verbose_output}")
+#       endif()
       
       bison_target(
          glockenspiel_yacc "${CMAKE_CURRENT_SOURCE_DIR}/src/Parser/GLS_Parser.yacc" "${glockenspiel_yacc}"
-         ${bison_report_file_spec}
-         COMPILE_FLAGS --debug
+#          ${bison_report_file_spec}
+         COMPILE_FLAGS "--debug -v"
       )
+      
+      if(NOT BISON_glockenspiel_yacc_DEFINED)
+         message(FATAL_ERROR "Failed defining bison target")
+      endif()
    
    endif()
    

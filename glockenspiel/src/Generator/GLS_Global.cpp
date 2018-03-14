@@ -26,11 +26,8 @@
 #include <ostream>
 #include <fstream>
 
-extern struct gengetopt_args_info ai;
-
 namespace Glockenspiel {
 namespace Generator {
-
   
 // Das gleiche fuer all actions
    
@@ -71,6 +68,7 @@ static void outputInformationOfDefinition(std::ostream &out, const ParserTree::N
 }
 
 void reportActionsAndInputs(std::ostream &out);
+void reportTree(std::ostream &out);
    
 void generateFileHeader(std::ostream &out) {
    
@@ -89,6 +87,8 @@ void generateFileHeader(std::ostream &out) {
 "*/\n"
 "\n";
    }
+   
+   reportTree(out);
    
    reportActionsAndInputs(out);
 
@@ -116,10 +116,10 @@ void generateFileHeader(std::ostream &out) {
    
   out <<
 "#define GLS_NUM_BITS_LEFT(N_BITS) \\\n"
-"   (N_BITS%(8*sizeof(GLS_Bitfield_Storage_Type)))\n"
+"   (N_BITS%(8*sizeof(PPG_Bitfield_Storage_Type)))\n"
 "\n"
 "#define GLS_NUM_BYTES(N_BITS) \\\n"
-"   (N_BITS/(8*sizeof(GLS_Bitfield_Storage_Type)))\n"
+"   (N_BITS/(8*sizeof(PPG_Bitfield_Storage_Type)))\n"
 "\n";
 
 #define ADD_DEFAULT_VALUE(NAME, INITIAL) \
@@ -560,6 +560,38 @@ void reportActionsAndInputs(std::ostream &out)
    reportJoinedEntities(out, ParserTree::Action::getJoinedEntities(), "Actions");
 }
 
+void recursivelyOutputTree(std::ostream &out, const ParserTree::Token &token, int indent)
+{
+   out <<
+"//";
+
+   for(int i = 0; i < indent; ++i) {
+      out << "   ";
+   }
+   
+   out << token.getId().getText() << "(" << token.getInputs() << ")";
+   
+   if(!token.getAction().getText().empty()) {
+      out << " : " << token.getAction().getText();
+   }
+   
+   out << "\n";
+   
+   for(const auto &child: token.getChildren()) {
+      recursivelyOutputTree(out, *child, indent + 1);
+   }
+}
+
+void reportTree(std::ostream &out)
+{
+   caption(out, "Tree");
+
+   auto root = ParserTree::Pattern::getTreeRoot();
+   recursivelyOutputTree(out, *root, 1);
+   
+   out << "\n";
+}
+
 void recursivelyOutputToken(std::ostream &out, const ParserTree::Token &token)
 {
    for(const auto &childTokenPtr: token.getChildren()) {
@@ -665,7 +697,7 @@ void generateGlobalContext(std::ostream &out)
 "#     if PPG_HAVE_LOGGING\n"
 "      .logging_enabled = GLS_INITIAL_LOGGING_ENABLED,\n"
 "#     endif\n"
-"      .destuction_enabled = false\n"
+"      .destruction_enabled = false\n"
 "    },\n"
 "   .tree_depth = " << maxDepth << ",\n"
 "   .layer = GLS_INITIAL_LAYER,\n"
@@ -679,8 +711,8 @@ void generateGlobalContext(std::ostream &out)
 "      .compare_times = &GLS_INITIAL_TIME_COMPARISON_FUNCTION\n"
 "   },\n"
 "   .signal_callback = {\n"
-"      .func = SIGNAL_CALLBACK_FUNC,\n"
-"      .user_data = SIGNAL_CALLBACK_USER_DATA\n"
+"      .func = GLS_INITIAL_SIGNAL_CALLBACK_FUNC,\n"
+"      .user_data = GLS_INITIAL_SIGNAL_CALLBACK_USER_DATA\n"
 "   }\n"
 "#  if PPG_HAVE_STATISTICS\n"
 "   ,\n"

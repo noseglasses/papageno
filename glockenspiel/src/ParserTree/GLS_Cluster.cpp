@@ -42,7 +42,7 @@ void
    std::size_t n_bits = inputs_.size();
    
    out <<
-"PPG_Bitfield_Storage_Type " << this->getId().getText() << "_member_active_lasting[(PPG_NUM_BITS_LEFT(" << n_bits << ") != 0) ? (PPG_NUM_BYTES(" << n_bits << ") + 1) : PPG_NUM_BYTES(" << n_bits << ")]\n"
+"PPG_Bitfield_Storage_Type " << this->getId().getText() << "_member_active_lasting[(GLS_NUM_BITS_LEFT(" << n_bits << ") != 0) ? (GLS_NUM_BYTES(" << n_bits << ") + 1) : GLS_NUM_BYTES(" << n_bits << ")]\n"
 "   = { 0 };\n"
 "\n";
 

@@ -408,17 +408,17 @@ __NL__}
 // Definitions for Papagenos glockenspiel compiler interface
 //##############################################################################
 //
-#define PPG_ENABLE_ACTIONS_LOCAL_INITIALIZATION_ALL
-#define PPG_ENABLE_INPUTS_LOCAL_INITIALIZATION_ALL
-#define PPG_NO_AUTOMATIC_LOCAL_INITIALIZATION
+#define GLS_ENABLE_ACTIONS_LOCAL_INITIALIZATION_ALL
+#define GLS_ENABLE_INPUTS_LOCAL_INITIALIZATION_ALL
+#define GLS_NO_AUTOMATIC_LOCAL_INITIALIZATION
    
-#define PPG_INPUT_INITIALIZE___(ID, CHAR) \
+#define GLS_INPUT_INITIALIZE___(ID, CHAR) \
    PPG_CS_CHAR(CHAR)
    
-#define PPG_ACTION_INITIALIZE___(ID) \
+#define GLS_ACTION_INITIALIZE___(ID) \
    PPG_CS_ACTION(ID)
    
-#define PPG_ACTION_CONFIGURE_LOCAL___(ID) \
+#define GLS_ACTION_CONFIGURE_LOCAL___(ID) \
    PPG_CS_REGISTER_ACTION(ID)
 
 #endif

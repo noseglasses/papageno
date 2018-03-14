@@ -83,6 +83,8 @@ class Note : public Token
          this->getInputPtr()->setWasRequested(true);
       }
       
+      virtual std::string getInputs() const override { return input_.getText(); }
+      
    protected:
       
       virtual void generateCCodeInternal(std::ostream &out) const override {
@@ -94,7 +96,7 @@ class Note : public Token
          this->Token::generateCCodeInternal(out);
          out <<
 "   },\n"
-"   .input = PPG_INPUT_INITIALIZE_GLOBAL___" << input->getType().getText()
+"   .input = GLS_INPUT_INITIALIZE_GLOBAL___" << input->getType().getText()
    << "(" 
    << input->getId().getText() << ", "
    << input->getParameters().getText() << ")\n";

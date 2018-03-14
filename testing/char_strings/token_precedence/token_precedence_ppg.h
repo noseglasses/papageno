@@ -38,6 +38,8 @@ input: z = $'z'$
 {d, e, f} : Cluster_4
 
 [m, n, o] : Chord_3
+
+layer: ppg_cs_layer_1
 {m, n, o} : Cluster_3
 
 papageno_end

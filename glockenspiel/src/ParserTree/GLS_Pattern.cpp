@@ -115,6 +115,17 @@ void
       
       tokens_[targetTokenPos]->setAction(cta.second);
    }
+   
+   bool haveFallback = false;
+   for(std::size_t i = sequenceStart_; i < tokens_.size(); ++i) {
+      auto &token = tokens_[i];
+      if(!token->getAction().getText().empty()) {
+         haveFallback = true;
+      }
+      else if(haveFallback) {
+         token->setActionFlagCode("PPG_Action_Fallback");
+      }
+   }
 }
       
 void  
@@ -150,7 +161,9 @@ void
          // at the current position, we continue with
          // the next tokens children
          //
-         if(childToken->isEqual(*tokens_[pos])) {
+         if(   !childToken->getChildren().empty() // only share interior nodes
+            && (pos + 1 < tokens_.size())
+            && childToken->isEqual(*tokens_[pos])) {
             
             const auto &action1 = Alias::replace(childToken->getAction().getText());
             const auto &action2 = Alias::replace(tokens_[pos]->getAction().getText());
@@ -167,6 +180,18 @@ void
                   }
                }
             }
+            
+            const auto &layer1 = childToken->getLayer().getText();
+            const auto &layer2 = tokens_[pos]->getLayer().getText();
+            
+            if(layer1 != layer2) {
+               std::ostringstream s;
+               s << "((" << layer1 << ") < (" << layer2
+                  << ")) ? (" << layer1 << ") : (" 
+                  << layer2 << ")";
+               childToken->setLayer(s.str());
+            }
+            
             redundantTokenFound = true;
             curToken = childToken;
             ++pos;
