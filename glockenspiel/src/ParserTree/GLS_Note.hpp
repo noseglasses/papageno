@@ -28,9 +28,7 @@ class Note : public Token
 {
    public:
       
-      Note(std::string flags = "PPG_Note_Flags_A_N_D", 
-           const Parser::Token &input = Parser::Token())
-         :  flags_(flags)
+      Note(const Parser::Token &input = Parser::Token())
       {
          input_ = (!input.getText().empty()) ? input : Input::popNext();
        
@@ -49,7 +47,7 @@ class Note : public Token
             
       virtual std::string getPropertyDescription() const override {
          return TO_STRING(Node::getPropertyDescription() << ", input = " 
-            << this->getInputPtr()->getDescription() << ", flags = " << flags_);
+            << this->getInputPtr()->getDescription());
       }
       
       virtual std::string getNodeType() const override { return "Note"; }
@@ -102,8 +100,6 @@ class Note : public Token
    << input->getParameters().getText() << ")\n";
       }
       
-      virtual std::string getFlags() const { return flags_; }
-      
       virtual std::string getVTableId() const override { return "&ppg_note_vtable"; }
       
       virtual std::string getTokenType() const override { return "PPG_Note"; }
@@ -111,8 +107,6 @@ class Note : public Token
    protected:
       
       Parser::Token input_;
-      
-      std::string flags_;
 };
 
 } // namespace ParserTree

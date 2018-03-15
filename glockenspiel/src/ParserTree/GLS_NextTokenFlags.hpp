@@ -16,36 +16,47 @@
 
 #pragma once
 
-#include "ParserTree/GLS_Aggregate.hpp"
+#include <map>
+#include <functional>
 
 namespace Glockenspiel {
 namespace ParserTree {
    
-class Chord : public Aggregate
+struct TokenFlags;
+class Token;
+   
+class NextTokenFlags
 {
    public:
-   
-      virtual std::string getNodeType() const override { return "Chord"; }
       
-      virtual std::shared_ptr<Token> clone() const override {
-         return std::make_shared<Chord>(*this);
-      }
+      typedef std::function<void(ParserTree::TokenFlags &)> ApplyFunction;
       
-      virtual void setFlagChar(char flagChar) override {
-         switch(flagChar) {
-            case 'd':
-               flags_.tokenFlags_.set("PPG_Chord_Flags_Disallow_Input_Deactivation");
-               break:
-            default:
-               this->Aggregate::setFlagChar(flagChar);
-         }
-      }
+      struct FlagFunctions {
+         ApplyFunction apply_;
+         bool enabled_;
+      };
       
-   protected:
+      typedef std::map<char, FlagFunctions> CharToFunctions;
       
-      virtual std::string getVTableId() const override { return "&ppg_chord_vtable"; }
-      virtual std::string getTokenType() const override { return "PPG_Chord"; }
+      NextTokenFlags();
+      
+      void init();
+      
+      void setFlags(const std::string &);
+      
+      void apply(ParserTree::Token &token);
+      void apply(ParserTree::TokenFlags &tf);
+      
+   private:
+      
+      void clearFlags();
+      
+   private:
+      
+      CharToFunctions functions_;
 };
+
+extern NextTokenFlags nextTokenFlags;
 
 } // namespace ParserTree
 } // namespace Glockenspiel

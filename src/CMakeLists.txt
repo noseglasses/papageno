@@ -64,7 +64,8 @@ configure_file(
 set(source_files_                                                                                                          
 	ppg_bitfield.c
 	ppg_chord.c                                                                                                                         
-	ppg_cluster.c                                                                                                                       
+	ppg_cluster.c   
+	ppg_sequence.c
 	ppg_compression.c                                                                                                                       
 	ppg_context.c                                                                                                                            
 	ppg_debug.c                                                                                                                       

@@ -31,6 +31,7 @@
 #include "ParserTree/GLS_Alias.hpp"
 #include "ParserTree/GLS_NextEntity.hpp"
 #include "Settings/GLS_Settings.hpp"
+#include "ParserTree/GLS_NextTokenFlags.hpp"
 
 #include <iostream>
 #include <string>
@@ -52,17 +53,19 @@ struct LocationRAII {
 };
 
 extern int yydebug;
-// extern YYLTYPE yylloc;
 
 typedef Glockenspiel::Parser::Token ParserToken;
 
+using namespace Glockenspiel;
 using namespace Glockenspiel::ParserTree;
+using namespace Glockenspiel::Parser;
 
 namespace Glockenspiel {
 namespace Parser {
 extern std::ostringstream codeStream;
 extern Token getCppCode();
 extern void searchFileGenerateTree(const std::string &quotedInputFilename);
+extern std::string flagString;
 
 inline
 std::string unquote(const std::string &s) {
@@ -129,7 +132,7 @@ line:   LINE_END
         '@' SETTING_KEYWORD ':' ID '=' QUOTED_STRING LINE_END
         {
            LocationRAII lr(&@$);
-           Glockenspiel::Settings::set($4, Glockenspiel::Parser::unquote($6));
+           Glockenspiel::settings.set($4, Glockenspiel::Parser::unquote($6));
         }
         |
         error LINE_END
@@ -191,7 +194,9 @@ rep_token:
 token:  token__
         {
            Pattern::getMostRecentToken()->setLOD(@1);
-           Pattern::getMostRecentToken()->setFlagCode(Glockenspiel::Parser::getCppCode());
+           
+           Pattern::getMostRecentToken()->setFlagString(Glockenspiel::Parser::flagString);
+           Glockenspiel::Parser::flagString.clear();
         }
         ;
            
@@ -207,19 +212,25 @@ token__:  note
 note:   '|' input '|'
         {
             LocationRAII lr(&@2);
-            Pattern::pushToken(std::make_shared<Note>("PPG_Note_Flags_A_N_D"));
+            auto newNote = std::make_shared<Note>();
+            newNote->getFlags().tokenFlags_.set("PPG_Note_Flags_A_N_D");
+            Pattern::pushToken(newNote);
         }
         |
         '|' input
         {
             LocationRAII lr(&@2);
-            Pattern::pushToken(std::make_shared<Note>("PPG_Note_Flag_Match_Activation"));
+            auto newNote = std::make_shared<Note>();
+            newNote->getFlags().tokenFlags_.set("PPG_Note_Flag_Match_Activation");
+            Pattern::pushToken(newNote);
         }
         |
         input '|'
         {
             LocationRAII lr(&@1);
-            Pattern::pushToken(std::make_shared<Note>("PPG_Note_Flag_Match_Deactivation"));
+            auto newNote = std::make_shared<Note>();
+            newNote->getFlags().tokenFlags_.set("PPG_Note_Flag_Match_Deactivation");
+            Pattern::pushToken(newNote);
         }
         ;
         
@@ -253,7 +264,10 @@ aggregate:
         
 flag_definition: /* allow empty */
         |
-        ':' cpp_code;
+        ':' QUOTED_STRING
+        {
+           Glockenspiel::Parser::flagString = Glockenspiel::Parser::unquote($2);
+        }
 
 alpha_seq:
         QUOTED_STRING
@@ -286,7 +300,7 @@ action_list:
 layer_def:
         LAYER_KEYWORD ':' ID
         {
-           Token::setCurrentLayer(ParserToken($3, @3));
+           ParserTree::Token::setCurrentLayer(ParserToken($3, @3));
         }
         ;
         
@@ -323,7 +337,7 @@ action_def:
 alias_def:
         ALIAS_KEYWORD ':' ID '=' ID
         {
-           Glockenspiel::ParserTree::Alias::define($3, Glockenspiel::Parser::Token($5, @$));
+           Alias::define($3, Glockenspiel::Parser::Token($5, @$));
         }
         
 action_parameters:
@@ -414,6 +428,8 @@ LocationOfDefinition currentLocation;
 
 std::vector<std::string> filesParsed;
 std::vector<std::string> codeParsed;
+
+std::string flagString;
 
 const char *currentFileParsed = nullptr;
 

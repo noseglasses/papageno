@@ -99,6 +99,7 @@ void generateFileHeader(std::ostream &out) {
 "#include \"detail/ppg_chord_detail.h\"\n"
 "#include \"detail/ppg_cluster_detail.h\"\n"
 "#include \"detail/ppg_time_detail.h\"\n"
+"#include \"detail/ppg_sequence_detail.h\"\n"
 "#include \"ppg_input.h\"\n"
 "\n";
 
@@ -134,6 +135,7 @@ void generateFileHeader(std::ostream &out) {
    ADD_DEFAULT_VALUE(TIME_DIFFERENCE_FUNCTION, ppg_default_time_difference)
    ADD_DEFAULT_VALUE(TIME_COMPARISON_FUNCTION, ppg_default_time_comparison)
    ADD_DEFAULT_VALUE(TIMEOUT_ENABLED, true)
+   ADD_DEFAULT_VALUE(EVENT_TIMEOUT, 1)
    ADD_DEFAULT_VALUE(PAPAGENO_ENABLED, true)
    ADD_DEFAULT_VALUE(LOGGING_ENABLED, true)
    ADD_DEFAULT_VALUE(ABORT_INPUT, (PPG_Input_Id)((uintptr_t)-1))
@@ -563,13 +565,14 @@ void reportActionsAndInputs(std::ostream &out)
 void recursivelyOutputTree(std::ostream &out, const ParserTree::Token &token, int indent)
 {
    out <<
-"//";
+"// ";
 
    for(int i = 0; i < indent; ++i) {
       out << "   ";
    }
    
-   out << token.getId().getText() << "(" << token.getInputs() << ")";
+   out << token.getId().getText() << "(" << token.getInputs() 
+      << ") [" << token.getLayer().getText() << "]";
    
    if(!token.getAction().getText().empty()) {
       out << " : " << token.getAction().getText();
@@ -587,7 +590,7 @@ void reportTree(std::ostream &out)
    caption(out, "Tree");
 
    auto root = ParserTree::Pattern::getTreeRoot();
-   recursivelyOutputTree(out, *root, 1);
+   recursivelyOutputTree(out, *root, 0);
    
    out << "\n";
 }
@@ -703,7 +706,7 @@ void generateGlobalContext(std::ostream &out)
 "   .layer = GLS_INITIAL_LAYER,\n"
 "   .abort_input = GLS_INITIAL_ABORT_INPUT,\n"
 "   .time_last_event = 0,\n"
-"   .event_timeout = 0,\n"
+"   .event_timeout = GLS_INITIAL_EVENT_TIMEOUT,\n"
 "   .event_processor = GLS_INITIAL_EVENT_PROCESSOR,\n"
 "   .time_manager = {\n"
 "      .time = &GLS_INITIAL_TIME_FUNCTION,\n"

@@ -17,14 +17,12 @@
 #include "ppg_sequence.h"
 #include "ppg_debug.h"
 #include "detail/ppg_context_detail.h"
-#include "detail/ppg_aggregate_detail.h"
+#include "detail/ppg_sequence_detail.h"
 #include "detail/ppg_pattern_detail.h"
 #include "detail/ppg_token_detail.h"
 #include "detail/ppg_token_precedence_detail.h"
 
-typedef PPG_Aggregate PPG_Sequence;
-
-#define next_member n_members_active
+#define S_AGGREGATE sequence->aggregate
 
 static bool ppg_sequence_match_event(  
                                  PPG_Sequence *sequence,
@@ -33,34 +31,36 @@ static bool ppg_sequence_match_event(
 {
    PPG_LOG("Ch. sequence\n");
    
+   PPG_LOG("++++++++++++++Sequence 0x%" PRIXPTR " %d/%d, flags: %d, state: %d\n", (uintptr_t)sequence, sequence->next_member, S_AGGREGATE.n_members,S_AGGREGATE.super.misc.flags, S_AGGREGATE.super.misc.state);
+   
    bool input_part_of_sequence = false;
    
-   PPG_ASSERT(sequence->n_members != 0);
+   PPG_ASSERT(S_AGGREGATE.n_members != 0);
    
    if(event->flags & PPG_Event_Active) {
-      if(sequence->inputs[sequence->next_member] == event->input) {
-         ppg_bitfield_set_bit(&sequence->member_active, sequence->next_member, true);
+      if(S_AGGREGATE.inputs[sequence->next_member] == event->input) {
+         ppg_bitfield_set_bit(&S_AGGREGATE.member_active, sequence->next_member, true);
          ++sequence->next_member;
-         ++sequence->n_inputs_active;
+         ++S_AGGREGATE.n_inputs_active;
          input_part_of_sequence = true;
       }
       else {
          
          if(!modify_only_if_consuming) {
-            sequence->super.misc.state = PPG_Token_Invalid;
+            S_AGGREGATE.super.misc.state = PPG_Token_Invalid;
          }
                
          return false;
       }
    }
    else {
-      for(PPG_Count i = 0; i < sequence->next_member - 1; ++i) {
+      for(PPG_Count i = 0; i < sequence->next_member; ++i) {
          
-         if(sequence->inputs[i] == event->input) {
+         if(S_AGGREGATE.inputs[i] == event->input) {
             
-            if(ppg_bitfield_get_bit(&sequence->member_active, i)) {
-               ppg_bitfield_set_bit(&sequence->member_active, i, false);
-               --sequence->n_inputs_active;
+            if(ppg_bitfield_get_bit(&S_AGGREGATE.member_active, i)) {
+               ppg_bitfield_set_bit(&S_AGGREGATE.member_active, i, false);
+               --S_AGGREGATE.n_inputs_active;
                input_part_of_sequence = true;
                break;
             }
@@ -69,11 +69,12 @@ static bool ppg_sequence_match_event(
    }
    
 #if PPG_HAVE_LOGGING
-   for(PPG_Count i = 0; i < sequence->n_members; ++i) {
+   PPG_LOG("inputs active: %d\n", S_AGGREGATE.n_inputs_active);
+   for(PPG_Count i = 0; i < S_AGGREGATE.n_members; ++i) {
       PPG_LOG("%d: 0x%d = %d\n", 
               i, 
-              sequence->inputs[i],
-              ppg_bitfield_get_bit(&sequence->member_active, i)
+              S_AGGREGATE.inputs[i],
+              ppg_bitfield_get_bit(&S_AGGREGATE.member_active, i)
       );
    }
 #endif
@@ -81,46 +82,50 @@ static bool ppg_sequence_match_event(
    if(!input_part_of_sequence) {
          
       if(!modify_only_if_consuming) {
-         sequence->super.misc.state = PPG_Token_Invalid;
+         S_AGGREGATE.super.misc.state = PPG_Token_Invalid;
       }
       
-      // Chords ignore unmatching deactivation events
+      // Sequences ignore non-matching deactivation events
       
       return false;
    }
    
-   sequence->super.misc.state = PPG_Token_Activation_In_Progress;
+   S_AGGREGATE.super.misc.state = PPG_Token_Activation_In_Progress;
    
-   if(sequence->next_member == sequence->n_members) {
+   if(   (sequence->next_member >= S_AGGREGATE.n_members) 
+      // Only enter this clause once when the last input of the sequence activated
+      && !(S_AGGREGATE.super.misc.flags & PPG_Aggregate_All_Active)) {
       
-      sequence->super.misc.flags |= PPG_Aggregate_All_Active;
+      S_AGGREGATE.super.misc.flags |= PPG_Aggregate_All_Active;
       
-      /* Sequence matches
-       */
-      sequence->super.misc.state = PPG_Token_Matches;
-//       PPG_LOG("C");
+      if(!(S_AGGREGATE.super.misc.flags & PPG_Token_Flags_Pedantic)) {
+         /* Sequence matches
+         */
+         S_AGGREGATE.super.misc.state = PPG_Token_Matches;
+      }
    }
-   else if(sequence->n_inputs_active == 0) {
+   else if(S_AGGREGATE.n_inputs_active == 0) {
       
-      if(sequence->super.misc.flags & PPG_Aggregate_All_Active) {
+      if(S_AGGREGATE.super.misc.flags & PPG_Aggregate_All_Active) {
       
-         if(sequence->super.misc.flags & PPG_Token_Flags_Pedantic) {
+         if(S_AGGREGATE.super.misc.flags & PPG_Token_Flags_Pedantic) {
             /* Sequence matches
             */
-            sequence->super.misc.state = PPG_Token_Matches;
+            S_AGGREGATE.super.misc.state = PPG_Token_Matches;
          }
          else {
-            sequence->super.misc.state = PPG_Token_Finalized;
+            S_AGGREGATE.super.misc.state = PPG_Token_Finalized;
          }
-         
-         sequence->next_member = 0;
       }
    }
    else {
-      if(sequence->super.misc.flags & PPG_Aggregate_All_Active) {
-         sequence->super.misc.state = PPG_Token_Deactivation_In_Progress;
+      if(S_AGGREGATE.super.misc.flags & PPG_Aggregate_All_Active) {
+         S_AGGREGATE.super.misc.state = PPG_Token_Deactivation_In_Progress;
       }
    }
+   
+   PPG_LOG("================Sequence 0x%" PRIXPTR " %d/%d, flags: %d, state: %d\n", 
+          (uintptr_t)sequence, sequence->next_member, S_AGGREGATE.n_members,S_AGGREGATE.super.misc.flags, S_AGGREGATE.super.misc.state);
    
    return true;
 }
@@ -152,6 +157,12 @@ static char *ppg_sequence_placement_clone(PPG_Token__ *token, char *buffer)
    return ppg_aggregate_copy_dynamic_members(token, clone, buffer + sizeof(PPG_Sequence));
 }
 
+static void ppg_sequence_reset(PPG_Sequence *sequence) 
+{
+   sequence->next_member = 0;
+   ppg_aggregate_reset((PPG_Aggregate*)sequence);
+}
+
 #if PPG_PRINT_SELF_ENABLED
 static void ppg_sequence_print_self(PPG_Sequence *c, PPG_Count indent, bool recurse)
 {
@@ -174,7 +185,7 @@ PPG_Token_Vtable ppg_sequence_vtable =
    .match_event
       = (PPG_Token_Match_Event_Fun) ppg_sequence_match_event,
    .reset 
-      = (PPG_Token_Reset_Fun) ppg_aggregate_reset,
+      = (PPG_Token_Reset_Fun) ppg_sequence_reset,
    .destroy 
       = (PPG_Token_Destroy_Fun) ppg_aggregate_destroy,
    .equals
@@ -211,13 +222,13 @@ PPG_Token ppg_sequence_create(
 {
    PPG_Sequence *sequence = (PPG_Sequence*)ppg_aggregate_new(ppg_aggregate_alloc());
    
-   sequence->super.vtable = &ppg_sequence_vtable;
+   S_AGGREGATE.super.vtable = &ppg_sequence_vtable;
    
    sequence->next_member = 0;
    
 //    PPG_LOG("in def: 0x%" PRIXPTR "\n", (uintptr_t)ppg_sequence_match_event);
    
-   return ppg_global_initialize_aggregate(sequence, n_inputs, inputs);
+   return ppg_global_initialize_aggregate((PPG_Aggregate*)sequence, n_inputs, inputs);
 }
 
 PPG_Token ppg_sequence(    

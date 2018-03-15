@@ -42,6 +42,21 @@ struct ActionAssignment {
 
 typedef std::map<std::string, std::vector<ActionAssignment>> ActionAssignmentsByTag;
    
+struct BinaryFlags {
+   std::string string_;
+   void set(const std::string &flags) {
+      string_ += " | " + flags;
+   }
+   void unset(const std::string &flags) {
+      string_ = "(" + string_ + ") &= ~(" + flags + ")";
+   }
+};
+      
+struct TokenFlags {
+   BinaryFlags tokenFlags_;
+   BinaryFlags actionFlags_;
+};
+
 class Token : public Node
 {
    public:  
@@ -64,21 +79,12 @@ class Token : public Node
       const Parser::Token &getAction() const {
          return action_;
       }
-      
-      void setFlagCode(const Parser::Token &flagCode) {
-         flagCode_ = flagCode;
+
+      const TokenFlags &getFlags() const {
+         return flags_;
       }
-      
-      const Parser::Token &getFlagCode() const {
-         return flagCode_;
-      }
-      
-      void setActionFlagCode(const std::string &actionFlagCode) {
-         actionFlagCode_ = actionFlagCode;
-      }
-      
-      const std::string &getActionFlagCode() const {
-         return actionFlagCode_;
+      TokenFlags &getFlags() {
+         return flags_;
       }
       
       void setLayer(const std::string &layer) {
@@ -244,21 +250,19 @@ class Token : public Node
          out <<
 "      .misc = (PPG_Misc_Bits) {\n"
 "         .state = PPG_Token_Initialized,\n"
-"         .flags = ";
-         if(!flagCode_.getText().empty()) {
-            out << flagCode_.getText() << " | ";
+"         .flags = 0";
+         const auto &flags = this->getFlags().tokenFlags_.string_;
+         if(!flags.empty()) {
+            out << flags;
          }
-
-         out << this->getFlags() << ",\n"
+         out << ",\n";
 "         .action_state = 0,\n";
 
          out <<
-"         .action_flags = ";
-         if(!this->getActionFlagCode().empty()) {
-            out << this->getActionFlagCode();
-         }
-         else {
-             out << "PPG_Action_Default";
+"         .action_flags = PPG_Action_Default";
+         const auto &factionFlags = this->getFlags().actionFlags_.string_;
+         if(!factionFlags.empty()) {
+            out << factionFlags;
          }
          out << "\n"
 "      },\n";
@@ -266,7 +270,24 @@ class Token : public Node
 "      .layer = " << this->layer_.getText() << "\n";
       }
       
-      virtual std::string getFlags() const { return "0"; }
+      void setFlagString(const std::string &flagChars) {
+         for(const auto &fc: flagChars) {
+            this->setFlagChar(fc);
+         }
+      }
+      
+      virtual void setFlagChar(char flagChar) {
+         switch(flagChar) {
+            case 'f':
+               flags_.actionFlags_.set("PPG_Action_Fallback");
+               break;
+            default:
+            {
+               THROW_ERROR("Unable to consider flag character \'" << flagChar
+                  << "\'");
+            }
+         }
+      }
       
       virtual std::string getTokenType() const { return "PPG_Token__"; }
       virtual std::string getVTableId() const { return "&ppg_token_vtable"; }
@@ -279,8 +300,7 @@ class Token : public Node
       std::vector<std::shared_ptr<Token>>   children_;
       const Token                           *parent_;
       Parser::Token                         layer_;
-      Parser::Token                         flagCode_;
-      std::string                           actionFlagCode_;
+      ParserTree::TokenFlags                flags_;
       
       static Parser::Token                  curLayer_;
 };

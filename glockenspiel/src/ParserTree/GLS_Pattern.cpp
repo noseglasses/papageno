@@ -82,7 +82,8 @@ void
    for(std::size_t i = 0; i < alphaSeqLower.size(); ++i) {
       std::string inputId(alphaSeqLower.substr(i, 1));
       
-      auto newNote = std::make_shared<Note>("PPG_Note_Flags_A_N_D", inputId);
+      auto newNote = std::make_shared<Note>(inputId);
+      newNote->getFlags().tokenFlags_.set("PPG_Note_Flags_A_N_D");
        
       tokens_.push_back(newNote);  
    }
@@ -123,7 +124,7 @@ void
          haveFallback = true;
       }
       else if(haveFallback) {
-         token->setActionFlagCode("PPG_Action_Fallback");
+         token->getFlags().actionFlags_.set("PPG_Action_Fallback");
       }
    }
 }
@@ -253,6 +254,8 @@ void
 {
    auto curToken = from;
    
+   std::string fromLayer = from->getLayer().getText();
+   
    // Walk along a branch until the next token is found that has 
    // either more or less than one child or has an action or is not a Note.
    //
@@ -260,7 +263,13 @@ void
          && (curToken->getChildren().size() == 1)
          && (curToken->getAction().getText().empty())
    ) {
-      if(!std::dynamic_pointer_cast<Note>(curToken->getChildren()[0])) {
+      if(!std::dynamic_pointer_cast<Note>(curToken->getChildren()[0])
+         
+         // Be conservative and only join tokens that are 
+         // associated with the same layer
+         //
+         || (curToken->getLayer().getText() != fromLayer)
+      ) {
          break;
       }
       curToken = curToken->getChildren()[0];
@@ -304,11 +313,11 @@ std::shared_ptr<Token>
    
    auto curToken = from;
    
-   while(curToken.get() != to.get()) {
-      
+   while(1) {
       auto notePtr = std::dynamic_pointer_cast<Note>(curToken);
       assert(notePtr);
       newSequence->addInput(notePtr->getInput());
+      if(curToken.get() == to.get()) { break; }
       assert(curToken->getChildren().size() == 1);
       curToken = curToken->getChildren()[0];
    }

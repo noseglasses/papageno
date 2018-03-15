@@ -20,12 +20,16 @@
 
 namespace Glockenspiel {
    
-Settings::NameToSetter Settings::setters_;
-   
-bool Settings::join_duplicate_entities;
-bool Settings::join_duplicate_actions;
-bool Settings::join_duplicate_inputs;
-bool Settings::join_note_sequences;
+Settings settings;
+
+   Settings
+      ::Settings()
+   :  join_duplicate_entities(false),
+      join_duplicate_actions(false),
+      join_duplicate_inputs(false),
+      join_note_sequences(false)
+{
+}
 
 void 
    Settings
@@ -46,10 +50,9 @@ void
 {
    #define ADD_SETTER(NAME, INITIAL_VALUE) \
       NAME = INITIAL_VALUE; \
-      setters_[#NAME] = [](const std::string &value) -> void { \
-         std::stringstream s; \
-         s << value; \
-         s >> Settings::NAME; \
+      setters_[#NAME] = [this](const std::string &value) -> void { \
+         std::stringstream s(value); \
+         s >> std::boolalpha >> Settings::NAME; \
          if(!s.good()) { \
             THROW_ERROR("Failed reading setting \'" << #NAME \
                << "\' from \'" << value << "\'"); \

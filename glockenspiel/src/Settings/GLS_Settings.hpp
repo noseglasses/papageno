@@ -29,18 +29,22 @@ class Settings
       typedef std::function<void(const std::string &)> SetterFunction;
       typedef std::map<std::string, SetterFunction> NameToSetter;
       
-      static void set(const std::string &name, const std::string &value);
+      Settings();
       
-      static void init();
+      void set(const std::string &name, const std::string &value);
       
-      static bool join_duplicate_entities;
-      static bool join_duplicate_actions;
-      static bool join_duplicate_inputs;
-      static bool join_note_sequences;
+      void init();
+      
+      bool join_duplicate_entities;
+      bool join_duplicate_actions;
+      bool join_duplicate_inputs;
+      bool join_note_sequences;
       
    protected:
       
-      static NameToSetter setters_;
+      NameToSetter setters_;
 };
+
+extern Settings settings;
 
 } // namespace Glockenspiel

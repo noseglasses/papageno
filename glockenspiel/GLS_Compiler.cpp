@@ -34,22 +34,22 @@ int main(int argc, char **argv)
    
    using namespace Glockenspiel;
    
-   Settings::init();
+   settings.init();
    
    try {
       for(int i = 0; i < Glockenspiel::commandLineArgs.source_filename_given; ++i) {
          Parser::generateTree(Glockenspiel::commandLineArgs.source_filename_arg[i]);
       }
       
-      if(Settings::join_duplicate_actions || Settings::join_duplicate_entities) {
+      if(settings.join_duplicate_actions || settings.join_duplicate_entities) {
          ParserTree::Action::joinDuplicateEntries();
       }
       
-      if(Settings::join_duplicate_inputs || Settings::join_duplicate_entities) {
+      if(settings.join_duplicate_inputs || settings.join_duplicate_entities) {
          ParserTree::Input::joinDuplicateEntries();
       }
       
-      if(Settings::join_note_sequences) {
+      if(settings.join_note_sequences) {
          ParserTree::Pattern::performSequenceReplacement();
       }
       
