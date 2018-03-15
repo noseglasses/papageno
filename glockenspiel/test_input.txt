@@ -29,7 +29,7 @@ action: unused_action <action_type> = $seetei$
 
 phrase: a_pattern = {B, C}*5 : the_action
 
-|A : $a_flag$| -> \
+|A : "f"| -> \
 {A_Copy, B, C} -> \
 [A, B, C] -> \
 "ab"

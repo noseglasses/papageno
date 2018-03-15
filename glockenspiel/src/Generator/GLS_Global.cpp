@@ -641,6 +641,16 @@ void generateGlobalContext(std::ostream &out)
 {
    auto root = ParserTree::Pattern::getTreeRoot();
    
+   caption(out, "Initialization");
+
+   out <<
+"#ifndef GLS_GLOBAL_INITIALIZATION\n"
+"#define GLS_GLOBAL_INITIALIZATION\n"
+"#endif\n"
+"\n"
+"GLS_GLOBAL_INITIALIZATION\n"
+"\n";
+
    caption(out, "Token tree forward declarations");
    
    recursivelyOutputTokenForwardDeclaration(out, *root);
