@@ -195,6 +195,19 @@ class Token : public Node
            
       virtual std::string getInputs() const { return std::string(); }
            
+      void setFlagsString(const std::string &flagChars) {
+         for(const auto &fc: flagChars) {
+            switch(fc) {
+               case ' ':
+               case '\t':
+               case '\n':
+                  break;
+               default:
+                  this->setFlagChar(fc);
+            }
+         }
+      }
+      
    protected:
       
       virtual void generateDependencyCodeInternal(std::ostream &out) const {}
@@ -268,12 +281,6 @@ class Token : public Node
 "      },\n";
          out <<
 "      .layer = " << this->layer_.getText() << "\n";
-      }
-      
-      void setFlagString(const std::string &flagChars) {
-         for(const auto &fc: flagChars) {
-            this->setFlagChar(fc);
-         }
       }
       
       virtual void setFlagChar(char flagChar) {

@@ -31,7 +31,6 @@
 #include "ParserTree/GLS_Alias.hpp"
 #include "ParserTree/GLS_NextEntity.hpp"
 #include "Settings/GLS_Settings.hpp"
-#include "ParserTree/GLS_NextTokenFlags.hpp"
 
 #include <iostream>
 #include <string>
@@ -65,7 +64,7 @@ namespace Parser {
 extern std::ostringstream codeStream;
 extern Token getCppCode();
 extern void searchFileGenerateTree(const std::string &quotedInputFilename);
-extern std::string flagString;
+extern std::string flagsString;
 
 inline
 std::string unquote(const std::string &s) {
@@ -195,8 +194,8 @@ token:  token__
         {
            Pattern::getMostRecentToken()->setLOD(@1);
            
-           Pattern::getMostRecentToken()->setFlagString(Glockenspiel::Parser::flagString);
-           Glockenspiel::Parser::flagString.clear();
+           Pattern::getMostRecentToken()->setFlagsString(Glockenspiel::Parser::flagsString);
+           Glockenspiel::Parser::flagsString.clear();
         }
         ;
            
@@ -266,7 +265,7 @@ flag_definition: /* allow empty */
         |
         ':' QUOTED_STRING
         {
-           Glockenspiel::Parser::flagString = Glockenspiel::Parser::unquote($2);
+           Glockenspiel::Parser::flagsString = Glockenspiel::Parser::unquote($2);
         }
 
 alpha_seq:
@@ -429,7 +428,7 @@ LocationOfDefinition currentLocation;
 std::vector<std::string> filesParsed;
 std::vector<std::string> codeParsed;
 
-std::string flagString;
+std::string flagsString;
 
 const char *currentFileParsed = nullptr;
 

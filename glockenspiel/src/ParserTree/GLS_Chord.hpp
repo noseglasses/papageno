@@ -35,7 +35,7 @@ class Chord : public Aggregate
          switch(flagChar) {
             case 'd':
                flags_.tokenFlags_.set("PPG_Chord_Flags_Disallow_Input_Deactivation");
-               break:
+               break;
             default:
                this->Aggregate::setFlagChar(flagChar);
          }

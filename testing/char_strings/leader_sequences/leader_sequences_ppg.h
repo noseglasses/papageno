@@ -11,7 +11,7 @@ action: Klaatubaradan
 
 layer: ppg_cs_layer_0
 
-[a, b, c: $PPG_Chord_Flags_Disallow_Input_Deactivation$]
+[a, b, c: "d"]
 
 "Foo" : Foo
 "Bar" : Bar
