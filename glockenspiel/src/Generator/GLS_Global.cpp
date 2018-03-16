@@ -388,11 +388,15 @@ void generateEntityInformation(
 
       for(const auto &entityPtr: abtEntry.second) {
          out <<
-"   OP(" << entityPtr->getId().getText() << ")\\\n";
+"   OP(" << entityPtr->getId().getText();
+         if(entityPtr->getParametersDefined()) {
+            out << ", " << entityPtr->getParameters().getText();
+         }
+         out << ")\\\n";
       }
-   }
    out <<
 "\n";
+   }
 
    out <<
 "#define GLS_" << entityTypeAllCaps << "S_ALL(OP) \\\n";
@@ -413,18 +417,6 @@ void generateEntityInformation(
    }
    out << 
 "\n";  
-   
-   caption(out, entityTypeUpper + "s global configuration");
-   for(const auto &abtEntry: entitiesByType) {
-      const auto &tag = abtEntry.first;
-      out <<
-"// Tag class \'" << tag << "\'\n"
-"//\n"
-"GLS_" << entityTypeAllCaps << "S___" << tag << "(GLS_" << entityTypeAllCaps << "_CONFIGURE_GLOBAL___" << tag << ")\n"
-"\n";
-   }
-   out << 
-"\n";
 }
 
 void recursivelyCollectInputAssignments(ParserTree::InputAssignmentsByTag &iabt, const ParserTree::Token &token)
@@ -481,6 +473,56 @@ void generateGlobalActionInformation(std::ostream &out)
       "Action",
       "ACTION"
    );
+}
+
+template<typename EntitiesByType>
+void globallyInitializeEntities(
+            std::ostream &out,
+            const EntitiesByType &entitiesByType,
+            const std::string &entityTypeUpper,
+            const std::string &entityTypeAllCaps
+     )
+{  
+   caption(out, entityTypeUpper + "s global configuration");
+   
+   for(const auto &abtEntry: entitiesByType) {
+      const auto &tag = abtEntry.first;
+      out <<
+"// Tag class \'" << tag << "\'\n"
+"//\n"
+"GLS_" << entityTypeAllCaps << "S___" << tag << "(GLS_" << entityTypeAllCaps << "_CONFIGURE_GLOBAL___" << tag << ")\n"
+"\n";
+   }
+}
+
+void globallyInitializeInputs(std::ostream &out)
+{
+   auto inputsByType = ParserTree::Input::getEntitiesByType(true /* only requested */);
+   
+   globallyInitializeEntities(
+      out,
+      inputsByType,
+      "Input",
+      "INPUT"
+   );
+}
+
+void globallyInitializeActions(std::ostream &out)
+{
+   auto actionsByType = ParserTree::Action::getEntitiesByType(true /* only requested */);
+   
+   globallyInitializeEntities(
+      out,
+      actionsByType,
+      "Action",
+      "ACTION"
+   );
+}
+
+void globallyInitializeAllEntities(std::ostream &out)
+{
+   globallyInitializeInputs(out);
+   globallyInitializeActions(out);
 }
 
 template<typename EntitiesByType>
@@ -642,14 +684,20 @@ void generateGlobalContext(std::ostream &out)
    auto root = ParserTree::Pattern::getTreeRoot();
    
    caption(out, "Initialization");
-
+   
    out <<
+"#ifdef GLS_GLOBAL_INITIALIZATION_INCLUDE\n"
+"#include GLS_GLOBAL_INITIALIZATION_INCLUDE\n"
+"#endif\n"
+"\n"
 "#ifndef GLS_GLOBAL_INITIALIZATION\n"
 "#define GLS_GLOBAL_INITIALIZATION\n"
 "#endif\n"
 "\n"
 "GLS_GLOBAL_INITIALIZATION\n"
 "\n";
+
+   globallyInitializeAllEntities(out);
 
    caption(out, "Token tree forward declarations");
    
@@ -759,7 +807,7 @@ void generateInitializationFunction(std::ostream &out)
 "     */ \\\n"
 "    GLS_INPUTS_CONFIGURE_LOCAL_ALL  \\\n"
 "    \\\n"
-"    /* Local initialization of actions.\n"
+"    /* Local initialization of actions.\\\n"
 "     */ \\\n"
 "    GLS_ACTIONS_INITIALIZE_LOCAL_ALL \\\n"
 "    \\\n"
