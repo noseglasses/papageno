@@ -25,6 +25,7 @@
 
 #include <ostream>
 #include <fstream>
+#include <iomanip>
 
 namespace Glockenspiel {
 namespace Generator {
@@ -69,7 +70,8 @@ static void outputInformationOfDefinition(std::ostream &out, const ParserTree::N
 
 void reportActionsAndInputs(std::ostream &out);
 void reportTree(std::ostream &out);
-   
+void reportCodeParsed(std::ostream &);
+
 void generateFileHeader(std::ostream &out) {
    
    out <<
@@ -77,16 +79,7 @@ void generateFileHeader(std::ostream &out) {
    out <<
 "\n";
 
-   caption(out, "Files parsed");
-   
-   for(std::size_t i = 0; i < Glockenspiel::Parser::filesParsed.size(); ++i) {
-      out << 
-"/* File " << Glockenspiel::Parser::filesParsed[i] << "\n"
-"\n";
-      out << Glockenspiel::Parser::codeParsed[i] << "\n"
-"*/\n"
-"\n";
-   }
+   reportCodeParsed(out);
    
    reportTree(out);
    
@@ -144,98 +137,36 @@ void generateFileHeader(std::ostream &out) {
    ADD_DEFAULT_VALUE(SIGNAL_CALLBACK_USER_DATA, NULL)
 }
 
-#if 0
-void generateGlobalActionInformation(std::ostream &out)
+void reportCodeParsed(std::ostream &out)
 {
-   auto actionsByType = ParserTree::Action::getEntitiesByType();
+   caption(out, "Code parsed");
    
-   caption(out, "Actions");
-
-   outputInfoAboutSpecificOverride(out);
-   out <<
-"#ifndef GLS_CONFIGURE_ACTIONS_GLOBAL\n"
-"#define GLS_CONFIGURE_ACTIONS_GLOBAL(...)\n"
-"#endif\n\n";
-
-   outputInfoAboutSpecificOverride(out);
-   out <<
-"#ifndef GLS_CONFIGURE_ACTIONS_LOCAL\n"
-"#define GLS_CONFIGURE_ACTIONS_LOCAL(...)\n"
-"#endif\n\n";
-
-   for(const auto &abtEntry: actionsByType) {
-      const auto &tag = abtEntry.first;
+   const char *curFile = nullptr;
+   long lastLine = -1;
    
-      outputInfoAboutSpecificOverride(out);
-      out <<
-"#ifndef GLS_ACTION_INITIALIZATION___" << tag << "\n";
-      out << 
-"#define GLS_ACTION_INITIALIZATION___" << tag << "(...) __VA_ARGS__\n";
-      out <<
-"#endif\n"
-"\n";
+   out <<
+"/*\n";
 
-      out <<
-"#define GLS_ACTIONS___" << tag << "(OP) \\\n";
-
-      for(const auto &actionPtr: abtEntry.second) {
-         out <<
-"   OP(" << actionPtr->getId().getText() << ")\\\n";
-      }
+   for(const auto &codeLineInfo: Parser::code) {
       
-      out <<
-"\n";
-         
-      outputInfoAboutSpecificOverride(out);
-      out <<
-   "#ifndef GLS_CONFIGURE_ACTIONS_GLOBAL___" << tag << "\n"
-   "#define GLS_CONFIGURE_ACTIONS_GLOBAL___" << tag << "(...) \\\n"
-   "   GLS_CONFIGURE_ACTIONS_GLOBAL(__VA_ARGS__)\n"
-   "#endif\n\n";
-
-      outputInfoAboutSpecificOverride(out);
-      out <<
-   "#ifndef GLS_CONFIGURE_ACTIONS_LOCAL___" << tag << "\n"
-   "#define GLS_CONFIGURE_ACTIONS_LOCAL___" << tag << "(...) \\\n"
-   "   GLS_CONFIGURE_ACTIONS_LOCAL(__VA_ARGS__)\n"
-   "#endif\n\n";
+      if(curFile != codeLineInfo.file_) {
+         curFile = codeLineInfo.file_;
+         out <<
+"**** " << curFile << "\n";
+      }
+      else if(lastLine + 1 != codeLineInfo.lineNumber_) {
+         out <<
+"...\n";
+      }
+      lastLine = codeLineInfo.lineNumber_;
+      
+      out << 
+std::setw(4) << codeLineInfo.lineNumber_ << " " << codeLineInfo.code_ << "\n";
    }
-   
    out <<
-"#define GLS_ACTIONS_ALL(OP) \\\n";
-
-   for(const auto &abtEntry: actionsByType) {
-      const auto &tag = abtEntry.first;
-      out <<
-"   GLS_ACTIONS___" << tag << "(OP) \\\n";
-   }
-   out << "\n";
-   
-   out <<
-"#define GLS_CUSTOM_CONFIGURE_ACTIONS_GLOBAL \\\n";
-   for(const auto &abtEntry: actionsByType) {
-      const auto &tag = abtEntry.first;
-      out <<
-"   GLS_ACTIONS___" << tag << "(GLS_CONFIGURE_ACTIONS_GLOBAL___" << tag << ") \\\n";
-   }
-   out << 
-"\n";
-
-   out <<
-"GLS_CUSTOM_CONFIGURE_ACTIONS_GLOBAL\n\n";
-
-   out <<
-"#define GLS_CUSTOM_CONFIGURE_ACTIONS_LOCAL \\\n";
-   for(const auto &abtEntry: actionsByType) {
-      const auto &tag = abtEntry.first;
-      out <<
-"   GLS_ACTIONS___" << tag << "(GLS_CONFIGURE_ACTIONS_LOCAL___" << tag << ") \\\n";
-   }
-   out << 
+"*/\n"
 "\n";
 }
-
-#endif
 
 template<typename EntitiesByType,
          typename EntityAssignments>

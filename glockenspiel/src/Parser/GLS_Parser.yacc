@@ -88,7 +88,7 @@ std::string unquote(const std::string &s) {
    std::string id;
 }*/
 
-%token LAYER_KEYWORD SYMBOL_KEYWORD ARROW ACTION_KEYWORD INPUT_KEYWORD PHRASE_KEYWORD
+%token LAYER_KEYWORD ARROW ACTION_KEYWORD INPUT_KEYWORD PHRASE_KEYWORD
 %token ALIAS_KEYWORD INCLUDE_KEYWORD SETTING_KEYWORD LINE_END ID QUOTED_STRING
 
 %locations
@@ -216,7 +216,7 @@ note:   '|' input '|'
             Pattern::pushToken(newNote);
         }
         |
-        '|' input
+        '|' input '-'
         {
             LocationRAII lr(&@2);
             auto newNote = std::make_shared<Note>();
@@ -224,7 +224,7 @@ note:   '|' input '|'
             Pattern::pushToken(newNote);
         }
         |
-        input '|'
+        '-' input '|'
         {
             LocationRAII lr(&@1);
             auto newNote = std::make_shared<Note>();
@@ -425,8 +425,9 @@ std::ostringstream codeStream;
 
 LocationOfDefinition currentLocation;
 
-std::vector<std::string> filesParsed;
-std::vector<std::string> codeParsed;
+std::set<std::string> filesParsed;
+
+std::vector<CodeLine> code;
 
 std::string flagsString;
 
@@ -440,30 +441,50 @@ Token getCppCode()
    return cppCode;
 }
 
-static void processDefinitions(const char *line, int startLine)
+class FileScanner 
 {
-   // add the second NULL terminator
-/*   int len = strlen(line);
-   char *temp = (char*)malloc(len + 2);
-   strcpy( temp, line );
-   temp[ len + 1 ] = 0; // The first NULL terminator is added by strcpy*/
+   public:
    
-   yyscan_t scanner;
+      FileScanner(const char *filename)
+         :  filename_(filename)
+      {
+         yylex_init(&scanner_);
+      }
+      
+      FileScanner(FileScanner &&other)
+      {
+         this->operator=(std::move(other));
+      }
+      
+      FileScanner &operator=(FileScanner &&other) {
+         scanner_ = other.scanner_;
+         other.scanner_ = nullptr;
+         filename_ = other.filename_;
+         other.filename_ = nullptr;
+         return *this;
+      }
+      
+      ~FileScanner() {
+         if(scanner_) {
+            yylex_destroy(scanner_);
+         }
+      }
+      
+      void parseLine(const char *line, int lineNumber) {
+         YY_BUFFER_STATE my_string_buffer = yy_scan_string(line, scanner_); 
+         yy_switch_to_buffer(my_string_buffer, scanner_);
+         my_string_buffer->yy_bs_lineno = lineNumber;
+         yyparse(scanner_); 
+/*          yy_delete_buffer(my_string_buffer, scanner_); */
+      }
 
-   yylex_init(&scanner);
+   private:
    
-   YY_BUFFER_STATE my_string_buffer = yy_scan_string(line, scanner); 
-   //yy_switch_to_buffer( my_string_buffer ); // switch flex to the buffer we just created
-   
-   yy_switch_to_buffer(my_string_buffer, scanner);
-   my_string_buffer->yy_bs_lineno = startLine;
-   yyparse(scanner); 
-   
-   yy_delete_buffer(my_string_buffer, scanner);
-/*    free(temp); */
-   
-   yylex_destroy(scanner);
-}
+      yyscan_t scanner_;
+      const char *filename_;
+};
+
+std::vector<FileScanner> fileScanners;
 
 #define PPG_START_TOKEN "papageno_start"
 #define PPG_END_TOKEN "papageno_end"
@@ -479,16 +500,14 @@ static void generateTree(std::istream &input)
       yydebug = 1;
    }
    
-   #define LINE_SIZE 4096
-   
    std::string line;
    
-   std::ostringstream buffer;
-   
    long curLine = 0;
-   long startLine = 0;
+   long lineStart = 0;
    bool inPPG = false;
-   bool wasInPPG = false;
+   bool wasInPPGAtAll = false;
+   
+   std::string actualLine; 
    
    while(std::getline(input, line)) {
    
@@ -500,25 +519,22 @@ static void generateTree(std::istream &input)
       if(line.find(PPG_START_TOKEN) != std::string::npos) {
          DEBUG_OUTPUT("Start tag \'" PPG_START_TOKEN "\' detected in line " << curLine << "\n")
          inPPG = true;
-         wasInPPG = true;
-         startLine = curLine + 1;
+         wasInPPGAtAll = true;
          continue;
       }
       
       if(!inPPG) {
-         if(wasInPPG) { break; }
          
          continue;
       }
       
       if(line.find(PPG_END_TOKEN) != std::string::npos) {
          DEBUG_OUTPUT("End tag \'" PPG_END_TOKEN "\' detected in line " << curLine << "\n")
-         break;
-      }
-      
-      if(!inPPG) {
+         inPPG = false;
          continue;
       }
+      
+      code.push_back((CodeLine){ curLine, currentFileParsed, line });
       
       // Remove comments
       //
@@ -526,24 +542,37 @@ static void generateTree(std::istream &input)
       for(auto it = line.begin(); *it != '\0'; ++it) {
          if(*it == '%') {
             line.resize(commentStart + 1);
-            line[commentStart] = '\n';
+            line.resize(commentStart);
             break;
          }
          ++commentStart;
       }
       
-      DEBUG_OUTPUT("Processing line \'" << line << "\'\n")
-      buffer << line << "\n";
+      if(actualLine.empty()) {
+         lineStart = curLine;
+      }
+      
+      if(line.back() == '\\') {
+          actualLine += line + "\n";
+          continue;
+      }
+      
+      if(actualLine.empty()) {
+         DEBUG_OUTPUT("****** Processing line \'" << line << "\'\n")
+         fileScanners.back().parseLine((line + "\n").c_str(), lineStart);
+      }
+      else {
+         actualLine += line;
+         DEBUG_OUTPUT("****** Processing continued line \'" << actualLine << "\'\n")
+         fileScanners.back().parseLine((actualLine + "\n").c_str(), lineStart);
+         actualLine.clear();
+      }
    }   
    
-   if(!wasInPPG) {
+   if(!wasInPPGAtAll) {
       std::cerr << "No papageno definitions encountered\n";
       exit(EXIT_FAILURE);
    }
-   
-   codeParsed.push_back(buffer.str());
-   
-   processDefinitions(codeParsed.back().c_str(), startLine);
 }
 
 inline bool exists(const std::string& name) {
@@ -558,13 +587,18 @@ inline bool exists(const std::string& name) {
    
 void generateTree(const char *inputFilename)
 {
-   filesParsed.push_back(inputFilename);
+   std::string filenameString(inputFilename);
+   auto entity = filesParsed.insert(filenameString);
    
-   CurrentFileRAII cfr(filesParsed.back().c_str());
+   fileScanners.emplace_back(FileScanner(entity.first->c_str()));
+   
+   CurrentFileRAII cfr(entity.first->c_str());
    
    std::ifstream inFile(inputFilename);
    
    generateTree(inFile);
+   
+   fileScanners.pop_back();
 }
 
 void searchFileGenerateTree(const std::string &inputFilename)

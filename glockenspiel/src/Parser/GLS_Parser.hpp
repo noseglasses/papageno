@@ -18,6 +18,7 @@
 
 #include <istream>
 #include <vector>
+#include <set>
 
 #define MAX_ID_LENGTH 256
 
@@ -49,10 +50,18 @@ namespace Parser {
    
 class LocationOfDefinition;
 
-extern std::vector<std::string> filesParsed;
-extern std::vector<std::string> codeParsed;
+struct CodeLine {
+   long lineNumber_;
+   const char *file_;
+   std::string code_;
+};
+
+extern std::vector<CodeLine> code;
+
+extern std::set<std::string> filesParsed;
 
 extern LocationOfDefinition currentLocation;
+
 extern const char *currentFileParsed;
 
 void generateTree(const char *inputFile);
