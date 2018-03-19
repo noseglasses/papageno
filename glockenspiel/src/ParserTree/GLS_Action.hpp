@@ -19,6 +19,7 @@
 #include "ParserTree/GLS_Node.hpp"
 #include "Parser/GLS_ParserToken.hpp"
 #include "ParserTree/GLS_Entity.hpp"
+#include "Settings/GLS_Settings.hpp"
 
 namespace Glockenspiel {
 namespace ParserTree {
@@ -61,6 +62,13 @@ class Action : public Entity<Action, CountToAction, CountToActionCompare>
       static void pushNext(const Parser::Token &id);
 
       virtual std::string getNodeType() const { return "Action"; }
+      
+      static std::string entityName() { return "action"; }
+      
+      static bool allowEntityDefinition() {
+         return settings.allow_auto_type_definition
+            || settings.allow_auto_action_type_definition;
+      }
 };
 
 inline

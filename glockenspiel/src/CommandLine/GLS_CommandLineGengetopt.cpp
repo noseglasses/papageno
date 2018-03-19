@@ -45,6 +45,11 @@ const char *gengetopt_args_info_help[] = {
   "      --join_duplicate_actions  Join duplicate actions  (default=off)",
   "      --join_duplicate_inputs   Join duplicate inputs  (default=off)",
   "      --join_note_sequences     Join note sequences  (default=off)",
+  "      --allow_auto_type_definition\n                                Allow automatic definition of all entity types\n                                  (default=off)",
+  "      --allow_auto_input_type_definition\n                                Allow automatic definition of input types\n                                  (default=off)",
+  "      --allow_auto_action_type_definition\n                                Allow automatic definition of action types\n                                  (default=off)",
+  "      --macros_prefix=STRING    A prefix to be added to all macros defined in\n                                  the output file",
+  "      --symbols_prefix=STRING   A prefix to be added to all C/C++ symbols\n                                  defined in the output file",
     0
 };
 
@@ -83,6 +88,11 @@ void clear_given (struct gengetopt_args_info *args_info)
   args_info->join_duplicate_actions_given = 0 ;
   args_info->join_duplicate_inputs_given = 0 ;
   args_info->join_note_sequences_given = 0 ;
+  args_info->allow_auto_type_definition_given = 0 ;
+  args_info->allow_auto_input_type_definition_given = 0 ;
+  args_info->allow_auto_action_type_definition_given = 0 ;
+  args_info->macros_prefix_given = 0 ;
+  args_info->symbols_prefix_given = 0 ;
 }
 
 static
@@ -104,6 +114,13 @@ void clear_args (struct gengetopt_args_info *args_info)
   args_info->join_duplicate_actions_flag = 0;
   args_info->join_duplicate_inputs_flag = 0;
   args_info->join_note_sequences_flag = 0;
+  args_info->allow_auto_type_definition_flag = 0;
+  args_info->allow_auto_input_type_definition_flag = 0;
+  args_info->allow_auto_action_type_definition_flag = 0;
+  args_info->macros_prefix_arg = NULL;
+  args_info->macros_prefix_orig = NULL;
+  args_info->symbols_prefix_arg = NULL;
+  args_info->symbols_prefix_orig = NULL;
   
 }
 
@@ -128,6 +145,11 @@ void init_args_info(struct gengetopt_args_info *args_info)
   args_info->join_duplicate_actions_help = gengetopt_args_info_help[9] ;
   args_info->join_duplicate_inputs_help = gengetopt_args_info_help[10] ;
   args_info->join_note_sequences_help = gengetopt_args_info_help[11] ;
+  args_info->allow_auto_type_definition_help = gengetopt_args_info_help[12] ;
+  args_info->allow_auto_input_type_definition_help = gengetopt_args_info_help[13] ;
+  args_info->allow_auto_action_type_definition_help = gengetopt_args_info_help[14] ;
+  args_info->macros_prefix_help = gengetopt_args_info_help[15] ;
+  args_info->symbols_prefix_help = gengetopt_args_info_help[16] ;
   
 }
 
@@ -263,6 +285,10 @@ cmdline_parser_release (struct gengetopt_args_info *args_info)
   free_string_field (&(args_info->project_name_arg));
   free_string_field (&(args_info->project_name_orig));
   free_multiple_string_field (args_info->include_directory_given, &(args_info->include_directory_arg), &(args_info->include_directory_orig));
+  free_string_field (&(args_info->macros_prefix_arg));
+  free_string_field (&(args_info->macros_prefix_orig));
+  free_string_field (&(args_info->symbols_prefix_arg));
+  free_string_field (&(args_info->symbols_prefix_orig));
   
   
 
@@ -323,6 +349,16 @@ cmdline_parser_dump(FILE *outfile, struct gengetopt_args_info *args_info)
     write_into_file(outfile, "join_duplicate_inputs", 0, 0 );
   if (args_info->join_note_sequences_given)
     write_into_file(outfile, "join_note_sequences", 0, 0 );
+  if (args_info->allow_auto_type_definition_given)
+    write_into_file(outfile, "allow_auto_type_definition", 0, 0 );
+  if (args_info->allow_auto_input_type_definition_given)
+    write_into_file(outfile, "allow_auto_input_type_definition", 0, 0 );
+  if (args_info->allow_auto_action_type_definition_given)
+    write_into_file(outfile, "allow_auto_action_type_definition", 0, 0 );
+  if (args_info->macros_prefix_given)
+    write_into_file(outfile, "macros_prefix", args_info->macros_prefix_orig, 0);
+  if (args_info->symbols_prefix_given)
+    write_into_file(outfile, "symbols_prefix", args_info->symbols_prefix_orig, 0);
   
 
   i = EXIT_SUCCESS;
@@ -1470,6 +1506,11 @@ cmdline_parser_internal (
         { "join_duplicate_actions",	0, NULL, 0 },
         { "join_duplicate_inputs",	0, NULL, 0 },
         { "join_note_sequences",	0, NULL, 0 },
+        { "allow_auto_type_definition",	0, NULL, 0 },
+        { "allow_auto_input_type_definition",	0, NULL, 0 },
+        { "allow_auto_action_type_definition",	0, NULL, 0 },
+        { "macros_prefix",	1, NULL, 0 },
+        { "symbols_prefix",	1, NULL, 0 },
         { 0,  0, 0, 0 }
       };
 
@@ -1609,6 +1650,70 @@ cmdline_parser_internal (
             if (update_arg((void *)&(args_info->join_note_sequences_flag), 0, &(args_info->join_note_sequences_given),
                 &(local_args_info.join_note_sequences_given), optarg, 0, 0, ARG_FLAG,
                 check_ambiguity, override, 1, 0, "join_note_sequences", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* Allow automatic definition of all entity types.  */
+          else if (strcmp (long_options[option_index].name, "allow_auto_type_definition") == 0)
+          {
+          
+          
+            if (update_arg((void *)&(args_info->allow_auto_type_definition_flag), 0, &(args_info->allow_auto_type_definition_given),
+                &(local_args_info.allow_auto_type_definition_given), optarg, 0, 0, ARG_FLAG,
+                check_ambiguity, override, 1, 0, "allow_auto_type_definition", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* Allow automatic definition of input types.  */
+          else if (strcmp (long_options[option_index].name, "allow_auto_input_type_definition") == 0)
+          {
+          
+          
+            if (update_arg((void *)&(args_info->allow_auto_input_type_definition_flag), 0, &(args_info->allow_auto_input_type_definition_given),
+                &(local_args_info.allow_auto_input_type_definition_given), optarg, 0, 0, ARG_FLAG,
+                check_ambiguity, override, 1, 0, "allow_auto_input_type_definition", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* Allow automatic definition of action types.  */
+          else if (strcmp (long_options[option_index].name, "allow_auto_action_type_definition") == 0)
+          {
+          
+          
+            if (update_arg((void *)&(args_info->allow_auto_action_type_definition_flag), 0, &(args_info->allow_auto_action_type_definition_given),
+                &(local_args_info.allow_auto_action_type_definition_given), optarg, 0, 0, ARG_FLAG,
+                check_ambiguity, override, 1, 0, "allow_auto_action_type_definition", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* A prefix to be added to all macros defined in the output file.  */
+          else if (strcmp (long_options[option_index].name, "macros_prefix") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->macros_prefix_arg), 
+                 &(args_info->macros_prefix_orig), &(args_info->macros_prefix_given),
+                &(local_args_info.macros_prefix_given), optarg, 0, 0, ARG_STRING,
+                check_ambiguity, override, 0, 0,
+                "macros_prefix", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* A prefix to be added to all C/C++ symbols defined in the output file.  */
+          else if (strcmp (long_options[option_index].name, "symbols_prefix") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->symbols_prefix_arg), 
+                 &(args_info->symbols_prefix_orig), &(args_info->symbols_prefix_given),
+                &(local_args_info.symbols_prefix_given), optarg, 0, 0, ARG_STRING,
+                check_ambiguity, override, 0, 0,
+                "symbols_prefix", '-',
                 additional_error))
               goto failure;
           

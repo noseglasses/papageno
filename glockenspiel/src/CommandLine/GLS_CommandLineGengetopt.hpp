@@ -31,7 +31,7 @@ extern "C" {
 
 #ifndef CMDLINE_PARSER_VERSION
 /** @brief the program version */
-#define CMDLINE_PARSER_VERSION "28c2574ca23093de11f71d7668be3568b4d0a3e0"
+#define CMDLINE_PARSER_VERSION "7ffe6fc6cb653c912268ddfa6e472e2eb1386a55"
 #endif
 
 /** @brief Where the command line options are stored */
@@ -68,6 +68,18 @@ struct gengetopt_args_info
   const char *join_duplicate_inputs_help; /**< @brief Join duplicate inputs help description.  */
   int join_note_sequences_flag;	/**< @brief Join note sequences (default=off).  */
   const char *join_note_sequences_help; /**< @brief Join note sequences help description.  */
+  int allow_auto_type_definition_flag;	/**< @brief Allow automatic definition of all entity types (default=off).  */
+  const char *allow_auto_type_definition_help; /**< @brief Allow automatic definition of all entity types help description.  */
+  int allow_auto_input_type_definition_flag;	/**< @brief Allow automatic definition of input types (default=off).  */
+  const char *allow_auto_input_type_definition_help; /**< @brief Allow automatic definition of input types help description.  */
+  int allow_auto_action_type_definition_flag;	/**< @brief Allow automatic definition of action types (default=off).  */
+  const char *allow_auto_action_type_definition_help; /**< @brief Allow automatic definition of action types help description.  */
+  char * macros_prefix_arg;	/**< @brief A prefix to be added to all macros defined in the output file.  */
+  char * macros_prefix_orig;	/**< @brief A prefix to be added to all macros defined in the output file original value given at command line.  */
+  const char *macros_prefix_help; /**< @brief A prefix to be added to all macros defined in the output file help description.  */
+  char * symbols_prefix_arg;	/**< @brief A prefix to be added to all C/C++ symbols defined in the output file.  */
+  char * symbols_prefix_orig;	/**< @brief A prefix to be added to all C/C++ symbols defined in the output file original value given at command line.  */
+  const char *symbols_prefix_help; /**< @brief A prefix to be added to all C/C++ symbols defined in the output file help description.  */
   
   unsigned int help_given ;	/**< @brief Whether help was given.  */
   unsigned int version_given ;	/**< @brief Whether version was given.  */
@@ -81,6 +93,11 @@ struct gengetopt_args_info
   unsigned int join_duplicate_actions_given ;	/**< @brief Whether join_duplicate_actions was given.  */
   unsigned int join_duplicate_inputs_given ;	/**< @brief Whether join_duplicate_inputs was given.  */
   unsigned int join_note_sequences_given ;	/**< @brief Whether join_note_sequences was given.  */
+  unsigned int allow_auto_type_definition_given ;	/**< @brief Whether allow_auto_type_definition was given.  */
+  unsigned int allow_auto_input_type_definition_given ;	/**< @brief Whether allow_auto_input_type_definition was given.  */
+  unsigned int allow_auto_action_type_definition_given ;	/**< @brief Whether allow_auto_action_type_definition was given.  */
+  unsigned int macros_prefix_given ;	/**< @brief Whether macros_prefix was given.  */
+  unsigned int symbols_prefix_given ;	/**< @brief Whether symbols_prefix was given.  */
 
 } ;
 

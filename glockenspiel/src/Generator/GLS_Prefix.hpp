@@ -16,44 +16,28 @@
 
 #pragma once
 
-#include <functional>
+#include "Settings/GLS_Settings.hpp"
+
 #include <string>
-#include <map>
 
 namespace Glockenspiel {
+namespace Generator {
    
-class Settings 
-{
-   public:
-         
-      typedef std::function<void(const std::string &)> SetterFunction;
-      typedef std::map<std::string, SetterFunction> NameToSetter;
-      
-      Settings();
-      
-      void set(const std::string &name, const std::string &value);
-      
-      void init();
-      
-      bool debug;
-      
-      bool join_duplicate_entities;
-      bool join_duplicate_actions;
-      bool join_duplicate_inputs;
-      bool join_note_sequences;
-      
-      bool allow_auto_type_definition;
-      bool allow_auto_input_type_definition;
-      bool allow_auto_action_type_definition;
-      
-      std::string macros_prefix;
-      std::string symbols_prefix;
-      
-   protected:
-      
-      NameToSetter setters_;
-};
+inline
+std::string macroPrefix() {
+   if(settings.macros_prefix.empty()) {
+      return "";
+   }
+   return settings.macros_prefix + "_";
+}
 
-extern Settings settings;
+inline
+std::string symbolsPrefix() {
+   if(settings.symbols_prefix.empty()) {
+      return "";
+   }
+   return settings.symbols_prefix + "_";
+} 
 
+} // namespace Generator
 } // namespace Glockenspiel

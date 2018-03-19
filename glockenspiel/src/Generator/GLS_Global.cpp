@@ -20,12 +20,17 @@
 #include "ParserTree/GLS_Action.hpp"
 #include "ParserTree/GLS_Input.hpp"
 #include "ParserTree/GLS_Pattern.hpp"
+#include "Generator/GLS_Prefix.hpp"
+#include "Settings/GLS_Defaults.hpp"
 
 #include "GLS_Compiler.hpp"
 
 #include <ostream>
 #include <fstream>
 #include <iomanip>
+
+#define SP Glockenspiel::Generator::symbolsPrefix()
+#define MP Glockenspiel::Generator::macroPrefix()
 
 namespace Glockenspiel {
 namespace Generator {
@@ -104,37 +109,25 @@ void generateFileHeader(std::ostream &out) {
    }
    
    out <<
-"#ifdef PAPAGENO_PREAMBLE_HEADER\n"
-"#include PAPAGENO_PREAMBLE_HEADER\n"
+"#ifdef " << MP << "PAPAGENO_PREAMBLE_HEADER\n"
+"#include " << MP << "PAPAGENO_PREAMBLE_HEADER\n"
 "#endif\n\n";
    
+   // The bit manipulation macros are unique and thus do not require prefixing
+   //
   out <<
-"#define GLS_NUM_BITS_LEFT(N_BITS) \\\n"
+"#ifndef GLS_NUM_BITS_LEFT\n"
+"#define " << "GLS_NUM_BITS_LEFT(N_BITS) \\\n"
 "   (N_BITS%(8*sizeof(PPG_Bitfield_Storage_Type)))\n"
+"#endif\n"
 "\n"
-"#define GLS_NUM_BYTES(N_BITS) \\\n"
+"#ifndef GLS_NUM_BYTES\n"
+"#define " << "GLS_NUM_BYTES(N_BITS) \\\n"
 "   (N_BITS/(8*sizeof(PPG_Bitfield_Storage_Type)))\n"
+"#endif\n"
 "\n";
 
-#define ADD_DEFAULT_VALUE(NAME, INITIAL) \
-   out << \
-"#ifndef GLS_INITIAL_" #NAME "\n" \
-"#define GLS_INITIAL_" #NAME " " #INITIAL "\n" \
-"#endif\n" \
-"\n";
-
-   ADD_DEFAULT_VALUE(LAYER, 0)
-   ADD_DEFAULT_VALUE(TIME_FUNCTION, ppg_default_time)
-   ADD_DEFAULT_VALUE(TIME_DIFFERENCE_FUNCTION, ppg_default_time_difference)
-   ADD_DEFAULT_VALUE(TIME_COMPARISON_FUNCTION, ppg_default_time_comparison)
-   ADD_DEFAULT_VALUE(TIMEOUT_ENABLED, true)
-   ADD_DEFAULT_VALUE(EVENT_TIMEOUT, 1)
-   ADD_DEFAULT_VALUE(PAPAGENO_ENABLED, true)
-   ADD_DEFAULT_VALUE(LOGGING_ENABLED, true)
-   ADD_DEFAULT_VALUE(ABORT_INPUT, (PPG_Input_Id)((uintptr_t)-1))
-   ADD_DEFAULT_VALUE(EVENT_PROCESSOR, NULL)
-   ADD_DEFAULT_VALUE(SIGNAL_CALLBACK_FUNC, NULL)
-   ADD_DEFAULT_VALUE(SIGNAL_CALLBACK_USER_DATA, NULL)
+   defaults.outputC(out);
 }
 
 void reportCodeParsed(std::ostream &out)
@@ -185,7 +178,7 @@ void generateEntityInformation(
 "// Add a flag to enable local initialization for\n"
 "// all input classes.\n"
 "//\n"
-"#ifdef GLS_ENABLE_" << entityTypeAllCaps << "S_LOCAL_INITIALIZATION_ALL\n";
+"#ifdef " << MP << "GLS_ENABLE_" << entityTypeAllCaps << "S_LOCAL_INITIALIZATION_ALL\n";
 
    for(const auto &entityAssignmentsEntry: entityAssignments) {
       const auto &tag = entityAssignmentsEntry.first;
@@ -193,8 +186,8 @@ void generateEntityInformation(
       out <<
 "// A flag to toggle specific initialization for tag class \'" << tag << "\'.\n"
 "//\n"
-"#   ifndef GLS_ENABLE_" << entityTypeAllCaps << "S_LOCAL_INITIALIZATION___" << tag << " \n"
-"#      define GLS_ENABLE_" << entityTypeAllCaps << "S_LOCAL_INITIALIZATION___" << tag << " \n"
+"#   ifndef " << MP << "GLS_ENABLE_" << entityTypeAllCaps << "S_LOCAL_INITIALIZATION___" << tag << " \n"
+"#      define " << MP << "GLS_ENABLE_" << entityTypeAllCaps << "S_LOCAL_INITIALIZATION___" << tag << " \n"
 "#   endif \n";
    }
    out <<
@@ -203,8 +196,8 @@ void generateEntityInformation(
    out <<
 "// Enable the same type of initialization for all tag classes\n"
 "//\n"
-"#ifndef GLS_" << entityTypeAllCaps << "_INITIALIZE\n"
-"#   define GLS_" << entityTypeAllCaps << "_INITIALIZE(ID, ...) __VA_ARGS__\n"
+"#ifndef " << MP << "GLS_" << entityTypeAllCaps << "_INITIALIZE\n"
+"#   define " << MP << "GLS_" << entityTypeAllCaps << "_INITIALIZE(ID, ...) __VA_ARGS__\n"
 "#endif\n\n";
    
    out <<
@@ -219,36 +212,36 @@ void generateEntityInformation(
 
       out <<
 "// Tag class \'" << tag << "\'.\n" <<
-"#ifndef GLS_" << entityTypeAllCaps << "_INITIALIZE___" << tag << "\n"
-"#   define GLS_" << entityTypeAllCaps << "_INITIALIZE___" << tag << "(ID, ...) \\\n" <<
-"      GLS_" << entityTypeAllCaps << "_INITIALIZE(ID, ##__VA_ARGS__)\n"
+"#ifndef " << MP << "GLS_" << entityTypeAllCaps << "_INITIALIZE___" << tag << "\n"
+"#   define " << MP << "GLS_" << entityTypeAllCaps << "_INITIALIZE___" << tag << "(ID, ...) \\\n" <<
+"      " << MP << "GLS_" << entityTypeAllCaps << "_INITIALIZE(ID, ##__VA_ARGS__)\n"
 "#endif\n"
 "\n"
-"#ifdef GLS_ENABLE_" << entityTypeAllCaps << "S_LOCAL_INITIALIZATION___" << tag << "\n" <<
-"#   ifndef GLS_" << entityTypeAllCaps << "_INITIALIZE_LOCAL___" << tag << "\n" <<
-"#      define GLS_" << entityTypeAllCaps << "_INITIALIZE_LOCAL___" << tag << "(ID, PATH, ...) \\\n" <<
-"            PATH = GLS_" << entityTypeAllCaps << "_INITIALIZE___" << tag << "(ID, ##__VA_ARGS__);\n" <<
+"#ifdef " << MP << "GLS_ENABLE_" << entityTypeAllCaps << "S_LOCAL_INITIALIZATION___" << tag << "\n" <<
+"#   ifndef " << MP << "GLS_" << entityTypeAllCaps << "_INITIALIZE_LOCAL___" << tag << "\n" <<
+"#      define " << MP << "GLS_" << entityTypeAllCaps << "_INITIALIZE_LOCAL___" << tag << "(ID, PATH, ...) \\\n" <<
+"            PATH = " << MP << "GLS_" << entityTypeAllCaps << "_INITIALIZE___" << tag << "(ID, ##__VA_ARGS__);\n" <<
 "#   endif\n"
-"#   ifndef GLS_" << entityTypeAllCaps << "_INITIALIZE_GLOBAL___" << tag << "\n" <<
-"#      define GLS_" << entityTypeAllCaps << "_INITIALIZE_GLOBAL___" << tag << "(ID, ...) 0\n" <<
+"#   ifndef " << MP << "GLS_" << entityTypeAllCaps << "_INITIALIZE_GLOBAL___" << tag << "\n" <<
+"#      define " << MP << "GLS_" << entityTypeAllCaps << "_INITIALIZE_GLOBAL___" << tag << "(ID, ...) 0\n" <<
 "#   endif\n"
 "#else\n"
-"#   ifndef GLS_" << entityTypeAllCaps << "_INITIALIZE_LOCAL___" << tag << "\n" <<
-"#      define GLS_" << entityTypeAllCaps << "_INITIALIZE_LOCAL___" << tag << "(ID, PATH, ...)\n"
+"#   ifndef " << MP << "GLS_" << entityTypeAllCaps << "_INITIALIZE_LOCAL___" << tag << "\n" <<
+"#      define " << MP << "GLS_" << entityTypeAllCaps << "_INITIALIZE_LOCAL___" << tag << "(ID, PATH, ...)\n"
 "#   endif\n"
-"#   ifndef GLS_" << entityTypeAllCaps << "_INITIALIZE_GLOBAL___" << tag << "\n" <<
-"#      define GLS_" << entityTypeAllCaps << "_INITIALIZE_GLOBAL___" << tag << "(ID, ...) \\\n" <<
-"            GLS_" << entityTypeAllCaps << "_INITIALIZE___" << tag << "(ID, ##__VA_ARGS__)\n" <<
+"#   ifndef " << MP << "GLS_" << entityTypeAllCaps << "_INITIALIZE_GLOBAL___" << tag << "\n" <<
+"#      define " << MP << "GLS_" << entityTypeAllCaps << "_INITIALIZE_GLOBAL___" << tag << "(ID, ...) \\\n" <<
+"            " << MP << "GLS_" << entityTypeAllCaps << "_INITIALIZE___" << tag << "(ID, ##__VA_ARGS__)\n" <<
 "#   endif\n"
 "#endif\n"
 "\n"         
 "// Define a common entry for each tag class to be used for\n"
 "// local initialization.\n"
 "//\n"
-"#define GLS_" << entityTypeAllCaps << "S_INITIALIZE_LOCAL_ALL___" << tag << " \\\n";
+"#define " << MP << "GLS_" << entityTypeAllCaps << "S_INITIALIZE_LOCAL_ALL___" << tag << " \\\n";
       for(const auto &assignment: entityAssignmentsEntry.second) {
          out <<
-"   GLS_" << entityTypeAllCaps << "_INITIALIZE_LOCAL___" << tag << "(" << assignment.entity_->getId().getText() << ", " << assignment.pathString_;
+"   " << MP << "GLS_" << entityTypeAllCaps << "_INITIALIZE_LOCAL___" << tag << "(" << assignment.entity_->getId().getText() << ", " << SP << assignment.pathString_;
          if(assignment.entity_->getParametersDefined()) {
             out << ", " << assignment.entity_->getParameters().getText();
          }
@@ -261,13 +254,13 @@ void generateEntityInformation(
    out <<
 "// Define a common entry point for local initialization\n"
 "//\n"
-"#define GLS_" << entityTypeAllCaps << "S_INITIALIZE_LOCAL_ALL \\\n";
+"#define " << MP << "GLS_" << entityTypeAllCaps << "S_INITIALIZE_LOCAL_ALL \\\n";
 
    for(const auto &entityAssignmentsEntry: entityAssignments) {
       const auto &tag = entityAssignmentsEntry.first;
       
       out <<
-"   GLS_" << entityTypeAllCaps << "S_INITIALIZE_LOCAL_ALL___" << tag << " \\\n";
+"   " << MP << "GLS_" << entityTypeAllCaps << "S_INITIALIZE_LOCAL_ALL___" << tag << " \\\n";
    }
    out <<
 "\n";
@@ -276,8 +269,8 @@ void generateEntityInformation(
 "// This macro can be used to add configuration of " << entityType << "s at global scope.\n"
 "// The default is no configuration at global scope.\n"
 "//\n"
-"#ifndef GLS_"<< entityTypeAllCaps << "_CONFIGURE_GLOBAL\n"
-"#   define GLS_"<< entityTypeAllCaps << "_CONFIGURE_GLOBAL(...)\n"
+"#ifndef " << MP << "GLS_"<< entityTypeAllCaps << "_CONFIGURE_GLOBAL\n"
+"#   define " << MP << "GLS_"<< entityTypeAllCaps << "_CONFIGURE_GLOBAL(...)\n"
 "#endif\n"
 "\n";
 
@@ -285,8 +278,8 @@ void generateEntityInformation(
 "// This macro can be used to add configuration of " << entityType << "s at global scope.\n"
 "// The default is no configuration at local scope.\n"
 "//\n"
-"#ifndef GLS_"<< entityTypeAllCaps << "_CONFIGURE_LOCAL\n"
-"#   define GLS_"<< entityTypeAllCaps << "_CONFIGURE_LOCAL(...)\n"
+"#ifndef " << MP << "GLS_"<< entityTypeAllCaps << "_CONFIGURE_LOCAL\n"
+"#   define " << MP << "GLS_"<< entityTypeAllCaps << "_CONFIGURE_LOCAL(...)\n"
 "#endif\n"
 "\n";
 
@@ -297,17 +290,17 @@ void generateEntityInformation(
 "// Implement the following macro to enable specific initialization \n"
 "// at global scope for tag class \'" << tag << "\'.\n" <<
 "//\n"
-"#ifndef GLS_" << entityTypeAllCaps << "_CONFIGURE_GLOBAL___" << tag << "\n"
-"#   define GLS_" << entityTypeAllCaps << "_CONFIGURE_GLOBAL___" << tag << "(...) \\\n"
-"       GLS_" << entityTypeAllCaps << "_CONFIGURE_GLOBAL(__VA_ARGS__)\n"
+"#ifndef " << MP << "GLS_" << entityTypeAllCaps << "_CONFIGURE_GLOBAL___" << tag << "\n"
+"#   define " << MP << "GLS_" << entityTypeAllCaps << "_CONFIGURE_GLOBAL___" << tag << "(...) \\\n"
+"       " << MP << "GLS_" << entityTypeAllCaps << "_CONFIGURE_GLOBAL(__VA_ARGS__)\n"
 "#endif\n"
 "\n"
 "// Implement the following macro to enable specific initialization \n"
 "// at local scope for tag class " << tag << ".\n" <<
 "//\n"
-"#ifndef GLS_" << entityTypeAllCaps << "_CONFIGURE_LOCAL___" << tag << "\n"
-"#   define GLS_" << entityTypeAllCaps << "_CONFIGURE_LOCAL___" << tag << "(...) \\\n"
-"       GLS_" << entityTypeAllCaps << "_CONFIGURE_LOCAL(__VA_ARGS__)\n"
+"#ifndef " << MP << "GLS_" << entityTypeAllCaps << "_CONFIGURE_LOCAL___" << tag << "\n"
+"#   define " << MP << "GLS_" << entityTypeAllCaps << "_CONFIGURE_LOCAL___" << tag << "(...) \\\n"
+"       " << MP << "GLS_" << entityTypeAllCaps << "_CONFIGURE_LOCAL(__VA_ARGS__)\n"
 "#endif\n"
 "\n";
 
@@ -315,7 +308,7 @@ void generateEntityInformation(
 "// Use this macro to perform specific initializations of " << entityType << "s with\n"
 "// tag class \'" << tag << "\'.\n"
 "//\n"
-"#define GLS_" << entityTypeAllCaps << "S___" << tag << "(OP) \\\n";
+"#define " << MP << "GLS_" << entityTypeAllCaps << "S___" << tag << "(OP) \\\n";
 
       for(const auto &entityPtr: abtEntry.second) {
          out <<
@@ -330,21 +323,21 @@ void generateEntityInformation(
    }
 
    out <<
-"#define GLS_" << entityTypeAllCaps << "S_ALL(OP) \\\n";
+"#define " << MP << "GLS_" << entityTypeAllCaps << "S_ALL(OP) \\\n";
 
    for(const auto &abtEntry: entitiesByType) {
       const auto &tag = abtEntry.first;
       out <<
-"   GLS_" << entityTypeAllCaps << "S___" << tag << "(OP) \\\n";
+"   " << MP << "GLS_" << entityTypeAllCaps << "S___" << tag << "(OP) \\\n";
    }
    out << "\n"; 
 
    out <<
-"#define GLS_" << entityTypeAllCaps << "S_CONFIGURE_LOCAL_ALL \\\n";
+"#define " << MP << "GLS_" << entityTypeAllCaps << "S_CONFIGURE_LOCAL_ALL \\\n";
    for(const auto &abtEntry: entitiesByType) {
       const auto &tag = abtEntry.first;
       out <<
-"   GLS_" << entityTypeAllCaps << "S___" << tag << "(GLS_" << entityTypeAllCaps << "_CONFIGURE_LOCAL___" << tag << ") \\\n";
+"   " << MP << "GLS_" << entityTypeAllCaps << "S___" << tag << "(" << MP << "GLS_" << entityTypeAllCaps << "_CONFIGURE_LOCAL___" << tag << ") \\\n";
    }
    out << 
 "\n";  
@@ -421,7 +414,7 @@ void globallyInitializeEntities(
       out <<
 "// Tag class \'" << tag << "\'\n"
 "//\n"
-"GLS_" << entityTypeAllCaps << "S___" << tag << "(GLS_" << entityTypeAllCaps << "_CONFIGURE_GLOBAL___" << tag << ")\n"
+<< MP << "GLS_" << entityTypeAllCaps << "S___" << tag << "(" << MP << "GLS_" << entityTypeAllCaps << "_CONFIGURE_GLOBAL___" << tag << ")\n"
 "\n";
    }
 }
@@ -544,7 +537,7 @@ void recursivelyOutputTree(std::ostream &out, const ParserTree::Token &token, in
       out << "   ";
    }
    
-   out << token.getId().getText() << "(" << token.getInputs() 
+   out << SP << token.getId().getText() << "(" << token.getInputs() 
       << ") [" << token.getLayer().getText() << "]";
    
    if(!token.getAction().getText().empty()) {
@@ -617,15 +610,15 @@ void generateGlobalContext(std::ostream &out)
    caption(out, "Initialization");
    
    out <<
-"#ifdef GLS_GLOBAL_INITIALIZATION_INCLUDE\n"
-"#include GLS_GLOBAL_INITIALIZATION_INCLUDE\n"
+"#ifdef " << MP << "GLS_GLOBAL_INITIALIZATION_INCLUDE\n"
+"#include " << MP << "GLS_GLOBAL_INITIALIZATION_INCLUDE\n"
 "#endif\n"
 "\n"
-"#ifndef GLS_GLOBAL_INITIALIZATION\n"
-"#define GLS_GLOBAL_INITIALIZATION\n"
+"#ifndef " << MP << "GLS_GLOBAL_INITIALIZATION\n"
+"#define " << MP << "GLS_GLOBAL_INITIALIZATION\n"
 "#endif\n"
 "\n"
-"GLS_GLOBAL_INITIALIZATION\n"
+<< MP << "GLS_GLOBAL_INITIALIZATION\n"
 "\n";
 
    globallyInitializeAllEntities(out);
@@ -650,17 +643,17 @@ void generateGlobalContext(std::ostream &out)
    assert(maxEvents > 0);
    
    out <<
-"PPG_Event_Queue_Entry event_buffer[" << 2*maxEvents << "] = { 0 };\n\n";
+"PPG_Event_Queue_Entry " << SP << "event_buffer[" << 2*maxEvents << "] = { 0 };\n\n";
 
    out <<
-"PPG_Furcation furcations[" << maxDepth << "] = { 0 };\n\n";
+"PPG_Furcation " << SP << "furcations[" << maxDepth << "] = { 0 };\n\n";
    
    out <<
-"PPG_Token__ *tokens[" << maxDepth << "] = { 0 };\n\n";
+"PPG_Token__ *" << SP << "tokens[" << maxDepth << "] = { 0 };\n\n";
    out <<
-"PPG_Context context = {\n"
+"PPG_Context " << SP << "context = {\n"
 "   .event_buffer = {\n"
-"      .events = event_buffer,\n"
+"      .events = " << SP << "event_buffer,\n"
 "      .start = 0,\n"
 "      .end = 0,\n"
 "      .cur = 0,\n"
@@ -669,42 +662,42 @@ void generateGlobalContext(std::ostream &out)
    out <<
 "   },\n"
 "   .furcation_stack = {\n"
-"      .furcations = furcations,\n"
+"      .furcations = " << SP << "furcations,\n"
 "      .n_furcations = 0,\n"
 "      .cur_furcation = 0,\n"
 "      .max_furcations = " << maxDepth << "\n";
    out <<
 "   },\n"
 "   .active_tokens = {\n"
-"      .tokens = tokens,\n"
+"      .tokens = " << SP << "tokens,\n"
 "      .n_tokens = 0,\n"
 "      .max_tokens = " << maxDepth << "\n";
    out <<
 "   },\n"
-"   .pattern_root = &" << root->getId().getText() << ",\n"
+"   .pattern_root = &" << SP << root->getId().getText() << ",\n"
 "   .current_token = NULL,\n"
 "   .properties = {\n"
-"      .timeout_enabled = GLS_INITIAL_TIMEOUT_ENABLED,\n"
-"      .papageno_enabled = GLS_INITIAL_PAPAGENO_ENABLED,\n"
+"      .timeout_enabled = " << MP << "GLS_INITIAL_TIMEOUT_ENABLED,\n"
+"      .papageno_enabled = " << MP << "GLS_INITIAL_PAPAGENO_ENABLED,\n"
 "#     if PPG_HAVE_LOGGING\n"
-"      .logging_enabled = GLS_INITIAL_LOGGING_ENABLED,\n"
+"      .logging_enabled = " << MP << "GLS_INITIAL_LOGGING_ENABLED,\n"
 "#     endif\n"
 "      .destruction_enabled = false\n"
 "    },\n"
 "   .tree_depth = " << maxDepth << ",\n"
-"   .layer = GLS_INITIAL_LAYER,\n"
-"   .abort_input = GLS_INITIAL_ABORT_INPUT,\n"
+"   .layer = " << MP << "GLS_INITIAL_LAYER,\n"
+"   .abort_trigger_input = " << MP << "GLS_INITIAL_ABORT_TRIGGER_INPUT,\n"
 "   .time_last_event = 0,\n"
-"   .event_timeout = GLS_INITIAL_EVENT_TIMEOUT,\n"
-"   .event_processor = GLS_INITIAL_EVENT_PROCESSOR,\n"
+"   .event_timeout = " << MP << "GLS_INITIAL_EVENT_TIMEOUT,\n"
+"   .event_processor = " << MP << "GLS_INITIAL_EVENT_PROCESSOR,\n"
 "   .time_manager = {\n"
-"      .time = &GLS_INITIAL_TIME_FUNCTION,\n"
-"      .time_difference = &GLS_INITIAL_TIME_DIFFERENCE_FUNCTION,\n"
-"      .compare_times = &GLS_INITIAL_TIME_COMPARISON_FUNCTION\n"
+"      .time = &" << MP << "GLS_INITIAL_TIME_FUNCTION,\n"
+"      .time_difference = &" << MP << "GLS_INITIAL_TIME_DIFFERENCE_FUNCTION,\n"
+"      .compare_times = &" << MP << "GLS_INITIAL_TIME_COMPARISON_FUNCTION\n"
 "   },\n"
 "   .signal_callback = {\n"
-"      .func = GLS_INITIAL_SIGNAL_CALLBACK_FUNC,\n"
-"      .user_data = GLS_INITIAL_SIGNAL_CALLBACK_USER_DATA\n"
+"      .func = " << MP << "GLS_INITIAL_SIGNAL_CALLBACK_FUNC,\n"
+"      .user_data = " << MP << "GLS_INITIAL_SIGNAL_CALLBACK_USER_DATA\n"
 "   }\n"
 "#  if PPG_HAVE_STATISTICS\n"
 "   ,\n"
@@ -719,40 +712,35 @@ void generateGlobalContext(std::ostream &out)
 "\n";
 }
 
-   
-   #if GLS_HAVE_STATISTICS
-   ppg_statistics_clear(&context->statistics);
-   #endif
-   
 void generateInitializationFunction(std::ostream &out)
 {
    caption(out, "Initialization");
    
    out << 
-"#define GLS_LOCAL_INITIALIZATION \\\n"
+"#define " << MP << "GLS_LOCAL_INITIALIZATION \\\n"
 "    /* Configuration of all actions. \\\n"
 "     */ \\\n"
-"    GLS_ACTIONS_CONFIGURE_LOCAL_ALL \\\n"
+"    " << MP << "GLS_ACTIONS_CONFIGURE_LOCAL_ALL \\\n"
 "    \\\n"
 "    /* Configuration of all inputs. \\\n"
 "     */ \\\n"
-"    GLS_INPUTS_CONFIGURE_LOCAL_ALL  \\\n"
+"    " << MP << "GLS_INPUTS_CONFIGURE_LOCAL_ALL  \\\n"
 "    \\\n"
 "    /* Local initialization of actions.\\\n"
 "     */ \\\n"
-"    GLS_ACTIONS_INITIALIZE_LOCAL_ALL \\\n"
+"    " << MP << "GLS_ACTIONS_INITIALIZE_LOCAL_ALL \\\n"
 "    \\\n"
 "    /* Local initialization of inputs. \\\n"
 "     */ \\\n"
-"    GLS_INPUTS_INITIALIZE_LOCAL_ALL\n"
+"    " << MP << "GLS_INPUTS_INITIALIZE_LOCAL_ALL\n"
 "\n"
-"void papageno_initialize_context()\n"
+"void " << SP << "papageno_initialize_context()\n"
 "{\n"
-"#  ifndef GLS_NO_AUTOMATIC_LOCAL_INITIALIZATION\n"
-"   GLS_LOCAL_INITIALIZATION\n"
+"#  ifndef " << MP << "GLS_NO_AUTOMATIC_LOCAL_INITIALIZATION\n"
+"   " << MP << "GLS_LOCAL_INITIALIZATION\n"
 "#  endif\n"
 "\n"
-"   ppg_context = &context;\n"
+"   ppg_context = &" << SP << "context;\n"
 "}\n\n";
 }
 

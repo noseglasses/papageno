@@ -128,7 +128,7 @@ function(ppg_add_compiler_test name)
    add_custom_command(
       OUTPUT "${compile_output_file}"
       DEPENDS "${ppg_file}" glockenspiel
-      COMMAND $<TARGET_FILE:glockenspiel> -I "${CMAKE_CURRENT_SOURCE_DIR}/${name}" -i "${ppg_file}" -o "${compile_output_file}"
+      COMMAND $<TARGET_FILE:glockenspiel> -I "${CMAKE_CURRENT_SOURCE_DIR}/${name}" -i "${ppg_file}" -o "${compile_output_file}" --symbols_prefix "s" --macros_prefix "m"
       WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${name}"
    )
    add_custom_target("${run_target_name}_compile" DEPENDS "${compile_output_file}")

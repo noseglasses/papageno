@@ -458,7 +458,7 @@ void ppg_compression_write_c_output(PPG_Compression_Context__ *ccontext,
    
    printf("tree_depth: %d\n", (int)ppg_context->tree_depth);
    printf("layer: %d\n", (int)ppg_context->layer);
-   printf("abort_input: %d\n", (int)ppg_context->abort_input);
+   printf("abort_trigger_input: %d\n", (int)ppg_context->abort_trigger_input);
    printf("time_last_event: %d\n", (int)ppg_context->time_last_event);
    printf("event_timeout: %d\n", (int)ppg_context->event_timeout);
    

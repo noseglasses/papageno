@@ -20,6 +20,7 @@
 
 #include "ParserTree/GLS_Token.hpp"
 #include "Parser/GLS_ParserToken.hpp"
+#include "ParserTree/GLS_Input.hpp"
 
 namespace Glockenspiel {
 namespace ParserTree {
@@ -85,20 +86,7 @@ class Note : public Token
       
    protected:
       
-      virtual void generateCCodeInternal(std::ostream &out) const override {
-         
-         const auto &input = this->getInputPtr();
-         out <<
-"   .super = {\n";
-
-         this->Token::generateCCodeInternal(out);
-         out <<
-"   },\n"
-"   .input = GLS_INPUT_INITIALIZE_GLOBAL___" << input->getType().getText()
-   << "(" 
-   << input->getId().getText() << ", "
-   << input->getParameters().getText() << ")\n";
-      }
+      virtual void generateCCodeInternal(std::ostream &out) const override;
       
       virtual std::string getVTableId() const override { return "&ppg_note_vtable"; }
       

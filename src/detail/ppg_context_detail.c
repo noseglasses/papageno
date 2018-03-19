@@ -50,7 +50,7 @@ void ppg_global_initialize_context_static(PPG_Context *context) {
    context->properties.destruction_enabled = false;
    
    context->layer = 0;
-   ppg_global_init_input(&context->abort_input);
+   ppg_global_init_input(&context->abort_trigger_input);
    context->time_last_event = 0;
    context->event_timeout = 0;
    context->event_processor = NULL;
@@ -132,7 +132,7 @@ void ppg_print_context(PPG_Context *context)
    
    PPG_LOG("tree_depth: %d\n", (int)context->tree_depth);
    PPG_LOG("layer: %d\n", (int)context->layer);
-   PPG_LOG("abort_input: %d\n", (int)context->abort_input);
+   PPG_LOG("abort_trigger_input: %d\n", (int)context->abort_trigger_input);
    PPG_LOG("time_last_event: %d\n", (int)context->time_last_event);
    PPG_LOG("event_timeout: %d\n", (int)context->event_timeout);
 }

@@ -68,16 +68,16 @@ void ppg_global_reset(void)
  */
 PPG_Input_Id ppg_global_set_abort_trigger(PPG_Input_Id input)
 {
-   PPG_Input_Id old_input = ppg_context->abort_input;
+   PPG_Input_Id old_input = ppg_context->abort_trigger_input;
    
-   ppg_context->abort_input = input;
+   ppg_context->abort_trigger_input = input;
    
    return old_input;
 }
 
 PPG_Input_Id ppg_global_get_abort_trigger(void)
 {
-   return ppg_context->abort_input;
+   return ppg_context->abort_trigger_input;
 }
 
 PPG_Time ppg_global_set_timeout(PPG_Time timeout)

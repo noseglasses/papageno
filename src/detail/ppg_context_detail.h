@@ -52,7 +52,7 @@ typedef struct PPG_Context_Struct
    
    PPG_Layer layer;
 
-   PPG_Input_Id abort_input;
+   PPG_Input_Id abort_trigger_input;
 
    PPG_Time time_last_event;
 

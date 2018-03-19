@@ -14,9 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "ParserTree/GLS_Cluster.hpp"
+#include "Generator/GLS_Prefix.hpp"
 
 namespace Glockenspiel {
 namespace ParserTree {
+   
+#define SP Glockenspiel::Generator::symbolsPrefix()
+#define MP Glockenspiel::Generator::macroPrefix()
    
 void 
    Cluster

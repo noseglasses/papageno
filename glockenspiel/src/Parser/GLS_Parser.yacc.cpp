@@ -96,6 +96,7 @@
 #include "ParserTree/GLS_Alias.hpp"
 #include "ParserTree/GLS_NextEntity.hpp"
 #include "Settings/GLS_Settings.hpp"
+#include "Settings/GLS_Defaults.hpp"
 
 #include <iostream>
 #include <string>
@@ -139,8 +140,12 @@ std::string unquote(const std::string &s) {
 }
 }
 
+#define MARK_LOCATION(LOC) \
+           LocationRAII lr(&(LOC));
 
-#line 144 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:339  */
+
+
+#line 149 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -176,17 +181,18 @@ extern int yydebug;
   enum yytokentype
   {
     LAYER_KEYWORD = 258,
-    SYMBOL_KEYWORD = 259,
-    ARROW = 260,
-    ACTION_KEYWORD = 261,
-    INPUT_KEYWORD = 262,
+    ARROW = 259,
+    ACTION_KEYWORD = 260,
+    INPUT_KEYWORD = 261,
+    TYPE_KEYWORD = 262,
     PHRASE_KEYWORD = 263,
     ALIAS_KEYWORD = 264,
     INCLUDE_KEYWORD = 265,
     SETTING_KEYWORD = 266,
-    LINE_END = 267,
-    ID = 268,
-    QUOTED_STRING = 269
+    DEFAULT_KEYWORD = 267,
+    LINE_END = 268,
+    ID = 269,
+    QUOTED_STRING = 270
   };
 #endif
 
@@ -219,7 +225,7 @@ int yyparse (void *scanner);
 
 /* Copy the second part of user declarations.  */
 
-#line 223 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:358  */
+#line 229 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -461,23 +467,23 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  46
+#define YYFINAL  52
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   152
+#define YYLAST   166
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  39
+#define YYNTOKENS  40
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  28
+#define YYNNTS  30
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  79
+#define YYNRULES  84
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  132
+#define YYNSTATES  148
 
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
    by yylex, with out-of-bounds checking.  */
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   269
+#define YYMAXUTOK   270
 
 #define YYTRANSLATE(YYX)                                                \
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -489,16 +495,16 @@ static const yytype_uint8 yytranslate[] =
        0,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,    33,     2,    19,    38,    31,    32,    37,
-      34,    35,    20,    29,    18,    22,     2,    30,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,    15,    36,
-      27,    16,    28,     2,    17,     2,     2,     2,     2,     2,
+       2,     2,     2,    34,     2,    20,    39,    32,    33,    38,
+      35,    36,    21,    30,    19,    23,     2,    31,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,    16,    37,
+      28,    17,    29,     2,    18,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,    25,     2,    26,     2,     2,     2,     2,     2,     2,
+       2,    26,     2,    27,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,    23,    21,    24,     2,     2,     2,     2,
+       2,     2,     2,    24,    22,    25,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -512,21 +518,23 @@ static const yytype_uint8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
-       5,     6,     7,     8,     9,    10,    11,    12,    13,    14
+       5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
+      15
 };
 
 #if YYDEBUG
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    98,    98,   100,   102,   105,   107,   112,   117,   119,
-     121,   123,   125,   131,   137,   144,   150,   158,   160,   164,
-     166,   171,   181,   186,   193,   202,   204,   206,   208,   211,
-     219,   227,   236,   241,   247,   254,   261,   264,   266,   272,
-     280,   286,   294,   296,   300,   307,   322,   337,   342,   345,
-     349,   355,   364,   371,   372,   373,   374,   375,   376,   377,
-     378,   379,   380,   381,   382,   383,   384,   385,   386,   387,
-     388,   389,   390,   391,   392,   393,   394,   396,   398,   399
+       0,   104,   104,   106,   111,   117,   119,   125,   131,   136,
+     141,   146,   151,   156,   161,   167,   173,   179,   186,   192,
+     200,   202,   209,   211,   217,   227,   232,   239,   249,   251,
+     253,   255,   258,   266,   274,   283,   289,   296,   304,   312,
+     318,   320,   327,   335,   341,   349,   351,   358,   366,   374,
+     382,   397,   412,   418,   421,   425,   431,   440,   447,   448,
+     449,   450,   451,   452,   453,   454,   455,   456,   457,   458,
+     459,   460,   461,   462,   463,   464,   465,   466,   467,   468,
+     469,   470,   472,   477,   478
 };
 #endif
 
@@ -535,15 +543,16 @@ static const yytype_uint16 yyrline[] =
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
 {
-  "$end", "error", "$undefined", "LAYER_KEYWORD", "SYMBOL_KEYWORD",
-  "ARROW", "ACTION_KEYWORD", "INPUT_KEYWORD", "PHRASE_KEYWORD",
-  "ALIAS_KEYWORD", "INCLUDE_KEYWORD", "SETTING_KEYWORD", "LINE_END", "ID",
-  "QUOTED_STRING", "':'", "'='", "'@'", "','", "'#'", "'*'", "'|'", "'-'",
-  "'{'", "'}'", "'['", "']'", "'<'", "'>'", "'+'", "'/'", "'%'", "'&'",
-  "'!'", "'('", "')'", "';'", "'\\''", "'$'", "$accept", "lines", "line",
-  "input_list", "phrase", "action_token", "rep_token", "token", "token__",
-  "note", "input", "cluster", "chord", "aggregate", "flag_definition",
-  "alpha_seq", "action_list_entry", "action_list", "layer_def",
+  "$end", "error", "$undefined", "LAYER_KEYWORD", "ARROW",
+  "ACTION_KEYWORD", "INPUT_KEYWORD", "TYPE_KEYWORD", "PHRASE_KEYWORD",
+  "ALIAS_KEYWORD", "INCLUDE_KEYWORD", "SETTING_KEYWORD", "DEFAULT_KEYWORD",
+  "LINE_END", "ID", "QUOTED_STRING", "':'", "'='", "'@'", "','", "'#'",
+  "'*'", "'|'", "'-'", "'{'", "'}'", "'['", "']'", "'<'", "'>'", "'+'",
+  "'/'", "'%'", "'&'", "'!'", "'('", "')'", "';'", "'\\''", "'$'",
+  "$accept", "lines", "line", "input_list", "phrase", "action_token",
+  "rep_token", "token", "token__", "note", "input", "cluster", "chord",
+  "aggregate", "flag_definition", "alpha_seq", "action_list_entry",
+  "action_list", "layer_def", "input_type_def", "action_type_def",
   "input_def", "action_def", "alias_def", "action_parameters", "typed_id",
   "parameters", "cpp_token", "cpp_code", "cpp_token_seq", YY_NULLPTR
 };
@@ -555,16 +564,16 @@ static const char *const yytname[] =
 static const yytype_uint16 yytoknum[] =
 {
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
-     265,   266,   267,   268,   269,    58,    61,    64,    44,    35,
-      42,   124,    45,   123,   125,    91,    93,    60,    62,    43,
-      47,    37,    38,    33,    40,    41,    59,    39,    36
+     265,   266,   267,   268,   269,   270,    58,    61,    64,    44,
+      35,    42,   124,    45,   123,   125,    91,    93,    60,    62,
+      43,    47,    37,    38,    33,    40,    41,    59,    39,    36
 };
 # endif
 
-#define YYPACT_NINF -14
+#define YYPACT_NINF -13
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-14)))
+  (!!((Yystate) == (-13)))
 
 #define YYTABLE_NINF -3
 
@@ -573,22 +582,23 @@ static const yytype_uint16 yytoknum[] =
 
   /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
      STATE-NUM.  */
-static const yytype_int8 yypact[] =
+static const yytype_int16 yypact[] =
 {
-      26,    -8,    21,    29,    39,    47,    48,   -14,   -14,    31,
-      37,    54,    54,    55,    55,    52,   -14,    25,   -14,    50,
-      56,   -14,   -14,   -14,   -14,   -14,    58,    60,    70,    92,
-     -14,    93,    94,    94,    96,   100,    90,   101,   -14,   102,
-      35,    97,   -14,    13,    91,    95,   -14,   -14,    89,   -14,
-     106,   107,   -14,   -14,   -14,   -14,   -14,    98,   108,   108,
-     110,   111,   109,   115,   116,   -14,   -14,   -14,   -14,   118,
-     -14,   -14,   -14,   -14,   105,   -14,   114,   -14,   120,    99,
-     -14,   -14,   -14,    89,   121,   117,   119,   -14,   -14,   123,
-     106,   112,    65,   -14,    34,   -14,   -14,   124,   -14,   -14,
-     -14,   -14,   -14,   -14,   -14,   -14,   -14,   -14,   -14,   -14,
-     -14,   -14,   -14,   -14,   -14,   -14,   -14,   -14,   -14,   -14,
-     -14,   -14,   -14,   -14,   -14,   -14,   -13,   -14,   127,   -14,
-     -14,   -14
+       0,     1,     5,    -5,     3,    15,    18,    21,   -13,   -13,
+      33,    32,    34,    34,    38,    38,    27,   -13,    12,   -13,
+      42,    -4,   -13,   -13,   -13,   -13,   -13,    28,    71,    95,
+      96,    98,   102,   -13,   103,   104,   105,   106,   105,   107,
+     109,   110,   111,   112,   -13,   113,    84,   108,   -13,   -12,
+      93,    99,   -13,   -13,    90,   -13,   117,   118,   -13,   -13,
+     -13,   -13,   -13,   -13,   -13,   119,    97,   120,   121,   120,
+     122,   123,   124,   127,   129,   130,   -13,   -13,   -13,   -13,
+     132,   -13,   -13,   -13,   -13,   116,   -13,   125,   -13,   -13,
+     133,   114,   -13,   -13,   -13,   -13,    90,   134,   114,   136,
+     135,   -13,   -13,   137,   117,   126,    66,   -13,    25,   -13,
+     141,   -13,   142,   -13,   -13,   -13,   -13,   -13,   -13,   -13,
+     -13,   -13,   -13,   -13,   -13,   -13,   -13,   -13,   -13,   -13,
+     -13,   -13,   -13,   -13,   -13,   -13,   -13,   -13,   -13,   -13,
+     -13,    40,   -13,   -13,   143,   -13,   -13,   -13
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -596,36 +606,37 @@ static const yytype_int8 yypact[] =
      means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       0,     0,     0,     0,     0,     0,     0,     5,    39,     0,
-       0,     0,     0,     0,     0,     0,     3,     0,    17,    19,
-      22,    24,    25,    26,    27,    28,     0,     0,     0,     0,
-      14,     0,     0,     0,     0,     0,     0,     0,    21,    32,
-       0,     0,    15,    37,     0,     0,     1,     4,     0,     6,
-       0,     0,     8,     9,    10,    11,    44,    50,    48,     0,
-       0,     0,     0,     0,     0,    33,    29,    30,    31,     0,
-      36,    34,    35,    18,    40,    42,    20,    23,     0,     0,
-      46,    49,    45,     0,     0,     0,     0,    38,    16,     0,
-       0,     0,     0,    52,     0,    47,    12,     0,    41,    43,
-      51,    75,    76,    71,    69,    73,    70,    55,    60,    53,
-      63,    64,    65,    66,    67,    68,    54,    56,    57,    58,
-      59,    61,    62,    72,    74,    78,     0,     7,     0,    77,
-      79,    13
+       0,     0,     0,     0,     0,     0,     0,     0,     5,    42,
+       0,     0,     0,     0,     0,     0,     0,     3,     0,    20,
+      22,    25,    27,    28,    29,    30,    31,     0,     0,     0,
+       0,     0,     0,    17,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,    24,    35,     0,     0,    18,    40,
+       0,     0,     1,     4,     0,     6,     0,     0,     8,     9,
+      10,    11,    12,    13,    47,     0,    55,    53,     0,     0,
+       0,     0,     0,     0,     0,     0,    36,    32,    33,    34,
+       0,    39,    37,    38,    21,    43,    45,    23,    26,    49,
+       0,     0,    51,    54,    48,    50,     0,     0,     0,     0,
+       0,    41,    19,     0,     0,     0,     0,    57,     0,    52,
+       0,    15,     0,    44,    46,    56,    80,    81,    76,    74,
+      78,    75,    60,    65,    58,    68,    69,    70,    71,    72,
+      73,    59,    61,    62,    63,    64,    66,    67,    77,    79,
+      83,     0,     7,    14,     0,    82,    84,    16
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int16 yypgoto[] =
 {
-     -14,   -14,   126,   -14,    59,   103,   -14,   -14,   -14,   -14,
-     131,   -14,   -14,   130,   104,   -14,    62,   -14,   -14,   -14,
-     -14,   -14,   -14,   113,    86,    22,   -14,   -14
+     -13,   -13,   144,   -13,    54,    82,   -13,   -13,   -13,   -13,
+     145,   -13,   -13,   146,    89,   -13,    55,   -13,   -13,   -13,
+     -13,   -13,   -13,   -13,   -13,   128,    94,    23,    64,   -13
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
-static const yytype_int8 yydefgoto[] =
+static const yytype_int16 yydefgoto[] =
 {
-      -1,    15,    16,    43,    17,    18,    19,    20,    21,    22,
-      40,    23,    24,    44,    65,    25,    75,    76,    26,    27,
-      28,    29,    80,    58,    81,   125,    93,   126
+      -1,    16,    17,    49,    18,    19,    20,    21,    22,    23,
+      46,    24,    25,    50,    76,    26,    86,    87,    27,    28,
+      29,    30,    31,    32,    92,    67,    93,   140,   107,   141
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -633,88 +644,93 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int16 yytable[] =
 {
-     101,   102,   103,   104,    30,   105,   106,   107,   108,   109,
-     110,   111,   112,   113,   114,   115,   116,   117,   118,   119,
-     120,   121,   122,   123,   124,   129,    -2,     1,    64,     2,
-      48,    69,     3,     4,     5,     6,    31,    49,     7,    48,
-       8,    36,    37,     9,    32,    10,   127,    11,    12,    13,
-      38,    14,    46,     1,    33,     2,    66,    67,     3,     4,
-       5,     6,    34,    35,     7,    50,     8,    39,    42,     9,
-      52,    10,    53,    11,    12,    13,    51,    14,   101,   102,
-     103,   104,    54,   105,   106,   107,   108,   109,   110,   111,
-     112,   113,   114,   115,   116,   117,   118,   119,   120,   121,
-     122,   123,   124,     8,    55,    62,    56,    57,    10,    60,
-      11,    12,    13,    61,    14,    71,    63,    64,    68,    74,
-      77,    72,    89,    85,    79,    78,    83,    84,    86,    96,
-      87,    88,    90,    91,    95,    97,    98,    92,   128,   131,
-     100,    47,    94,    41,    45,    82,    59,    70,   130,     0,
-       0,    73,    99
+      -2,     1,    35,     2,    75,     3,     4,    80,     5,     6,
+      37,    36,     7,     8,    33,     9,    54,    57,    10,    38,
+      11,    34,    12,    13,    14,    55,    15,    52,     1,    54,
+       2,    39,     3,     4,    40,     5,     6,    41,   142,     7,
+       8,    58,     9,    42,    43,    10,    44,    11,    45,    12,
+      13,    14,    48,    15,   116,   117,   118,   119,    56,   120,
+     121,   122,   123,   124,   125,   126,   127,   128,   129,   130,
+     131,   132,   133,   134,   135,   136,   137,   138,   139,   145,
+     116,   117,   118,   119,    59,   120,   121,   122,   123,   124,
+     125,   126,   127,   128,   129,   130,   131,   132,   133,   134,
+     135,   136,   137,   138,   139,     9,    77,    78,    60,    61,
+      11,    62,    12,    13,    14,    63,    15,    64,    82,    66,
+      65,    70,    68,    71,    72,    90,    83,    73,    74,    75,
+      79,    85,    88,    89,   103,    94,    84,    91,    81,    96,
+      97,    98,    99,   100,   104,   101,   102,   105,   109,   111,
+     108,   113,   112,   106,   143,   115,   147,   144,    47,   114,
+      53,    51,   110,    95,   146,     0,    69
 };
 
-static const yytype_int8 yycheck[] =
+static const yytype_int16 yycheck[] =
 {
-      13,    14,    15,    16,    12,    18,    19,    20,    21,    22,
-      23,    24,    25,    26,    27,    28,    29,    30,    31,    32,
-      33,    34,    35,    36,    37,    38,     0,     1,    15,     3,
-       5,    18,     6,     7,     8,     9,    15,    12,    12,     5,
-      14,    10,    11,    17,    15,    19,    12,    21,    22,    23,
-      13,    25,     0,     1,    15,     3,    21,    22,     6,     7,
-       8,     9,    15,    15,    12,    15,    14,    13,    13,    17,
-      12,    19,    12,    21,    22,    23,    20,    25,    13,    14,
-      15,    16,    12,    18,    19,    20,    21,    22,    23,    24,
-      25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
-      35,    36,    37,    14,    12,    15,    13,    13,    19,    13,
-      21,    22,    23,    13,    25,    24,    15,    15,    21,    13,
-      13,    26,    17,    14,    16,    27,    16,    16,    13,    12,
-      14,    13,    18,    13,    13,    16,    13,    38,    14,    12,
-      28,    15,    83,    12,    14,    59,    33,    43,   126,    -1,
-      -1,    48,    90
+       0,     1,     7,     3,    16,     5,     6,    19,     8,     9,
+       7,    16,    12,    13,    13,    15,     4,    21,    18,    16,
+      20,    16,    22,    23,    24,    13,    26,     0,     1,     4,
+       3,    16,     5,     6,    16,     8,     9,    16,    13,    12,
+      13,    13,    15,    10,    11,    18,    14,    20,    14,    22,
+      23,    24,    14,    26,    14,    15,    16,    17,    16,    19,
+      20,    21,    22,    23,    24,    25,    26,    27,    28,    29,
+      30,    31,    32,    33,    34,    35,    36,    37,    38,    39,
+      14,    15,    16,    17,    13,    19,    20,    21,    22,    23,
+      24,    25,    26,    27,    28,    29,    30,    31,    32,    33,
+      34,    35,    36,    37,    38,    15,    22,    23,    13,    13,
+      20,    13,    22,    23,    24,    13,    26,    14,    25,    14,
+      16,    14,    16,    14,    14,    28,    27,    16,    16,    16,
+      22,    14,    14,    14,    18,    14,    54,    17,    49,    17,
+      17,    17,    15,    14,    19,    15,    14,    14,    14,    13,
+      96,    14,    17,    39,    13,    29,    13,    15,    13,   104,
+      16,    15,    98,    69,   141,    -1,    38
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,     1,     3,     6,     7,     8,     9,    12,    14,    17,
-      19,    21,    22,    23,    25,    40,    41,    43,    44,    45,
-      46,    47,    48,    50,    51,    54,    57,    58,    59,    60,
-      12,    15,    15,    15,    15,    15,    10,    11,    13,    13,
-      49,    49,    13,    42,    52,    52,     0,    41,     5,    12,
-      15,    20,    12,    12,    12,    12,    13,    13,    62,    62,
-      13,    13,    15,    15,    15,    53,    21,    22,    21,    18,
-      53,    24,    26,    44,    13,    55,    56,    13,    27,    16,
-      61,    63,    63,    16,    16,    14,    13,    14,    13,    17,
-      18,    13,    38,    65,    43,    13,    12,    16,    13,    55,
-      28,    13,    14,    15,    16,    18,    19,    20,    21,    22,
-      23,    24,    25,    26,    27,    28,    29,    30,    31,    32,
-      33,    34,    35,    36,    37,    64,    66,    12,    14,    38,
-      64,    12
+       0,     1,     3,     5,     6,     8,     9,    12,    13,    15,
+      18,    20,    22,    23,    24,    26,    41,    42,    44,    45,
+      46,    47,    48,    49,    51,    52,    55,    58,    59,    60,
+      61,    62,    63,    13,    16,     7,    16,     7,    16,    16,
+      16,    16,    10,    11,    14,    14,    50,    50,    14,    43,
+      53,    53,     0,    42,     4,    13,    16,    21,    13,    13,
+      13,    13,    13,    13,    14,    16,    14,    65,    16,    65,
+      14,    14,    14,    16,    16,    16,    54,    22,    23,    22,
+      19,    54,    25,    27,    45,    14,    56,    57,    14,    14,
+      28,    17,    64,    66,    14,    66,    17,    17,    17,    15,
+      14,    15,    14,    18,    19,    14,    39,    68,    44,    14,
+      68,    13,    17,    14,    56,    29,    14,    15,    16,    17,
+      19,    20,    21,    22,    23,    24,    25,    26,    27,    28,
+      29,    30,    31,    32,    33,    34,    35,    36,    37,    38,
+      67,    69,    13,    13,    15,    39,    67,    13
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,    39,    40,    40,    40,    41,    41,    41,    41,    41,
-      41,    41,    41,    41,    41,    42,    42,    43,    43,    44,
-      44,    44,    45,    45,    46,    47,    47,    47,    47,    48,
-      48,    48,    49,    49,    50,    51,    52,    53,    53,    54,
-      55,    55,    56,    56,    57,    58,    59,    60,    61,    61,
-      62,    62,    63,    64,    64,    64,    64,    64,    64,    64,
-      64,    64,    64,    64,    64,    64,    64,    64,    64,    64,
-      64,    64,    64,    64,    64,    64,    64,    65,    66,    66
+       0,    40,    41,    41,    41,    42,    42,    42,    42,    42,
+      42,    42,    42,    42,    42,    42,    42,    42,    43,    43,
+      44,    44,    45,    45,    45,    46,    46,    47,    48,    48,
+      48,    48,    49,    49,    49,    50,    50,    51,    52,    53,
+      54,    54,    55,    56,    56,    57,    57,    58,    59,    60,
+      61,    62,    63,    64,    64,    65,    65,    66,    67,    67,
+      67,    67,    67,    67,    67,    67,    67,    67,    67,    67,
+      67,    67,    67,    67,    67,    67,    67,    67,    67,    67,
+      67,    67,    68,    69,    69
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
        0,     2,     0,     1,     2,     1,     2,     6,     2,     2,
-       2,     2,     5,     7,     2,     1,     3,     1,     3,     1,
-       3,     2,     1,     3,     1,     1,     1,     1,     1,     3,
-       3,     3,     1,     2,     3,     3,     2,     0,     2,     1,
-       1,     3,     1,     3,     3,     4,     4,     5,     0,     1,
-       1,     4,     2,     1,     1,     1,     1,     1,     1,     1,
+       2,     2,     2,     2,     6,     5,     7,     2,     1,     3,
+       1,     3,     1,     3,     2,     1,     3,     1,     1,     1,
+       1,     1,     3,     3,     3,     1,     2,     3,     3,     2,
+       0,     2,     1,     1,     3,     1,     3,     3,     4,     4,
+       4,     4,     5,     0,     1,     1,     4,     2,     1,     1,
        1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
-       1,     1,     1,     1,     1,     1,     1,     3,     1,     2
+       1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
+       1,     1,     3,     1,     2
 };
 
 
@@ -1491,225 +1507,350 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
-        case 6:
-#line 108 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+        case 3:
+#line 107 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
+           MARK_LOCATION((yyloc))
+        }
+#line 1516 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 4:
+#line 112 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    {
+           MARK_LOCATION((yyloc))
+        }
+#line 1524 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 6:
+#line 120 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    {
+           MARK_LOCATION((yyloc))
            Pattern::finishPattern();
         }
-#line 1500 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1533 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 113 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 126 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
+           MARK_LOCATION((yyloc))
            Phrase::storePhrase(ParserToken((yyvsp[-3]), (yylsp[-3])));
         }
-#line 1508 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1542 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 8:
+#line 132 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    {
+           MARK_LOCATION((yyloc))
+        }
+#line 1550 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 9:
+#line 137 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    {
+           MARK_LOCATION((yyloc))
+        }
+#line 1558 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 10:
+#line 142 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    {
+           MARK_LOCATION((yyloc))
+        }
+#line 1566 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 11:
+#line 147 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    {
+           MARK_LOCATION((yyloc))
+        }
+#line 1574 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 126 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 152 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
-           LocationRAII lr(&(yyloc));
-           Glockenspiel::Parser::searchFileGenerateTree(Glockenspiel::Parser::unquote((yyvsp[-1])));
+           MARK_LOCATION((yyloc))
         }
-#line 1517 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1582 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 132 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 157 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
-           LocationRAII lr(&(yyloc));
-           Glockenspiel::settings.set((yyvsp[-3]), Glockenspiel::Parser::unquote((yyvsp[-1])));
+           MARK_LOCATION((yyloc))
         }
-#line 1526 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1590 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 138 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 162 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
-          yyerrok;
+           MARK_LOCATION((yyloc))
+           defaults.set((yyvsp[-3]), Glockenspiel::Parser::getCppCode().getText());
         }
-#line 1534 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1599 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 145 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 168 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
-            LocationRAII lr(&(yylsp[0]));
-            Input::pushNext(ParserToken((yyvsp[0]), (yylsp[0])));
-         }
-#line 1543 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+           MARK_LOCATION((yyloc))
+           Glockenspiel::Parser::searchFileGenerateTree(Glockenspiel::Parser::unquote((yyvsp[-1])));
+        }
+#line 1608 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 151 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 174 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
-            LocationRAII lr(&(yylsp[0]));
-            Input::pushNext(ParserToken((yyvsp[0]), (yylsp[0])));
-         }
-#line 1552 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+           MARK_LOCATION((yyloc))
+           Glockenspiel::settings.set((yyvsp[-3]), Glockenspiel::Parser::unquote((yyvsp[-1])));
+        }
+#line 1617 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
-  case 20:
-#line 167 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+  case 17:
+#line 180 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
-           Pattern::applyActions();
+          yyerrok;
         }
-#line 1560 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1625 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 18:
+#line 187 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    {
+            MARK_LOCATION((yyloc))
+            Input::pushNext(ParserToken((yyvsp[0]), (yylsp[0])));
+         }
+#line 1634 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 19:
+#line 193 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    {
+            MARK_LOCATION((yyloc))
+            Input::pushNext(ParserToken((yyvsp[0]), (yylsp[0])));
+         }
+#line 1643 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 172 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 203 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
-           // Lookup a phrase and copy its tokens to the current pattern
-           //
-           LocationRAII lr(&(yylsp[0]));
-           Pattern::pushPhrase(ParserToken((yyvsp[0]), (yylsp[0])));
+            MARK_LOCATION((yyloc))
         }
-#line 1571 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
-    break;
-
-  case 22:
-#line 182 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
-    {
-           ((yylsp[0]));
-         }
-#line 1579 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1651 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 187 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 212 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
-           LocationRAII lr(&(yylsp[0]));
-           Pattern::repeatLastToken(ParserToken((yyvsp[0]), (yylsp[0])));
+           MARK_LOCATION((yyloc))
+           Pattern::applyActions();
         }
-#line 1588 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1660 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 194 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 218 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
+           // Lookup a phrase and copy its tokens to the current pattern
+           //
+           MARK_LOCATION((yyloc))
+           Pattern::pushPhrase(ParserToken((yyvsp[0]), (yylsp[0])));
+        }
+#line 1671 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 25:
+#line 228 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    {
+           MARK_LOCATION((yyloc))
+        }
+#line 1679 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 26:
+#line 233 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    {
+           MARK_LOCATION((yyloc))
+           Pattern::repeatLastToken(ParserToken((yyvsp[0]), (yylsp[0])));
+        }
+#line 1688 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 27:
+#line 240 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    {
+           MARK_LOCATION((yyloc))
            Pattern::getMostRecentToken()->setLOD((yylsp[0]));
            
            Pattern::getMostRecentToken()->setFlagsString(Glockenspiel::Parser::flagsString);
            Glockenspiel::Parser::flagsString.clear();
         }
-#line 1599 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1700 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
-  case 29:
-#line 212 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+  case 32:
+#line 259 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
-            LocationRAII lr(&(yylsp[-1]));
+            MARK_LOCATION((yyloc))
             auto newNote = std::make_shared<Note>();
             newNote->getFlags().tokenFlags_.set("PPG_Note_Flags_A_N_D");
             Pattern::pushToken(newNote);
         }
-#line 1610 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1711 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
-  case 30:
-#line 220 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+  case 33:
+#line 267 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
-            LocationRAII lr(&(yylsp[-1]));
+            MARK_LOCATION((yyloc))
             auto newNote = std::make_shared<Note>();
             newNote->getFlags().tokenFlags_.set("PPG_Note_Flag_Match_Activation");
             Pattern::pushToken(newNote);
         }
-#line 1621 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1722 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
-  case 31:
-#line 228 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+  case 34:
+#line 275 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
-            LocationRAII lr(&(yylsp[-2]));
+            MARK_LOCATION((yyloc))
             auto newNote = std::make_shared<Note>();
             newNote->getFlags().tokenFlags_.set("PPG_Note_Flag_Match_Deactivation");
             Pattern::pushToken(newNote);
         }
-#line 1632 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
-    break;
-
-  case 32:
-#line 237 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
-    {
-            Input::pushNext(ParserToken((yyvsp[0]), (yylsp[0])));
-        }
-#line 1640 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
-    break;
-
-  case 33:
-#line 242 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
-    {
-            Input::pushNext(ParserToken((yyvsp[-1]), (yylsp[-1])));
-        }
-#line 1648 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
-    break;
-
-  case 34:
-#line 248 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
-    {
-            Pattern::pushToken(std::make_shared<Cluster>());
-        }
-#line 1656 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1733 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 35:
-#line 255 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 284 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
-            Pattern::pushToken(std::make_shared<Chord>());
+            MARK_LOCATION((yyloc))
+            Input::pushNext(ParserToken((yyvsp[0]), (yylsp[0])));
         }
-#line 1664 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1742 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 36:
+#line 290 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    {
+            MARK_LOCATION((yyloc))
+            Input::pushNext(ParserToken((yyvsp[-1]), (yylsp[-1])));
+        }
+#line 1751 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 37:
+#line 297 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    {
+            MARK_LOCATION((yyloc))
+            Pattern::pushToken(std::make_shared<Cluster>());
+        }
+#line 1760 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 38:
-#line 267 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 305 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
-           Glockenspiel::Parser::flagsString = Glockenspiel::Parser::unquote((yyvsp[0]));
+            MARK_LOCATION((yyloc))
+            Pattern::pushToken(std::make_shared<Chord>());
         }
-#line 1672 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1769 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 273 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 313 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
-            LocationRAII lr(&(yylsp[0]));
-            Pattern::addAlphaSequence(Glockenspiel::Parser::unquote((yyvsp[0])));
+           MARK_LOCATION((yyloc))
         }
-#line 1681 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
-    break;
-
-  case 40:
-#line 281 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
-    {
-            LocationRAII lr(&(yylsp[0]));
-            Action::pushNext(ParserToken((yyvsp[0]), (yylsp[0])));
-        }
-#line 1690 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1777 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 41:
-#line 287 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 321 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
-            LocationRAII lr(&(yylsp[-2]));
-            Action::pushNext(ParserToken((yyvsp[0]), (yylsp[0])), ParserToken((yyvsp[-2]), (yylsp[-2])));
+           MARK_LOCATION((yyloc))
+           Glockenspiel::Parser::flagsString = Glockenspiel::Parser::unquote((yyvsp[0]));
         }
-#line 1699 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1786 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 42:
+#line 328 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    {
+           MARK_LOCATION((yyloc))
+            Pattern::addAlphaSequence(Glockenspiel::Parser::unquote((yyvsp[0])));
+        }
+#line 1795 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 43:
+#line 336 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    {
+           MARK_LOCATION((yyloc))
+            Action::pushNext(ParserToken((yyvsp[0]), (yylsp[0])));
+        }
+#line 1804 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 44:
-#line 301 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 342 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
-           ParserTree::Token::setCurrentLayer(ParserToken((yyvsp[0]), (yylsp[0])));
+           MARK_LOCATION((yyloc))
+            Action::pushNext(ParserToken((yyvsp[0]), (yylsp[0])), ParserToken((yyvsp[-2]), (yylsp[-2])));
         }
-#line 1707 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1813 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
-  case 45:
-#line 308 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+  case 46:
+#line 352 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
-           LocationRAII lr(&(yyloc));
+           MARK_LOCATION((yyloc))
+        }
+#line 1821 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 47:
+#line 359 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    {
+           MARK_LOCATION((yyloc))
+           ParserTree::Token::setCurrentLayer(ParserToken((yyvsp[0]), (yylsp[0])));
+        }
+#line 1830 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 48:
+#line 367 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    {
+           MARK_LOCATION((yyloc))
+           Input::defineType((yyvsp[0]));
+        }
+#line 1839 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 49:
+#line 375 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    {
+           MARK_LOCATION((yyloc))
+           Action::defineType((yyvsp[0]));
+        }
+#line 1848 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 50:
+#line 383 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    {
+           MARK_LOCATION((yyloc))
            Input::define(
                std::make_shared<Input>(
                   NextEntity::getNextId(),
@@ -1719,13 +1860,13 @@ yyreduce:
                )
            );
         }
-#line 1723 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1864 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
-  case 46:
-#line 323 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+  case 51:
+#line 398 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
-            LocationRAII lr(&(yyloc));
+            MARK_LOCATION((yyloc))
             Action::define(
                std::make_shared<Action>(
                   NextEntity::getNextId(),
@@ -1735,191 +1876,208 @@ yyreduce:
                )
             );
         }
-#line 1739 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
-    break;
-
-  case 47:
-#line 338 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
-    {
-           Alias::define((yyvsp[-2]), Glockenspiel::Parser::Token((yyvsp[0]), (yyloc)));
-        }
-#line 1747 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
-    break;
-
-  case 50:
-#line 350 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
-    {
-            LocationRAII lr(&(yylsp[0]));
-            NextEntity::setId(ParserToken((yyvsp[0]), (yylsp[0])));
-        }
-#line 1756 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
-    break;
-
-  case 51:
-#line 356 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
-    {
-            LocationRAII lr(&(yylsp[-3]));
-            NextEntity::setId(ParserToken((yyvsp[-3]), (yylsp[-3])));
-            NextEntity::setType(ParserToken((yyvsp[-1]), (yylsp[-1])));
-        }
-#line 1766 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1880 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 52:
-#line 365 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 413 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
-           LocationRAII lr(&(yylsp[-1]));
-           NextEntity::setParameters(Glockenspiel::Parser::getCppCode());
+           MARK_LOCATION((yyloc))
+           Alias::define((yyvsp[-2]), Glockenspiel::Parser::Token((yyvsp[0]), (yyloc)));
         }
-#line 1775 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
-    break;
-
-  case 53:
-#line 371 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
-    { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 1781 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
-    break;
-
-  case 54:
-#line 372 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
-    { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 1787 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
-    break;
-
-  case 55:
-#line 373 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
-    { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 1793 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
-    break;
-
-  case 56:
-#line 374 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
-    { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 1799 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
-    break;
-
-  case 57:
-#line 375 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
-    { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 1805 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
-    break;
-
-  case 58:
-#line 376 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
-    { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 1811 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
-    break;
-
-  case 59:
-#line 377 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
-    { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 1817 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
-    break;
-
-  case 60:
-#line 378 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
-    { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 1823 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
-    break;
-
-  case 61:
-#line 379 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
-    { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 1829 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
-    break;
-
-  case 62:
-#line 380 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
-    { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 1835 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
-    break;
-
-  case 63:
-#line 381 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
-    { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 1841 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
-    break;
-
-  case 64:
-#line 382 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
-    { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 1847 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
-    break;
-
-  case 65:
-#line 383 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
-    { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 1853 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
-    break;
-
-  case 66:
-#line 384 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
-    { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 1859 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
-    break;
-
-  case 67:
-#line 385 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
-    { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 1865 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
-    break;
-
-  case 68:
-#line 386 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
-    { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 1871 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
-    break;
-
-  case 69:
-#line 387 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
-    { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 1877 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
-    break;
-
-  case 70:
-#line 388 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
-    { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 1883 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
-    break;
-
-  case 71:
-#line 389 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
-    { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
 #line 1889 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
-  case 72:
-#line 390 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+  case 55:
+#line 426 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    {
+           MARK_LOCATION((yyloc))
+            NextEntity::setId(ParserToken((yyvsp[0]), (yylsp[0])));
+        }
+#line 1898 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 56:
+#line 432 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    {
+           MARK_LOCATION((yyloc))
+            NextEntity::setId(ParserToken((yyvsp[-3]), (yylsp[-3])));
+            NextEntity::setType(ParserToken((yyvsp[-1]), (yylsp[-1])));
+        }
+#line 1908 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 57:
+#line 441 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    {
+           MARK_LOCATION((yyloc))
+           NextEntity::setParameters(Glockenspiel::Parser::getCppCode());
+        }
+#line 1917 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 58:
+#line 447 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 1895 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1923 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 59:
+#line 448 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
+#line 1929 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 60:
+#line 449 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
+#line 1935 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 61:
+#line 450 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
+#line 1941 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 62:
+#line 451 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
+#line 1947 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 63:
+#line 452 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
+#line 1953 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 64:
+#line 453 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
+#line 1959 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 65:
+#line 454 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
+#line 1965 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 66:
+#line 455 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
+#line 1971 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 67:
+#line 456 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
+#line 1977 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 68:
+#line 457 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
+#line 1983 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 69:
+#line 458 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
+#line 1989 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 70:
+#line 459 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
+#line 1995 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 71:
+#line 460 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
+#line 2001 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 72:
+#line 461 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
+#line 2007 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 73:
-#line 391 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 462 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 1901 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 2013 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 74:
-#line 392 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 463 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 1907 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 2019 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 75:
-#line 393 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 464 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 1913 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 2025 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 76:
-#line 394 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 465 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 1919 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 2031 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 77:
+#line 466 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
+#line 2037 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 78:
+#line 467 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
+#line 2043 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 79:
+#line 468 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
+#line 2049 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 80:
+#line 469 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
+#line 2055 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 81:
+#line 470 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
+#line 2061 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 82:
+#line 473 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    {
+           MARK_LOCATION((yyloc))
+         }
+#line 2069 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 84:
+#line 479 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    {
+           MARK_LOCATION((yyloc))
+         }
+#line 2077 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
 
-#line 1923 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 2081 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2154,11 +2312,12 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 400 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1906  */
+#line 482 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1906  */
 
 
 void yyerror(YYLTYPE *yylloc, yyscan_t scanner, const char *s)
 {
+  MARK_LOCATION((*yylloc))
   THROW_ERROR("Parser error: " << s);
 }
 
@@ -2251,12 +2410,21 @@ std::vector<FileScanner> fileScanners;
    if(Glockenspiel::commandLineArgs.debug_flag) { \
       std::cout << __VA_ARGS__; \
    }
+   
+struct DebugRAII {
+   DebugRAII(bool state) { 
+      oldState_ = yydebug;
+      yydebug = state;
+   }
+   ~DebugRAII() {
+      yydebug = oldState_;
+   }
+   bool oldState_;
+};
 
 static void generateTree(std::istream &input) 
 {
-   if(Glockenspiel::commandLineArgs.debug_flag) {
-      yydebug = 1;
-   }
+   DebugRAII dr(Glockenspiel::commandLineArgs.debug_flag);
    
    std::string line;
    

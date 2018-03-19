@@ -18,6 +18,7 @@
 #include "Parser/GLS_Parser.yacc.hpp"
 #include "CommandLine/GLS_CommandLine.hpp"
 #include "Settings/GLS_Settings.hpp"
+#include "Settings/GLS_Defaults.hpp"
 #include "Generator/GLS_Global.hpp"
 #include "ParserTree/GLS_Action.hpp"
 #include "ParserTree/GLS_Pattern.hpp"
@@ -35,6 +36,7 @@ int main(int argc, char **argv)
    using namespace Glockenspiel;
    
    settings.init();
+   defaults.init();
    
    try {
       for(int i = 0; i < Glockenspiel::commandLineArgs.source_filename_given; ++i) {

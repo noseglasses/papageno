@@ -17,6 +17,7 @@
 #pragma once
 
 #include "Parser/GLS_Parser.hpp"
+#include "Parser/GLS_LocationOfDefinition.hpp"
 
 #include <sstream>
 #include <stdexcept>
@@ -26,13 +27,13 @@ extern YYLTYPE yylloc;
 #define TO_STRING_WITH_LOCATION(...) ([&]() -> std::string { \
       std::ostringstream tmp; \
       if(Glockenspiel::Parser::currentFileParsed) { \
-         tmp << Glockenspiel::Parser::currentFileParsed << ":"; \
+         tmp << Glockenspiel::Parser::currentFileParsed << " "; \
       } \
       if(Glockenspiel::Parser::currentLocation) { \
-         tmp << Glockenspiel::Parser::currentLocation.location_.first_line << ":" \
-            << Glockenspiel::Parser::currentLocation.location_.first_column; \
+         tmp << "(" << Glockenspiel::Parser::currentLocation.location_.first_line << ":" \
+            << Glockenspiel::Parser::currentLocation.location_.first_column << ") " ; \
       } \
-      tmp << ": error: " << __VA_ARGS__; \
+      tmp << "error: " << __VA_ARGS__; \
       return tmp.str(); \
    }() \
 )

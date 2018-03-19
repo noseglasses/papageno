@@ -18,6 +18,7 @@
 
 #include "Parser/GLS_ParserToken.hpp"
 #include "ParserTree/GLS_Entity.hpp"
+#include "Settings/GLS_Settings.hpp"
 
 namespace Glockenspiel {
 namespace ParserTree {
@@ -31,6 +32,13 @@ class Input : public Entity<Input, Parser::Token, Parser::TokenCompare>
       using Parent::Entity;
       
       virtual std::string getNodeType() const { return "Input"; }
+      
+      static std::string entityName() { return "input"; }
+      
+      static bool allowEntityDefinition() {
+         return settings.allow_auto_type_definition
+            || settings.allow_auto_input_type_definition;
+      }
 };
 
 bool inputsEqual(std::vector<Parser::Token> i1,

@@ -18,16 +18,25 @@
 #include "Misc/GLS_StringHandling.hpp"
 #include "CommandLine/GLS_CommandLine.hpp"
 
+#include <iostream>
+
+extern int yydebug;
+
 namespace Glockenspiel {
    
 Settings settings;
 
    Settings
       ::Settings()
-   :  join_duplicate_entities(false),
+   :  debug(false),
+      join_duplicate_entities(false),
       join_duplicate_actions(false),
       join_duplicate_inputs(false),
-      join_note_sequences(false)
+      join_note_sequences(false),
+      
+      allow_auto_type_definition(false),
+      allow_auto_input_type_definition(false),
+      allow_auto_action_type_definition(false)
 {
 }
 
@@ -48,8 +57,8 @@ void
    Settings
       ::init()
 {
-   #define ADD_SETTER(NAME, INITIAL_VALUE) \
-      NAME = INITIAL_VALUE; \
+   #define ADD_SETTER(NAME, ...) \
+      NAME = Glockenspiel::commandLineArgs.NAME##_flag; \
       setters_[#NAME] = [this](const std::string &value) -> void { \
          std::stringstream s(value); \
          s >> std::boolalpha >> Settings::NAME; \
@@ -57,12 +66,31 @@ void
             THROW_ERROR("Failed reading setting \'" << #NAME \
                << "\' from \'" << value << "\'"); \
          } \
+         __VA_ARGS__ \
       };
          
-   ADD_SETTER(join_duplicate_entities, Glockenspiel::commandLineArgs.join_duplicate_entities_flag)
-   ADD_SETTER(join_duplicate_actions, Glockenspiel::commandLineArgs.join_duplicate_actions_flag)
-   ADD_SETTER(join_duplicate_inputs, Glockenspiel::commandLineArgs.join_duplicate_inputs_flag)
-   ADD_SETTER(join_note_sequences, Glockenspiel::commandLineArgs.join_note_sequences_flag)
+   ADD_SETTER(debug, yydebug = debug;)
+      
+   ADD_SETTER(join_duplicate_entities)
+   ADD_SETTER(join_duplicate_actions)
+   ADD_SETTER(join_duplicate_inputs)
+   ADD_SETTER(join_note_sequences)
+   ADD_SETTER(join_note_sequences)
+   
+   ADD_SETTER(allow_auto_type_definition)
+   ADD_SETTER(allow_auto_input_type_definition)
+   ADD_SETTER(allow_auto_action_type_definition)
+   
+   #define ADD_STRING_SETTER(NAME) \
+      if(Glockenspiel::commandLineArgs.NAME##_arg) { \
+         NAME = Glockenspiel::commandLineArgs.NAME##_arg; \
+      } \
+      setters_[#NAME] = [this](const std::string &value) -> void { \
+         Settings::NAME = value; \
+      };
+      
+   ADD_STRING_SETTER(macros_prefix)
+   ADD_STRING_SETTER(symbols_prefix)
 }
 
 } // namespace Glockenspiel

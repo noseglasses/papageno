@@ -379,8 +379,8 @@ static void yy_fatal_error (yyconst char msg[] ,yyscan_t yyscanner );
 	*yy_cp = '\0'; \
 	yyg->yy_c_buf_p = yy_cp;
 
-#define YY_NUM_RULES 16
-#define YY_END_OF_BUFFER 17
+#define YY_NUM_RULES 18
+#define YY_END_OF_BUFFER 19
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -388,14 +388,15 @@ struct yy_trans_info
 	flex_int32_t yy_verify;
 	flex_int32_t yy_nxt;
 	};
-static yyconst flex_int16_t yy_accept[58] =
+static yyconst flex_int16_t yy_accept[69] =
     {   0,
-        0,    0,   17,   16,    2,   13,    1,   12,   16,   12,
-       14,   16,   12,   14,   14,   14,   14,   14,    0,   15,
-       11,   14,    3,   14,   14,   14,   14,   14,   14,   14,
-       14,   14,   14,   14,   14,   14,   14,   14,   14,   14,
-       14,   14,   14,   14,    8,   14,    5,    4,   14,   14,
-        6,   14,    7,   14,    9,   10,    0
+        0,    0,   19,   18,    2,   15,    1,   14,   18,   14,
+       16,   18,   14,   16,   16,   16,   16,   16,   16,   16,
+        0,   17,   13,   16,    3,   16,   16,   16,   16,   16,
+       16,   16,   16,   16,   16,   16,   16,   16,   16,   16,
+       16,   16,   16,   16,   16,   16,   16,   16,   16,   16,
+        7,   16,    9,   16,   16,    5,    4,   16,   16,    6,
+       16,   16,    8,   16,   12,   10,   11,    0
     } ;
 
 static yyconst YY_CHAR yy_ec[256] =
@@ -411,9 +412,9 @@ static yyconst YY_CHAR yy_ec[256] =
         8,    8,    8,    8,    8,    8,    8,    8,    8,    8,
         5,   10,    5,    1,   11,    1,   12,    8,   13,   14,
 
-       15,    8,   16,   17,   18,    8,    8,   19,    8,   20,
-       21,   22,    8,   23,   24,   25,   26,    8,    8,    8,
-       27,    8,    5,    5,    5,    1,    1,    1,    1,    1,
+       15,   16,   17,   18,   19,    8,    8,   20,    8,   21,
+       22,   23,    8,   24,   25,   26,   27,    8,    8,    8,
+       28,    8,    5,    5,    5,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
@@ -430,67 +431,71 @@ static yyconst YY_CHAR yy_ec[256] =
         1,    1,    1,    1,    1
     } ;
 
-static yyconst YY_CHAR yy_meta[28] =
+static yyconst YY_CHAR yy_meta[29] =
     {   0,
         1,    1,    1,    1,    1,    1,    1,    2,    1,    1,
         2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
-        2,    2,    2,    2,    2,    2,    2
+        2,    2,    2,    2,    2,    2,    2,    2
     } ;
 
-static yyconst flex_uint16_t yy_base[60] =
+static yyconst flex_uint16_t yy_base[71] =
     {   0,
-        0,    0,   68,   69,   69,   69,   69,   69,   61,   57,
-        0,   62,    0,   15,   44,   51,   45,   46,   54,   69,
-       69,    0,   69,   34,   40,   16,   30,   33,   30,   36,
-       41,   33,   25,   35,   37,   23,   26,   22,   19,   19,
-       20,   18,   23,   17,    0,   22,    0,    0,   20,   13,
-        0,   17,    0,   15,    0,    0,   69,   38,   28
+        0,    0,   78,   79,   79,   79,   79,   79,   71,   67,
+        0,   72,    0,   16,   59,   52,   60,   53,   55,   41,
+       62,   79,   79,    0,   79,   41,   47,   49,   17,   36,
+       39,   36,   38,   41,   47,   46,   37,   29,   40,   42,
+       27,   37,   29,   25,   22,   21,   21,   22,   20,   25,
+        0,   22,    0,   19,   24,    0,    0,   22,   14,    0,
+        8,   18,    0,   15,    0,    0,    0,   79,   40,   29
     } ;
 
-static yyconst flex_int16_t yy_def[60] =
+static yyconst flex_int16_t yy_def[71] =
     {   0,
-       57,    1,   57,   57,   57,   57,   57,   57,   58,   57,
-       59,   57,   59,   59,   59,   59,   59,   59,   58,   57,
-       57,   59,   57,   59,   59,   59,   59,   59,   59,   59,
-       59,   59,   59,   59,   59,   59,   59,   59,   59,   59,
-       59,   59,   59,   59,   59,   59,   59,   59,   59,   59,
-       59,   59,   59,   59,   59,   59,    0,   57,   57
+       68,    1,   68,   68,   68,   68,   68,   68,   69,   68,
+       70,   68,   70,   70,   70,   70,   70,   70,   70,   70,
+       69,   68,   68,   70,   68,   70,   70,   70,   70,   70,
+       70,   70,   70,   70,   70,   70,   70,   70,   70,   70,
+       70,   70,   70,   70,   70,   70,   70,   70,   70,   70,
+       70,   70,   70,   70,   70,   70,   70,   70,   70,   70,
+       70,   70,   70,   70,   70,   70,   70,    0,   68,   68
     } ;
 
-static yyconst flex_uint16_t yy_nxt[97] =
+static yyconst flex_uint16_t yy_nxt[108] =
     {   0,
         4,    5,    6,    7,    8,    9,   10,   11,    8,   12,
-       13,   14,   11,   11,   11,   11,   11,   15,   16,   11,
-       11,   17,   11,   18,   11,   11,   11,   24,   32,   22,
-       56,   55,   54,   25,   53,   52,   51,   33,   19,   19,
-       50,   49,   48,   47,   46,   45,   44,   43,   42,   41,
-       40,   39,   38,   37,   36,   35,   34,   31,   30,   20,
-       29,   28,   27,   26,   23,   21,   20,   57,    3,   57,
-       57,   57,   57,   57,   57,   57,   57,   57,   57,   57,
-       57,   57,   57,   57,   57,   57,   57,   57,   57,   57,
-       57,   57,   57,   57,   57,   57
+       13,   14,   11,   15,   11,   11,   11,   11,   16,   17,
+       11,   11,   18,   11,   19,   20,   11,   11,   26,   37,
+       24,   67,   66,   65,   64,   27,   63,   62,   61,   38,
+       21,   21,   60,   59,   58,   57,   56,   55,   54,   53,
+       52,   51,   50,   49,   48,   47,   46,   45,   44,   43,
+       42,   41,   40,   39,   36,   35,   34,   22,   33,   32,
+       31,   30,   29,   28,   25,   23,   22,   68,    3,   68,
+       68,   68,   68,   68,   68,   68,   68,   68,   68,   68,
+       68,   68,   68,   68,   68,   68,   68,   68,   68,   68,
 
+       68,   68,   68,   68,   68,   68,   68
     } ;
 
-static yyconst flex_int16_t yy_chk[97] =
+static yyconst flex_int16_t yy_chk[108] =
     {   0,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,   14,   26,   59,
-       54,   52,   50,   14,   49,   46,   44,   26,   58,   58,
+        1,    1,    1,    1,    1,    1,    1,    1,   14,   29,
+       70,   64,   62,   61,   59,   14,   58,   55,   54,   29,
+       69,   69,   52,   50,   49,   48,   47,   46,   45,   44,
        43,   42,   41,   40,   39,   38,   37,   36,   35,   34,
-       33,   32,   31,   30,   29,   28,   27,   25,   24,   19,
-       18,   17,   16,   15,   12,   10,    9,    3,   57,   57,
-       57,   57,   57,   57,   57,   57,   57,   57,   57,   57,
-       57,   57,   57,   57,   57,   57,   57,   57,   57,   57,
-       57,   57,   57,   57,   57,   57
+       33,   32,   31,   30,   28,   27,   26,   21,   20,   19,
+       18,   17,   16,   15,   12,   10,    9,    3,   68,   68,
+       68,   68,   68,   68,   68,   68,   68,   68,   68,   68,
+       68,   68,   68,   68,   68,   68,   68,   68,   68,   68,
 
+       68,   68,   68,   68,   68,   68,   68
     } ;
 
 /* Table of booleans, true if rule could match eol. */
-static yyconst flex_int32_t yy_rule_can_match_eol[17] =
+static yyconst flex_int32_t yy_rule_can_match_eol[19] =
     {   0,
-0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0,     };
+0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0,     };
 
 /* The intent behind this definition is that it'll catch
  * any uses of REJECT which flex missed.
@@ -547,7 +552,7 @@ int c;
 //             yylval = yytext;
 //             return RAW_CODE; 
 //          }
-#line 551 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.lex.cpp"
+#line 556 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.lex.cpp"
 
 #define INITIAL 0
 
@@ -822,7 +827,7 @@ YY_DECL
 	{
 #line 53 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.lex"
 
-#line 826 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.lex.cpp"
+#line 831 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.lex.cpp"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -849,13 +854,13 @@ yy_match:
 			while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 				{
 				yy_current_state = (int) yy_def[yy_current_state];
-				if ( yy_current_state >= 58 )
+				if ( yy_current_state >= 69 )
 					yy_c = yy_meta[(unsigned int) yy_c];
 				}
 			yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
 			++yy_cp;
 			}
-		while ( yy_base[yy_current_state] != 69 );
+		while ( yy_base[yy_current_state] != 79 );
 
 yy_find_action:
 		yy_act = yy_accept[yy_current_state];
@@ -930,40 +935,50 @@ return ACTION_KEYWORD;
 case 7:
 YY_RULE_SETUP
 #line 65 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.lex"
-return PHRASE_KEYWORD;
+return TYPE_KEYWORD;
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
 #line 66 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.lex"
-return ALIAS_KEYWORD;
+return PHRASE_KEYWORD;
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
 #line 67 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.lex"
-return INCLUDE_KEYWORD;
+return ALIAS_KEYWORD;
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
 #line 68 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.lex"
-return SETTING_KEYWORD;
+return INCLUDE_KEYWORD;
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
 #line 69 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.lex"
-return ARROW;
+return SETTING_KEYWORD;
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
 #line 70 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.lex"
+return DEFAULT_KEYWORD;
+	YY_BREAK
+case 13:
+YY_RULE_SETUP
+#line 71 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.lex"
+return ARROW;
+	YY_BREAK
+case 14:
+YY_RULE_SETUP
+#line 72 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.lex"
 { 
             *yylval = yytext[0];//std::string(1, yytext[0]);
             return yytext[0]; 
          }
 	YY_BREAK
-case 13:
-/* rule 13 can match eol */
+case 15:
+/* rule 15 can match eol */
 YY_RULE_SETUP
-#line 74 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.lex"
+#line 76 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.lex"
 { 
 /*             std::cout << "Standard line end detected\n";  */
             // yylineno was already updated before YY_USER_ACTION was called
@@ -972,30 +987,30 @@ YY_RULE_SETUP
             return LINE_END;
          }
 	YY_BREAK
-case 14:
+case 16:
 YY_RULE_SETUP
-#line 81 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.lex"
+#line 83 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.lex"
 { 
 /*             std::cout << "Reading ID=" << yytext << std::endl;  */
             *yylval = yytext; 
             return ID; 
          }
 	YY_BREAK
-case 15:
-/* rule 15 can match eol */
+case 17:
+/* rule 17 can match eol */
 YY_RULE_SETUP
-#line 87 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.lex"
+#line 89 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.lex"
 {
             *yylval = yytext;
             return QUOTED_STRING;
          }
 	YY_BREAK
-case 16:
+case 18:
 YY_RULE_SETUP
-#line 91 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.lex"
+#line 93 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.lex"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 999 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.lex.cpp"
+#line 1014 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.lex.cpp"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1290,7 +1305,7 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
 		while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 			{
 			yy_current_state = (int) yy_def[yy_current_state];
-			if ( yy_current_state >= 58 )
+			if ( yy_current_state >= 69 )
 				yy_c = yy_meta[(unsigned int) yy_c];
 			}
 		yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
@@ -1319,11 +1334,11 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
 	while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 		{
 		yy_current_state = (int) yy_def[yy_current_state];
-		if ( yy_current_state >= 58 )
+		if ( yy_current_state >= 69 )
 			yy_c = yy_meta[(unsigned int) yy_c];
 		}
 	yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
-	yy_is_jam = (yy_current_state == 57);
+	yy_is_jam = (yy_current_state == 68);
 
 	(void)yyg;
 	return yy_is_jam ? 0 : yy_current_state;
@@ -2145,4 +2160,4 @@ void yyfree (void * ptr , yyscan_t yyscanner)
 
 #define YYTABLES_NAME "yytables"
 
-#line 91 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.lex"
+#line 93 "/home/flo/Inpartik/Development/Papageno/papageno/glockenspiel/src/Parser/GLS_Parser.lex"

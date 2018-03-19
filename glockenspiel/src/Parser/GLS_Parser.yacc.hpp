@@ -46,17 +46,18 @@ extern int yydebug;
   enum yytokentype
   {
     LAYER_KEYWORD = 258,
-    SYMBOL_KEYWORD = 259,
-    ARROW = 260,
-    ACTION_KEYWORD = 261,
-    INPUT_KEYWORD = 262,
+    ARROW = 259,
+    ACTION_KEYWORD = 260,
+    INPUT_KEYWORD = 261,
+    TYPE_KEYWORD = 262,
     PHRASE_KEYWORD = 263,
     ALIAS_KEYWORD = 264,
     INCLUDE_KEYWORD = 265,
     SETTING_KEYWORD = 266,
-    LINE_END = 267,
-    ID = 268,
-    QUOTED_STRING = 269
+    DEFAULT_KEYWORD = 267,
+    LINE_END = 268,
+    ID = 269,
+    QUOTED_STRING = 270
   };
 #endif
 

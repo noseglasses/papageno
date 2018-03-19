@@ -31,6 +31,7 @@
 #include "ParserTree/GLS_Alias.hpp"
 #include "ParserTree/GLS_NextEntity.hpp"
 #include "Settings/GLS_Settings.hpp"
+#include "Settings/GLS_Defaults.hpp"
 
 #include <iostream>
 #include <string>
@@ -74,6 +75,10 @@ std::string unquote(const std::string &s) {
 }
 }
 
+#define MARK_LOCATION(LOC) \
+           LocationRAII lr(&(LOC));
+
+
 %}
 
 %start lines
@@ -88,8 +93,9 @@ std::string unquote(const std::string &s) {
    std::string id;
 }*/
 
-%token LAYER_KEYWORD ARROW ACTION_KEYWORD INPUT_KEYWORD PHRASE_KEYWORD
-%token ALIAS_KEYWORD INCLUDE_KEYWORD SETTING_KEYWORD LINE_END ID QUOTED_STRING
+%token LAYER_KEYWORD ARROW ACTION_KEYWORD INPUT_KEYWORD TYPE_KEYWORD PHRASE_KEYWORD
+%token ALIAS_KEYWORD INCLUDE_KEYWORD SETTING_KEYWORD DEFAULT_KEYWORD
+%token LINE_END ID QUOTED_STRING
 
 %locations
 
@@ -98,39 +104,75 @@ std::string unquote(const std::string &s) {
 lines:  /*  empty  */
         |
         line
+        {
+           MARK_LOCATION(@$)
+        }
         |      
         lines line
+        {
+           MARK_LOCATION(@$)
+        }
         ;
         
 line:   LINE_END
         |
         phrase LINE_END
         {
+           MARK_LOCATION(@$)
            Pattern::finishPattern();
         }
         |
         PHRASE_KEYWORD ':' ID '=' phrase LINE_END
         {
+           MARK_LOCATION(@$)
            Phrase::storePhrase(ParserToken($3, @3));
         }
         |
         layer_def LINE_END
+        {
+           MARK_LOCATION(@$)
+        }
+        |
+        input_type_def LINE_END
+        {
+           MARK_LOCATION(@$)
+        }
+        |
+        action_type_def LINE_END
+        {
+           MARK_LOCATION(@$)
+        }
         |
         input_def LINE_END
+        {
+           MARK_LOCATION(@$)
+        }
         |
         action_def LINE_END
+        {
+           MARK_LOCATION(@$)
+        }
         |
         alias_def LINE_END
+        {
+           MARK_LOCATION(@$)
+        }
+        |
+        DEFAULT_KEYWORD ':' ID '=' cpp_code LINE_END
+        {
+           MARK_LOCATION(@$)
+           defaults.set($3, Glockenspiel::Parser::getCppCode().getText());
+        }
         |
         '@' INCLUDE_KEYWORD ':' QUOTED_STRING LINE_END
         {
-           LocationRAII lr(&@$);
+           MARK_LOCATION(@$)
            Glockenspiel::Parser::searchFileGenerateTree(Glockenspiel::Parser::unquote($4));
         }
         |
         '@' SETTING_KEYWORD ':' ID '=' QUOTED_STRING LINE_END
         {
-           LocationRAII lr(&@$);
+           MARK_LOCATION(@$)
            Glockenspiel::settings.set($4, Glockenspiel::Parser::unquote($6));
         }
         |
@@ -143,13 +185,13 @@ line:   LINE_END
 input_list:
          ID
          {
-            LocationRAII lr(&@1);
+            MARK_LOCATION(@$)
             Input::pushNext(ParserToken($1, @1));
          }
          |
          input_list ',' ID
          {
-            LocationRAII lr(&@3);
+            MARK_LOCATION(@$)
             Input::pushNext(ParserToken($3, @3));
          }
          ;
@@ -158,6 +200,9 @@ phrase:
         action_token
         |
         phrase ARROW action_token
+        {
+            MARK_LOCATION(@$)
+        }
         ;
         
 action_token:
@@ -165,6 +210,7 @@ action_token:
         |
         rep_token ':' action_list
         {
+           MARK_LOCATION(@$)
            Pattern::applyActions();
         }
         |
@@ -172,7 +218,7 @@ action_token:
         {
            // Lookup a phrase and copy its tokens to the current pattern
            //
-           LocationRAII lr(&@2);
+           MARK_LOCATION(@$)
            Pattern::pushPhrase(ParserToken($2, @2));
         }
         ;
@@ -180,18 +226,19 @@ action_token:
 rep_token:
         token
         {
-           (@1);
-         }
+           MARK_LOCATION(@$)
+        }
         |
         token '*' ID
         {
-           LocationRAII lr(&@3);
+           MARK_LOCATION(@$)
            Pattern::repeatLastToken(ParserToken($3, @3));
         }
         ;
        
 token:  token__
         {
+           MARK_LOCATION(@$)
            Pattern::getMostRecentToken()->setLOD(@1);
            
            Pattern::getMostRecentToken()->setFlagsString(Glockenspiel::Parser::flagsString);
@@ -210,7 +257,7 @@ token__:  note
         
 note:   '|' input '|'
         {
-            LocationRAII lr(&@2);
+            MARK_LOCATION(@$)
             auto newNote = std::make_shared<Note>();
             newNote->getFlags().tokenFlags_.set("PPG_Note_Flags_A_N_D");
             Pattern::pushToken(newNote);
@@ -218,7 +265,7 @@ note:   '|' input '|'
         |
         '|' input '-'
         {
-            LocationRAII lr(&@2);
+            MARK_LOCATION(@$)
             auto newNote = std::make_shared<Note>();
             newNote->getFlags().tokenFlags_.set("PPG_Note_Flag_Match_Activation");
             Pattern::pushToken(newNote);
@@ -226,7 +273,7 @@ note:   '|' input '|'
         |
         '-' input '|'
         {
-            LocationRAII lr(&@1);
+            MARK_LOCATION(@$)
             auto newNote = std::make_shared<Note>();
             newNote->getFlags().tokenFlags_.set("PPG_Note_Flag_Match_Deactivation");
             Pattern::pushToken(newNote);
@@ -235,17 +282,20 @@ note:   '|' input '|'
         
 input:  ID
         {
+            MARK_LOCATION(@$)
             Input::pushNext(ParserToken($1, @1));
         }
         |
         ID flag_definition
         {
+            MARK_LOCATION(@$)
             Input::pushNext(ParserToken($1, @1));
         }
         
 cluster:
         '{' aggregate '}'
         {
+            MARK_LOCATION(@$)
             Pattern::pushToken(std::make_shared<Cluster>());
         }
         ;
@@ -253,25 +303,30 @@ cluster:
 chord:
         '[' aggregate ']'
         {
+            MARK_LOCATION(@$)
             Pattern::pushToken(std::make_shared<Chord>());
         }
         ;
         
 aggregate:
         input_list flag_definition
+        {
+           MARK_LOCATION(@$)
+        }           
         ;
         
 flag_definition: /* allow empty */
         |
         ':' QUOTED_STRING
         {
+           MARK_LOCATION(@$)
            Glockenspiel::Parser::flagsString = Glockenspiel::Parser::unquote($2);
         }
 
 alpha_seq:
         QUOTED_STRING
         {
-            LocationRAII lr(&@1);
+           MARK_LOCATION(@$)
             Pattern::addAlphaSequence(Glockenspiel::Parser::unquote($1));
         }
         ;
@@ -279,13 +334,13 @@ alpha_seq:
 action_list_entry:
         ID
         {
-            LocationRAII lr(&@1);
+           MARK_LOCATION(@$)
             Action::pushNext(ParserToken($1, @1));
         }
         |
         ID '@' ID
         {
-            LocationRAII lr(&@1);
+           MARK_LOCATION(@$)
             Action::pushNext(ParserToken($3, @3), ParserToken($1, @1));
         }
         ;
@@ -294,19 +349,39 @@ action_list:
         action_list_entry
         |
         action_list ',' action_list_entry
+        {
+           MARK_LOCATION(@$)
+        }
         ;
         
 layer_def:
         LAYER_KEYWORD ':' ID
         {
+           MARK_LOCATION(@$)
            ParserTree::Token::setCurrentLayer(ParserToken($3, @3));
+        }
+        ;
+        
+input_type_def:
+        INPUT_KEYWORD TYPE_KEYWORD ':' ID
+        {
+           MARK_LOCATION(@$)
+           Input::defineType($4);
+        }
+        ;
+        
+action_type_def:
+        ACTION_KEYWORD TYPE_KEYWORD ':' ID
+        {
+           MARK_LOCATION(@$)
+           Action::defineType($4);
         }
         ;
         
 input_def:
         INPUT_KEYWORD ':' typed_id parameters
         {
-           LocationRAII lr(&@$);
+           MARK_LOCATION(@$)
            Input::define(
                std::make_shared<Input>(
                   NextEntity::getNextId(),
@@ -321,7 +396,7 @@ input_def:
 action_def:
         ACTION_KEYWORD ':' typed_id action_parameters
         {
-            LocationRAII lr(&@$);
+            MARK_LOCATION(@$)
             Action::define(
                std::make_shared<Action>(
                   NextEntity::getNextId(),
@@ -336,6 +411,7 @@ action_def:
 alias_def:
         ALIAS_KEYWORD ':' ID '=' ID
         {
+           MARK_LOCATION(@$)
            Alias::define($3, Glockenspiel::Parser::Token($5, @$));
         }
         
@@ -348,13 +424,13 @@ action_parameters:
 typed_id:
         ID
         {
-            LocationRAII lr(&@1);
+           MARK_LOCATION(@$)
             NextEntity::setId(ParserToken($1, @1));
         }
         |
         ID '<' ID '>'
         {
-            LocationRAII lr(&@1);
+           MARK_LOCATION(@$)
             NextEntity::setId(ParserToken($1, @1));
             NextEntity::setType(ParserToken($3, @3));
         }
@@ -363,7 +439,7 @@ typed_id:
 parameters:
         '=' cpp_code
         {
-           LocationRAII lr(&@1);
+           MARK_LOCATION(@$)
            NextEntity::setParameters(Glockenspiel::Parser::getCppCode());
         }
         ;
@@ -394,13 +470,20 @@ cpp_token:   '-' { Glockenspiel::Parser::codeStream << $1; }
    |         QUOTED_STRING { Glockenspiel::Parser::codeStream << $1; }
    
 cpp_code: '$' cpp_token_seq '$'
+         {
+           MARK_LOCATION(@$)
+         }
 
 cpp_token_seq:    cpp_token
    |         cpp_token_seq cpp_token
+         {
+           MARK_LOCATION(@$)
+         }
 %%
 
 void yyerror(YYLTYPE *yylloc, yyscan_t scanner, const char *s)
 {
+  MARK_LOCATION((*yylloc))
   THROW_ERROR("Parser error: " << s);
 }
 
@@ -493,12 +576,21 @@ std::vector<FileScanner> fileScanners;
    if(Glockenspiel::commandLineArgs.debug_flag) { \
       std::cout << __VA_ARGS__; \
    }
+   
+struct DebugRAII {
+   DebugRAII(bool state) { 
+      oldState_ = yydebug;
+      yydebug = state;
+   }
+   ~DebugRAII() {
+      yydebug = oldState_;
+   }
+   bool oldState_;
+};
 
 static void generateTree(std::istream &input) 
 {
-   if(Glockenspiel::commandLineArgs.debug_flag) {
-      yydebug = 1;
-   }
+   DebugRAII dr(Glockenspiel::commandLineArgs.debug_flag);
    
    std::string line;
    

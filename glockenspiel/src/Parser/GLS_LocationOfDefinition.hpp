@@ -1,4 +1,4 @@
-/* Copyright 2018 noseglasses <shinynoseglasses@gmail.com>
+ /* Copyright 2018 noseglasses <shinynoseglasses@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -13,33 +13,35 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+ 
+#pragma once
 
-#include "ParserTree/GLS_Note.hpp"
-#include "Generator/GLS_Prefix.hpp"
-
-#define SP Glockenspiel::Generator::symbolsPrefix()
-#define MP Glockenspiel::Generator::macroPrefix()
-      
-namespace Glockenspiel {
-namespace ParserTree {
-   
-void 
-   Note 
-      ::generateCCodeInternal(std::ostream &out) const
+typedef struct YYLTYPE
 {
+  int first_line;
+  int first_column;
+  int last_line;
+  int last_column;
+} YYLTYPE;
+
+namespace Glockenspiel {
+namespace Parser {
    
-   const auto &input = this->getInputPtr();
-   out <<
-"   .super = {\n";
+struct LocationOfDefinition
+{
+   LocationOfDefinition(YYLTYPE location = (YYLTYPE){ .first_line = -1, .first_column = -1, .last_line = -1, .last_column = -1 },
+                        const char *file = nullptr)
+      :  file_(file),
+         location_(location)
+   {}
+   
+   operator bool() const {
+      return location_.first_line != -1;
+   }
+   
+   const char* file_;
+   YYLTYPE location_;
+};
 
-   this->Token::generateCCodeInternal(out);
-   out <<
-"   },\n"
-"   .input = " << MP << "GLS_INPUT_INITIALIZE_GLOBAL___" << input->getType().getText()
-<< "(" 
-<< input->getId().getText() << ", "
-<< input->getParameters().getText() << ")\n";
-}
-
-} // namespace ParserTree
+} // namespace Parser
 } // namespace Glockenspiel

@@ -19,41 +19,29 @@
 #include <functional>
 #include <string>
 #include <map>
+#include <iostream>
 
 namespace Glockenspiel {
    
-class Settings 
+class Defaults 
 {
    public:
-         
-      typedef std::function<void(const std::string &)> SetterFunction;
-      typedef std::map<std::string, SetterFunction> NameToSetter;
       
-      Settings();
+      Defaults();
       
       void set(const std::string &name, const std::string &value);
       
       void init();
       
-      bool debug;
-      
-      bool join_duplicate_entities;
-      bool join_duplicate_actions;
-      bool join_duplicate_inputs;
-      bool join_note_sequences;
-      
-      bool allow_auto_type_definition;
-      bool allow_auto_input_type_definition;
-      bool allow_auto_action_type_definition;
-      
-      std::string macros_prefix;
-      std::string symbols_prefix;
+      void outputC(std::ostream &out);
       
    protected:
       
-      NameToSetter setters_;
+      typedef std::map<std::string, std::string> NameToValue;
+      
+      NameToValue defaults_;
 };
 
-extern Settings settings;
+extern Defaults defaults;
 
 } // namespace Glockenspiel

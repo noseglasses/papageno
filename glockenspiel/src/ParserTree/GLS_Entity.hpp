@@ -43,6 +43,8 @@ class Entity : public Node
       typedef std::vector<EntityToEntity> EntityToEntityCollection;
       typedef std::map<std::string, EntityToEntityCollection> EntitiesToEntitiesByType;
       
+      typedef std::set<std::string> EntityTypes;
+      
       Entity(  const Parser::Token &id,
                const Parser::Token &type, 
                const Parser::Token &parameters,
@@ -56,8 +58,31 @@ class Entity : public Node
       {
       }
       
+      static void defineType(const std::string &type) {
+         types_.insert(type);
+      }
+      
+      static void assertTypeDefined(const EntityType__ &entity) {
+            
+         const auto &type = entity.getType().getText();
+         
+         if(type.empty() || EntityType__::allowEntityDefinition()) {
+            defineType(type);
+         }
+         else {
+            
+            auto it = types_.find(type);
+            if(it == types_.end()) {
+               THROW_ERROR("Trying to register an " << EntityType__::entityName()
+                 << " of undeclared type \'" << type << "\'");
+            }
+         }
+      }
+      
       static void define(const std::shared_ptr<EntityType__> &entity)
       {
+         assertTypeDefined(*entity);
+         
          const auto &id = entity->getId().getText();
          
          auto it = entities_.find(id);
@@ -203,10 +228,14 @@ class Entity : public Node
       bool                    parametersDefined_;
       bool                    wasRequested_;
       
-      static NextEntities nextEntities_;
-      static Entities entities_;
-      static LocationsOfDefinition locationsOfDefinition_;
-      static EntitiesToEntitiesByType joinedEntities_;
+      static NextEntities     nextEntities_;
+      static Entities         entities_;
+      static LocationsOfDefinition
+                              locationsOfDefinition_;
+      static EntitiesToEntitiesByType 
+                              joinedEntities_;
+      
+      static EntityTypes      types_;
 };
 
 template<typename EntityType__,
@@ -232,6 +261,13 @@ template<typename EntityType__,
          typename NextEntityCompare__>
 typename Entity<EntityType__, NextEntityType__, NextEntityCompare__>::EntitiesToEntitiesByType
    Entity<EntityType__, NextEntityType__, NextEntityCompare__>::joinedEntities_;
+   
+template<typename EntityType__,
+         typename NextEntityType__,
+         typename NextEntityCompare__>
+typename Entity<EntityType__, NextEntityType__, NextEntityCompare__>::EntityTypes
+   Entity<EntityType__, NextEntityType__, NextEntityCompare__>::types_;
+
 
 } // namespace ParserTree
 } // namespace Glockenspiel

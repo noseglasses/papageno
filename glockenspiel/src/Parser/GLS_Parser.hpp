@@ -16,6 +16,8 @@
  
 #pragma once
 
+#include "Parser/GLS_LocationOfDefinition.hpp"
+
 #include <istream>
 #include <vector>
 #include <set>
@@ -24,14 +26,6 @@
 
 #define YYLTYPE_IS_DECLARED
 #define YYLTYPE_IS_TRIVIAL 1
-
-typedef struct YYLTYPE
-{
-  int first_line;
-  int first_column;
-  int last_line;
-  int last_column;
-} YYLTYPE;
 
 #define YYSTYPE std::string
 

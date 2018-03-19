@@ -27,9 +27,9 @@ PPG_CS_START_TEST
    
    // Initialize local variables of actions and inputs.
    //
-   GLS_LOCAL_INITIALIZATION
+   m_GLS_LOCAL_INITIALIZATION
    
-   papageno_initialize_context();
+   s_papageno_initialize_context();
    
    PPG_CS_PREPARE_CONTEXT
    

@@ -17,6 +17,7 @@
 #pragma once
 
 #include "Parser/GLS_Parser.hpp"
+#include "Parser/GLS_LocationOfDefinition.hpp"
 
 #include <string>
 #include <ostream>
@@ -29,22 +30,6 @@
    
 namespace Glockenspiel {
 namespace Parser {
-   
-struct LocationOfDefinition
-{
-   LocationOfDefinition(YYLTYPE location = (YYLTYPE){ .first_line = -1, .first_column = -1, .last_line = -1, .last_column = -1 },
-                        const char *file = Glockenspiel::Parser::currentFileParsed)
-      :  file_(file),
-         location_(location)
-   {}
-   
-   operator bool() const {
-      return location_.first_line != -1;
-   }
-   
-   const char* file_;
-   YYLTYPE location_;
-};
 
 class Token
 {   

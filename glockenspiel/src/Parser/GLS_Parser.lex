@@ -62,10 +62,12 @@ int c;
 layer    return LAYER_KEYWORD;
 input    return INPUT_KEYWORD;
 action   return ACTION_KEYWORD;
+type     return TYPE_KEYWORD;
 phrase   return PHRASE_KEYWORD;
 alias    return ALIAS_KEYWORD;
 include  return INCLUDE_KEYWORD;
 setting  return SETTING_KEYWORD;
+default  return DEFAULT_KEYWORD;
 "->"     return ARROW;
 [-+\*/%&!\|\(\){}\[\]<>=#\:;,_\@\$\'] { 
             *yylval = yytext[0];//std::string(1, yytext[0]);

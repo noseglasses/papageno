@@ -16,6 +16,10 @@
 
 #include "ParserTree/GLS_Aggregate.hpp"
 #include "ParserTree/GLS_Input.hpp"
+#include "Generator/GLS_Prefix.hpp"
+
+#define SP Glockenspiel::Generator::symbolsPrefix()
+#define MP Glockenspiel::Generator::macroPrefix()
 
 namespace Glockenspiel {
 namespace ParserTree {
@@ -56,18 +60,18 @@ void
    std::size_t n_bits = inputs_.size();
    
    out <<
-"PPG_Bitfield_Storage_Type " << this->getId().getText() << "_member_active[(GLS_NUM_BITS_LEFT(" << n_bits << ") != 0) ? (GLS_NUM_BYTES(" << n_bits << ") + 1) : GLS_NUM_BYTES(" << n_bits << ")]\n"
+"PPG_Bitfield_Storage_Type " << SP << this->getId().getText() << "_member_active[(GLS_NUM_BITS_LEFT(" << n_bits << ") != 0) ? (GLS_NUM_BYTES(" << n_bits << ") + 1) : GLS_NUM_BYTES(" << n_bits << ")]\n"
 "   = { 0 };\n\n";
 
    out <<
-"PPG_Input_Id " << this->getId().getText() << "_inputs[" << inputs_.size() << "] = {\n";
+"PPG_Input_Id " << SP << this->getId().getText() << "_inputs[" << inputs_.size() << "] = {\n";
 
    for(int i = 0; i < inputs_.size(); ++i) {
       
       const auto &inputPtr = Input::lookup(inputs_[i].getText());
       
       out <<
-"   GLS_INPUT_INITIALIZE_GLOBAL___" << inputPtr->getType().getText() << "(" 
+"   " << MP << "GLS_INPUT_INITIALIZE_GLOBAL___" << inputPtr->getType().getText() << "(" 
       << inputPtr->getId().getText() << ", "
       << inputPtr->getParameters().getText() << ")";
       if(i < (inputs_.size() - 1)) {
@@ -93,10 +97,10 @@ void
    out <<
 "   },\n"
 "   .n_members = " << inputs_.size() << ",\n" <<
-"   .inputs = " << this->getId().getText() << "_inputs,\n" <<
+"   .inputs = " << SP << this->getId().getText() << "_inputs,\n" <<
 "   .member_active = {\n"
 "      .n_bits = " << this->inputs_.size() << ",\n" <<
-"      .bitarray = " << this->getId().getText() << "_member_active\n" <<
+"      .bitarray = " << SP << this->getId().getText() << "_member_active\n" <<
 "   },\n"
 "   .n_inputs_active = 0\n";
 }      
