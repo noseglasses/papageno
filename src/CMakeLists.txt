@@ -108,6 +108,7 @@ endforeach()
 set(header_files_
    papageno.h
    ppg_cluster.h
+   ppg_sequence.h
    ppg_statistics.h
    ppg_signal_callback.h
    ppg_event.h
@@ -151,6 +152,8 @@ set(header_files_detail
    ppg_furcation_detail.h
    ppg_chord_detail.h
    ppg_active_tokens_detail.h
+   ppg_sequence_detail.h
+   ppg_time_detail.h
 )
 
 set(header_files ${header_files_})

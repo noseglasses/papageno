@@ -569,8 +569,8 @@ class FileScanner
 
 std::vector<FileScanner> fileScanners;
 
-#define PPG_START_TOKEN "papageno_start"
-#define PPG_END_TOKEN "papageno_end"
+#define PPG_START_TOKEN "glockenspiel_begin"
+#define PPG_END_TOKEN "glockenspiel_end"
 
 #define DEBUG_OUTPUT(...) \
    if(Glockenspiel::commandLineArgs.debug_flag) { \
@@ -662,7 +662,7 @@ static void generateTree(std::istream &input)
    }   
    
    if(!wasInPPGAtAll) {
-      std::cerr << "No papageno definitions encountered\n";
+      std::cerr << "No glockenspiel definitions encountered\n";
       exit(EXIT_FAILURE);
    }
 }
