@@ -74,34 +74,34 @@ void
       ::generateCCodeInternal(std::ostream &out) const 
 {
    out <<
-"      .vtable = " << this->getVTableId() << ",\n";
+"      __GLS_DI__(vtable) " << this->getVTableId() << ",\n";
 
    if(parent_) {
       out <<
-"      .parent = (PPG_Token__*)&" << SP << parent_->getId().getText() << ",\n";
+"      __GLS_DI__(parent) (PPG_Token__*)&" << SP << parent_->getId().getText() << ",\n";
    }
    else {
       out <<
-"      .parent = NULL,\n";
+"      __GLS_DI__(parent) NULL,\n";
    }
    
    if(!children_.empty()) {
       out <<
-"      .children = " << SP << this->getId().getText() << "_children,\n" <<
-"      .n_allocated_children = sizeof(" << SP << this->getId().getText() << "_children)/sizeof(PPG_Token__*),\n" <<
-"      .n_children = sizeof(" << SP << this->getId().getText() << "_children)/sizeof(PPG_Token__*),\n";
+"      __GLS_DI__(children) " << SP << this->getId().getText() << "_children,\n" <<
+"      __GLS_DI__(n_allocated_children) sizeof(" << SP << this->getId().getText() << "_children)/sizeof(PPG_Token__*),\n" <<
+"      __GLS_DI__(n_children) sizeof(" << SP << this->getId().getText() << "_children)/sizeof(PPG_Token__*),\n";
    }
    else {
       out <<
-"      .children = NULL,\n"
-"      .n_allocated_children = 0,\n"
-"      .n_children = 0,\n";
+"      __GLS_DI__(children) NULL,\n"
+"      __GLS_DI__(n_allocated_children) 0,\n"
+"      __GLS_DI__(n_children) 0,\n";
    }
    
    if(!action_.getText().empty()) {
       const auto &actionPtr = Action::lookup(action_.getText());
       out <<
-"      .action = " << MP << "GLS_ACTION_INITIALIZE_GLOBAL___" << actionPtr->getType().getText() << "("
+"      __GLS_DI__(action) " << MP << "GLS_ACTION_INITIALIZE_GLOBAL___" << actionPtr->getType().getText() << "("
       << actionPtr->getId().getText();
       if(actionPtr->getParametersDefined()) {
          out << ", " << actionPtr->getParameters().getText();
@@ -112,26 +112,26 @@ void
    else {
       
       out <<
-"      .action = { \n"
-"         .callback = (PPG_Action_Callback) {\n"
-"            .func = NULL,\n"
-"            .user_data = NULL\n"
+"      __GLS_DI__(action) { \n"
+"         __GLS_DI__(callback) (PPG_Action_Callback) {\n"
+"            __GLS_DI__(func) NULL,\n"
+"            __GLS_DI__(user_data) NULL\n"
 "         }\n"
 "      },\n";
    }         
    out <<
-"      .misc = (PPG_Misc_Bits) {\n"
-"         .state = PPG_Token_Initialized,\n"
-"         .flags = 0";
+"      __GLS_DI__(misc) {\n"
+"         __GLS_DI__(state) PPG_Token_Initialized,\n"
+"         __GLS_DI__(flags) 0";
    const auto &flags = this->getFlags().tokenFlags_.string_;
    if(!flags.empty()) {
       out << flags;
    }
-   out << ",\n";
-"         .action_state = 0,\n";
+   out << ",\n"
+"         __GLS_DI__(action_state) 0,\n";
 
    out <<
-"         .action_flags = PPG_Action_Default";
+"         __GLS_DI__(action_flags) PPG_Action_Default";
    const auto &factionFlags = this->getFlags().actionFlags_.string_;
    if(!factionFlags.empty()) {
       out << factionFlags;
@@ -139,7 +139,7 @@ void
    out << "\n"
 "      },\n";
    out <<
-"      .layer = " << this->layer_.getText() << "\n";
+"      __GLS_DI__(layer) " << this->layer_.getText() << "\n";
 }
       
 }

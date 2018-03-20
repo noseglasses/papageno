@@ -1,5 +1,5 @@
 /*
-papageno_start
+glockenspiel_begin
 
 action: Chord_1
 action: Chord_2
@@ -12,5 +12,5 @@ input: d = $'d'$
 [a, b, c] : Chord_1
 [a, b, d] : Chord_2
 
-papageno_end
+glockenspiel_end
 */

@@ -79,6 +79,8 @@ class Entity : public Node
          }
       }
       
+      static const EntityTypes &getTypes() { return types_; }
+      
       static void define(const std::shared_ptr<EntityType__> &entity)
       {
          assertTypeDefined(*entity);

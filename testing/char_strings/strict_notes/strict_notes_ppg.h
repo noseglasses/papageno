@@ -1,5 +1,5 @@
 /*
-papageno_start
+glockenspiel_begin
 
 action: Pattern
 
@@ -9,5 +9,5 @@ input: c = $'c'$
 
 |a- -> -a| -> |b- -> |c- -> -b| -> -c| : Pattern
 
-papageno_end
+glockenspiel_end
 */

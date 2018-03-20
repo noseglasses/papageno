@@ -1,5 +1,5 @@
 /*
-papageno_start
+glockenspiel_begin
 
 action: Cluster_1
 action: Cluster_2
@@ -12,5 +12,5 @@ input: d = $'d'$
 {a, b, c} : Cluster_1
 {a, b, d} : Cluster_2
 
-papageno_end
+glockenspiel_end
 */

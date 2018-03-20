@@ -1,5 +1,5 @@
 /*
-papageno_start
+glockenspiel_begin
 
 action: Pattern_1
 action: Pattern_2
@@ -22,5 +22,5 @@ input: r = $'r'$
 |r| -> |n| -> |m| : Single_Note_Line_1
 |a|*5 : 3_Taps@3, 5_Taps@5
 
-papageno_end
+glockenspiel_end
 */

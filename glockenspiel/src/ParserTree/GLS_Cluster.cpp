@@ -27,16 +27,16 @@ void
       ::generateCCodeInternal(std::ostream &out) const
 { 
    out <<
-"   .aggregate = {\n";
+"   __GLS_DI__(aggregate) {\n";
 
    this->Aggregate::generateCCodeInternal(out);
    out <<
 "   },\n"
-"   .member_active_lasting = {\n"
-"      .n_bits = " << this->inputs_.size() << ",\n" <<
-"      .bitarray = " << this->getId().getText() << "_member_active_lasting\n" <<
+"   __GLS_DI__(member_active_lasting) {\n"
+"      __GLS_DI__(bitarray) " << this->getId().getText() << "_member_active_lasting,\n" <<
+"      __GLS_DI__(n_bits) " << this->inputs_.size() << "\n" <<
 "   },\n"
-"   .n_lasting = 0\n";
+"   __GLS_DI__(n_lasting) 0\n";
 }
 
 void 

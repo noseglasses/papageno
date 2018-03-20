@@ -30,12 +30,12 @@ void
    
    const auto &input = this->getInputPtr();
    out <<
-"   .super = {\n";
+"   __GLS_DI__(super) {\n";
 
    this->Token::generateCCodeInternal(out);
    out <<
 "   },\n"
-"   .input = " << MP << "GLS_INPUT_INITIALIZE_GLOBAL___" << input->getType().getText()
+"   __GLS_DI__(input) " << MP << "GLS_INPUT_INITIALIZE_GLOBAL___" << input->getType().getText()
 << "(" 
 << input->getId().getText() << ", "
 << input->getParameters().getText() << ")\n";

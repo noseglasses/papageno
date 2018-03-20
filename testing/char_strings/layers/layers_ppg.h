@@ -1,5 +1,5 @@
 /*
-papageno_start
+glockenspiel_begin
 
 action: Action_1
 action: Action_2
@@ -23,5 +23,5 @@ layer: ppg_cs_layer_1
 layer: ppg_cs_layer_2
 |a| -> |b| -> |c| % empty override
 
-papageno_end
+glockenspiel_end
 */

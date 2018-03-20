@@ -1,5 +1,5 @@
 /*
-papageno_start
+glockenspiel_begin
 
 @setting: join_note_sequences = "true"
 
@@ -18,5 +18,5 @@ layer: ppg_cs_layer_0
 "Klaatubaradan" : Klaatubaradan
 "First" -> "Second"
 
-papageno_end
+glockenspiel_end
 */

@@ -90,19 +90,19 @@ void
       ::generateCCodeInternal(std::ostream &out) const
 {   
    out <<
-"   .super = {\n";
+"   __GLS_DI__(super) {\n";
 //    out <<
-// "   .super = (PPG_Token__) {\n";
+// "   __GLS_DI__(super) (PPG_Token__) {\n";
    this->Token::generateCCodeInternal(out);
    out <<
 "   },\n"
-"   .n_members = " << inputs_.size() << ",\n" <<
-"   .inputs = " << SP << this->getId().getText() << "_inputs,\n" <<
-"   .member_active = {\n"
-"      .n_bits = " << this->inputs_.size() << ",\n" <<
-"      .bitarray = " << SP << this->getId().getText() << "_member_active\n" <<
+"   __GLS_DI__(n_members) " << inputs_.size() << ",\n" <<
+"   __GLS_DI__(inputs) " << SP << this->getId().getText() << "_inputs,\n" <<
+"   __GLS_DI__(member_active) {\n"
+"      __GLS_DI__(bitarray) " << SP << this->getId().getText() << "_member_active,\n" <<
+"      __GLS_DI__(n_bits) " << this->inputs_.size() << "\n" <<
 "   },\n"
-"   .n_inputs_active = 0\n";
+"   __GLS_DI__(n_inputs_active) 0\n";
 }      
 
 void  

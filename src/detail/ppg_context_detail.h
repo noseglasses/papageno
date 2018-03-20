@@ -70,6 +70,9 @@ typedef struct PPG_Context_Struct
   
 } PPG_Context;
 
+#ifdef __cplusplus
+extern
+#endif
 PPG_Context *ppg_context;
 
 void ppg_global_initialize_context_static(PPG_Context *context);

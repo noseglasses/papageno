@@ -1,5 +1,5 @@
 /*
-papageno_start
+glockenspiel_begin
 
 action: Single_Note_Line_1
 action: Chord_1
@@ -42,5 +42,5 @@ input: z = $'z'$
 layer: ppg_cs_layer_1
 {m, n, o} : Cluster_3
 
-papageno_end
+glockenspiel_end
 */

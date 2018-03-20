@@ -98,6 +98,7 @@ set(source_files_detail
 	ppg_signal_detail.c
 	ppg_token_detail.c     
 	ppg_token_vtable_detail.c    
+	ppg_time_detail.c
 )
 
 set(source_files ${source_files_})

@@ -23,12 +23,12 @@ void
       ::generateCCodeInternal(std::ostream &out) const
 { 
    out <<
-"   .aggregate = {\n";
+"   __GLS_DI__(aggregate) {\n";
 
    this->Aggregate::generateCCodeInternal(out);
    out <<
 "   },\n"
-"   .next_member = 0\n";
+"   __GLS_DI__(next_member) 0\n";
 }
 
 } // namespace ParserTree

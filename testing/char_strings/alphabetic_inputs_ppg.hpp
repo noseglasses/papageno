@@ -1,5 +1,5 @@
 /*
-papageno_start
+glockenspiel_begin
 
 input: a = $'a'$
 input: b = $'b'$
@@ -28,5 +28,5 @@ input: x = $'x'$
 input: y = $'y'$
 input: z = $'z'$
 
-papageno_end
+glockenspiel_end
 */
