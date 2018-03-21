@@ -77,6 +77,24 @@ void reportActionsAndInputs(std::ostream &out);
 void reportTree(std::ostream &out);
 void reportCodeParsed(std::ostream &);
 
+void startExternC(std::ostream &out)
+{
+   out <<
+"#ifdef __cplusplus\n"
+"extern \"C\" {\n"
+"#endif\n"
+"\n";
+}
+
+void endExternC(std::ostream &out)
+{
+   out <<
+"#ifdef __cplusplus\n"
+"} // end extern \"C\"\n"
+"#endif\n"
+"\n";
+}
+
 void generateFileHeader(std::ostream &out) {
    
    out <<
@@ -92,6 +110,8 @@ void generateFileHeader(std::ostream &out) {
    
    reportActionsAndInputs(out);
 
+   startExternC(out);
+
    out <<
 "#include \"detail/ppg_context_detail.h\"\n"
 "#include \"detail/ppg_token_detail.h\"\n"
@@ -103,6 +123,8 @@ void generateFileHeader(std::ostream &out) {
 "#include \"ppg_input.h\"\n"
 "#include \"ppg_action_flags.h\"\n"
 "\n";
+   
+   endExternC(out);
 
    if(Glockenspiel::commandLineArgs.preamble_filename_arg) {
       out <<
@@ -110,12 +132,12 @@ void generateFileHeader(std::ostream &out) {
       out <<
 "\n";
    }
-   
    out <<
 "#ifdef " << MP << "PAPAGENO_PREAMBLE_HEADER\n"
 "#include " << MP << "PAPAGENO_PREAMBLE_HEADER\n"
 "#endif\n"
 "\n";
+   startExternC(out);
 
    out <<
 "// C++ does not support designated initializers\n"
@@ -623,17 +645,21 @@ void generateGlobalContext(std::ostream &out)
    
    caption(out, "Initialization");
    
+   endExternC(out);
    out <<
 "#ifdef " << MP << "GLS_GLOBAL_INITIALIZATION_INCLUDE\n"
 "#include " << MP << "GLS_GLOBAL_INITIALIZATION_INCLUDE\n"
 "#endif\n"
-"\n"
+"\n";
+
+   out <<
 "#ifndef " << MP << "GLS_GLOBAL_INITIALIZATION\n"
 "#define " << MP << "GLS_GLOBAL_INITIALIZATION\n"
 "#endif\n"
 "\n"
 << MP << "GLS_GLOBAL_INITIALIZATION\n"
 "\n";
+   startExternC(out);
 
    globallyInitializeAllEntities(out);
 
@@ -808,6 +834,7 @@ void generateGlobal(const std::string &outputFilename)
    
    generateInitializationFunction(outputFile);
    
+   endExternC(outputFile);
 //    outputFile <<
 // "#line\n"
 // "\n";

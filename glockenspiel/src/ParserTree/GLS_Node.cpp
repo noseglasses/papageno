@@ -19,7 +19,7 @@
 namespace Glockenspiel {
 namespace ParserTree {
       
-std::map<std::string, const Node*> Node::ids_;
+// std::map<std::string, const Node*> Node::ids_;
       
 int           Node::nextId_ = 0;
 

@@ -42,7 +42,7 @@ class Node
       {
          this->retreiveSourcePosition();
          
-         Node::storeNode(id, this);
+//          Node::storeNode(id, this);
       }
       
       void setLOD(const Parser::LocationOfDefinition &lod) {
@@ -84,7 +84,7 @@ class Node
             return;
          }
       }
-      
+/*      
       static void storeNode(const Parser::Token &id, const Node *node) {
          
          auto it = ids_.find(id.getText());
@@ -95,7 +95,7 @@ class Node
          }
          
          ids_[id.getText()] = node;
-      }
+      }*/
       
 //       static void deleteNode(const Parser::Token &id) {
 //          auto it = ids_.find(id.getText());
@@ -115,7 +115,7 @@ class Node
       mutable Parser::Token id_;
       Parser::LocationOfDefinition          lod_;
       
-      static std::map<std::string, const Node*> ids_;
+//       static std::map<std::string, const Node*> ids_;
       
       static int           nextId_;
 };

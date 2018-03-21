@@ -379,7 +379,7 @@ action_type_def:
         ;
         
 input_def:
-        INPUT_KEYWORD ':' typed_id parameters
+        INPUT_KEYWORD ':' typed_id input_parameters
         {
            MARK_LOCATION(@$)
            Input::define(
@@ -416,6 +416,12 @@ alias_def:
         }
         
 action_parameters:
+        // Allow empty
+        |
+        parameters
+        ;
+        
+input_parameters:
         // Allow empty
         |
         parameters
