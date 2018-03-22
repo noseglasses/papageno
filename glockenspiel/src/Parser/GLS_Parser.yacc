@@ -470,6 +470,7 @@ cpp_token:   '-' { Glockenspiel::Parser::codeStream << $1; }
    |         '#' { Glockenspiel::Parser::codeStream << $1; }
    |         ':' { Glockenspiel::Parser::codeStream << $1; }
    |         ';' { Glockenspiel::Parser::codeStream << $1; }
+   |         '.' { Glockenspiel::Parser::codeStream << $1;  }
    |         ',' { Glockenspiel::Parser::codeStream << $1; }
    |         '\'' { Glockenspiel::Parser::codeStream << $1; }
    |         ID  { Glockenspiel::Parser::codeStream << $1; }

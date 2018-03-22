@@ -102,7 +102,7 @@ void
       const auto &actionPtr = Action::lookup(action_.getText());
       out <<
 "      __GLS_DI__(action) " << MP << "GLS_ACTION_INITIALIZE_GLOBAL___" << actionPtr->getType().getText() << "("
-      << actionPtr->getId().getText();
+      << actionPtr->getUniqueId() << ", " << actionPtr->getId().getText();
       if(actionPtr->getParametersDefined()) {
          out << ", " << actionPtr->getParameters().getText();
       }

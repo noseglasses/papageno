@@ -61,7 +61,7 @@ void
    
    out <<
 "PPG_Bitfield_Storage_Type " << SP << this->getId().getText() << "_member_active[(GLS_NUM_BITS_LEFT(" << n_bits << ") != 0) ? (GLS_NUM_BYTES(" << n_bits << ") + 1) : GLS_NUM_BYTES(" << n_bits << ")]\n"
-"   = { 0 };\n\n";
+"   = GLS_ZERO_INIT;\n\n";
 
    out <<
 "PPG_Input_Id " << SP << this->getId().getText() << "_inputs[" << inputs_.size() << "] = {\n";

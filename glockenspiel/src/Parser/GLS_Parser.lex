@@ -69,7 +69,7 @@ include  return INCLUDE_KEYWORD;
 setting  return SETTING_KEYWORD;
 default  return DEFAULT_KEYWORD;
 "->"     return ARROW;
-[-+\*/%&!\|\(\){}\[\]<>=#\:;,_\@\$\'] { 
+[-+\*/%&!\|\(\){}\[\]<>=#\:;,\._\@\$\'] { 
             *yylval = yytext[0];//std::string(1, yytext[0]);
             return yytext[0]; 
          }

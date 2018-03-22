@@ -21,6 +21,7 @@
 
 #include <set>
 #include <map>
+#include <string>
 
 namespace Glockenspiel {
 namespace ParserTree {
@@ -94,6 +95,8 @@ class Entity : public Node
                "Action multiply defined. First definition here: " 
                << lodIt->second);
          }
+         
+         entity->uniqueId_ = entityCount_++;
          
          entities_[id] = entity;
          locationsOfDefinition_[id] = entity->getId().getLOD();
@@ -221,6 +224,8 @@ class Entity : public Node
          }
       }
       
+      std::string getUniqueId() const { return std::to_string(uniqueId_); }
+      
       static const EntitiesToEntitiesByType &getJoinedEntities() { return joinedEntities_; }
       
    protected:
@@ -229,6 +234,9 @@ class Entity : public Node
       Parser::Token           parameters_;
       bool                    parametersDefined_;
       bool                    wasRequested_;
+      unsigned                uniqueId_;
+      
+      static unsigned         entityCount_;
       
       static NextEntities     nextEntities_;
       static Entities         entities_;
@@ -239,6 +247,12 @@ class Entity : public Node
       
       static EntityTypes      types_;
 };
+
+template<typename EntityType__,
+         typename NextEntityType__,
+         typename NextEntityCompare__>
+unsigned
+   Entity<EntityType__, NextEntityType__, NextEntityCompare__>::entityCount_ = 0;
 
 template<typename EntityType__,
          typename NextEntityType__,
