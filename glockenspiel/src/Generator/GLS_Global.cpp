@@ -144,9 +144,17 @@ void generateFileHeader(std::ostream &out) {
 "//\n"
 "#ifdef __cplusplus\n"
 "#   define __GLS_DI__(NAME)\n"
+"#   define GLS_ZERO_INIT {}\n"
 "#else\n"
 "#   define __GLS_DI__(NAME) .NAME =\n"
+"#   define GLS_ZERO_INIT { 0 }\n"
 "#endif\n"
+"\n"
+"#define GLS_ACTION_ZERO_INIT { GLS_ZERO_INIT }\n"
+"#define GLS_INPUT_ZERO_INIT 0\n"
+"\n"
+"#define GLS_EMPTY()\n"
+"#define GLS_DEFER(...) __VA_ARGS__ GLS_EMPTY()\n"
 "\n";
 
    // The bit manipulation macros are unique and thus do not require prefixing
@@ -217,7 +225,8 @@ void generateEntityInformation(
 "// Add a flag to enable local initialization for\n"
 "// all input classes.\n"
 "//\n"
-"#ifdef " << MP << "GLS_ENABLE_" << entityTypeAllCaps << "S_LOCAL_INITIALIZATION_ALL\n";
+"#ifdef " << MP << "GLS_ENABLE_" << entityTypeAllCaps << "S_LOCAL_INITIALIZATION_ALL\n"
+"\n";
 
    for(const auto &type: types) {
       
@@ -226,7 +235,8 @@ void generateEntityInformation(
 "//\n"
 "#   ifndef " << MP << "GLS_ENABLE_" << entityTypeAllCaps << "S_LOCAL_INITIALIZATION___" << type << " \n"
 "#      define " << MP << "GLS_ENABLE_" << entityTypeAllCaps << "S_LOCAL_INITIALIZATION___" << type << " \n"
-"#   endif \n";
+"#   endif \n"
+"\n";
    }
    out <<
 "#endif\n\n";
@@ -235,7 +245,7 @@ void generateEntityInformation(
 "// Enable the same type of initialization for all type classes\n"
 "//\n"
 "#ifndef " << MP << "GLS_" << entityTypeAllCaps << "_INITIALIZE\n"
-"#   define " << MP << "GLS_" << entityTypeAllCaps << "_INITIALIZE(ID, ...) __VA_ARGS__\n"
+"#   define " << MP << "GLS_" << entityTypeAllCaps << "_INITIALIZE(UNIQUE_ID, USER_ID, ...) __VA_ARGS__\n"
 "#endif\n\n";
    
    out <<
@@ -248,27 +258,27 @@ void generateEntityInformation(
    for(const auto &type: types) {
 
       out <<
-"// Tag class \'" << type << "\'.\n" <<
+"// " << entityTypeUpper << " type \'" << type << "\'.\n" <<
 "#ifndef " << MP << "GLS_" << entityTypeAllCaps << "_INITIALIZE___" << type << "\n"
-"#   define " << MP << "GLS_" << entityTypeAllCaps << "_INITIALIZE___" << type << "(ID, ...) \\\n" <<
-"      " << MP << "GLS_" << entityTypeAllCaps << "_INITIALIZE(ID, ##__VA_ARGS__)\n"
+"#   define " << MP << "GLS_" << entityTypeAllCaps << "_INITIALIZE___" << type << "(UNIQUE_ID, USER_ID, ...) \\\n" <<
+"      " << MP << "GLS_" << entityTypeAllCaps << "_INITIALIZE(UNIQUE_ID, GLS_DEFER(USER_ID), ##__VA_ARGS__)\n"
 "#endif\n"
 "\n"
 "#ifdef " << MP << "GLS_ENABLE_" << entityTypeAllCaps << "S_LOCAL_INITIALIZATION___" << type << "\n" <<
 "#   ifndef " << MP << "GLS_" << entityTypeAllCaps << "_INITIALIZE_LOCAL___" << type << "\n" <<
-"#      define " << MP << "GLS_" << entityTypeAllCaps << "_INITIALIZE_LOCAL___" << type << "(ID, PATH, ...) \\\n" <<
-"            PATH = " << MP << "GLS_" << entityTypeAllCaps << "_INITIALIZE___" << type << "(ID, ##__VA_ARGS__);\n" <<
+"#      define " << MP << "GLS_" << entityTypeAllCaps << "_INITIALIZE_LOCAL___" << type << "(UNIQUE_ID, USER_ID, PATH, ...) \\\n" <<
+"            PATH = " << MP << "GLS_" << entityTypeAllCaps << "_INITIALIZE___" << type << "(UNIQUE_ID, GLS_DEFER(USER_ID), ##__VA_ARGS__);\n" <<
 "#   endif\n"
 "#   ifndef " << MP << "GLS_" << entityTypeAllCaps << "_INITIALIZE_GLOBAL___" << type << "\n" <<
-"#      define " << MP << "GLS_" << entityTypeAllCaps << "_INITIALIZE_GLOBAL___" << type << "(ID, ...) 0\n" <<
+"#      define " << MP << "GLS_" << entityTypeAllCaps << "_INITIALIZE_GLOBAL___" << type << "(UNIQUE_ID, USER_ID, ...) GLS_" << entityTypeAllCaps << "_ZERO_INIT\n" <<
 "#   endif\n"
 "#else\n"
 "#   ifndef " << MP << "GLS_" << entityTypeAllCaps << "_INITIALIZE_LOCAL___" << type << "\n" <<
-"#      define " << MP << "GLS_" << entityTypeAllCaps << "_INITIALIZE_LOCAL___" << type << "(ID, PATH, ...)\n"
+"#      define " << MP << "GLS_" << entityTypeAllCaps << "_INITIALIZE_LOCAL___" << type << "(UNIQUE_ID, USER_ID, PATH, ...)\n"
 "#   endif\n"
 "#   ifndef " << MP << "GLS_" << entityTypeAllCaps << "_INITIALIZE_GLOBAL___" << type << "\n" <<
-"#      define " << MP << "GLS_" << entityTypeAllCaps << "_INITIALIZE_GLOBAL___" << type << "(ID, ...) \\\n" <<
-"            " << MP << "GLS_" << entityTypeAllCaps << "_INITIALIZE___" << type << "(ID, ##__VA_ARGS__)\n" <<
+"#      define " << MP << "GLS_" << entityTypeAllCaps << "_INITIALIZE_GLOBAL___" << type << "(UNIQUE_ID, USER_ID, ...) \\\n" <<
+"            " << MP << "GLS_" << entityTypeAllCaps << "_INITIALIZE___" << type << "(UNIQUE_ID, GLS_DEFER(USER_ID), ##__VA_ARGS__)\n" <<
 "#   endif\n"
 "#endif\n"
 "\n"         
@@ -283,7 +293,8 @@ void generateEntityInformation(
 
          for(const auto &assignment: it->second) {
             out <<
-"   " << MP << "GLS_" << entityTypeAllCaps << "_INITIALIZE_LOCAL___" << type << "(" << assignment.entity_->getId().getText() << ", " << SP << assignment.pathString_;
+"   " << MP << "GLS_" << entityTypeAllCaps << "_INITIALIZE_LOCAL___" << type << "("
+         << assignment.entity_->getUniqueId() << ", GLS_DEFER(" << assignment.entity_->getId().getText() << "), " << SP << assignment.pathString_;
             if(assignment.entity_->getParametersDefined()) {
                out << ", " << assignment.entity_->getParameters().getText();
             }
@@ -332,7 +343,7 @@ void generateEntityInformation(
 "//\n"
 "#ifndef " << MP << "GLS_" << entityTypeAllCaps << "_CONFIGURE_GLOBAL___" << type << "\n"
 "#   define " << MP << "GLS_" << entityTypeAllCaps << "_CONFIGURE_GLOBAL___" << type << "(...) \\\n"
-"       " << MP << "GLS_" << entityTypeAllCaps << "_CONFIGURE_GLOBAL(__VA_ARGS__)\n"
+"       " << MP << "GLS_" << entityTypeAllCaps << "_CONFIGURE_GLOBAL(GLS_DEFER(__VA_ARGS__))\n"
 "#endif\n"
 "\n"
 "// Implement the following macro to enable specific initialization \n"
@@ -340,7 +351,7 @@ void generateEntityInformation(
 "//\n"
 "#ifndef " << MP << "GLS_" << entityTypeAllCaps << "_CONFIGURE_LOCAL___" << type << "\n"
 "#   define " << MP << "GLS_" << entityTypeAllCaps << "_CONFIGURE_LOCAL___" << type << "(...) \\\n"
-"       " << MP << "GLS_" << entityTypeAllCaps << "_CONFIGURE_LOCAL(__VA_ARGS__)\n"
+"       " << MP << "GLS_" << entityTypeAllCaps << "_CONFIGURE_LOCAL(GLS_DEFER(__VA_ARGS__))\n"
 "#endif\n"
 "\n";
 
@@ -355,7 +366,7 @@ void generateEntityInformation(
       if(it != entitiesByType.end()) {
          for(const auto &entityPtr: it->second) {
             out <<
-"   OP(" << entityPtr->getId().getText();
+"   OP(" << entityPtr->getUniqueId() << ", " << entityPtr->getId().getText();
             if(entityPtr->getParametersDefined()) {
                out << ", " << entityPtr->getParameters().getText();
             }
@@ -448,7 +459,7 @@ void globallyInitializeEntities(
    for(const auto &abtEntry: entitiesByType) {
       const auto &tag = abtEntry.first;
       out <<
-"// Tag class \'" << tag << "\'\n"
+"// " << entityTypeUpper << " type \'" << tag << "\'\n"
 "//\n"
 << MP << "GLS_" << entityTypeAllCaps << "S___" << tag << "(" << MP << "GLS_" << entityTypeAllCaps << "_CONFIGURE_GLOBAL___" << tag << ")\n"
 "\n";
@@ -489,7 +500,7 @@ template<typename EntitiesByType>
 void reportUnusedEntities(
             std::ostream &out,
             const EntitiesByType &entitiesByType,
-            const std::string &entityType)
+            const std::string &entityTypeUpper)
 {
    bool anyEntities = false;
    for(const auto &abtEntry: entitiesByType) {
@@ -503,11 +514,11 @@ void reportUnusedEntities(
          
          if(!anyUnusedOfCurrentType) {
             if(!anyEntities) {
-               caption(out, "Unused " + entityType);
+               caption(out, "Unused " + entityTypeUpper + "s");
                anyEntities = true;
             }
             out <<
-"// Tag class \'" << tag << "\': ";
+"// " << entityTypeUpper << " type \'" << tag << "\': ";
             anyUnusedOfCurrentType = true;
          }
          out << entityPtr->getId().getText() << ", ";
@@ -523,7 +534,7 @@ template<typename JoinedEntities>
 void reportJoinedEntities(
             std::ostream &out,
             const JoinedEntities &joinedEntities,
-            const std::string &entityType)
+            const std::string &entityTypeUpper)
 {
    bool anyEntities = false;
    for(const auto &abtEntry: joinedEntities) {
@@ -537,11 +548,11 @@ void reportJoinedEntities(
          
          if(!anyUnusedOfCurrentType) {
             if(!anyEntities) {
-               caption(out, "Joined " + entityType);
+               caption(out, "Joined " + entityTypeUpper + "s");
                anyEntities = true;
             }
             out <<
-"// Tag class \'" << tag << "\': ";
+"// " << entityTypeUpper << " type \'" << tag << "\': ";
             anyUnusedOfCurrentType = true;
          }
          out << entityPair.first->getId().getText() << "->" << entityPair.second->getId().getText() << ", ";
@@ -683,36 +694,36 @@ void generateGlobalContext(std::ostream &out)
    assert(maxEvents > 0);
    
    out <<
-"PPG_Event_Queue_Entry " << SP << "event_buffer[" << 2*maxEvents << "] = { \n";
-   for(int i = 0; i < 2*maxEvents; ++i) {
-      out <<
-"                     {{0, 0, 0}, 0, {0, 0}}";
-      if(i < 2*maxEvents - 1) {
-         out << ",";
-      }
-      out << "\n";
-   }
-   out <<
-"};\n"
+"PPG_Event_Queue_Entry " << SP << "event_buffer[" << 2*maxEvents << "] = GLS_ZERO_INIT;\n"
+//    for(int i = 0; i < 2*maxEvents; ++i) {
+//       out <<
+// "                     {{0, 0, 0}, 0, {0, 0}}";
+//       if(i < 2*maxEvents - 1) {
+//          out << ",";
+//       }
+//       out << "\n";
+//    }
+//    out <<
+// "};\n"
 "\n";
 
    out <<
-"PPG_Furcation " << SP << "furcations[" << maxDepth << "] = { \n";
-   for(int i = 0; i < maxDepth; ++i) {
-      out <<
-"                     {0, 0, 0, 0}";
-      if(i < maxDepth - 1) {
-         out << ",";
-      }
-      out << "\n";
-   }
-   out <<
-"};\n"
+"PPG_Furcation " << SP << "furcations[" << maxDepth << "] = GLS_ZERO_INIT;\n"
+//    for(int i = 0; i < maxDepth; ++i) {
+//       out <<
+// "                     {0, 0, 0, 0}";
+//       if(i < maxDepth - 1) {
+//          out << ",";
+//       }
+//       out << "\n";
+//    }
+//    out <<
+// "};\n"
 "\n";
    
    out <<
-"PPG_Token__ *" << SP << "tokens[" << maxDepth << "] = {\n";
-
+"PPG_Token__ *" << SP << "tokens[" << maxDepth << "] = GLS_ZERO_INIT;\n";
+/*
    for(int i = 0; i < maxDepth; ++i) {
       out <<
 "                     NULL";
@@ -722,7 +733,7 @@ void generateGlobalContext(std::ostream &out)
       out << "\n";
    }
    out <<
-"};\n"
+"};\n"*/
 "\n";
 
    out <<
