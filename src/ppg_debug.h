@@ -32,6 +32,28 @@
 #   include "debug.h"
 #endif
 
+// Allow to force logging for arduino builds where 
+// no additional command line macro definitions are possible.
+//
+// Be careful. The strings used for output can cause a quite large 
+// binary that might exceed the resources available.
+//
+// #ifdef ARDUINO
+// #   ifdef PPG_HAVE_LOGGING
+// #      undef PPG_HAVE_LOGGING
+// #   endif
+// #   define PPG_HAVE_LOGGING 1
+// #endif
+
+// #define PPG_FORCE_LOGGING
+
+#ifdef PPG_FORCE_LOGGING
+#   ifdef PPG_HAVE_LOGGING
+#      undef PPG_HAVE_LOGGING
+#   endif
+#   define PPG_HAVE_LOGGING 1
+#endif
+
 #if PPG_HAVE_LOGGING
 
 #   include <stdio.h>
@@ -45,8 +67,19 @@
       uprintf(__VA_ARGS__); \
    }
 
+// #elif defined(ARDUINO)
+// 
+// void serial_print(const char *c);
+// #   define PPG_LOG(...) \
+//    { \
+//       char buffer[128]; \
+//       snprintf(buffer, 128, __VA_ARGS__); \
+//       serial_print(buffer); \
+//    }
+//    
 #else
 // #   include <stdio.h>
+
 #   define PPG_LOG(...) \
    if(ppg_logging_get_enabled()) { \
       printf(__VA_ARGS__); \

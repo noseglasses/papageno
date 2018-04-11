@@ -30,7 +30,7 @@ static bool ppg_note_match_event(
                                  bool modify_only_if_consuming
                                 ) 
 {  
-   PPG_LOG("Nt 0x%" PRIXPTR ", input 0x%d, ppg_note_match_event\n", (uintptr_t)note, note->input);
+   PPG_LOG("Note 0x%" PRIXPTR ", input 0x%d, ppg_note_match_event\n", (uintptr_t)note, note->input);
    
    PPG_Count note_flags 
       = note->super.misc.flags;
@@ -59,32 +59,35 @@ static bool ppg_note_match_event(
                
             if(event->flags & PPG_Event_Active) {
                
-               PPG_LOG("I act\n");
+               PPG_LOG("Activation event\n");
                
                // Mark the note as active
                //
                note->super.misc.flags |= PPG_Note_Type_Active;
                
-               PPG_LOG("Nt 0x%" PRIXPTR " fin\n", (uintptr_t)note);
-               
                if(note_flags & PPG_Token_Flags_Pedantic) {
+               
+                  PPG_LOG("Note 0x%" PRIXPTR " activation inprogress\n", (uintptr_t)note);
                   note->super.misc.state = PPG_Token_Activation_In_Progress;
                }
                else {
+               
+                  PPG_LOG("Note 0x%" PRIXPTR " match\n", (uintptr_t)note);
                   note->super.misc.state = PPG_Token_Matches;
                }
             }
             else {
                
                if(note_flags & PPG_Note_Type_Active) {
-                  PPG_LOG("I deact\n");
+                  
+                  PPG_LOG("Deactivation event\n");
                
                   if(note_flags & PPG_Token_Flags_Pedantic) {
-                     PPG_LOG("Nt fin\n");
-         //             PPG_LOG("N");
+                     PPG_LOG("Note 0x%" PRIXPTR " pedantic match\n", (uintptr_t)note);
                      note->super.misc.state = PPG_Token_Matches;
                   }
                   else {
+                     PPG_LOG("Note 0x%" PRIXPTR " finalized\n", (uintptr_t)note);
                      note->super.misc.state = PPG_Token_Finalized;
                   }
                }

@@ -40,4 +40,6 @@ void ppg_active_tokens_update(void);
 
 bool ppg_active_tokens_check_consumption(PPG_Event *event);
 
+void ppg_active_tokens_repeat_actions(void);
+
 #endif

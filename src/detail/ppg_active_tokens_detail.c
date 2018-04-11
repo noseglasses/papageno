@@ -109,98 +109,101 @@ static void ppg_active_tokens_on_deactivation(PPG_Token__ *consumer,
                                               bool changed
                                              )
 {
+   PPG_LOG("ppg_active_tokens_on_deactivation\n")
+   
    // The event deactivates an input
 
-   if(consumer) {
+   if(!consumer) { return; }
       
-      if(consumer->misc.flags & PPG_Token_Flags_Pedantic) {
-         
-         if(   (state 
-                        == PPG_Token_Matches) 
-            && (changed)) {
-               
-//             PPG_LOG("   Cs act & deact\n");
-         
-            if(consumer->misc.action_state == PPG_Action_Enabled) {
-                     
-//                PPG_LOG("      T.a.a.\n");
-                     
-               consumer->action.callback.func(true /* signal deactivation */,
-                        consumer->action.callback.user_data);
-               
-               consumer->misc.action_state = PPG_Action_Activation_Triggered;
-                     
-               consumer->action.callback.func(false /* signal deactivation */,
-                        consumer->action.callback.user_data);
-                     
-               consumer->misc.action_state = PPG_Action_Deactivation_Triggered;
-            }
+   if(consumer->misc.flags & PPG_Token_Flags_Pedantic) {
+      
+      if(   (state 
+                     == PPG_Token_Matches) 
+         && (changed)) {
             
-            ppg_active_tokens_search_remove(consumer);
+//             PPG_LOG("   Cs act & deact\n");
+      
+         if(consumer->misc.action_state == PPG_Action_Enabled) {
+                  
+//                PPG_LOG("      T.a.a.\n");
+                  
+            consumer->action.callback.func(true /* signal deactivation */,
+                     consumer->action.callback.user_data);
+            
+            consumer->misc.action_state = PPG_Action_Activation_Triggered;
+                  
+            consumer->action.callback.func(false /* signal deactivation */,
+                     consumer->action.callback.user_data);
+                  
+            consumer->misc.action_state = PPG_Action_Deactivation_Triggered;
          }
          
-         return;
+         ppg_active_tokens_search_remove(consumer);
       }
       
-      // It there is a consumer listed, this means that the event was
-      // consumed by one of the tokens of the matching branch
+      return;
+   }
+   
+   // It there is a consumer listed, this means that the event was
+   // consumed by one of the tokens of the matching branch
+   
+   if(changed) {
       
-      if(changed) {
+      // Token state just changed...
+      
+      if(state 
+                  == PPG_Token_Deactivation_In_Progress) {
          
-         // Token state just changed...
-         
-         if(state 
-                     == PPG_Token_Deactivation_In_Progress) {
-            
 //             PPG_LOG("   C. d.\n");
+      
+         // It turned from state "matching" to state
+         // "deactivation in progress"
          
-            // It turned from state "matching" to state
-            // "deactivation in progress"
-            
-            if(consumer->misc.action_flags & PPG_Action_Deactivate_On_Token_Unmatch) {
+         if(consumer->misc.action_flags & PPG_Action_Deactivate_On_Token_Unmatch) {
 
-               if(consumer->misc.action_state == PPG_Action_Enabled) {
-                  
+            if(consumer->misc.action_state == PPG_Action_Enabled) {
+               
 //                   PPG_LOG("      T.e.a.\n");
-                  consumer->action.callback.func(false /* signal deactivation */,
-                     consumer->action.callback.user_data);
-                  
-                  consumer->misc.action_state = PPG_Action_Deactivation_Triggered;
-               }
+               consumer->action.callback.func(false /* signal deactivation */,
+                  consumer->action.callback.user_data);
+               
+               consumer->misc.action_state = PPG_Action_Deactivation_Triggered;
             }
          }
-         else if(state 
-                           == PPG_Token_Finalized) {
-            
-//             PPG_LOG("   Causes finalization of 0x%" PRIXPTR "\n", (uintptr_t)consumer);
+      }
+      else if(state 
+                        == PPG_Token_Finalized) {
+         
+         PPG_LOG("   Causes finalization of 0x%" PRIXPTR "\n", (uintptr_t)consumer);
 //             PPG_LOG("Fin\n");
-            // The token just became initialized, i.e. all related inputs were deactivated
-            // again.
+         // The token just became initialized, i.e. all related inputs were deactivated
+         // again.
+         
+         if(   ((consumer->misc.action_flags & PPG_Action_Deactivate_On_Token_Unmatch) == 0)
+            || (consumer->misc.action_state != PPG_Action_Deactivation_Triggered)) {
             
-            if(   ((consumer->misc.action_flags & PPG_Action_Deactivate_On_Token_Unmatch) == 0)
-               || (consumer->misc.action_state != PPG_Action_Deactivation_Triggered)) {
-               
-               if(consumer->misc.action_state == PPG_Action_Enabled) {
+            if(consumer->misc.action_state == PPG_Action_Enabled) {
 //                   PPG_LOG("      T.a.a.\n");
-                  consumer->action.callback.func(true /* signal deactivation */,
-                     consumer->action.callback.user_data);
-                  
-                  consumer->misc.action_state = PPG_Action_Activation_Triggered;
-               }
+               consumer->action.callback.func(true /* signal activation */,
+                  consumer->action.callback.user_data);
                
-               if(consumer->misc.action_state == PPG_Action_Activation_Triggered) {
-//                   PPG_LOG("      T.d.a.\n");
-                  consumer->action.callback.func(false /* signal deactivation */,
-                     consumer->action.callback.user_data);
-                  
-                  consumer->misc.action_state = PPG_Action_Deactivation_Triggered;
-               }
+               consumer->misc.action_state = PPG_Action_Activation_Triggered;
             }
             
-            // Remove it from the active set as no further events will affect it
-            //
-            ppg_active_tokens_search_remove(consumer);
+            if(consumer->misc.action_state == PPG_Action_Activation_Triggered) {
+//                   PPG_LOG("      T.d.a.\n");
+               consumer->action.callback.func(false /* signal deactivation */,
+                  consumer->action.callback.user_data);
+               
+               consumer->misc.action_state = PPG_Action_Deactivation_Triggered;
+            }
          }
+         
+         PPG_LOG("   Removing token 0x%" PRIXPTR "\n", (uintptr_t)consumer);
+         
+         // Remove it from the active set as no further events will affect it
+         //
+         ppg_active_tokens_search_remove(consumer);
       }
    }
 }
@@ -211,6 +214,8 @@ bool ppg_active_tokens_check_consumption(
    if(PPG_GAT.n_tokens == 0) {
       return false;
    }
+   
+   PPG_LOG("ppg_active_tokens_check_consumption\n")
    
    // No consumer (token) is listed for the deactivation event. 
    // This means that the input deactivation that
@@ -241,6 +246,8 @@ bool ppg_active_tokens_check_consumption(
                                        event,
                                        true /*modify only if consuming*/
                                  );
+                              
+      PPG_LOG("Event consumed: %d\n", event_consumed);
                          
       PPG_PRINT_TOKEN(consumer)
       
@@ -286,6 +293,24 @@ bool ppg_active_tokens_check_consumption(
    return true;
 }
 
+void ppg_active_tokens_repeat_actions(void)
+{
+   if(PPG_GAT.n_tokens == 0) {
+      return;
+   }
+   
+   for(PPG_Count i = 0; i < PPG_GAT.n_tokens; ++i) {
+      
+      PPG_Token__ *consumer = PPG_GAT.tokens[i];
+      
+      if(consumer->misc.action_state == PPG_Action_Activation_Triggered)
+      {
+         consumer->action.callback.func(true /* signal activation */,
+                  consumer->action.callback.user_data);
+      }
+   }
+}
+
 static void ppg_active_tokens_update_aux(
                                     PPG_Event_Queue_Entry *eqe,
                                     void *user_data)
@@ -317,7 +342,7 @@ static void ppg_active_tokens_update_aux(
       if(   (eqe->token_state.state == PPG_Token_Matches)
          && eqe->token_state.changed
       ) {
-//          PPG_LOG("   Causes token match\n");
+         PPG_LOG("   Causes token match\n");
          
          // The last event led to a match
             
@@ -365,7 +390,7 @@ static void ppg_active_tokens_update_aux(
       }
       else {
          
-//          PPG_LOG("   Not part of current match branch\n");
+         PPG_LOG("   Not part of current match branch\n");
          
          ppg_active_tokens_check_consumption(&eqe->event);
       }

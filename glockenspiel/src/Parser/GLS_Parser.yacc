@@ -670,7 +670,8 @@ static void generateTree(std::istream &input)
    
    if(!wasInPPGAtAll) {
       std::cerr << "No glockenspiel definitions encountered\n";
-      exit(EXIT_FAILURE);
+      exit(0);
+      //exit(EXIT_FAILURE);
    }
 }
 
