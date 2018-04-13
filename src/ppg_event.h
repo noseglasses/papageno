@@ -45,6 +45,7 @@ typedef struct {
    PPG_Input_Id input; ///< The input identifier associated with the input that is pressed or released
    PPG_Time time; ///< The time at which the input event occured
    PPG_Count flags; ///< Whether the input is active
+   PPG_Count groupId; // The id of a group the event is assigned to
 } PPG_Event;
 
 /** @brief A callback function that is used during processing of stored input events

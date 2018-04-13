@@ -26,8 +26,10 @@
  * @param event_processor A custom input processor callback. If NULL the default processor registered by
  *                ppg_global_set_default_event_processor is used.
  * @param user_data Optional user data is passed on to the input processor callback
+ * 
+ * @returns The number of events that were processed.
  */
-void ppg_event_buffer_iterate(
+uint8_t ppg_event_buffer_iterate(
                         PPG_Event_Processor_Fun event_processor,
                         void *user_data);
 

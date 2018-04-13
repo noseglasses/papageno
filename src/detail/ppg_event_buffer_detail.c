@@ -230,6 +230,8 @@ void ppg_event_buffer_truncate_at_front(void)
       PPG_Count old_end = PPG_EB.end;
       PPG_EB.end = PPG_EB.cur;
       
+      PPG_LOG("Truncating event buffer at front\n")
+      
       ppg_event_buffer_iterate2(
          (PPG_Event_Processor_Visitor)ppg_flush_non_considered_events, 
          NULL);
@@ -303,27 +305,44 @@ void ppg_event_buffer_on_match_success(void)
    ppg_event_buffer_truncate_at_front();
 }
 
-void ppg_event_buffer_iterate2(
+uint8_t ppg_event_buffer_iterate2(
                         PPG_Event_Processor_Visitor visitor,
                         void *user_data)
 {   
-   if(PPG_EB.size == 0) { return; }
+   if(PPG_EB.size == 0) { return 0; }
+   
+   uint8_t nEventsProcessed = 0;
    
    if(PPG_EB.start > PPG_EB.end) {
       
+      nEventsProcessed = PPG_EB.max_size - PPG_EB.start + PPG_EB.end;
+      
+      PPG_LOG("Event buffer wrapps around\n")
+      PPG_LOG("Processing %d events\n", nEventsProcessed);
+      
       for(PPG_Count i = PPG_EB.start; i < PPG_EB.max_size; ++i) {
       
+         PPG_LOG("   event %d\n", i)
          visitor(&PPG_EB.events[i], user_data);
       }
       for(PPG_Count i = 0; i < PPG_EB.end; ++i) {
          
+         PPG_LOG("   event %d\n", i)
          visitor(&PPG_EB.events[i], user_data);
       }
    }
    else {
+      
+      nEventsProcessed = PPG_EB.end - PPG_EB.start;
+      
+      PPG_LOG("Processing %d events\n", nEventsProcessed);
+      
       for(PPG_Count i = PPG_EB.start; i < PPG_EB.end; ++i) {
       
+         PPG_LOG("   event %d\n", i)
          visitor(&PPG_EB.events[i], user_data);
       }
    }
+   
+   return nEventsProcessed;
 }

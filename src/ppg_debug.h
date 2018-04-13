@@ -45,7 +45,7 @@
 // #   define PPG_HAVE_LOGGING 1
 // #endif
 
-// #define PPG_FORCE_LOGGING
+#define PPG_FORCE_LOGGING
 
 #ifdef PPG_FORCE_LOGGING
 #   ifdef PPG_HAVE_LOGGING

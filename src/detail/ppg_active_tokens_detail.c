@@ -44,6 +44,11 @@ void ppg_active_tokens_resize(PPG_Active_Tokens *active_tokens,
    active_tokens->tokens = new_tokens;
 }
 
+PPG_Count ppg_active_tokens_get_size(void)
+{
+   return PPG_GAT.n_tokens;
+}
+
 void ppg_active_tokens_init(PPG_Active_Tokens *active_tokens)
 {
    active_tokens->tokens = NULL;
@@ -78,6 +83,9 @@ void ppg_active_tokens_free(PPG_Active_Tokens *active_tokens)
 
 static void ppg_active_tokens_add(PPG_Token__ *token)
 {
+   PPG_LOG("Adding active token 0x%" PRIXPTR "\n", 
+             (uintptr_t)token);
+
    PPG_GAT.tokens[PPG_GAT.n_tokens] = token;
    
    PPG_ASSERT(PPG_GAT.n_tokens < PPG_MAX_ACTIVE_TOKENS);
@@ -98,6 +106,9 @@ static void ppg_active_tokens_search_remove(PPG_Token__ *token)
 {
    for(PPG_Count i = 0; i < PPG_GAT.n_tokens; ++i) {
       if(token == PPG_GAT.tokens[i]) {
+         
+         PPG_LOG("Removing active token 0x%" PRIXPTR "\n", 
+             (uintptr_t)token);
          ppg_active_tokens_remove(i);
          break;
       }
@@ -127,12 +138,12 @@ static void ppg_active_tokens_on_deactivation(PPG_Token__ *consumer,
                   
 //                PPG_LOG("      T.a.a.\n");
                   
-            consumer->action.callback.func(true /* signal deactivation */,
+            consumer->action.callback.func(PPG_Action_Activation_Flags_Active /* signal deactivation */,
                      consumer->action.callback.user_data);
             
             consumer->misc.action_state = PPG_Action_Activation_Triggered;
                   
-            consumer->action.callback.func(false /* signal deactivation */,
+            consumer->action.callback.func(PPG_Action_Activation_Flags_Empty /* signal deactivation */,
                      consumer->action.callback.user_data);
                   
             consumer->misc.action_state = PPG_Action_Deactivation_Triggered;
@@ -164,7 +175,7 @@ static void ppg_active_tokens_on_deactivation(PPG_Token__ *consumer,
             if(consumer->misc.action_state == PPG_Action_Enabled) {
                
 //                   PPG_LOG("      T.e.a.\n");
-               consumer->action.callback.func(false /* signal deactivation */,
+               consumer->action.callback.func(PPG_Action_Activation_Flags_Empty /* signal deactivation */,
                   consumer->action.callback.user_data);
                
                consumer->misc.action_state = PPG_Action_Deactivation_Triggered;
@@ -184,7 +195,7 @@ static void ppg_active_tokens_on_deactivation(PPG_Token__ *consumer,
             
             if(consumer->misc.action_state == PPG_Action_Enabled) {
 //                   PPG_LOG("      T.a.a.\n");
-               consumer->action.callback.func(true /* signal activation */,
+               consumer->action.callback.func(PPG_Action_Activation_Flags_Active /* signal activation */,
                   consumer->action.callback.user_data);
                
                consumer->misc.action_state = PPG_Action_Activation_Triggered;
@@ -192,7 +203,7 @@ static void ppg_active_tokens_on_deactivation(PPG_Token__ *consumer,
             
             if(consumer->misc.action_state == PPG_Action_Activation_Triggered) {
 //                   PPG_LOG("      T.d.a.\n");
-               consumer->action.callback.func(false /* signal deactivation */,
+               consumer->action.callback.func(PPG_Action_Activation_Flags_Empty /* signal deactivation */,
                   consumer->action.callback.user_data);
                
                consumer->misc.action_state = PPG_Action_Deactivation_Triggered;
@@ -305,7 +316,7 @@ void ppg_active_tokens_repeat_actions(void)
       
       if(consumer->misc.action_state == PPG_Action_Activation_Triggered)
       {
-         consumer->action.callback.func(true /* signal activation */,
+         consumer->action.callback.func(PPG_Action_Activation_Flags_Active | PPG_Action_Activation_Flags_Repeated/* signal activation */,
                   consumer->action.callback.user_data);
       }
    }
@@ -363,7 +374,7 @@ static void ppg_active_tokens_update_aux(
                
 //                PPG_LOG("      Triggering activation action\n");
                
-               eqe->consumer->action.callback.func(true /* signal activation */,
+               eqe->consumer->action.callback.func(PPG_Action_Activation_Flags_Active /* signal activation */,
                   eqe->consumer->action.callback.user_data);
                
                eqe->consumer->misc.action_state = PPG_Action_Activation_Triggered;
@@ -400,7 +411,7 @@ static void ppg_active_tokens_update_aux(
 void ppg_active_tokens_update(void)
 {
 //    PPG_LOG("************************\n")
-//    PPG_LOG("Activating active tokens\n")
+   PPG_LOG("Updating active tokens\n")
    ppg_event_buffer_iterate2(
       (PPG_Event_Processor_Visitor)ppg_active_tokens_update_aux, 
       NULL);

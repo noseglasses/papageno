@@ -163,8 +163,8 @@ static PPG_Token__ *ppg_token_get_most_appropriate_branch(
          
       if(parent_token->children[i]->misc.state == PPG_Token_Invalid) {
          
-         PPG_LOG("   Ignoring 0x%" PRIXPTR " as invalid\n",
-           (uintptr_t)parent_token->children[i]);
+//          PPG_LOG("   Ignoring 0x%" PRIXPTR " as invalid\n",
+//            (uintptr_t)parent_token->children[i]);
          
 //          #if PPG_HAVE_DEBUGGING
 //          PPG_PRINT_TOKEN(parent_token->children[i])
@@ -297,8 +297,8 @@ static PPG_Token__ *ppg_token_get_next_possible_branch(
 
    if(furcation_already_present) {
       
-      PPG_LOG("Updating furcation for token 0x%" PRIXPTR "\n", 
-            (uintptr_t)PPG_CUR_FUR.token);
+//       PPG_LOG("Updating furcation for token 0x%" PRIXPTR "\n", 
+//             (uintptr_t)PPG_CUR_FUR.token);
       
       PPG_CUR_FUR.branch = branch;
    }
@@ -429,8 +429,8 @@ static PPG_Count ppg_process_next_event(void)
 
    PPG_Event *event = &PPG_EB.events[PPG_EB.cur].event;
    
-   PPG_LOG("Branch token  0x%" PRIXPTR "\n", 
-             (uintptr_t)ppg_context->current_token);
+//    PPG_LOG("Branch token 0x%" PRIXPTR "\n", 
+//              (uintptr_t)ppg_context->current_token);
 
    
    PPG_Count state_before = ppg_context->current_token->misc.state;

@@ -88,4 +88,6 @@ void ppg_reset_pattern_matching_engine(void)
    // Start with the first token in the queue
    //
    PPG_EB.cur = PPG_EB.start;
+   
+   ppg_signal(PPG_On_Initialization);
 }

@@ -27,6 +27,8 @@ typedef struct {
    PPG_Count   max_tokens;
 } PPG_Active_Tokens;
 
+PPG_Count ppg_active_tokens_get_size(void);
+
 void ppg_active_tokens_resize(PPG_Active_Tokens *active_tokens,
                               PPG_Count new_size);
 

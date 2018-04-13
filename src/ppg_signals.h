@@ -34,7 +34,8 @@ enum PPG_Signals {
    PPG_On_Pattern_Matches,
    PPG_On_User,
    PPG_On_Match_Failed,
-   PPG_On_Flush_Events
+   PPG_On_Flush_Events,
+   PPG_On_Initialization
 };
 
 #endif

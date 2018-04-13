@@ -36,17 +36,19 @@ static void ppg_event_buffer_visit_adaptor(PPG_Event_Queue_Entry *eqe,
    adaptor_data->fun(&eqe->event, adaptor_data->user_data);
 }
 
-void ppg_event_buffer_iterate(
+uint8_t ppg_event_buffer_iterate(
                         PPG_Event_Processor_Fun event_processor,
                         void *user_data)
 {
+   PPG_LOG("ppg_event_buffer_iterate\n")
+   
    PPG_Event_Buffer_Visitor_Adaptor_Data adaptor_data =
       { 
          .fun = event_processor,
          .user_data = user_data
       };
       
-   ppg_event_buffer_iterate2(
+   return ppg_event_buffer_iterate2(
       (PPG_Event_Processor_Visitor)ppg_event_buffer_visit_adaptor,
       &adaptor_data
    );
