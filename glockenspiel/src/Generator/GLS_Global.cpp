@@ -688,10 +688,13 @@ void generateGlobalContext(std::ostream &out)
    caption(out, "Context");
    
    int maxDepth = 0;
-   int maxEvents = 0;
-   recursivelyGetMaxEvents(*root, 0, maxDepth, 0, maxEvents);
+   int maxInputs = 0; // The maximum number of inputs to activate
+                      // to achieve a match.
+   recursivelyGetMaxEvents(*root, 0, maxDepth, 0, maxInputs);
    assert(maxDepth > 0);
-   assert(maxEvents > 0);
+   assert(maxInputs > 0);
+   
+   int maxEvents = 2*maxInputs + 1;
    
    out <<
 "PPG_Event_Queue_Entry " << SP << "event_buffer[" << 2*maxEvents << "] = GLS_ZERO_INIT;\n"

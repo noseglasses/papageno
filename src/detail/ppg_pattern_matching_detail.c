@@ -33,7 +33,7 @@ enum {
 
 static void ppg_branch_prepare(PPG_Token__ *branch_token)
 {
-   PPG_LOG("Preparing branch token 0x%" PRIXPTR "\n", 
+   PPG_LOG_TOKEN_LOOKUP("Preparing branch token 0x%" PRIXPTR "\n", 
             (uintptr_t)branch_token);
    
    PPG_CALL_VIRT_METHOD(branch_token, reset);
@@ -78,14 +78,14 @@ static PPG_Token__ *ppg_furcation_revert(void)
       furcation_token
          = (PPG_FB.cur_furcation == -1) ? NULL : PPG_CUR_FUR.token;
          
-      PPG_LOG("Reverting to furcation token 0x%" PRIXPTR "\n", 
+      PPG_LOG_TOKEN_LOOKUP("Reverting to furcation token 0x%" PRIXPTR "\n", 
             (uintptr_t)furcation_token);
       
       // If there is no current furcation, we can't do anything else
       //
       if(!furcation_token) { 
          
-         PPG_LOG("   No furcation found\n");
+         PPG_LOG_TOKEN_LOOKUP("   No furcation found\n");
          
          // By returning NULL we signal that there is no
          // reversion to another furcation possible.
@@ -97,7 +97,7 @@ static PPG_Token__ *ppg_furcation_revert(void)
       //
       if(PPG_CUR_FUR.n_branch_candidates <= 1) {
          
-         PPG_LOG("   No branches left for token 0x%" PRIXPTR "\n", 
+         PPG_LOG_TOKEN_LOOKUP("   No branches left for token 0x%" PRIXPTR "\n", 
             (uintptr_t)furcation_token);
          
          // ... we mark all children as initialized. 
@@ -120,7 +120,7 @@ static PPG_Token__ *ppg_furcation_revert(void)
       
          --PPG_CUR_FUR.n_branch_candidates;
          
-         PPG_LOG("   %d candidates left from %d\n", 
+         PPG_LOG_TOKEN_LOOKUP("   %d candidates left from %d\n", 
                  PPG_CUR_FUR.n_branch_candidates,
                  PPG_CUR_FUR.token->n_children
                 );
@@ -144,7 +144,7 @@ static PPG_Token__ *ppg_token_get_most_appropriate_branch(
                         PPG_Token__ *parent_token,
                         PPG_Count *n_branch_candidates)
 {
-   PPG_LOG("Getting most appropriate branch for 0x%" PRIXPTR "\n",
+   PPG_LOG_TOKEN_LOOKUP("Getting most appropriate branch for 0x%" PRIXPTR "\n",
            (uintptr_t)parent_token);
    
    // Determine the number of possible candidates
@@ -182,7 +182,7 @@ static PPG_Token__ *ppg_token_get_most_appropriate_branch(
       if(parent_token->children[i]->layer < 0) {
          
          if(ppg_context->layer > (-parent_token->children[i]->layer - 1)) {
-            PPG_LOG("   Ignoring 0x%" PRIXPTR " due to insuitably low layer\n",
+            PPG_LOG_TOKEN_LOOKUP("   Ignoring 0x%" PRIXPTR " due to insuitably low layer\n",
             (uintptr_t)parent_token->children[i]);
             
             parent_token->children[i]->misc.state = PPG_Token_Invalid;
@@ -191,7 +191,7 @@ static PPG_Token__ *ppg_token_get_most_appropriate_branch(
       }
       else if(parent_token->children[i]->layer > ppg_context->layer) { 
          
-         PPG_LOG("   Ignoring 0x%" PRIXPTR " due to insuitably high layer\n",
+         PPG_LOG_TOKEN_LOOKUP("   Ignoring 0x%" PRIXPTR " due to insuitably high layer\n",
            (uintptr_t)parent_token->children[i]);
          
          parent_token->children[i]->misc.state = PPG_Token_Invalid;
@@ -231,7 +231,7 @@ static PPG_Token__ *ppg_token_get_most_appropriate_branch(
    
    #if PPG_HAVE_LOGGING
    if(!branch_token) {
-      PPG_LOG("No branch left\n");
+      PPG_LOG_TOKEN_LOOKUP("No branch left\n");
    }
    #endif
    
@@ -268,7 +268,7 @@ static PPG_Token__ *ppg_token_get_next_possible_branch(
    
    if(revert_to_previous_furcation) {
       
-      PPG_LOG("Reverting to previous furcation\n");
+      PPG_LOG_TOKEN_LOOKUP("Reverting to previous furcation\n");
       
       parent_token = ppg_furcation_revert();
       
@@ -310,7 +310,7 @@ static PPG_Token__ *ppg_token_get_next_possible_branch(
       
       // Create a new furcation data set
       //
-      PPG_LOG("Creating furcation for token 0x%" PRIXPTR "\n", 
+      PPG_LOG_TOKEN_LOOKUP("Creating furcation for token 0x%" PRIXPTR "\n", 
             (uintptr_t)parent_token);
 
       //PPG_ASSERT(PPG_FB.cur_furcation < PPG_FB.n_furcations - 1);
@@ -325,7 +325,7 @@ static PPG_Token__ *ppg_token_get_next_possible_branch(
    PPG_CUR_FUR.n_branch_candidates 
                   = n_branch_candidates;
    
-   PPG_LOG("Furcation 0x%" PRIXPTR ": candidates %u, next branch 0x%" PRIXPTR "\n", 
+   PPG_LOG_TOKEN_LOOKUP("Furcation 0x%" PRIXPTR ": candidates %u, next branch 0x%" PRIXPTR "\n", 
            (uintptr_t)PPG_CUR_FUR.token,
            PPG_CUR_FUR.n_branch_candidates,
            (uintptr_t)PPG_CUR_FUR.branch);
@@ -335,7 +335,7 @@ static PPG_Token__ *ppg_token_get_next_possible_branch(
 
 static PPG_Count ppg_process_next_event(void)
 {  
-   PPG_LOG("Processing next event\n");
+   PPG_LOG_TOKEN_LOOKUP("Processing next event\n");
    
    // If the event is a deactivation event that was obviously
    // not matched and it is the first in the queue, 
@@ -345,7 +345,7 @@ static PPG_Count ppg_process_next_event(void)
       && !(PPG_EB.events[PPG_EB.cur].event.flags & PPG_Event_Active)
    ) {
       
-      PPG_LOG("orpth deact\n");
+//       PPG_LOG("orpth deact\n");
    
       return PPG_Pattern_Orphaned_Deactivation;
    }
@@ -361,7 +361,7 @@ static PPG_Count ppg_process_next_event(void)
       ppg_branch_prepare(ppg_context->current_token);
    }
 
-   PPG_LOG("Current token 0x%" PRIXPTR ", state %u\n", 
+   PPG_LOG_TOKEN_LOOKUP("Current token 0x%" PRIXPTR ", state %u\n", 
              (uintptr_t)ppg_context->current_token,
              (PPG_Count)ppg_context->current_token->misc.state
           );
@@ -385,7 +385,7 @@ static PPG_Count ppg_process_next_event(void)
          case PPG_Token_Finalized:
          case PPG_Token_Invalid:
             {
-               PPG_LOG("Determining branch\n");
+               PPG_LOG_TOKEN_LOOKUP("Determining branch\n");
                
                // Here, we can rely on the fact that after a match
                // during processing the previous event, we already checked
@@ -435,7 +435,9 @@ static PPG_Count ppg_process_next_event(void)
    
    PPG_Count state_before = ppg_context->current_token->misc.state;
    
-   // As the token to process the event.
+   PPG_LOG_TOKEN_LOOKUP("Try to match event %d\n", PPG_EB.cur)
+   
+   // Ask the token to process the event.
    //
    bool event_consumed =
          ppg_context->current_token
@@ -444,6 +446,8 @@ static PPG_Count ppg_process_next_event(void)
                      event,
                      false /*allow modifications in any case*/
                );
+            
+   PPG_LOG_TOKEN_LOOKUP("event consumed: %d\n", event_consumed);
             
    PPG_EB.events[PPG_EB.cur].token_state.changed =
       state_before != ppg_context->current_token->misc.state;
@@ -471,7 +475,7 @@ static PPG_Count ppg_process_next_event(void)
       case PPG_Token_Finalized:
          if(ppg_context->current_token->n_children == 0){
             
-            PPG_LOG("p match\n");
+            PPG_LOG_TOKEN_LOOKUP("p match\n");
          
             // We found a matching pattern
             //
@@ -479,12 +483,13 @@ static PPG_Count ppg_process_next_event(void)
          }
          break;
       case PPG_Token_Invalid:
-  
+
          return PPG_Pattern_Branch_Reversion;
          break;
    }
       
-   PPG_LOG("p in prog\n");
+   PPG_LOG_TOKEN_LOOKUP("Token state %d\n", ppg_context->current_token->misc.state);
+   PPG_LOG_TOKEN_LOOKUP("p in prog\n");
    
    return PPG_Pattern_In_Progress;
 }
@@ -539,15 +544,16 @@ bool ppg_pattern_matching_run(void)
                //
                ppg_signal(PPG_On_Match_Failed);       
                
-               PPG_LOG("Mtch fld\n");
+               PPG_LOG_TOKEN_LOOKUP("Match failed\n");
                ppg_even_buffer_flush_and_remove_first_event(false /* no success */);
+               ppg_event_buffer_flush_and_remove_non_processable_deactivation_events();
             }
          }
             break;
             
          case PPG_Pattern_Orphaned_Deactivation:
             
-            PPG_LOG("Orph deact\n");
+//             PPG_LOG("Orph deact\n");
             
             // Prepare the event buffer for 
             // user processing
@@ -609,4 +615,9 @@ bool ppg_pattern_matching_process_remaining_branch_options(void)
    }
    
    return pattern_matched;
+}
+
+bool ppg_pattern_matching_in_progress(void)
+{
+   return ppg_event_buffer_size() > 0;
 }

@@ -30,7 +30,7 @@ static bool ppg_note_match_event(
                                  bool modify_only_if_consuming
                                 ) 
 {  
-   PPG_LOG("Note 0x%" PRIXPTR ", input 0x%d, ppg_note_match_event\n", (uintptr_t)note, note->input);
+//    PPG_LOG("Note 0x%" PRIXPTR ", input 0x%d, ppg_note_match_event\n", (uintptr_t)note, note->input);
    
    PPG_Count note_flags 
       = note->super.misc.flags;
@@ -49,6 +49,7 @@ static bool ppg_note_match_event(
                if(   (note_flags & PPG_Token_Flags_Pedantic) 
                   || (event->flags & PPG_Event_Active)) {
                   
+//                   PPG_LOG("modify_only_if_consuming = %d\n",  modify_only_if_consuming);
                   if(!modify_only_if_consuming) {
                      note->super.misc.state = PPG_Token_Invalid;
                   }

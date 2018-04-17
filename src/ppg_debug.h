@@ -64,7 +64,7 @@
 #ifdef PPG_BUILDING_FOR_QMK 
 #   define PPG_LOG(...) \
    if(ppg_logging_get_enabled()) { \
-      uprintf(__VA_ARGS__); \
+      uprintf("PPG: " __VA_ARGS__); \
    }
 
 // #elif defined(ARDUINO)
@@ -85,6 +85,12 @@
       printf(__VA_ARGS__); \
    }
    
+#endif
+
+// #define PPG_LOG_TOKEN_LOOKUP_ENABLED
+#ifdef PPG_LOG_TOKEN_LOOKUP_ENABLED
+#   define PPG_LOG_TOKEN_LOOKUP(...) \
+      PPG_LOG("TL: " __VA_ARGS__)
 #endif
 
 /** @brief Dynamically toggle logging output
@@ -147,6 +153,10 @@ bool ppg_logging_get_enabled(void);
  */
 #define PPG_LOG(...)
 #define PPG_LOG_NOOP
+#endif
+
+#ifndef PPG_LOG_TOKEN_LOOKUP
+#   define PPG_LOG_TOKEN_LOOKUP(...)
 #endif
 
 #define PPG_UNUSED(X) (void)(X)

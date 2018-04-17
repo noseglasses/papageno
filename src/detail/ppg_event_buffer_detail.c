@@ -58,18 +58,18 @@ PPG_Event * ppg_event_buffer_store_event(PPG_Event *event)
 {
    #if PPG_HAVE_ASSERTIONS
    if(PPG_EB.start > PPG_EB.end) {
-      PPG_Count n_events = PPG_MAX_EVENTS + PPG_EB.end - PPG_EB.start;
-      PPG_ASSERT(n_events < PPG_MAX_EVENTS - 1); // At least one left!
+      PPG_Count n_events = PPG_EB.max_size + PPG_EB.end - PPG_EB.start;
+      PPG_ASSERT(n_events < PPG_EB.max_size - 1); // At least one left!
    }
    else {
       PPG_Count n_events = PPG_EB.end - PPG_EB.start;
-      PPG_ASSERT(n_events < PPG_MAX_EVENTS - 1); // At least one left!
+      PPG_ASSERT(n_events < PPG_EB.max_size - 1); // At least one left!
    }
    #endif
    
    PPG_Event_Buffer_Index_Type new_pos = PPG_EB.end;
    
-   if(PPG_EB.end == PPG_MAX_EVENTS - 1) {
+   if(PPG_EB.end == PPG_EB.max_size - 1) {
       PPG_EB.end = 0;
    }
    else {
@@ -147,7 +147,7 @@ void ppg_event_buffer_advance(void)
 {
    if(PPG_EB.size == 0) { return; }
    
-   if(PPG_EB.cur == PPG_MAX_EVENTS - 1) {
+   if(PPG_EB.cur == PPG_EB.max_size - 1) {
       PPG_EB.cur = 0;
    }
    else {
@@ -192,7 +192,7 @@ static void ppg_even_buffer_recompute_size(void)
    }
    else {
       
-      PPG_EB.size = PPG_MAX_EVENTS + PPG_EB.end - PPG_EB.start;
+      PPG_EB.size = PPG_EB.max_size + PPG_EB.end - PPG_EB.start;
    }
 }
 
@@ -256,7 +256,7 @@ void ppg_event_buffer_remove_first_event(void)
 {
    if(PPG_EB.size == 0) { return; }
    
-   if(PPG_EB.start < PPG_MAX_EVENTS - 1) {
+   if(PPG_EB.start < PPG_EB.max_size - 1) {
       ++PPG_EB.start;
    }
    else {
@@ -287,9 +287,29 @@ void ppg_even_buffer_flush_and_remove_first_event(bool on_success)
    }
 }
 
+void ppg_event_buffer_flush_and_remove_non_processable_deactivation_events(void)
+{
+   // Remove events...
+   //
+   while(
+      
+      // While there are any
+      //
+      (PPG_EB.size > 0) 
+      
+      // And if those events are deactivation events and cannot be fed to
+      // any active tokens
+      //
+      && !(PPG_EB.events[PPG_EB.start].event.flags & PPG_Event_Active)
+   )
+   {
+      ppg_even_buffer_flush_and_remove_first_event(false);
+   }
+}
+
 void ppg_event_buffer_on_match_success(void)
 {
-   PPG_LOG("Prp. evt bffr on suc.\n");
+   PPG_LOG("Preparing event buffer on success\n");
             
    ppg_active_tokens_update();
    

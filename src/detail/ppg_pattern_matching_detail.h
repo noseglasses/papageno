@@ -17,11 +17,17 @@
 #ifndef PPG_PATTERN_MATCHING_DETAIL_H
 #define PPG_PATTERN_MATCHING_DETAIL_H
 
+#include "ppg_token_detail.h"
+
 #include <stdbool.h>
 
 // Returns true if a match occurred
 //
 bool ppg_pattern_matching_run(void);
+
+// Returns if pattern matching is currently in progress
+//
+bool ppg_pattern_matching_in_progress(void);
 
 // Returns true if a match occurred
 //

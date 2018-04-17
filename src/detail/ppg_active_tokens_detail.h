@@ -40,6 +40,10 @@ void ppg_active_tokens_free(PPG_Active_Tokens *active_tokens);
 
 void ppg_active_tokens_update(void);
 
+void ppg_active_tokens_update_single_token(
+                                    void *event_queue_entry,
+                                    void *user_data);
+
 bool ppg_active_tokens_check_consumption(PPG_Event *event);
 
 void ppg_active_tokens_repeat_actions(void);
