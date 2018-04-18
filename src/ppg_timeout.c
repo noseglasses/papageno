@@ -133,3 +133,13 @@ bool ppg_timeout_check(void)
    
    return timeout_hit;
 }
+
+bool ppg_timeout_set_state(bool state)
+{
+   bool old_state = ppg_context->properties.timeout_enabled;
+   
+   ppg_context->properties.timeout_enabled = state;
+   
+   return old_state;
+}
+

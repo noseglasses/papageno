@@ -87,7 +87,7 @@ PPG_Event * ppg_event_buffer_store_event(PPG_Event *event)
    
    ++PPG_EB.size;
    
-   PPG_LOG("Storing event at %u\n", PPG_EB.end);
+   PPG_LOG("Storing event at %u\n", new_pos);
    PPG_LOG("   start: %u, cur: %u, end: %u, size: %u\n", 
               PPG_EB.start, PPG_EB.cur, PPG_EB.end, PPG_EB.size);
    
@@ -332,6 +332,9 @@ uint8_t ppg_event_buffer_iterate2(
    if(PPG_EB.size == 0) { return 0; }
    
    uint8_t nEventsProcessed = 0;
+   
+//    PPG_SERIAL_PRINT("start: %d, end: %d, size: %d, max_size: %d\n",
+//  (int)PPG_EB.start, (int)PPG_EB.end, (int)PPG_EB.size, (int)PPG_EB.max_size);
    
    if(PPG_EB.start > PPG_EB.end) {
       

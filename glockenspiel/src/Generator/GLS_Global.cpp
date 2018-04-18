@@ -172,6 +172,12 @@ void generateFileHeader(std::ostream &out) {
 "\n";
 
    defaults.outputC(out);
+   
+   out <<
+"#ifndef GLS_EVENT_QUEUE_SIZE\n"
+"#define GLS_EVENT_QUEUE_SIZE(S) (S)\n"
+"#endif\n"
+"\n";
 }
 
 void reportCodeParsed(std::ostream &out)
@@ -566,13 +572,14 @@ void reportJoinedEntities(
 
 void reportActionsAndInputs(std::ostream &out)
 {
+   
    auto inputsByType = ParserTree::Input::getEntitiesByType();
    auto actionsByType = ParserTree::Action::getEntitiesByType();
 
-   reportUnusedEntities(out, ParserTree::Input::getEntitiesByType(), "Inputs");
-   reportJoinedEntities(out, ParserTree::Input::getJoinedEntities(), "Inputs");
-   reportUnusedEntities(out, ParserTree::Action::getEntitiesByType(), "Actions");
-   reportJoinedEntities(out, ParserTree::Action::getJoinedEntities(), "Actions");
+   reportUnusedEntities(out, ParserTree::Input::getEntitiesByType(), "Input");
+   reportJoinedEntities(out, ParserTree::Input::getJoinedEntities(), "Input");
+   reportUnusedEntities(out, ParserTree::Action::getEntitiesByType(), "Action");
+   reportJoinedEntities(out, ParserTree::Action::getJoinedEntities(), "Action");
 }
 
 void recursivelyOutputTree(std::ostream &out, const ParserTree::Token &token, int indent)
@@ -697,7 +704,7 @@ void generateGlobalContext(std::ostream &out)
    int maxEvents = 2*maxInputs + 1;
    
    out <<
-"PPG_Event_Queue_Entry " << SP << "event_buffer[" << 2*maxEvents << "] = GLS_ZERO_INIT;\n"
+"PPG_Event_Queue_Entry " << SP << "event_buffer[GLS_EVENT_QUEUE_SIZE((" << maxEvents << "))] = GLS_ZERO_INIT;\n"
 //    for(int i = 0; i < 2*maxEvents; ++i) {
 //       out <<
 // "                     {{0, 0, 0}, 0, {0, 0}}";
@@ -747,7 +754,7 @@ void generateGlobalContext(std::ostream &out)
 "      __GLS_DI__(end) 0,\n"
 "      __GLS_DI__(cur) 0,\n"
 "      __GLS_DI__(size) 0,\n"
-"      __GLS_DI__(max_size) " << 2*maxEvents << "\n";
+"      __GLS_DI__(max_size) GLS_EVENT_QUEUE_SIZE((" << maxEvents << "))\n";
    out <<
 "   },\n"
 "   __GLS_DI__(furcation_stack) {\n"

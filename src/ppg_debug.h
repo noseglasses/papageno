@@ -45,7 +45,7 @@
 // #   define PPG_HAVE_LOGGING 1
 // #endif
 
-#define PPG_FORCE_LOGGING
+// #define PPG_FORCE_LOGGING
 
 #ifdef PPG_FORCE_LOGGING
 #   ifdef PPG_HAVE_LOGGING
@@ -53,6 +53,17 @@
 #   endif
 #   define PPG_HAVE_LOGGING 1
 #endif
+
+// #if defined(ARDUINO)
+// 
+// void serial_print(const char *c);
+// #   define PPG_SERIAL_PRINT(...) \
+//    { \
+//       char buffer[128]; \
+//       snprintf(buffer, 128, __VA_ARGS__); \
+//       serial_print(buffer); \
+//    }
+// #endif
 
 #if PPG_HAVE_LOGGING
 
@@ -67,15 +78,7 @@
       uprintf("PPG: " __VA_ARGS__); \
    }
 
-// #elif defined(ARDUINO)
-// 
-// void serial_print(const char *c);
-// #   define PPG_LOG(...) \
-//    { \
-//       char buffer[128]; \
-//       snprintf(buffer, 128, __VA_ARGS__); \
-//       serial_print(buffer); \
-//    }
+
 //    
 #else
 // #   include <stdio.h>
