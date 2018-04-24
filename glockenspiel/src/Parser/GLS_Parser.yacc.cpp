@@ -467,18 +467,18 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  52
+#define YYFINAL  53
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   171
+#define YYLAST   170
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  41
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  31
+#define YYNNTS  32
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  87
+#define YYNRULES  88
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  150
+#define YYNSTATES  151
 
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
    by yylex, with out-of-bounds checking.  */
@@ -495,8 +495,8 @@ static const yytype_uint8 yytranslate[] =
        0,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,    34,     2,    20,    40,    32,    33,    39,
-      35,    36,    21,    30,    19,    23,    38,    31,     2,     2,
+       2,     2,     2,    34,     2,    21,    40,    32,    33,    39,
+      35,    36,    20,    30,    19,    23,    38,    31,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,    16,    37,
       28,    17,    29,     2,    18,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -528,13 +528,13 @@ static const yytype_uint16 yyrline[] =
 {
        0,   104,   104,   106,   111,   117,   119,   125,   131,   136,
      141,   146,   151,   156,   161,   167,   173,   179,   186,   192,
-     200,   202,   209,   211,   217,   227,   232,   239,   249,   251,
-     253,   255,   258,   266,   274,   283,   289,   296,   304,   312,
-     318,   320,   327,   335,   341,   349,   351,   358,   366,   374,
-     382,   397,   412,   418,   421,   424,   427,   431,   437,   446,
-     453,   454,   455,   456,   457,   458,   459,   460,   461,   462,
-     463,   464,   465,   466,   467,   468,   469,   470,   471,   472,
-     473,   474,   475,   476,   477,   479,   484,   485
+     200,   202,   209,   211,   219,   224,   231,   241,   243,   245,
+     247,   249,   253,   262,   270,   278,   287,   293,   300,   308,
+     316,   322,   324,   331,   339,   345,   353,   355,   362,   370,
+     378,   386,   401,   416,   422,   425,   428,   431,   435,   441,
+     450,   457,   458,   459,   460,   461,   462,   463,   464,   465,
+     466,   467,   468,   469,   470,   471,   472,   473,   474,   475,
+     476,   477,   478,   479,   480,   481,   483,   488,   489
 };
 #endif
 
@@ -546,16 +546,16 @@ static const char *const yytname[] =
   "$end", "error", "$undefined", "LAYER_KEYWORD", "ARROW",
   "ACTION_KEYWORD", "INPUT_KEYWORD", "TYPE_KEYWORD", "PHRASE_KEYWORD",
   "ALIAS_KEYWORD", "INCLUDE_KEYWORD", "SETTING_KEYWORD", "DEFAULT_KEYWORD",
-  "LINE_END", "ID", "QUOTED_STRING", "':'", "'='", "'@'", "','", "'#'",
-  "'*'", "'|'", "'-'", "'{'", "'}'", "'['", "']'", "'<'", "'>'", "'+'",
+  "LINE_END", "ID", "QUOTED_STRING", "':'", "'='", "'@'", "','", "'*'",
+  "'#'", "'|'", "'-'", "'{'", "'}'", "'['", "']'", "'<'", "'>'", "'+'",
   "'/'", "'%'", "'&'", "'!'", "'('", "')'", "';'", "'.'", "'\\''", "'$'",
   "$accept", "lines", "line", "input_list", "phrase", "action_token",
-  "rep_token", "token", "token__", "note", "input", "cluster", "chord",
-  "aggregate", "flag_definition", "alpha_seq", "action_list_entry",
-  "action_list", "layer_def", "input_type_def", "action_type_def",
-  "input_def", "action_def", "alias_def", "action_parameters",
-  "input_parameters", "typed_id", "parameters", "cpp_token", "cpp_code",
-  "cpp_token_seq", YY_NULLPTR
+  "rep_token", "token", "token__", "phrase_lookup", "note", "input",
+  "cluster", "chord", "aggregate", "flag_definition", "alpha_seq",
+  "action_list_entry", "action_list", "layer_def", "input_type_def",
+  "action_type_def", "input_def", "action_def", "alias_def",
+  "action_parameters", "input_parameters", "typed_id", "parameters",
+  "cpp_token", "cpp_code", "cpp_token_seq", YY_NULLPTR
 };
 #endif
 
@@ -566,7 +566,7 @@ static const yytype_uint16 yytoknum[] =
 {
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
      265,   266,   267,   268,   269,   270,    58,    61,    64,    44,
-      35,    42,   124,    45,   123,   125,    91,    93,    60,    62,
+      42,    35,   124,    45,   123,   125,    91,    93,    60,    62,
       43,    47,    37,    38,    33,    40,    41,    59,    46,    39,
       36
 };
@@ -586,21 +586,22 @@ static const yytype_uint16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
-      27,    -9,    25,    22,    30,    28,    32,    42,   -15,   -15,
-      60,    47,    50,    50,    59,    59,    54,   -15,    39,   -15,
-      63,    64,   -15,   -15,   -15,   -15,   -15,    55,    62,    97,
-      98,   100,   104,   -15,   105,   106,   107,   108,   107,   109,
-     111,   112,   113,   114,   -15,   115,    86,   110,   -15,    15,
-      95,   101,   -15,   -15,    92,   -15,   119,   120,   -15,   -15,
-     -15,   -15,   -15,   -15,   -15,   121,    99,   122,   123,   122,
-     124,   125,   126,   129,   131,   132,   -15,   -15,   -15,   -15,
-     134,   -15,   -15,   -15,   -15,   118,   -15,   127,   -15,   -15,
-     135,   116,   -15,   -15,   -15,   -15,   -15,    92,   136,   116,
-     138,   137,   -15,   -15,   139,   119,   128,    67,   -15,    52,
-     -15,   142,   -15,   143,   -15,   -15,   -15,   -15,   -15,   -15,
+      27,    -9,    25,    22,    30,    28,    45,    52,   -15,   -15,
+      60,    44,    59,    59,    65,    65,    54,   -15,    39,   -15,
+      58,    88,   -15,   -15,   -15,   -15,   -15,   -15,    72,    96,
+      97,    98,    99,   104,   -15,   105,   106,   107,   108,   107,
+     109,   111,   112,   113,   114,   -15,   115,    42,   110,   -15,
+      15,    95,   100,   -15,   -15,    92,   -15,   119,   120,   -15,
+     -15,   -15,   -15,   -15,   -15,   -15,   121,   116,   122,   123,
+     122,   124,   125,   126,   130,   132,   133,   -15,   -15,   -15,
+     -15,   135,   -15,   -15,   -15,   -15,   118,   -15,   128,   -15,
+     -15,   136,   117,   -15,   -15,   -15,   -15,   -15,    92,   137,
+     117,   127,   138,   -15,   -15,   139,   119,   129,    67,   -15,
+      43,   -15,   141,   -15,   144,   -15,   -15,   -15,   -15,   -15,
      -15,   -15,   -15,   -15,   -15,   -15,   -15,   -15,   -15,   -15,
      -15,   -15,   -15,   -15,   -15,   -15,   -15,   -15,   -15,   -15,
-     -15,   -15,   -15,   -14,   -15,   -15,   146,   -15,   -15,   -15
+     -15,   -15,   -15,   -15,   -14,   -15,   -15,   143,   -15,   -15,
+     -15
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -608,39 +609,40 @@ static const yytype_int16 yypact[] =
      means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       0,     0,     0,     0,     0,     0,     0,     0,     5,    42,
+       0,     0,     0,     0,     0,     0,     0,     0,     5,    43,
        0,     0,     0,     0,     0,     0,     0,     3,     0,    20,
-      22,    25,    27,    28,    29,    30,    31,     0,     0,     0,
-       0,     0,     0,    17,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,    24,    35,     0,     0,    18,    40,
-       0,     0,     1,     4,     0,     6,     0,     0,     8,     9,
-      10,    11,    12,    13,    47,     0,    57,    53,     0,    55,
-       0,     0,     0,     0,     0,     0,    36,    32,    33,    34,
-       0,    39,    37,    38,    21,    43,    45,    23,    26,    49,
-       0,     0,    51,    54,    48,    50,    56,     0,     0,     0,
-       0,     0,    41,    19,     0,     0,     0,     0,    59,     0,
-      52,     0,    15,     0,    44,    46,    58,    83,    84,    78,
-      76,    81,    77,    62,    67,    60,    70,    71,    72,    73,
-      74,    75,    61,    63,    64,    65,    66,    68,    69,    79,
-      80,    82,    86,     0,     7,    14,     0,    85,    87,    16
+      22,    24,    26,    31,    27,    28,    29,    30,     0,     0,
+       0,     0,     0,     0,    17,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,    32,    36,     0,     0,    18,
+      41,     0,     0,     1,     4,     0,     6,     0,     0,     8,
+       9,    10,    11,    12,    13,    48,     0,    58,    54,     0,
+      56,     0,     0,     0,     0,     0,     0,    37,    33,    34,
+      35,     0,    40,    38,    39,    21,    44,    46,    23,    25,
+      50,     0,     0,    52,    55,    49,    51,    57,     0,     0,
+       0,     0,     0,    42,    19,     0,     0,     0,     0,    60,
+       0,    53,     0,    15,     0,    45,    47,    59,    84,    85,
+      79,    77,    82,    63,    78,    68,    61,    71,    72,    73,
+      74,    75,    76,    62,    64,    65,    66,    67,    69,    70,
+      80,    81,    83,    87,     0,     7,    14,     0,    86,    88,
+      16
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int16 yypgoto[] =
 {
-     -15,   -15,   144,   -15,    41,   117,   -15,   -15,   -15,   -15,
-     148,   -15,   -15,   147,    91,   -15,    58,   -15,   -15,   -15,
-     -15,   -15,   -15,   -15,   -15,   -15,   130,    83,    21,    66,
-     -15
+     -15,   -15,   145,   -15,    40,    73,   -15,   -15,   -15,   -15,
+     -15,   147,   -15,   -15,   148,   102,   -15,    56,   -15,   -15,
+     -15,   -15,   -15,   -15,   -15,   -15,   -15,   131,    94,    21,
+      66,   -15
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int16 yydefgoto[] =
 {
-      -1,    16,    17,    49,    18,    19,    20,    21,    22,    23,
-      46,    24,    25,    50,    76,    26,    86,    87,    27,    28,
-      29,    30,    31,    32,    92,    95,    67,    93,   142,   108,
-     143
+      -1,    16,    17,    50,    18,    19,    20,    21,    22,    23,
+      24,    47,    25,    26,    51,    77,    27,    87,    88,    28,
+      29,    30,    31,    32,    33,    93,    96,    68,    94,   143,
+     109,   144
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -648,24 +650,24 @@ static const yytype_int16 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int16 yytable[] =
 {
-     117,   118,   119,   120,    33,   121,   122,   123,   124,   125,
+     118,   119,   120,   121,    34,   122,   123,   124,   125,   126,
+     127,   128,   129,   130,   131,   132,   133,   134,   135,   136,
+     137,   138,   139,   140,   141,   142,   148,    -2,     1,    36,
+       2,    76,     3,     4,    81,     5,     6,    38,    37,     7,
+       8,    35,     9,    55,    40,    10,    39,    55,    11,    12,
+      13,    14,    56,    15,    53,     1,   145,     2,    45,     3,
+       4,    41,     5,     6,    78,    79,     7,     8,    42,     9,
+      43,    44,    10,    46,    57,    11,    12,    13,    14,    49,
+      15,   118,   119,   120,   121,    59,   122,   123,   124,   125,
      126,   127,   128,   129,   130,   131,   132,   133,   134,   135,
-     136,   137,   138,   139,   140,   141,   147,    -2,     1,    35,
-       2,    75,     3,     4,    80,     5,     6,    37,    36,     7,
-       8,    34,     9,    54,    39,    10,    38,    11,    40,    12,
-      13,    14,    55,    15,    52,     1,    54,     2,    41,     3,
-       4,    44,     5,     6,    45,   144,     7,     8,    58,     9,
-      42,    43,    10,    48,    11,    59,    12,    13,    14,    56,
-      15,   117,   118,   119,   120,    57,   121,   122,   123,   124,
-     125,   126,   127,   128,   129,   130,   131,   132,   133,   134,
-     135,   136,   137,   138,   139,   140,   141,     9,    77,    78,
-      60,    61,    11,    62,    12,    13,    14,    63,    15,    64,
-      82,    66,    65,    70,    68,    71,    72,    90,    83,    73,
-      74,    75,    79,    85,    88,    89,   104,    94,   109,    91,
-      81,    97,    98,    99,   100,   101,   105,   102,   103,   106,
-     110,   112,    96,   114,   113,   145,   107,   116,   146,   149,
-      53,    47,    51,   115,   148,   111,     0,     0,    69,     0,
-       0,    84
+     136,   137,   138,   139,   140,   141,   142,     9,    58,    60,
+      61,    62,    63,    11,    12,    13,    14,    64,    15,    65,
+      83,    67,    66,    71,    69,    72,    73,    84,    85,    74,
+      75,    76,    80,    86,    89,    90,   105,    95,   110,    92,
+     113,    98,    99,   100,    91,   101,   102,   106,   103,   104,
+     107,   111,    82,   115,   146,   114,   150,   108,   117,   147,
+      48,    54,   116,    52,    97,   149,   112,     0,     0,     0,
+      70
 };
 
 static const yytype_int16 yycheck[] =
@@ -674,20 +676,20 @@ static const yytype_int16 yycheck[] =
       24,    25,    26,    27,    28,    29,    30,    31,    32,    33,
       34,    35,    36,    37,    38,    39,    40,     0,     1,     7,
        3,    16,     5,     6,    19,     8,     9,     7,    16,    12,
-      13,    16,    15,     4,    16,    18,    16,    20,    16,    22,
-      23,    24,    13,    26,     0,     1,     4,     3,    16,     5,
-       6,    14,     8,     9,    14,    13,    12,    13,    13,    15,
-      10,    11,    18,    14,    20,    13,    22,    23,    24,    16,
-      26,    14,    15,    16,    17,    21,    19,    20,    21,    22,
+      13,    16,    15,     4,    16,    18,    16,     4,    21,    22,
+      23,    24,    13,    26,     0,     1,    13,     3,    14,     5,
+       6,    16,     8,     9,    22,    23,    12,    13,    16,    15,
+      10,    11,    18,    14,    16,    21,    22,    23,    24,    14,
+      26,    14,    15,    16,    17,    13,    19,    20,    21,    22,
       23,    24,    25,    26,    27,    28,    29,    30,    31,    32,
-      33,    34,    35,    36,    37,    38,    39,    15,    22,    23,
-      13,    13,    20,    13,    22,    23,    24,    13,    26,    14,
-      25,    14,    16,    14,    16,    14,    14,    28,    27,    16,
-      16,    16,    22,    14,    14,    14,    18,    14,    97,    17,
-      49,    17,    17,    17,    15,    14,    19,    15,    14,    14,
-      14,    13,    69,    14,    17,    13,    40,    29,    15,    13,
-      16,    13,    15,   105,   143,    99,    -1,    -1,    38,    -1,
-      -1,    54
+      33,    34,    35,    36,    37,    38,    39,    15,    20,    13,
+      13,    13,    13,    21,    22,    23,    24,    13,    26,    14,
+      25,    14,    16,    14,    16,    14,    14,    27,    55,    16,
+      16,    16,    22,    14,    14,    14,    18,    14,    98,    17,
+      13,    17,    17,    17,    28,    15,    14,    19,    15,    14,
+      14,    14,    50,    14,    13,    17,    13,    40,    29,    15,
+      13,    16,   106,    15,    70,   144,   100,    -1,    -1,    -1,
+      39
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
@@ -695,20 +697,21 @@ static const yytype_int16 yycheck[] =
 static const yytype_uint8 yystos[] =
 {
        0,     1,     3,     5,     6,     8,     9,    12,    13,    15,
-      18,    20,    22,    23,    24,    26,    42,    43,    45,    46,
-      47,    48,    49,    50,    52,    53,    56,    59,    60,    61,
-      62,    63,    64,    13,    16,     7,    16,     7,    16,    16,
-      16,    16,    10,    11,    14,    14,    51,    51,    14,    44,
-      54,    54,     0,    43,     4,    13,    16,    21,    13,    13,
-      13,    13,    13,    13,    14,    16,    14,    67,    16,    67,
-      14,    14,    14,    16,    16,    16,    55,    22,    23,    22,
-      19,    55,    25,    27,    46,    14,    57,    58,    14,    14,
-      28,    17,    65,    68,    14,    66,    68,    17,    17,    17,
-      15,    14,    15,    14,    18,    19,    14,    40,    70,    45,
-      14,    70,    13,    17,    14,    57,    29,    14,    15,    16,
-      17,    19,    20,    21,    22,    23,    24,    25,    26,    27,
-      28,    29,    30,    31,    32,    33,    34,    35,    36,    37,
-      38,    39,    69,    71,    13,    13,    15,    40,    69,    13
+      18,    21,    22,    23,    24,    26,    42,    43,    45,    46,
+      47,    48,    49,    50,    51,    53,    54,    57,    60,    61,
+      62,    63,    64,    65,    13,    16,     7,    16,     7,    16,
+      16,    16,    16,    10,    11,    14,    14,    52,    52,    14,
+      44,    55,    55,     0,    43,     4,    13,    16,    20,    13,
+      13,    13,    13,    13,    13,    14,    16,    14,    68,    16,
+      68,    14,    14,    14,    16,    16,    16,    56,    22,    23,
+      22,    19,    56,    25,    27,    46,    14,    58,    59,    14,
+      14,    28,    17,    66,    69,    14,    67,    69,    17,    17,
+      17,    15,    14,    15,    14,    18,    19,    14,    40,    71,
+      45,    14,    71,    13,    17,    14,    58,    29,    14,    15,
+      16,    17,    19,    20,    21,    22,    23,    24,    25,    26,
+      27,    28,    29,    30,    31,    32,    33,    34,    35,    36,
+      37,    38,    39,    70,    72,    13,    13,    15,    40,    70,
+      13
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
@@ -716,13 +719,13 @@ static const yytype_uint8 yyr1[] =
 {
        0,    41,    42,    42,    42,    43,    43,    43,    43,    43,
       43,    43,    43,    43,    43,    43,    43,    43,    44,    44,
-      45,    45,    46,    46,    46,    47,    47,    48,    49,    49,
-      49,    49,    50,    50,    50,    51,    51,    52,    53,    54,
-      55,    55,    56,    57,    57,    58,    58,    59,    60,    61,
-      62,    63,    64,    65,    65,    66,    66,    67,    67,    68,
-      69,    69,    69,    69,    69,    69,    69,    69,    69,    69,
-      69,    69,    69,    69,    69,    69,    69,    69,    69,    69,
-      69,    69,    69,    69,    69,    70,    71,    71
+      45,    45,    46,    46,    47,    47,    48,    49,    49,    49,
+      49,    49,    50,    51,    51,    51,    52,    52,    53,    54,
+      55,    56,    56,    57,    58,    58,    59,    59,    60,    61,
+      62,    63,    64,    65,    66,    66,    67,    67,    68,    68,
+      69,    70,    70,    70,    70,    70,    70,    70,    70,    70,
+      70,    70,    70,    70,    70,    70,    70,    70,    70,    70,
+      70,    70,    70,    70,    70,    70,    71,    72,    72
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
@@ -730,13 +733,13 @@ static const yytype_uint8 yyr2[] =
 {
        0,     2,     0,     1,     2,     1,     2,     6,     2,     2,
        2,     2,     2,     2,     6,     5,     7,     2,     1,     3,
-       1,     3,     1,     3,     2,     1,     3,     1,     1,     1,
-       1,     1,     3,     3,     3,     1,     2,     3,     3,     2,
-       0,     2,     1,     1,     3,     1,     3,     3,     4,     4,
-       4,     4,     5,     0,     1,     0,     1,     1,     4,     2,
+       1,     3,     1,     3,     1,     3,     1,     1,     1,     1,
+       1,     1,     2,     3,     3,     3,     1,     2,     3,     3,
+       2,     0,     2,     1,     1,     3,     1,     3,     3,     4,
+       4,     4,     4,     5,     0,     1,     0,     1,     1,     4,
+       2,     1,     1,     1,     1,     1,     1,     1,     1,     1,
        1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
-       1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
-       1,     1,     1,     1,     1,     3,     1,     2
+       1,     1,     1,     1,     1,     1,     3,     1,     2
 };
 
 
@@ -1518,7 +1521,7 @@ yyreduce:
     {
            MARK_LOCATION((yyloc))
         }
-#line 1522 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1525 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 4:
@@ -1526,7 +1529,7 @@ yyreduce:
     {
            MARK_LOCATION((yyloc))
         }
-#line 1530 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1533 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 6:
@@ -1535,7 +1538,7 @@ yyreduce:
            MARK_LOCATION((yyloc))
            Pattern::finishPattern();
         }
-#line 1539 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1542 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 7:
@@ -1544,7 +1547,7 @@ yyreduce:
            MARK_LOCATION((yyloc))
            Phrase::storePhrase(ParserToken((yyvsp[-3]), (yylsp[-3])));
         }
-#line 1548 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1551 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 8:
@@ -1552,7 +1555,7 @@ yyreduce:
     {
            MARK_LOCATION((yyloc))
         }
-#line 1556 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1559 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 9:
@@ -1560,7 +1563,7 @@ yyreduce:
     {
            MARK_LOCATION((yyloc))
         }
-#line 1564 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1567 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 10:
@@ -1568,7 +1571,7 @@ yyreduce:
     {
            MARK_LOCATION((yyloc))
         }
-#line 1572 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1575 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 11:
@@ -1576,7 +1579,7 @@ yyreduce:
     {
            MARK_LOCATION((yyloc))
         }
-#line 1580 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1583 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 12:
@@ -1584,7 +1587,7 @@ yyreduce:
     {
            MARK_LOCATION((yyloc))
         }
-#line 1588 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1591 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 13:
@@ -1592,7 +1595,7 @@ yyreduce:
     {
            MARK_LOCATION((yyloc))
         }
-#line 1596 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1599 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 14:
@@ -1601,7 +1604,7 @@ yyreduce:
            MARK_LOCATION((yyloc))
            defaults.set((yyvsp[-3]), Glockenspiel::Parser::getCppCode().getText());
         }
-#line 1605 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1608 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 15:
@@ -1610,7 +1613,7 @@ yyreduce:
            MARK_LOCATION((yyloc))
            Glockenspiel::Parser::searchFileGenerateTree(Glockenspiel::Parser::unquote((yyvsp[-1])));
         }
-#line 1614 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1617 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 16:
@@ -1619,7 +1622,7 @@ yyreduce:
            MARK_LOCATION((yyloc))
            Glockenspiel::settings.set((yyvsp[-3]), Glockenspiel::Parser::unquote((yyvsp[-1])));
         }
-#line 1623 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1626 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 17:
@@ -1627,7 +1630,7 @@ yyreduce:
     {
           yyerrok;
         }
-#line 1631 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1634 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 18:
@@ -1636,7 +1639,7 @@ yyreduce:
             MARK_LOCATION((yyloc))
             Input::pushNext(ParserToken((yyvsp[0]), (yylsp[0])));
          }
-#line 1640 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1643 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 19:
@@ -1645,7 +1648,7 @@ yyreduce:
             MARK_LOCATION((yyloc))
             Input::pushNext(ParserToken((yyvsp[0]), (yylsp[0])));
          }
-#line 1649 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1652 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 21:
@@ -1653,7 +1656,7 @@ yyreduce:
     {
             MARK_LOCATION((yyloc))
         }
-#line 1657 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1660 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 23:
@@ -1662,39 +1665,28 @@ yyreduce:
            MARK_LOCATION((yyloc))
            Pattern::applyActions();
         }
-#line 1666 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1669 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 218 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 220 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
-           // Lookup a phrase and copy its tokens to the current pattern
-           //
            MARK_LOCATION((yyloc))
-           Pattern::pushPhrase(ParserToken((yyvsp[0]), (yylsp[0])));
         }
 #line 1677 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 228 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
-    {
-           MARK_LOCATION((yyloc))
-        }
-#line 1685 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
-    break;
-
-  case 26:
-#line 233 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 225 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
            MARK_LOCATION((yyloc))
            Pattern::repeatLastToken(ParserToken((yyvsp[0]), (yylsp[0])));
         }
-#line 1694 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1686 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
-  case 27:
-#line 240 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+  case 26:
+#line 232 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
            MARK_LOCATION((yyloc))
            Pattern::getMostRecentToken()->setLOD((yylsp[0]));
@@ -1702,159 +1694,170 @@ yyreduce:
            Pattern::getMostRecentToken()->setFlagsString(Glockenspiel::Parser::flagsString);
            Glockenspiel::Parser::flagsString.clear();
         }
-#line 1706 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1698 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 259 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 254 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    {
+           // Lookup a phrase and copy its tokens to the current pattern
+           //
+           MARK_LOCATION((yyloc))
+           Pattern::pushPhrase(ParserToken((yyvsp[0]), (yylsp[0])));
+        }
+#line 1709 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 33:
+#line 263 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
             MARK_LOCATION((yyloc))
             auto newNote = std::make_shared<Note>();
             newNote->getFlags().tokenFlags_.set("PPG_Note_Flags_A_N_D");
             Pattern::pushToken(newNote);
         }
-#line 1717 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1720 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
-  case 33:
-#line 267 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+  case 34:
+#line 271 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
             MARK_LOCATION((yyloc))
             auto newNote = std::make_shared<Note>();
             newNote->getFlags().tokenFlags_.set("PPG_Note_Flag_Match_Activation");
             Pattern::pushToken(newNote);
         }
-#line 1728 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1731 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
-  case 34:
-#line 275 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+  case 35:
+#line 279 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
             MARK_LOCATION((yyloc))
             auto newNote = std::make_shared<Note>();
             newNote->getFlags().tokenFlags_.set("PPG_Note_Flag_Match_Deactivation");
             Pattern::pushToken(newNote);
         }
-#line 1739 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1742 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
-  case 35:
-#line 284 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+  case 36:
+#line 288 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
             MARK_LOCATION((yyloc))
             Input::pushNext(ParserToken((yyvsp[0]), (yylsp[0])));
         }
-#line 1748 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1751 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
-  case 36:
-#line 290 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+  case 37:
+#line 294 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
             MARK_LOCATION((yyloc))
             Input::pushNext(ParserToken((yyvsp[-1]), (yylsp[-1])));
         }
-#line 1757 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1760 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
-  case 37:
-#line 297 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+  case 38:
+#line 301 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
             MARK_LOCATION((yyloc))
             Pattern::pushToken(std::make_shared<Cluster>());
         }
-#line 1766 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1769 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
-  case 38:
-#line 305 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+  case 39:
+#line 309 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
             MARK_LOCATION((yyloc))
             Pattern::pushToken(std::make_shared<Chord>());
         }
-#line 1775 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1778 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
-  case 39:
-#line 313 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+  case 40:
+#line 317 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
            MARK_LOCATION((yyloc))
         }
-#line 1783 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1786 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
-  case 41:
-#line 321 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+  case 42:
+#line 325 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
            MARK_LOCATION((yyloc))
            Glockenspiel::Parser::flagsString = Glockenspiel::Parser::unquote((yyvsp[0]));
         }
-#line 1792 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1795 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
-  case 42:
-#line 328 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+  case 43:
+#line 332 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
            MARK_LOCATION((yyloc))
             Pattern::addAlphaSequence(Glockenspiel::Parser::unquote((yyvsp[0])));
         }
-#line 1801 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1804 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
-  case 43:
-#line 336 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+  case 44:
+#line 340 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
            MARK_LOCATION((yyloc))
             Action::pushNext(ParserToken((yyvsp[0]), (yylsp[0])));
         }
-#line 1810 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1813 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
-  case 44:
-#line 342 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+  case 45:
+#line 346 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
            MARK_LOCATION((yyloc))
             Action::pushNext(ParserToken((yyvsp[0]), (yylsp[0])), ParserToken((yyvsp[-2]), (yylsp[-2])));
         }
-#line 1819 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
-    break;
-
-  case 46:
-#line 352 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
-    {
-           MARK_LOCATION((yyloc))
-        }
-#line 1827 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1822 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 47:
-#line 359 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 356 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    {
+           MARK_LOCATION((yyloc))
+        }
+#line 1830 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 48:
+#line 363 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
            MARK_LOCATION((yyloc))
            ParserTree::Token::setCurrentLayer(ParserToken((yyvsp[0]), (yylsp[0])));
         }
-#line 1836 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1839 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
-  case 48:
-#line 367 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+  case 49:
+#line 371 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
            MARK_LOCATION((yyloc))
            Input::defineType((yyvsp[0]));
         }
-#line 1845 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1848 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
-  case 49:
-#line 375 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+  case 50:
+#line 379 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
            MARK_LOCATION((yyloc))
            Action::defineType((yyvsp[0]));
         }
-#line 1854 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1857 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
-  case 50:
-#line 383 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+  case 51:
+#line 387 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
            MARK_LOCATION((yyloc))
            Input::define(
@@ -1866,11 +1869,11 @@ yyreduce:
                )
            );
         }
-#line 1870 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1873 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
-  case 51:
-#line 398 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+  case 52:
+#line 402 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
             MARK_LOCATION((yyloc))
             Action::define(
@@ -1882,214 +1885,214 @@ yyreduce:
                )
             );
         }
-#line 1886 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1889 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
-  case 52:
-#line 413 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+  case 53:
+#line 417 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
            MARK_LOCATION((yyloc))
            Alias::define((yyvsp[-2]), Glockenspiel::Parser::Token((yyvsp[0]), (yyloc)));
         }
-#line 1895 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1898 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
-  case 57:
-#line 432 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+  case 58:
+#line 436 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
            MARK_LOCATION((yyloc))
             NextEntity::setId(ParserToken((yyvsp[0]), (yylsp[0])));
         }
-#line 1904 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1907 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
-  case 58:
-#line 438 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+  case 59:
+#line 442 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
            MARK_LOCATION((yyloc))
             NextEntity::setId(ParserToken((yyvsp[-3]), (yylsp[-3])));
             NextEntity::setType(ParserToken((yyvsp[-1]), (yylsp[-1])));
         }
-#line 1914 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1917 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
-  case 59:
-#line 447 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+  case 60:
+#line 451 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
            MARK_LOCATION((yyloc))
            NextEntity::setParameters(Glockenspiel::Parser::getCppCode());
         }
-#line 1923 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
-    break;
-
-  case 60:
-#line 453 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
-    { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 1929 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1926 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 61:
-#line 454 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 457 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 1935 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1932 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 62:
-#line 455 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 458 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 1941 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1938 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 63:
-#line 456 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 459 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 1947 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1944 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 64:
-#line 457 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 460 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 1953 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1950 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 65:
-#line 458 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 461 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 1959 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1956 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 66:
-#line 459 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 462 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 1965 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1962 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 67:
-#line 460 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 463 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 1971 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1968 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 68:
-#line 461 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 464 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 1977 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1974 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 69:
-#line 462 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 465 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 1983 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1980 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 70:
-#line 463 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 466 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 1989 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1986 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 71:
-#line 464 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 467 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 1995 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1992 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 72:
-#line 465 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 468 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 2001 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 1998 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 73:
-#line 466 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 469 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 2007 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 2004 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 74:
-#line 467 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 470 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 2013 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 2010 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 75:
-#line 468 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 471 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 2019 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 2016 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 76:
-#line 469 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 472 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 2025 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 2022 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 77:
-#line 470 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 473 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 2031 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 2028 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 78:
-#line 471 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 474 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 2037 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 2034 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 79:
-#line 472 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 475 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 2043 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 2040 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 80:
-#line 473 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
-    { Glockenspiel::Parser::codeStream << (yyvsp[0]);  }
-#line 2049 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 476 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
+#line 2046 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 81:
-#line 474 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
-    { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 2055 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 477 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    { Glockenspiel::Parser::codeStream << (yyvsp[0]);  }
+#line 2052 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 82:
-#line 475 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 478 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 2061 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 2058 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 83:
-#line 476 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 479 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 2067 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 2064 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 84:
-#line 477 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 480 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
-#line 2073 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 2070 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
   case 85:
-#line 480 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+#line 481 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+    { Glockenspiel::Parser::codeStream << (yyvsp[0]); }
+#line 2076 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+    break;
+
+  case 86:
+#line 484 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
            MARK_LOCATION((yyloc))
          }
-#line 2081 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 2084 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
-  case 87:
-#line 486 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
+  case 88:
+#line 490 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1646  */
     {
            MARK_LOCATION((yyloc))
          }
-#line 2089 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 2092 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
     break;
 
 
-#line 2093 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
+#line 2096 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc.cpp" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2324,7 +2327,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 489 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1906  */
+#line 493 "/home/flo/Inpartik/Development/Kaleidoscope/Kaleidoscope-Papageno/hardware/keyboardio/avr/libraries/Kaleidoscope-Papageno/3rd_party/Papageno/glockenspiel/src/Parser/GLS_Parser.yacc" /* yacc.c:1906  */
 
 
 void yyerror(YYLTYPE *yylloc, yyscan_t scanner, const char *s)

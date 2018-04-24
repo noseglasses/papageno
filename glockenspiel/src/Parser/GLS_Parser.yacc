@@ -213,14 +213,6 @@ action_token:
            MARK_LOCATION(@$)
            Pattern::applyActions();
         }
-        |
-        '#' ID
-        {
-           // Lookup a phrase and copy its tokens to the current pattern
-           //
-           MARK_LOCATION(@$)
-           Pattern::pushPhrase(ParserToken($2, @2));
-        }
         ;
         
 rep_token:
@@ -253,6 +245,18 @@ token__:  note
         chord
         |
         alpha_seq
+        |
+        phrase_lookup
+        ;
+        
+phrase_lookup:
+        '#' ID
+        {
+           // Lookup a phrase and copy its tokens to the current pattern
+           //
+           MARK_LOCATION(@$)
+           Pattern::pushPhrase(ParserToken($2, @2));
+        }
         ;
         
 note:   '|' input '|'

@@ -58,6 +58,8 @@ void
    
    const auto &tokens = phrasePtr->getTokens();
    
+   sequenceStart_ = tokens_.size() - 1;
+   
    std::copy(tokens.begin(), tokens.end(), std::back_inserter(tokens_));
 }
 
@@ -67,9 +69,13 @@ void
 {   
    auto count = Glockenspiel::Misc::atol(countString);
    
+   int sequenceEnd = tokens_.size();
+   
    for(int i = 0; i < (count - 1); ++i) {
       
-      tokens_.push_back(tokens_.back()->clone());
+      for(int j = sequenceStart_; j < sequenceEnd; ++j) {
+         tokens_.push_back(tokens_[j]->clone());
+      }
    }
 }
 
