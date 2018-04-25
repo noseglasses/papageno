@@ -58,7 +58,7 @@ void
    
    const auto &tokens = phrasePtr->getTokens();
    
-   sequenceStart_ = tokens_.size() - 1;
+   sequenceStart_ = tokens_.size();
    
    std::copy(tokens.begin(), tokens.end(), std::back_inserter(tokens_));
 }

@@ -11,10 +11,10 @@ option "project_name" n "The name of the project to generate Papageno code for" 
 option "include_directory" I "Include directory" string optional multiple
 option "debug" d "Generate debug output during the compile" flag off
 
-option "join_duplicate_entities" - "Join duplicate actions and inputs" flag off
-option "join_duplicate_actions" - "Join duplicate actions" flag off
-option "join_duplicate_inputs" - "Join duplicate inputs" flag off
-option "join_note_sequences" - "Join note sequences" flag off
+option "join_duplicate_entities" - "Join duplicate actions and inputs" flag on   
+option "join_duplicate_actions" - "Join duplicate actions" flag on
+option "join_duplicate_inputs" - "Join duplicate inputs" flag on
+option "join_note_sequences" - "Join note sequences" flag on
 
 option "allow_auto_type_definition" - "Allow automatic definition of all entity types" flag off
 option "allow_auto_input_type_definition" - "Allow automatic definition of input types" flag off

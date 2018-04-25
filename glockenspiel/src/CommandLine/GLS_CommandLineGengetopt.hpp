@@ -31,7 +31,7 @@ extern "C" {
 
 #ifndef CMDLINE_PARSER_VERSION
 /** @brief the program version */
-#define CMDLINE_PARSER_VERSION "68e97f421f845f504699d0f3b7ca129580964afe"
+#define CMDLINE_PARSER_VERSION ""
 #endif
 
 /** @brief Where the command line options are stored */
@@ -60,13 +60,13 @@ struct gengetopt_args_info
   const char *include_directory_help; /**< @brief Include directory help description.  */
   int debug_flag;	/**< @brief Generate debug output during the compile (default=off).  */
   const char *debug_help; /**< @brief Generate debug output during the compile help description.  */
-  int join_duplicate_entities_flag;	/**< @brief Join duplicate actions and inputs (default=off).  */
+  int join_duplicate_entities_flag;	/**< @brief Join duplicate actions and inputs (default=on).  */
   const char *join_duplicate_entities_help; /**< @brief Join duplicate actions and inputs help description.  */
-  int join_duplicate_actions_flag;	/**< @brief Join duplicate actions (default=off).  */
+  int join_duplicate_actions_flag;	/**< @brief Join duplicate actions (default=on).  */
   const char *join_duplicate_actions_help; /**< @brief Join duplicate actions help description.  */
-  int join_duplicate_inputs_flag;	/**< @brief Join duplicate inputs (default=off).  */
+  int join_duplicate_inputs_flag;	/**< @brief Join duplicate inputs (default=on).  */
   const char *join_duplicate_inputs_help; /**< @brief Join duplicate inputs help description.  */
-  int join_note_sequences_flag;	/**< @brief Join note sequences (default=off).  */
+  int join_note_sequences_flag;	/**< @brief Join note sequences (default=on).  */
   const char *join_note_sequences_help; /**< @brief Join note sequences help description.  */
   int allow_auto_type_definition_flag;	/**< @brief Allow automatic definition of all entity types (default=off).  */
   const char *allow_auto_type_definition_help; /**< @brief Allow automatic definition of all entity types help description.  */

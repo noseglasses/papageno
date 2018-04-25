@@ -43,11 +43,11 @@ int main(int argc, char **argv)
          Parser::generateTree(Glockenspiel::commandLineArgs.source_filename_arg[i]);
       }
       
-      if(settings.join_duplicate_actions || settings.join_duplicate_entities) {
+      if(settings.join_duplicate_actions && settings.join_duplicate_entities) {
          ParserTree::Action::joinDuplicateEntries();
       }
       
-      if(settings.join_duplicate_inputs || settings.join_duplicate_entities) {
+      if(settings.join_duplicate_inputs && settings.join_duplicate_entities) {
          ParserTree::Input::joinDuplicateEntries();
       }
       

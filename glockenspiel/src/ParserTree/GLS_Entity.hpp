@@ -200,15 +200,27 @@ class Entity : public Node
          
          for(const auto &ibtEntry: ibt) {
             
-            std::map<std::string, std::shared_ptr<EntityType__>> entitiesByParameters;
+            typedef std::pair<std::string, std::string> TypeAndParams;
+            
+            std::map<TypeAndParams, std::shared_ptr<EntityType__>> entitiesByParameters;
             
             for(const auto &entityPtr: ibtEntry.second) {
                
                const auto &params = entityPtr->getParameters().getText();
                
+               // Cannot join entities with empty parameters
+               //
+               if(params.empty()) {
+                  entities_[entityPtr->getId().getText()] = entityPtr;
+                  continue;
+               }
+               
+               TypeAndParams typeAndParams(entityPtr->getType().getText(),
+                                           params);
+               
                // Sort entities by parameters definition
                //
-               auto it = entitiesByParameters.find(params);
+               auto it = entitiesByParameters.find(typeAndParams);
                
                if(it != entitiesByParameters.end()) {
                   
@@ -217,7 +229,7 @@ class Entity : public Node
                   joinedEntities_[entityPtr->getType().getText()].push_back(EntityToEntity(entityPtr, it->second));
                }
                else {
-                  entitiesByParameters[params] = entityPtr;
+                  entitiesByParameters[typeAndParams] = entityPtr;
                   entities_[entityPtr->getId().getText()] = entityPtr;
                }
             }

@@ -29,10 +29,11 @@ Settings settings;
    Settings
       ::Settings()
    :  debug(false),
-      join_duplicate_entities(false),
-      join_duplicate_actions(false),
-      join_duplicate_inputs(false),
-      join_note_sequences(false),
+   
+      join_duplicate_entities(true),
+      join_duplicate_actions(true),
+      join_duplicate_inputs(true),
+      join_note_sequences(true),
       
       allow_auto_type_definition(false),
       allow_auto_input_type_definition(false),
@@ -74,7 +75,6 @@ void
    ADD_SETTER(join_duplicate_entities)
    ADD_SETTER(join_duplicate_actions)
    ADD_SETTER(join_duplicate_inputs)
-   ADD_SETTER(join_note_sequences)
    ADD_SETTER(join_note_sequences)
    
    ADD_SETTER(allow_auto_type_definition)
