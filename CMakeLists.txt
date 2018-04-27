@@ -14,7 +14,7 @@ endmacro(use_c99)
 
 use_c99()
 
-option(PAPAGENO_BUILD_LIBRARY TRUE)
+option(PAPAGENO_BUILD_LIBRARY "Enable/Disable build of the Papageno library" TRUE)
 if(PAPAGENO_BUILD_LIBRARY)
 
    # Determine the current project version
@@ -209,7 +209,7 @@ if(PAPAGENO_BUILD_LIBRARY)
    add_subdirectory(src)
 endif()
 
-option(PAPAGENO_BUILD_GLOCKENSPIEL FALSE)
+option(PAPAGENO_BUILD_GLOCKENSPIEL "Enable/Disable build of Papageno's Glockenpiel compiler" TRUE)
 if(PAPAGENO_BUILD_GLOCKENSPIEL)
    add_subdirectory(glockenspiel)
 endif()
