@@ -54,16 +54,18 @@
 #   define PPG_HAVE_LOGGING 1
 #endif
 
-// #if defined(ARDUINO)
-// 
-// void serial_print(const char *c);
-// #   define PPG_SERIAL_PRINT(...) \
-//    { \
-//       char buffer[128]; \
-//       snprintf(buffer, 128, __VA_ARGS__); \
-//       serial_print(buffer); \
-//    }
-// #endif
+#if 0
+#if defined(ARDUINO)
+
+void serial_print(const char *c);
+#   define PPG_SERIAL_PRINT(...) \
+   { \
+      char buffer[128]; \
+      snprintf(buffer, 128, __VA_ARGS__); \
+      serial_print(buffer); \
+   }
+#endif
+#endif
 
 #if PPG_HAVE_LOGGING
 
