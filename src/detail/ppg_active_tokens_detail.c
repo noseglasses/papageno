@@ -17,6 +17,7 @@
 #include "detail/ppg_active_tokens_detail.h"
 #include "detail/ppg_token_detail.h"
 #include "detail/ppg_context_detail.h"
+#include "detail/ppg_signal_detail.h"
 #include "detail/ppg_malloc_detail.h"
 
 #include "ppg_debug.h"
@@ -115,13 +116,14 @@ static void ppg_active_tokens_search_remove(PPG_Token__ *token)
    }
 }
 
-static void ppg_action_callback(PPG_Action_Callback_Fun func, 
-                                PPG_Count activation_flags, 
-                                void *user_data)
+static void ppg_action_callback(PPG_Token__ *consumer,
+                                PPG_Count activation_flags)
 {
    ppg_signal(PPG_Before_Action);
    
-   func(activation_flags, user_data);
+   consumer->action.callback.func(activation_flags, 
+//                                   consumer,
+                                  consumer->action.callback.user_data);
 }
 
 static void ppg_active_tokens_on_deactivation(PPG_Token__ *consumer,
@@ -147,15 +149,13 @@ static void ppg_active_tokens_on_deactivation(PPG_Token__ *consumer,
                   
 //                PPG_LOG("      T.a.a.\n");
                   
-            ppg_action_callback(consumer->action.callback.func,
-                                PPG_Action_Activation_Flags_Active /* signal deactivation */,
-                                 consumer->action.callback.user_data);
+            ppg_action_callback(consumer,
+                                PPG_Action_Activation_Flags_Active /* signal deactivation */);
             
             consumer->misc.action_state = PPG_Action_Activation_Triggered;
                   
-            ppg_action_callback(consumer->action.callback.func,
-                                PPG_Action_Activation_Flags_Empty /* signal deactivation */,
-                                 consumer->action.callback.user_data);
+            ppg_action_callback(consumer,
+                                PPG_Action_Activation_Flags_Empty /* signal deactivation */);
                   
             consumer->misc.action_state = PPG_Action_Deactivation_Triggered;
          }
@@ -186,9 +186,8 @@ static void ppg_active_tokens_on_deactivation(PPG_Token__ *consumer,
             if(consumer->misc.action_state == PPG_Action_Enabled) {
                
 //                   PPG_LOG("      T.e.a.\n");
-               ppg_action_callback(consumer->action.callback.func,
-                                   PPG_Action_Activation_Flags_Empty /* signal deactivation */,
-                                   consumer->action.callback.user_data);
+               ppg_action_callback(consumer,
+                                   PPG_Action_Activation_Flags_Empty /* signal deactivation */);
                
                consumer->misc.action_state = PPG_Action_Deactivation_Triggered;
             }
@@ -207,18 +206,16 @@ static void ppg_active_tokens_on_deactivation(PPG_Token__ *consumer,
             
             if(consumer->misc.action_state == PPG_Action_Enabled) {
 //                   PPG_LOG("      T.a.a.\n");
-               ppg_action_callback(consumer->action.callback.func,
-                                   PPG_Action_Activation_Flags_Active /* signal activation */,
-                                    consumer->action.callback.user_data);
+               ppg_action_callback(consumer,
+                                   PPG_Action_Activation_Flags_Active /* signal activation */);
                
                consumer->misc.action_state = PPG_Action_Activation_Triggered;
             }
             
             if(consumer->misc.action_state == PPG_Action_Activation_Triggered) {
 //                   PPG_LOG("      T.d.a.\n");
-               ppg_action_callback(consumer->action.callback.func,
-                                   PPG_Action_Activation_Flags_Empty /* signal deactivation */,
-                                    consumer->action.callback.user_data);
+               ppg_action_callback(consumer,
+                                   PPG_Action_Activation_Flags_Empty /* signal deactivation */);
                
                consumer->misc.action_state = PPG_Action_Deactivation_Triggered;
             }
@@ -330,9 +327,8 @@ void ppg_active_tokens_repeat_actions(void)
       
       if(consumer->misc.action_state == PPG_Action_Activation_Triggered)
       {
-         ppg_action_callback(consumer->action.callback.func,
-                             PPG_Action_Activation_Flags_Active | PPG_Action_Activation_Flags_Repeated/* signal activation */,
-                              consumer->action.callback.user_data);
+         ppg_action_callback(consumer,
+                             PPG_Action_Activation_Flags_Active | PPG_Action_Activation_Flags_Repeated/* signal activation */);
       }
    }
 }
@@ -391,9 +387,8 @@ void ppg_active_tokens_update_single_token(
                
 //                PPG_LOG("      Triggering activation action\n");
                
-               ppg_action_callback(eqe->consumer->action.callback.func,
-                                   PPG_Action_Activation_Flags_Active /* signal activation */,
-                                    eqe->consumer->action.callback.user_data);
+               ppg_action_callback(eqe->consumer,
+                                   PPG_Action_Activation_Flags_Active /* signal activation */);
                
                eqe->consumer->misc.action_state = PPG_Action_Activation_Triggered;
             }
