@@ -51,8 +51,7 @@ int main(int argc, char **argv)
          ParserTree::Input::joinDuplicateEntries();
       }
       
-      if(!settings.no_join_note_sequences) {
-         ParserTree::Pattern::performSequenceReplacement();
+      if(!settings.no_join_note_sequences) {      ParserTree::Pattern::performSequenceReplacement();
       }
       
       Generator::generateGlobal(Glockenspiel::commandLineArgs.output_filename_arg);

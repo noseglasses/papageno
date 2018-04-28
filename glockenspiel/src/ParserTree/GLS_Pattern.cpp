@@ -262,18 +262,17 @@ void
    auto curToken = from;
    
    std::string fromLayer = from->getLayer().getText();
-   
+
    // Walk along a branch until the next token is found that has 
    // either more or less than one child or has an action or is not a Note.
    //
    while(   (std::dynamic_pointer_cast<Note>(curToken))
          && (curToken->getChildren().size() == 1)
-         && (curToken->getAction().getText().empty()
+         && curToken->getAction().getText().empty()
          
          // Only join notes that match activation and deactivation
          //
-         && (curToken->getFlags().tokenFlags_.string_ == "PPG_Note_Flags_A_N_D")
-         )
+         && (curToken->getFlags().tokenFlags_.string_.find("PPG_Note_Flags_A_N_D") != std::string::npos)
    ) {
       if(!std::dynamic_pointer_cast<Note>(curToken->getChildren()[0])
          

@@ -830,7 +830,7 @@ void generateInitializationFunction(std::ostream &out)
 "     */ \\\n"
 "    " << MP << "GLS_INPUTS_INITIALIZE_LOCAL_ALL\n"
 "\n"
-"void " << SP << "papageno_initialize_context()\n"
+"void " << SP << "papageno_initialize_context(void)\n"
 "{\n"
 "#  ifndef " << MP << "GLS_NO_AUTOMATIC_LOCAL_INITIALIZATION\n"
 "   " << MP << "GLS_LOCAL_INITIALIZATION\n"
