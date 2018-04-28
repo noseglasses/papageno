@@ -75,10 +75,12 @@ void ppg_event_buffer_remove_first_event(void);
 
 void ppg_even_buffer_flush_and_remove_first_event(bool on_success);
 
+void ppg_event_buffer_flush_and_remove_non_processable_deactivation_events(void);
+
 typedef void (*PPG_Event_Processor_Visitor)(PPG_Event_Queue_Entry *eqe,
                         void *user_data);
 
-void ppg_event_buffer_iterate2(
+uint8_t ppg_event_buffer_iterate2(
                         PPG_Event_Processor_Visitor event_processor,
                         void *user_data);
 

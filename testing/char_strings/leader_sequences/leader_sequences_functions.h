@@ -1,6 +1,4 @@
-enum {
-   ppg_cs_layer_0 = 0
-};
+#include <string.h>
 
 #define PPG_CS_INPUT_FROM_CHAR(CHAR) \
    (CHAR - 'a')

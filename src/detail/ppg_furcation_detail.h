@@ -34,7 +34,7 @@ typedef struct {
 
 typedef struct {
    PPG_Furcation *furcations;
-   PPG_Count n_furcations;
+//    PPG_Count n_furcations;
    PPG_Id cur_furcation;
    PPG_Id max_furcations;
 } PPG_Furcation_Stack;
@@ -53,6 +53,11 @@ void ppg_furcation_stack_restore(PPG_Furcation_Stack *stack);
 
 void ppg_furcation_stack_free(PPG_Furcation_Stack *stack);
 
+#ifndef NDEBUG
+PPG_Furcation *ppg_furcation_checked_access(PPG_Count pos);
+#define PPG_CUR_FUR (*ppg_furcation_checked_access(PPG_FB.cur_furcation))
+#else
 #define PPG_CUR_FUR PPG_FB.furcations[PPG_FB.cur_furcation]
+#endif
 
 #endif

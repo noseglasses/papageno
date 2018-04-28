@@ -25,6 +25,7 @@ enum PPG_Token_Precedence {
    PPG_Token_Precedence_Note,
    PPG_Token_Precedence_Explicit_Note,
       // A note that expects either an activation or deactivation
+   PPG_Token_Precedence_Sequence,
    PPG_Token_Precedence_Chord
 };
 

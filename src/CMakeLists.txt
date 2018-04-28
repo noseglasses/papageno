@@ -64,7 +64,8 @@ configure_file(
 set(source_files_                                                                                                          
 	ppg_bitfield.c
 	ppg_chord.c                                                                                                                         
-	ppg_cluster.c                                                                                                                       
+	ppg_cluster.c   
+	ppg_sequence.c
 	ppg_compression.c                                                                                                                       
 	ppg_context.c                                                                                                                            
 	ppg_debug.c                                                                                                                       
@@ -97,6 +98,7 @@ set(source_files_detail
 	ppg_signal_detail.c
 	ppg_token_detail.c     
 	ppg_token_vtable_detail.c    
+	ppg_time_detail.c
 )
 
 set(source_files ${source_files_})
@@ -107,6 +109,7 @@ endforeach()
 set(header_files_
    papageno.h
    ppg_cluster.h
+   ppg_sequence.h
    ppg_statistics.h
    ppg_signal_callback.h
    ppg_event.h
@@ -150,6 +153,8 @@ set(header_files_detail
    ppg_furcation_detail.h
    ppg_chord_detail.h
    ppg_active_tokens_detail.h
+   ppg_sequence_detail.h
+   ppg_time_detail.h
 )
 
 set(header_files ${header_files_})

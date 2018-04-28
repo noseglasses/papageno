@@ -34,13 +34,9 @@ static void ppg_signal_callback_init(PPG_Signal_Callback *cb)
    cb->user_data = NULL;
 }
 
-void ppg_global_initialize_context(PPG_Context *context) {
+void ppg_global_initialize_context_static(PPG_Context *context) {
    
 //    PPG_LOG("Initializing context\n");
-   
-   ppg_event_buffer_init(&context->event_buffer);
-   ppg_furcation_stack_init(&context->furcation_stack);
-   ppg_active_tokens_init(&context->active_tokens);
    
 //    ppg_bitfield_init(&context->active_inputs);
    
@@ -51,11 +47,10 @@ void ppg_global_initialize_context(PPG_Context *context) {
    context->properties.logging_enabled = true;
    #endif
    
-   context->properties.destruction_enabled = true;
+   context->properties.destruction_enabled = false;
    
-   context->tree_depth = 0;
    context->layer = 0;
-   ppg_global_init_input(&context->abort_input);
+   ppg_global_init_input(&context->abort_trigger_input);
    context->time_last_event = 0;
    context->event_timeout = 0;
    context->event_processor = NULL;
@@ -63,21 +58,32 @@ void ppg_global_initialize_context(PPG_Context *context) {
    ppg_time_manager_init(&context->time_manager);
    
    ppg_signal_callback_init(&context->signal_callback);
-   
-   context->pattern_root = ppg_token_alloc();
-
-   /* Initialize the pattern root
-   */
-   ppg_token_new(context->pattern_root);
-   
-   context->pattern_root->misc.state = PPG_Token_Initialized;
-   
+ 
    context->current_token = NULL;
    
    #if PPG_HAVE_STATISTICS
    ppg_statistics_clear(&context->statistics);
    #endif
 };
+
+void ppg_global_initialize_context(PPG_Context *context) {
+  
+   ppg_event_buffer_init(&context->event_buffer);
+   ppg_furcation_stack_init(&context->furcation_stack);
+   ppg_active_tokens_init(&context->active_tokens);
+   
+   ppg_global_initialize_context_static(context);
+   
+   context->properties.destruction_enabled = true;
+   context->pattern_root = ppg_token_alloc();
+   context->tree_depth = 0;
+
+   /* Initialize the pattern root
+   */
+   ppg_token_new(context->pattern_root);
+   
+   context->pattern_root->misc.state = PPG_Token_Initialized;
+}
 
 size_t ppg_context_get_size_requirements(PPG_Context *context)
 {
@@ -126,7 +132,7 @@ void ppg_print_context(PPG_Context *context)
    
    PPG_LOG("tree_depth: %d\n", (int)context->tree_depth);
    PPG_LOG("layer: %d\n", (int)context->layer);
-   PPG_LOG("abort_input: %d\n", (int)context->abort_input);
+   PPG_LOG("abort_trigger_input: %d\n", (int)context->abort_trigger_input);
    PPG_LOG("time_last_event: %d\n", (int)context->time_last_event);
    PPG_LOG("event_timeout: %d\n", (int)context->event_timeout);
 }

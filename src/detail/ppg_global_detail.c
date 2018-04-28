@@ -17,6 +17,7 @@
 #include "detail/ppg_global_detail.h"
 #include "detail/ppg_context_detail.h"
 #include "detail/ppg_pattern_matching_detail.h"
+#include "detail/ppg_signal_detail.h"
 #include "ppg_debug.h"
 
 /* Returns if an action has been triggered.
@@ -88,4 +89,6 @@ void ppg_reset_pattern_matching_engine(void)
    // Start with the first token in the queue
    //
    PPG_EB.cur = PPG_EB.start;
+   
+   ppg_signal(PPG_On_Initialization);
 }

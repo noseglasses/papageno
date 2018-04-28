@@ -52,24 +52,24 @@ void ppg_event_buffer_resize(PPG_Event_Buffer *event_buffer,
    event_buffer->events = new_events;
 }
 
-// Reurns an in place version of the event
+// Returns an in place version of the event
 //
 PPG_Event * ppg_event_buffer_store_event(PPG_Event *event)
 {
    #if PPG_HAVE_ASSERTIONS
    if(PPG_EB.start > PPG_EB.end) {
-      PPG_Count n_events = PPG_MAX_EVENTS + PPG_EB.end - PPG_EB.start;
-      PPG_ASSERT(n_events < PPG_MAX_EVENTS - 1); // At least one left!
+      PPG_Count n_events = PPG_EB.max_size + PPG_EB.end - PPG_EB.start;
+      PPG_ASSERT(n_events < PPG_EB.max_size - 1); // At least one left!
    }
    else {
       PPG_Count n_events = PPG_EB.end - PPG_EB.start;
-      PPG_ASSERT(n_events < PPG_MAX_EVENTS - 1); // At least one left!
+      PPG_ASSERT(n_events <= PPG_EB.max_size - 1); // At least one left!
    }
    #endif
    
    PPG_Event_Buffer_Index_Type new_pos = PPG_EB.end;
    
-   if(PPG_EB.end == PPG_MAX_EVENTS - 1) {
+   if(PPG_EB.end == PPG_EB.max_size - 1) {
       PPG_EB.end = 0;
    }
    else {
@@ -87,7 +87,7 @@ PPG_Event * ppg_event_buffer_store_event(PPG_Event *event)
    
    ++PPG_EB.size;
    
-   PPG_LOG("Storing event at %u\n", PPG_EB.end);
+   PPG_LOG("Storing event at %u\n", new_pos);
    PPG_LOG("   start: %u, cur: %u, end: %u, size: %u\n", 
               PPG_EB.start, PPG_EB.cur, PPG_EB.end, PPG_EB.size);
    
@@ -116,7 +116,6 @@ void ppg_event_buffer_init(PPG_Event_Buffer *eb)
    
    ppg_event_buffer_resize(eb, PPG_MAX_EVENTS);
 }
-
 
 void ppg_event_buffer_restore(PPG_Event_Buffer *eb)
 {
@@ -148,7 +147,7 @@ void ppg_event_buffer_advance(void)
 {
    if(PPG_EB.size == 0) { return; }
    
-   if(PPG_EB.cur == PPG_MAX_EVENTS - 1) {
+   if(PPG_EB.cur == PPG_EB.max_size - 1) {
       PPG_EB.cur = 0;
    }
    else {
@@ -172,8 +171,11 @@ void ppg_check_event_buffer_validity(void)
       PPG_ASSERT(PPG_EB.cur <= PPG_EB.end);
    }
    else if(PPG_EB.end == PPG_EB.start) {
-      PPG_ASSERT(PPG_EB.size == 0);
-      PPG_ASSERT(PPG_EB.end == PPG_EB.cur);
+      // The event buffer might be either full (wrapped around)
+      // or empty.
+      //
+      PPG_ASSERT((PPG_EB.size == 0) | (PPG_EB.size == PPG_EB.max_size));
+//       PPG_ASSERT(PPG_EB.end == PPG_EB.cur);
    }
    else {
       PPG_ASSERT( !(    (PPG_EB.cur > PPG_EB.end)
@@ -193,7 +195,7 @@ static void ppg_even_buffer_recompute_size(void)
    }
    else {
       
-      PPG_EB.size = PPG_MAX_EVENTS + PPG_EB.end - PPG_EB.start;
+      PPG_EB.size = PPG_EB.max_size + PPG_EB.end - PPG_EB.start;
    }
 }
 
@@ -231,6 +233,8 @@ void ppg_event_buffer_truncate_at_front(void)
       PPG_Count old_end = PPG_EB.end;
       PPG_EB.end = PPG_EB.cur;
       
+      PPG_LOG("Truncating event buffer at front\n")
+      
       ppg_event_buffer_iterate2(
          (PPG_Event_Processor_Visitor)ppg_flush_non_considered_events, 
          NULL);
@@ -255,7 +259,7 @@ void ppg_event_buffer_remove_first_event(void)
 {
    if(PPG_EB.size == 0) { return; }
    
-   if(PPG_EB.start < PPG_MAX_EVENTS - 1) {
+   if(PPG_EB.start < PPG_EB.max_size - 1) {
       ++PPG_EB.start;
    }
    else {
@@ -286,9 +290,29 @@ void ppg_even_buffer_flush_and_remove_first_event(bool on_success)
    }
 }
 
+void ppg_event_buffer_flush_and_remove_non_processable_deactivation_events(void)
+{
+   // Remove events...
+   //
+   while(
+      
+      // While there are any
+      //
+      (PPG_EB.size > 0) 
+      
+      // And if those events are deactivation events and cannot be fed to
+      // any active tokens
+      //
+      && !(PPG_EB.events[PPG_EB.start].event.flags & PPG_Event_Active)
+   )
+   {
+      ppg_even_buffer_flush_and_remove_first_event(false);
+   }
+}
+
 void ppg_event_buffer_on_match_success(void)
 {
-   PPG_LOG("Prp. evt bffr on suc.\n");
+   PPG_LOG("Preparing event buffer on success\n");
             
    ppg_active_tokens_update();
    
@@ -304,29 +328,47 @@ void ppg_event_buffer_on_match_success(void)
    ppg_event_buffer_truncate_at_front();
 }
 
-void ppg_event_buffer_iterate2(
+uint8_t ppg_event_buffer_iterate2(
                         PPG_Event_Processor_Visitor visitor,
                         void *user_data)
-{
-   if(ppg_event_buffer_size() == 0) { return; }
+{   
+   if(PPG_EB.size == 0) { return 0; }
    
-   if(PPG_EB.size == 0) { return; }
+   uint8_t nEventsProcessed = 0;
    
-   if(PPG_EB.start > PPG_EB.end) {
+//    PPG_SERIAL_PRINT("start: %d, end: %d, size: %d, max_size: %d\n",
+//  (int)PPG_EB.start, (int)PPG_EB.end, (int)PPG_EB.size, (int)PPG_EB.max_size);
+   
+   if(PPG_EB.start >= PPG_EB.end) {
       
-      for(PPG_Count i = PPG_EB.start; i < PPG_MAX_EVENTS; ++i) {
+//       nEventsProcessed = PPG_EB.max_size - PPG_EB.start + PPG_EB.end;
       
+      PPG_LOG("Event buffer wrapps around\n")
+      PPG_LOG("Processing %d events\n", PPG_EB.size);
+      
+      for(PPG_Count i = PPG_EB.start; i < PPG_EB.max_size; ++i) {
+      
+         PPG_LOG("   event %d\n", i)
          visitor(&PPG_EB.events[i], user_data);
       }
       for(PPG_Count i = 0; i < PPG_EB.end; ++i) {
          
+         PPG_LOG("   event %d\n", i)
          visitor(&PPG_EB.events[i], user_data);
       }
    }
    else {
+      
+//       nEventsProcessed = PPG_EB.end - PPG_EB.start;
+      
+      PPG_LOG("Processing %d events\n", PPG_EB.size);
+      
       for(PPG_Count i = PPG_EB.start; i < PPG_EB.end; ++i) {
       
+         PPG_LOG("   event %d\n", i)
          visitor(&PPG_EB.events[i], user_data);
       }
    }
+   
+   return nEventsProcessed;
 }

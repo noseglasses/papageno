@@ -17,29 +17,7 @@
 #include "ppg_time.h"
 #include "ppg_global.h"
 #include "detail/ppg_context_detail.h"
-
-static void ppg_default_time(PPG_Time *time)
-{
-   *time = 0;
-}
-
-static void ppg_default_time_difference(PPG_Time time1, 
-                                        PPG_Time time2, 
-                                        PPG_Time *delta)
-{
-   PPG_UNUSED(time1);
-   PPG_UNUSED(time2);
-   *delta = 0;
-}
-
-PPG_Time_Comparison_Result_Type ppg_default_time_comparison(
-                        PPG_Time time1,
-                        PPG_Time time2)
-{
-   PPG_UNUSED(time1);
-   PPG_UNUSED(time2);
-   return 0;
-}
+#include "detail/ppg_time_detail.h"
 
 void ppg_time_manager_init(PPG_Time_Manager *time_manager)
 {

@@ -26,4 +26,10 @@
  */
 bool ppg_timeout_check(void);
 
+/** @brief Set the timeout enabled/disabled state
+ * 
+ * @returns returns the previous state
+ */
+bool ppg_timeout_set_state(bool state);
+
 #endif

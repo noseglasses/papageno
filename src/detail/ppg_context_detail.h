@@ -52,7 +52,7 @@ typedef struct PPG_Context_Struct
    
    PPG_Layer layer;
 
-   PPG_Input_Id abort_input;
+   PPG_Input_Id abort_trigger_input;
 
    PPG_Time time_last_event;
 
@@ -70,8 +70,12 @@ typedef struct PPG_Context_Struct
   
 } PPG_Context;
 
+#ifdef __cplusplus
+extern
+#endif
 PPG_Context *ppg_context;
 
+void ppg_global_initialize_context_static(PPG_Context *context);
 void ppg_global_initialize_context(PPG_Context *context);
 
 size_t ppg_context_get_size_requirements(PPG_Context *context);

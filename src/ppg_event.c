@@ -29,7 +29,7 @@ static bool ppg_check_ignore_event(PPG_Event *event)
 {  
    /* Check if the pattern is being aborted
     */
-   if(   (ppg_context->abort_input == event->input)
+   if(   (ppg_context->abort_trigger_input == event->input)
       && (event->flags & PPG_Event_Active)) {
       
       // Mark the event as a control event

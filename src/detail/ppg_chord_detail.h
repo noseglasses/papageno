@@ -18,6 +18,9 @@
 #define PPG_CHORD_DETAIL_H
 
 #include "detail/ppg_token_detail.h"
+#include "detail/ppg_aggregate_detail.h"
+
+typedef PPG_Aggregate PPG_Chord;
 
 extern PPG_Token_Vtable ppg_chord_vtable;
 

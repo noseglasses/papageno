@@ -1,0 +1,67 @@
+some stuff before start
+
+papageno_start
+
+@setting: macros_prefix="a_macro"
+@setting: symbols_prefix="a_symbol"
+
+default: logging_enabled = $bla$
+
+% This is a comment
+
+layer: my_layer
+
+input type: KEYPOS
+input type: KEYCODE
+
+input: A <KEYPOS> = $1, 5, "la la la"$
+input: A_Copy <KEYPOS> = $1, 5, "la la la"$
+input: B <KEYPOS> = $2, 3$
+input: C <KEYPOS> = $n, 5$
+input: D <KEYPOS> = $19, 5$
+input: E <KEYPOS> = $1rr, 5$
+input: Unused <KEYPOS> = $setse$
+
+papageno_end
+
+
+soniesenniestonsetio
+
+
+papageno_start
+
+input type: LS
+
+input: a <LS> = $setinse$
+input: b <LS> = $etni$
+input: c <LS> = $setyni$
+
+alias: pff = A
+
+input: F <KEYCODE> = $setinse$
+
+action type: action_type
+action type: another_action_type
+action type: the_action_type
+
+action: an_action <action_type> = $bla blubb$
+action: another_action <another_action_type> = $something$
+action: the_action <the_action_type> = $bosee$
+action: unused_action <action_type> = $seetei$
+
+phrase: a_pattern = {B, C}*5 : the_action
+
+|A : "f"| -> \
+{A_Copy, B, C} -> \
+[A, B, C] -> \
+"ab"
+
+|C- -> -D| : an_action
+
+|E|*3 : an_action@2, another_action@3 -> {B, C, D}*5 : the_action@3
+
+|pff| -> #a_pattern
+
+papageno_end
+
+some stuff at the very end

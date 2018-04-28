@@ -1,0 +1,23 @@
+version "@PAPAGENO_VERSION@"
+package "glockenspiel"
+purpose "A compiler for Papageno's description language."
+description "Generates C code of a statically allocated pattern matching tree from a description in Papageno's own language."
+
+# Options
+option "source_filename" i "Source filename" string required multiple
+option "output_filename" o "Output filename" string required
+option "preamble_filename" p "Preamble filename" string optional
+option "project_name" n "The name of the project to generate Papageno code for" string optional
+option "include_directory" I "Include directory" string optional multiple
+option "debug" d "Generate debug output during the compile" flag off
+ 
+option "no_join_duplicate_actions" - "Join duplicate actions" flag off
+option "no_join_duplicate_inputs" - "Join duplicate inputs" flag off
+option "no_join_note_sequences" - "Join note sequences" flag off
+
+option "allow_auto_type_definition" - "Allow automatic definition of all entity types" flag off
+option "allow_auto_input_type_definition" - "Allow automatic definition of input types" flag off
+option "allow_auto_action_type_definition" - "Allow automatic definition of action types" flag off
+
+option "macros_prefix" - "A prefix to be added to all macros defined in the output file" string optional
+option "symbols_prefix" - "A prefix to be added to all C/C++ symbols defined in the output file" string optional

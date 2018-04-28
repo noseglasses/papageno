@@ -26,6 +26,8 @@ static void ppg_on_timeout(void)
 {
    if(ppg_event_buffer_size() == 0) { return; }
    
+   PPG_LOG("Processing actions on timeout\n")
+   
    // Check if fallback is possible
    //
    bool action_processed 
@@ -33,7 +35,7 @@ static void ppg_on_timeout(void)
       
    if(action_processed) { 
       
-//       PPG_LOG("Fallback success\n");
+      PPG_LOG("Fallback success\n");
       
       // Fallback was possible
    
@@ -47,7 +49,7 @@ static void ppg_on_timeout(void)
    }
    else {
       
-//       PPG_LOG("Trying to find match after timeout\n");
+      PPG_LOG("Trying to find match after timeout\n");
       
       // If no action fallback is possible,
       // we try to find a match...
@@ -65,6 +67,8 @@ static void ppg_on_timeout(void)
       //
       ppg_pattern_matching_process_remaining_branch_options();
    }
+   
+   PPG_LOG("Signaling timeout\n")
    
    ppg_signal(PPG_On_Timeout);
    
@@ -129,3 +133,13 @@ bool ppg_timeout_check(void)
    
    return timeout_hit;
 }
+
+bool ppg_timeout_set_state(bool state)
+{
+   bool old_state = ppg_context->properties.timeout_enabled;
+   
+   ppg_context->properties.timeout_enabled = state;
+   
+   return old_state;
+}
+

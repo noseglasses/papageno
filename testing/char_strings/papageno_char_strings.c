@@ -18,6 +18,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 
 #ifdef __AVR__
 
@@ -247,7 +248,8 @@ void ppg_cs_process_event(char the_char)
    PPG_Event event = {
       .input = (PPG_Input_Id)(uintptr_t)lower_char,
       .time = (PPG_Time)ppg_cs_run_time_ms(),
-      .flags = (my_isalpha_upper(the_char)) ? PPG_Event_Active : PPG_Event_Flags_Empty
+      .flags = (my_isalpha_upper(the_char)) ? PPG_Event_Active : PPG_Event_Flags_Empty,
+      .groupId = 0
    };
    
    ppg_event_process(&event);

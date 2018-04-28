@@ -18,6 +18,13 @@
 #define PPG_CLUSTER_DETAIL_H
 
 #include "detail/ppg_token_detail.h"
+#include "detail/ppg_aggregate_detail.h"
+
+typedef struct {
+   PPG_Aggregate aggregate;
+   PPG_Bitfield member_active_lasting;
+   PPG_Count n_lasting;
+} PPG_Cluster;
 
 extern PPG_Token_Vtable ppg_cluster_vtable;
 

@@ -39,7 +39,7 @@ void ppg_token_store_action(PPG_Token__ *token,
 
 void ppg_token_reset_control_state(PPG_Token__ *token)
 {
-   PPG_LOG("Resetting tk 0x%" PRIXPTR "\n", (uintptr_t)token);
+//    PPG_LOG("Resetting tk 0x%" PRIXPTR "\n", (uintptr_t)token);
    
    token->misc.state = PPG_Token_Initialized;
    token->misc.action_state = PPG_Action_Disabled;

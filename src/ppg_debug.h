@@ -32,6 +32,41 @@
 #   include "debug.h"
 #endif
 
+// Allow to force logging for arduino builds where 
+// no additional command line macro definitions are possible.
+//
+// Be careful. The strings used for output can cause a quite large 
+// binary that might exceed the resources available.
+//
+// #ifdef ARDUINO
+// #   ifdef PPG_HAVE_LOGGING
+// #      undef PPG_HAVE_LOGGING
+// #   endif
+// #   define PPG_HAVE_LOGGING 1
+// #endif
+
+// #define PPG_FORCE_LOGGING
+
+#ifdef PPG_FORCE_LOGGING
+#   ifdef PPG_HAVE_LOGGING
+#      undef PPG_HAVE_LOGGING
+#   endif
+#   define PPG_HAVE_LOGGING 1
+#endif
+
+#if 0
+#if defined(ARDUINO)
+
+void serial_print(const char *c);
+#   define PPG_SERIAL_PRINT(...) \
+   { \
+      char buffer[128]; \
+      snprintf(buffer, 128, __VA_ARGS__); \
+      serial_print(buffer); \
+   }
+#endif
+#endif
+
 #if PPG_HAVE_LOGGING
 
 #   include <stdio.h>
@@ -42,16 +77,25 @@
 #ifdef PPG_BUILDING_FOR_QMK 
 #   define PPG_LOG(...) \
    if(ppg_logging_get_enabled()) { \
-      uprintf(__VA_ARGS__); \
+      uprintf("PPG: " __VA_ARGS__); \
    }
 
+
+//    
 #else
 // #   include <stdio.h>
+
 #   define PPG_LOG(...) \
    if(ppg_logging_get_enabled()) { \
       printf(__VA_ARGS__); \
    }
    
+#endif
+
+// #define PPG_LOG_TOKEN_LOOKUP_ENABLED
+#ifdef PPG_LOG_TOKEN_LOOKUP_ENABLED
+#   define PPG_LOG_TOKEN_LOOKUP(...) \
+      PPG_LOG("TL: " __VA_ARGS__)
 #endif
 
 /** @brief Dynamically toggle logging output
@@ -114,6 +158,10 @@ bool ppg_logging_get_enabled(void);
  */
 #define PPG_LOG(...)
 #define PPG_LOG_NOOP
+#endif
+
+#ifndef PPG_LOG_TOKEN_LOOKUP
+#   define PPG_LOG_TOKEN_LOOKUP(...)
 #endif
 
 #define PPG_UNUSED(X) (void)(X)
