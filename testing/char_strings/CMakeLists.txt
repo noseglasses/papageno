@@ -125,10 +125,16 @@ function(ppg_add_compiler_test name)
    )
    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/test_with_compile.c.in" "${code_file}")
    
+   if(CMAKE_HOST_WIN32)
+      set(glockenspiel_executable_basename "glockenspiel.exe")
+   else()
+      set(glockenspiel_executable_basename "glockenspiel")
+   endif()
+   
    add_custom_command(
       OUTPUT "${compile_output_file}"
       DEPENDS "${ppg_file}" glockenspiel
-      COMMAND $<TARGET_FILE:glockenspiel> -I "${CMAKE_CURRENT_SOURCE_DIR}/${name}" -i "${ppg_file}" -o "${compile_output_file}" --symbols_prefix "s" --macros_prefix "m"
+      COMMAND ${CMAKE_BINARY_DIR}/glockenspiel/${glockenspiel_executable_basename} -I "${CMAKE_CURRENT_SOURCE_DIR}/${name}" -i "${ppg_file}" -o "${compile_output_file}" --symbols_prefix "s" --macros_prefix "m"
 #       --no_join_note_sequences
       WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${name}"
    )

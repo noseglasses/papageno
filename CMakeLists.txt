@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(Papageno C CXX)
+project(Papageno C)
 
 macro(use_c99)
   if (CMAKE_VERSION VERSION_LESS "3.1")
@@ -217,7 +217,14 @@ endif()
 
 option(PAPAGENO_BUILD_GLOCKENSPIEL "Enable/Disable build of Papageno's Glockenpiel compiler" TRUE)
 if(PAPAGENO_BUILD_GLOCKENSPIEL)
-   add_subdirectory(glockenspiel)
+   include(ExternalProject)
+   ExternalProject_Add(glockenspiel
+      SOURCE_DIR "${CMAKE_SOURCE_DIR}/glockenspiel"
+      BINARY_DIR "${CMAKE_BINARY_DIR}/glockenspiel"
+#       CONFIGURE_COMMAND "${CMAKE_COMMAND}" .
+      BUILD_COMMAND "${CMAKE_COMMAND}" --build .
+      INSTALL_COMMAND ""
+   )
 endif()
 
 if(PAPAGENO_TESTING_ENABLED)
