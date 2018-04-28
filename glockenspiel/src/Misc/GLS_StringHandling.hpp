@@ -23,16 +23,29 @@
 #include <climits>
 #include <sstream>
 
-#define TO_STRING(...) ([&]() -> std::string { \
-      std::ostringstream tmp; \
-      tmp << __VA_ARGS__; \
-      return tmp.str(); \
-   }() \
-)
+// #define TO_STRING(...) ([&]() -> std::string { \
+//       std::ostringstream tmp; \
+//       tmp << __VA_ARGS__; \
+//       return tmp.str(); \
+//    }() \
+// )
+
+
+#define TO_STRING(...) ((Glockenspiel::Misc::OStreamWrapper() << __VA_ARGS__).str())
 
 namespace Glockenspiel {
 namespace Misc {
    
+struct OStreamWrapper
+{
+   template<typename T>
+   OStreamWrapper &operator<<(const T &t) { out_ << t; return *this; }
+   
+   std::string str() { return out_.str(); }
+   
+   std::ostringstream out_;
+};
+
 inline long atol(const Parser::Token &token)
 {
    errno = 0;    /* To distinguish success/failure after call */

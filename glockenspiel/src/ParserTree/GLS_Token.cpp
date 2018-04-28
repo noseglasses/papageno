@@ -113,7 +113,7 @@ void
       
       out <<
 "      __GLS_DI__(action) { \n"
-"         __GLS_DI__(callback) (PPG_Action_Callback) {\n"
+"         __GLS_DI__(callback) {\n"
 "            __GLS_DI__(func) NULL,\n"
 "            __GLS_DI__(user_data) NULL\n"
 "         }\n"

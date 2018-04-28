@@ -153,7 +153,13 @@ if(PAPAGENO_BUILD_LIBRARY)
    #
    if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
 
-      set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror")
+      set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wno-missing-braces -Werror")
+      
+      if((CMAKE_C_COMPILER_VERSION VERSION_GREATER 4.8.0) AND
+         (CMAKE_C_COMPILER_VERSION VERSION_LESS 5.0.0))
+         
+         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-missing-braces")
+      endif()
       
    endif()
 

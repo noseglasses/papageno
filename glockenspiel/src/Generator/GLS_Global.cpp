@@ -732,7 +732,7 @@ void generateGlobalContext(std::ostream &out)
 "\n";
    
    out <<
-"PPG_Token__ *" << SP << "tokens[" << maxDepth << "] = GLS_ZERO_INIT;\n";
+"PPG_Token__ *" << SP << "tokens[" << maxDepth << "] = GLS_ZERO_INIT;\n"
 /*
    for(int i = 0; i < maxDepth; ++i) {
       out <<
