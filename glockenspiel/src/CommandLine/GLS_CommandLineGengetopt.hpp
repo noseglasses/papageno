@@ -31,7 +31,7 @@ extern "C" {
 
 #ifndef CMDLINE_PARSER_VERSION
 /** @brief the program version */
-#define CMDLINE_PARSER_VERSION ""
+#define CMDLINE_PARSER_VERSION "22582c2e87304be94239f1ffdd782265da3a24e2"
 #endif
 
 /** @brief Where the command line options are stored */
@@ -60,14 +60,12 @@ struct gengetopt_args_info
   const char *include_directory_help; /**< @brief Include directory help description.  */
   int debug_flag;	/**< @brief Generate debug output during the compile (default=off).  */
   const char *debug_help; /**< @brief Generate debug output during the compile help description.  */
-  int join_duplicate_entities_flag;	/**< @brief Join duplicate actions and inputs (default=on).  */
-  const char *join_duplicate_entities_help; /**< @brief Join duplicate actions and inputs help description.  */
-  int join_duplicate_actions_flag;	/**< @brief Join duplicate actions (default=on).  */
-  const char *join_duplicate_actions_help; /**< @brief Join duplicate actions help description.  */
-  int join_duplicate_inputs_flag;	/**< @brief Join duplicate inputs (default=on).  */
-  const char *join_duplicate_inputs_help; /**< @brief Join duplicate inputs help description.  */
-  int join_note_sequences_flag;	/**< @brief Join note sequences (default=on).  */
-  const char *join_note_sequences_help; /**< @brief Join note sequences help description.  */
+  int no_join_duplicate_actions_flag;	/**< @brief Join duplicate actions (default=off).  */
+  const char *no_join_duplicate_actions_help; /**< @brief Join duplicate actions help description.  */
+  int no_join_duplicate_inputs_flag;	/**< @brief Join duplicate inputs (default=off).  */
+  const char *no_join_duplicate_inputs_help; /**< @brief Join duplicate inputs help description.  */
+  int no_join_note_sequences_flag;	/**< @brief Join note sequences (default=off).  */
+  const char *no_join_note_sequences_help; /**< @brief Join note sequences help description.  */
   int allow_auto_type_definition_flag;	/**< @brief Allow automatic definition of all entity types (default=off).  */
   const char *allow_auto_type_definition_help; /**< @brief Allow automatic definition of all entity types help description.  */
   int allow_auto_input_type_definition_flag;	/**< @brief Allow automatic definition of input types (default=off).  */
@@ -89,10 +87,9 @@ struct gengetopt_args_info
   unsigned int project_name_given ;	/**< @brief Whether project_name was given.  */
   unsigned int include_directory_given ;	/**< @brief Whether include_directory was given.  */
   unsigned int debug_given ;	/**< @brief Whether debug was given.  */
-  unsigned int join_duplicate_entities_given ;	/**< @brief Whether join_duplicate_entities was given.  */
-  unsigned int join_duplicate_actions_given ;	/**< @brief Whether join_duplicate_actions was given.  */
-  unsigned int join_duplicate_inputs_given ;	/**< @brief Whether join_duplicate_inputs was given.  */
-  unsigned int join_note_sequences_given ;	/**< @brief Whether join_note_sequences was given.  */
+  unsigned int no_join_duplicate_actions_given ;	/**< @brief Whether no_join_duplicate_actions was given.  */
+  unsigned int no_join_duplicate_inputs_given ;	/**< @brief Whether no_join_duplicate_inputs was given.  */
+  unsigned int no_join_note_sequences_given ;	/**< @brief Whether no_join_note_sequences was given.  */
   unsigned int allow_auto_type_definition_given ;	/**< @brief Whether allow_auto_type_definition was given.  */
   unsigned int allow_auto_input_type_definition_given ;	/**< @brief Whether allow_auto_input_type_definition was given.  */
   unsigned int allow_auto_action_type_definition_given ;	/**< @brief Whether allow_auto_action_type_definition was given.  */

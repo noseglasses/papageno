@@ -27,7 +27,7 @@
 void ppg_furcation_stack_init(PPG_Furcation_Stack *stack)
 {
    stack->furcations = NULL;
-   stack->n_furcations = 0;
+//    stack->n_furcations = 0;
    stack->cur_furcation = -1;
    stack->max_furcations = 0;
 }
@@ -44,9 +44,9 @@ void ppg_furcation_stack_resize(PPG_Furcation_Stack *stack,
       
    stack->max_furcations = new_size;
    
-   if(stack->furcations && (stack->n_furcations > 0)) {
+   if(stack->furcations && (stack->max_furcations > 0)) {
       memcpy(new_furcations, stack->furcations, 
-             sizeof(PPG_Furcation)*stack->n_furcations);
+             sizeof(PPG_Furcation)*stack->max_furcations);
    }
    
    stack->furcations = new_furcations;
@@ -84,7 +84,7 @@ void ppg_furcation_stack_free(PPG_Furcation_Stack *stack)
 PPG_Furcation *ppg_furcation_checked_access(PPG_Count pos)
 {
    PPG_ASSERT(pos >= 0);
-   PPG_ASSERT(pos < PPG_FB.n_furcations);
+   PPG_ASSERT(pos < PPG_FB.max_furcations);
    
    return &PPG_FB.furcations[pos];
 }

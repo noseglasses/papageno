@@ -313,7 +313,7 @@ static PPG_Token__ *ppg_token_get_next_possible_branch(
       PPG_LOG_TOKEN_LOOKUP("Creating furcation for token 0x%" PRIXPTR "\n", 
             (uintptr_t)parent_token);
 
-      //PPG_ASSERT(PPG_FB.cur_furcation < PPG_FB.n_furcations - 1);
+      //PPG_ASSERT(PPG_FB.cur_furcation < PPG_FB.max_furcations - 1);
       
       ++PPG_FB.cur_furcation;
                   
@@ -466,8 +466,10 @@ static PPG_Count ppg_process_next_event(void)
    ++ppg_context->statistics.n_token_checks;
    #endif
             
-//    PPG_LOG("Token state after match_event: %u\n", (PPG_Count)ppg_context->current_token->misc.state);
-//    PPG_LOG("Event consumed: %u\n", event_consumed);
+   PPG_LOG("Token state of 0x%" PRIXPTR " after match_event: %u\n", 
+           (uintptr_t)ppg_context->current_token,
+           (PPG_Count)ppg_context->current_token->misc.state);
+   PPG_LOG("Event consumed: %u\n", event_consumed);
 
    switch(ppg_context->current_token->misc.state) {
       

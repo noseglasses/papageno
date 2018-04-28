@@ -81,12 +81,15 @@ static bool ppg_sequence_match_event(
    
    if(!input_part_of_sequence) {
          
-      if(!modify_only_if_consuming) {
-         S_AGGREGATE.super.misc.state = PPG_Token_Invalid;
+      if(event->flags & PPG_Event_Active) {
+         if(!modify_only_if_consuming) {
+            S_AGGREGATE.super.misc.state = PPG_Token_Invalid;
+         }
       }
       
       // Sequences ignore non-matching deactivation events
       
+      PPG_LOG("sequence ignores non matching deactivation event\n");
       return false;
    }
    
@@ -168,14 +171,7 @@ static void ppg_sequence_print_self(PPG_Sequence *c, PPG_Count indent, bool recu
 {
    PPG_I PPG_LOG("<*** seq (0x%" PRIXPTR ") ***>\n", (uintptr_t)c);
    ppg_token_print_self_start((PPG_Token__*)c, indent);
-   PPG_I PPG_LOG("\tn mem: %d\n", c->n_members);
-   PPG_I PPG_LOG("\tn I actv: %d\n", c->n_inputs_active);
-   
-   for(PPG_Count i = 0; i < c->n_members; ++i) {
-      PPG_I PPG_LOG("\t\tI: 0x%d, actv: %d\n", 
-              c->inputs[i],
-               ppg_bitfield_get_bit(&c->member_active, i));
-   }
+   PPG_I PPG_LOG("\tnext member: %d\n", c->next_member);
    ppg_token_print_self_end((PPG_Token__*)c, indent, recurse);
 }
 #endif

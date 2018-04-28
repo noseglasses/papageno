@@ -1,7 +1,7 @@
 /*
 glockenspiel_begin
 
-@setting: join_note_sequences = "true"
+@setting: no_join_note_sequences = "false"
 
 action: Foo
 action: Bar

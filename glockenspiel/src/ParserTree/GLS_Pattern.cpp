@@ -24,6 +24,7 @@
 #include "Misc/GLS_StringHandling.hpp"
 
 #include <algorithm>
+#include <iostream>
 
 namespace Glockenspiel {
 namespace ParserTree {
@@ -267,7 +268,12 @@ void
    //
    while(   (std::dynamic_pointer_cast<Note>(curToken))
          && (curToken->getChildren().size() == 1)
-         && (curToken->getAction().getText().empty())
+         && (curToken->getAction().getText().empty()
+         
+         // Only join notes that match activation and deactivation
+         //
+         && (curToken->getFlags().tokenFlags_.string_ == "PPG_Note_Flags_A_N_D")
+         )
    ) {
       if(!std::dynamic_pointer_cast<Note>(curToken->getChildren()[0])
          
@@ -317,6 +323,8 @@ std::shared_ptr<Token>
 {
    auto newSequence = std::make_shared<Sequence>();
    
+   newSequence->setLayer(from->getLayer().getText());
+         
    auto curToken = from;
    
    while(1) {
@@ -327,7 +335,7 @@ std::shared_ptr<Token>
       assert(curToken->getChildren().size() == 1);
       curToken = curToken->getChildren()[0];
    }
-   
+         
    newSequence->setAction(to->getAction());
    newSequence->setChildren(to->getChildren());
    

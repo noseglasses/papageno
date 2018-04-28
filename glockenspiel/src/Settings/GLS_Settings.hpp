@@ -37,10 +37,9 @@ class Settings
       
       bool debug;
       
-      bool join_duplicate_entities;
-      bool join_duplicate_actions;
-      bool join_duplicate_inputs;
-      bool join_note_sequences;
+      bool no_join_duplicate_actions;
+      bool no_join_duplicate_inputs;
+      bool no_join_note_sequences;
       
       bool allow_auto_type_definition;
       bool allow_auto_input_type_definition;

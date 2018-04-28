@@ -52,7 +52,7 @@ void ppg_event_buffer_resize(PPG_Event_Buffer *event_buffer,
    event_buffer->events = new_events;
 }
 
-// Reurns an in place version of the event
+// Returns an in place version of the event
 //
 PPG_Event * ppg_event_buffer_store_event(PPG_Event *event)
 {
@@ -63,7 +63,7 @@ PPG_Event * ppg_event_buffer_store_event(PPG_Event *event)
    }
    else {
       PPG_Count n_events = PPG_EB.end - PPG_EB.start;
-      PPG_ASSERT(n_events < PPG_EB.max_size - 1); // At least one left!
+      PPG_ASSERT(n_events <= PPG_EB.max_size - 1); // At least one left!
    }
    #endif
    
@@ -171,8 +171,11 @@ void ppg_check_event_buffer_validity(void)
       PPG_ASSERT(PPG_EB.cur <= PPG_EB.end);
    }
    else if(PPG_EB.end == PPG_EB.start) {
-      PPG_ASSERT(PPG_EB.size == 0);
-      PPG_ASSERT(PPG_EB.end == PPG_EB.cur);
+      // The event buffer might be either full (wrapped around)
+      // or empty.
+      //
+      PPG_ASSERT((PPG_EB.size == 0) | (PPG_EB.size == PPG_EB.max_size));
+//       PPG_ASSERT(PPG_EB.end == PPG_EB.cur);
    }
    else {
       PPG_ASSERT( !(    (PPG_EB.cur > PPG_EB.end)
@@ -336,12 +339,12 @@ uint8_t ppg_event_buffer_iterate2(
 //    PPG_SERIAL_PRINT("start: %d, end: %d, size: %d, max_size: %d\n",
 //  (int)PPG_EB.start, (int)PPG_EB.end, (int)PPG_EB.size, (int)PPG_EB.max_size);
    
-   if(PPG_EB.start > PPG_EB.end) {
+   if(PPG_EB.start >= PPG_EB.end) {
       
-      nEventsProcessed = PPG_EB.max_size - PPG_EB.start + PPG_EB.end;
+//       nEventsProcessed = PPG_EB.max_size - PPG_EB.start + PPG_EB.end;
       
       PPG_LOG("Event buffer wrapps around\n")
-      PPG_LOG("Processing %d events\n", nEventsProcessed);
+      PPG_LOG("Processing %d events\n", PPG_EB.size);
       
       for(PPG_Count i = PPG_EB.start; i < PPG_EB.max_size; ++i) {
       
@@ -356,9 +359,9 @@ uint8_t ppg_event_buffer_iterate2(
    }
    else {
       
-      nEventsProcessed = PPG_EB.end - PPG_EB.start;
+//       nEventsProcessed = PPG_EB.end - PPG_EB.start;
       
-      PPG_LOG("Processing %d events\n", nEventsProcessed);
+      PPG_LOG("Processing %d events\n", PPG_EB.size);
       
       for(PPG_Count i = PPG_EB.start; i < PPG_EB.end; ++i) {
       

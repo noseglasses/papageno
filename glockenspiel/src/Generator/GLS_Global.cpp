@@ -759,7 +759,7 @@ void generateGlobalContext(std::ostream &out)
 "   },\n"
 "   __GLS_DI__(furcation_stack) {\n"
 "      __GLS_DI__(furcations) " << SP << "furcations,\n"
-"      __GLS_DI__(n_furcations) 0,\n"
+// "      __GLS_DI__(n_furcations) 0,\n"
 "      __GLS_DI__(cur_furcation) 0,\n"
 "      __GLS_DI__(max_furcations) " << maxDepth << "\n";
    out <<

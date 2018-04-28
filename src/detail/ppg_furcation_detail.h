@@ -34,7 +34,7 @@ typedef struct {
 
 typedef struct {
    PPG_Furcation *furcations;
-   PPG_Count n_furcations;
+//    PPG_Count n_furcations;
    PPG_Id cur_furcation;
    PPG_Id max_furcations;
 } PPG_Furcation_Stack;
