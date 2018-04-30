@@ -317,7 +317,12 @@ foreach(file ${source_files_detail} ${header_files_detail})
 endforeach()
 ")
 
-if(NOT "${PAPAGENO_ARDUINO_BUILD_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
+get_filename_component(PAPAGENO_ARDUINO_BUILD_DIR_REALPATH "${PAPAGENO_ARDUINO_BUILD_DIR}"
+REALPATH)
+get_filename_component(CMAKE_BINARY_DIR_REALPATH "${CMAKE_BINARY_DIR}"
+REALPATH)
+
+if(NOT "${PAPAGENO_ARDUINO_BUILD_DIR_REALPATH}" STREQUAL "${CMAKE_BINARY_DIR_REALPATH}")
 
    file(APPEND "${sym_links_creation_script}"
 "
