@@ -67,7 +67,7 @@ if(PAPAGENO_DEVELOP_GLOCKENSPIEL)
    bison_target(
       glockenspiel_yacc "${CMAKE_CURRENT_SOURCE_DIR}/src/Parser/GLS_Parser.yacc" "${glockenspiel_yacc}"
 #          ${bison_report_file_spec}
-      COMPILE_FLAGS "--debug -v"
+      COMPILE_FLAGS "--debug -v -l"
    )
    
    if(NOT BISON_glockenspiel_yacc_DEFINED)
