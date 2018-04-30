@@ -39,7 +39,8 @@
 
 // Fix build problems with XCode clang
 //
-#if defined(__clang__) && defined(__USE_FILE_OFFSET64)
+//#if defined(__clang__)
+#if defined(__USE_FILE_OFFSET64)
 #define fseeko fseeko64
 #define ftello ftello64
 #endif
