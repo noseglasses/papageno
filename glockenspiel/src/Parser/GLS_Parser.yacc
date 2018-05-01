@@ -16,6 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <fstream>
+
 #include "Parser/GLS_Parser.hpp"
 #include "Parser/GLS_Parser.lex.hpp"
 #include "GLS_Compiler.hpp"
@@ -35,9 +37,6 @@
 
 #include <iostream>
 #include <string>
-
-#include <cstdio>
-#include <fstream>
 
 void yyerror(YYLTYPE *yylloc, yyscan_t scanner, const char *s);
 
