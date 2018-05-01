@@ -18,6 +18,15 @@
 
 #include <fstream>
 
+// Can be removed after debugging
+//
+static int testFunc() {
+   std::ifstream is("bla.txt");
+   int a;
+   is >> a;
+   return a;
+}
+
 #include "Parser/GLS_Parser.hpp"
 #include "Parser/GLS_Parser.lex.hpp"
 #include "GLS_Compiler.hpp"
