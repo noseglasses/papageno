@@ -33,16 +33,9 @@
 #include "Settings/GLS_Settings.hpp"
 #include "Settings/GLS_Defaults.hpp"
 
+#include <fstream>
 #include <iostream>
 #include <string>
-#include <fstream>
-
-// Fix build problems with XCode clang
-//
-#if defined(__clang__) && defined(__USE_FILE_OFFSET64)
-#define fseeko fseeko64
-#define ftello ftello64
-#endif
 
 void yyerror(YYLTYPE *yylloc, yyscan_t scanner, const char *s);
 

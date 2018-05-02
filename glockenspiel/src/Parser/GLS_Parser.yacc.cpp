@@ -81,6 +81,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <fstream>
+
+// Can be removed after debugging
+//
+static int testFunc1() {
+   std::ifstream is("bla.txt");
+   int a;
+   is >> a;
+   return a;
+}
+
 #include "Parser/GLS_Parser.hpp"
 #include "Parser/GLS_Parser.lex.hpp"
 #include "GLS_Compiler.hpp"
@@ -100,14 +111,6 @@
 
 #include <iostream>
 #include <string>
-#include <fstream>
-
-// Fix build problems with XCode clang
-//
-#if defined(__clang__) && defined(__USE_FILE_OFFSET64)
-#define fseeko fseeko64
-#define ftello ftello64
-#endif
 
 void yyerror(YYLTYPE *yylloc, yyscan_t scanner, const char *s);
 
@@ -533,15 +536,15 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   111,   111,   113,   118,   124,   126,   132,   138,   143,
-     148,   153,   158,   163,   168,   174,   180,   186,   193,   199,
-     207,   209,   216,   218,   226,   231,   238,   248,   250,   252,
-     254,   256,   260,   269,   277,   285,   294,   300,   307,   315,
-     323,   329,   331,   338,   346,   352,   360,   362,   369,   377,
-     385,   393,   408,   423,   429,   432,   435,   438,   442,   448,
-     457,   464,   465,   466,   467,   468,   469,   470,   471,   472,
-     473,   474,   475,   476,   477,   478,   479,   480,   481,   482,
-     483,   484,   485,   486,   487,   488,   490,   495,   496
+       0,   114,   114,   116,   121,   127,   129,   135,   141,   146,
+     151,   156,   161,   166,   171,   177,   183,   189,   196,   202,
+     210,   212,   219,   221,   229,   234,   241,   251,   253,   255,
+     257,   259,   263,   272,   280,   288,   297,   303,   310,   318,
+     326,   332,   334,   341,   349,   355,   363,   365,   372,   380,
+     388,   396,   411,   426,   432,   435,   438,   441,   445,   451,
+     460,   467,   468,   469,   470,   471,   472,   473,   474,   475,
+     476,   477,   478,   479,   480,   481,   482,   483,   484,   485,
+     486,   487,   488,   489,   490,   491,   493,   498,   499
 };
 #endif
 
@@ -2577,3 +2580,12 @@ void searchFileGenerateTree(const std::string &inputFilename)
 
 } // namespace ParserTree
 } // namespace Glockenspiel
+
+// Can be removed after debugging
+//
+static int testFunc2() {
+   std::ifstream is("bla.txt");
+   int a;
+   is >> a;
+   return a;
+}
