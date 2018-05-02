@@ -81,6 +81,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <fstream>
+
+// Can be removed after debugging
+//
+static int testFunc() {
+   std::ifstream is("bla.txt");
+   int a;
+   is >> a;
+   return a;
+}
+
 #include "Parser/GLS_Parser.hpp"
 #include "Parser/GLS_Parser.lex.hpp"
 #include "GLS_Compiler.hpp"
@@ -100,9 +111,6 @@
 
 #include <iostream>
 #include <string>
-
-#include <cstdio>
-#include <fstream>
 
 void yyerror(YYLTYPE *yylloc, yyscan_t scanner, const char *s);
 
@@ -528,15 +536,15 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   106,   106,   108,   113,   119,   121,   127,   133,   138,
-     143,   148,   153,   158,   163,   169,   175,   181,   188,   194,
-     202,   204,   211,   213,   221,   226,   233,   243,   245,   247,
-     249,   251,   255,   264,   272,   280,   289,   295,   302,   310,
-     318,   324,   326,   333,   341,   347,   355,   357,   364,   372,
-     380,   388,   403,   418,   424,   427,   430,   433,   437,   443,
-     452,   459,   460,   461,   462,   463,   464,   465,   466,   467,
-     468,   469,   470,   471,   472,   473,   474,   475,   476,   477,
-     478,   479,   480,   481,   482,   483,   485,   490,   491
+       0,   114,   114,   116,   121,   127,   129,   135,   141,   146,
+     151,   156,   161,   166,   171,   177,   183,   189,   196,   202,
+     210,   212,   219,   221,   229,   234,   241,   251,   253,   255,
+     257,   259,   263,   272,   280,   288,   297,   303,   310,   318,
+     326,   332,   334,   341,   349,   355,   363,   365,   372,   380,
+     388,   396,   411,   426,   432,   435,   438,   441,   445,   451,
+     460,   467,   468,   469,   470,   471,   472,   473,   474,   475,
+     476,   477,   478,   479,   480,   481,   482,   483,   484,   485,
+     486,   487,   488,   489,   490,   491,   493,   498,   499
 };
 #endif
 

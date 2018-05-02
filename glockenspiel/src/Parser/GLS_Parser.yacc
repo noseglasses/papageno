@@ -20,7 +20,7 @@
 
 // Can be removed after debugging
 //
-static int testFunc() {
+static int testFunc1() {
    std::ifstream is("bla.txt");
    int a;
    is >> a;
@@ -742,3 +742,12 @@ void searchFileGenerateTree(const std::string &inputFilename)
 
 } // namespace ParserTree
 } // namespace Glockenspiel
+
+// Can be removed after debugging
+//
+static int testFunc2() {
+   std::ifstream is("bla.txt");
+   int a;
+   is >> a;
+   return a;
+}
