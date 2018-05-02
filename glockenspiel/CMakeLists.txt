@@ -109,7 +109,8 @@ add_executable(
 )
 set_property(TARGET glockenspiel PROPERTY C_STANDARD 99)
 
-target_compile_definitions(glockenspiel PUBLIC "-D_POSIX_C_SOURCE=1" "-DYY_NO_INPUT")
+# target_compile_definitions(glockenspiel PUBLIC "-D_POSIX_C_SOURCE=1" "-DYY_NO_INPUT")
+target_compile_definitions(glockenspiel PUBLIC "-DYY_NO_INPUT")
 
 if(TARGET glockenspiel_cmdline)
    add_dependencies(glockenspiel glockenspiel_cmdline)

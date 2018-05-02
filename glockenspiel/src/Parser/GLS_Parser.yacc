@@ -16,17 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <fstream>
-
-// Can be removed after debugging
-//
-static int testFunc1() {
-   std::ifstream is("bla.txt");
-   int a;
-   is >> a;
-   return a;
-}
-
 #include "Parser/GLS_Parser.hpp"
 #include "Parser/GLS_Parser.lex.hpp"
 #include "GLS_Compiler.hpp"
@@ -44,6 +33,7 @@ static int testFunc1() {
 #include "Settings/GLS_Settings.hpp"
 #include "Settings/GLS_Defaults.hpp"
 
+#include <fstream>
 #include <iostream>
 #include <string>
 
@@ -742,12 +732,3 @@ void searchFileGenerateTree(const std::string &inputFilename)
 
 } // namespace ParserTree
 } // namespace Glockenspiel
-
-// Can be removed after debugging
-//
-static int testFunc2() {
-   std::ifstream is("bla.txt");
-   int a;
-   is >> a;
-   return a;
-}
