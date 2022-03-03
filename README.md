@@ -275,7 +275,7 @@ The following is a simple token sequence where a note `(C)` is followed by the c
 (C) -> [A, B] -> {B, A}
 ```
 
-It would be matched e.g. by the following event seriess.
+It would be matched e.g. by the following event series.
 
 ```
 C A B b B a A c
