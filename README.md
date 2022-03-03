@@ -186,7 +186,7 @@ A B a C c b
 
 In Detail this means: 1. Inputs A and B are activated, 2. Input A is deactivated, 3. Input C is activated and deactivated, 4. Input B is deactivated.
 
-It is important to note that before and input can be deactivated, it must have been activated beforehand. Two consecutive activations or deactivations of inputs are illegal, even if other events are intermixed, e.g.
+It is important to note that before an input can be deactivated, it must have been activated beforehand. Two consecutive activations or deactivations of inputs are illegal, even if other events are intermixed, e.g.
 
 ```
 A B b C a c   # Legal
